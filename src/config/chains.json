@@ -1,0 +1,42 @@
+{
+    "0x1": {
+        "chainId": "0x1",
+        "explorer": "https://etherscan.io/",
+        "label": "Ethereum",
+        "code": "eth",
+        "rpc": "https://trade.orionprotocol.io/rpc",
+        "baseCurrencyName": "ETH"
+    },
+    "0x38": {
+        "chainId": "0x38",
+        "explorer": "https://bscscan.com/",
+        "label": "Binance Smart Chain",
+        "code": "bsc",
+        "rpc": "https://bsc-dataseed.binance.org/",
+        "baseCurrencyName": "BNB"
+    },
+    "0x61": {
+        "chainId": "0x61",
+        "explorer": "https://testnet.bscscan.com/",
+        "label": "Binance Smart Chain Testnet",
+        "code": "bsc",
+        "rpc": "https://bsc-stage.node.orionprotocol.io/",
+        "baseCurrencyName": "BNB"
+    },
+    "0x3": {
+        "chainId": "0x3",
+        "explorer": "https://ropsten.etherscan.io/",
+        "label": "Ropsten",
+        "code": "eth",
+        "rpc": "https://staging.orionprotocol.io/rpc",
+        "baseCurrencyName": "ETH"
+    },
+    "0xfa2": {
+        "chainId": "0xfa2",
+        "explorer": "https://testnet.ftmscan.com/",
+        "label": "Fantom Testnet",
+        "code": "ftm",
+        "rpc": "https://ftm-dev.orionprotocol.io/ftm/rpc",
+        "baseCurrencyName": "FTM"
+    }
+}

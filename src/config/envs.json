@@ -1,0 +1,63 @@
+{
+    "production": {
+        "networks": [
+            {
+                "chainId": "0x1",
+                "api": "trade.orionprotocol.io",
+                "matcherAddress": "0x15E030E12cD2C949181BFf268cbEF26F524d7929"
+            },
+            {
+                "chainId": "0x38",
+                "api": "trade-exp.orionprotocol.io",
+                "matcherAddress": "0x2d23c313feac4810d9d014f840741363fccba675"
+            }
+        ]
+    },
+    "staging": {
+        "networks": [
+            {
+                "chainId": "0x61",
+                "api": "dev-exp.orionprotocol.io",
+                "matcherAddress": "0xfbCAd2c3A90FBD94C335FBdF8E22573456Da7F68"
+            },
+            {
+                "chainId": "0x3",
+                "api": "staging.orionprotocol.io",
+                "matcherAddress": "0x1FF516E5ce789085CFF86d37fc27747dF852a80a"
+            },
+            {
+                "chainId": "0xfa2",
+                "api": "ftm-dev.orionprotocol.io/ftm",
+                "matcherAddress": "0x0dbd7b361989dae564b18db91f96523ca7431fd1"
+            }
+        ]
+    },
+    "staging-mainnet": {
+        "networks": [
+            {
+                "chainId": "0x1",
+                "api": "mns.orionprotocol.io",
+                "matcherAddress": "0x798E811C96FFe470e1FbdFa221E5391016eb014A"
+            },
+            {
+                "chainId": "0x38",
+                "api": "stage-exp.orionprotocol.io",
+                "matcherAddress": "0xea2529bf9b63606284589afa5206f2d33baa8628"
+            }
+        ]
+    },
+    "dev": {
+        "networks": [
+            {
+                "chainId": "0x61",
+                "api": "dn-bsc.orionprotocol.io",
+                "matcherAddress": "0xfbCAd2c3A90FBD94C335FBdF8E22573456Da7F68"
+            },
+            {
+                "chainId": "0x3",
+                "api": "dev.orionprotocol.io",
+                "matcherAddress": "0x1FF516E5ce789085CFF86d37fc27747dF852a80a"
+            }
+        ]
+    }
+}
