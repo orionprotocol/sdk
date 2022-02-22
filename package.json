@@ -8,15 +8,14 @@
     "start": "npm run build-ts && node dist/index.js",
     "develop": "concurrently -i -k -p \"[{name}]\" -n \"Node,TypeScript\" -c \"yellow.bold,cyan.bold\" \"yarn watch-js\" \"yarn watch-ts\"",
     "clean": "rimraf dist/*",
-    "build-ts": "tsc --skipLibCheck",
-    "watch-ts": "tsc -w --skipLibCheck",
+    "build-ts": "npm run typechain:generate-types && tsc --skipLibCheck",
+    "watch-ts": "npm run typechain:generate-types && tsc -w --skipLibCheck",
     "watch-js": "nodemon dist/index.js",
     "test": "exit 0",
     "coverage": "jest --coverage",
     "lint:eslint": "eslint ./src --ext .ts,.js,.tsx,.jsx",
     "lint:eslint:fix": "eslint ./src --ext .ts,.js,.tsx,.jsx --fix",
-    "typechain:generate-types": "typechain --target=ethers-v5 ./src/abis/*.json --out-dir ./src/artifacts/contracts",
-    "postinstall": "npm run typechain:generate-types"
+    "typechain:generate-types": "typechain --target=ethers-v5 ./src/abis/*.json --out-dir ./src/artifacts/contracts"
   },
   "repository": {
     "type": "git",
