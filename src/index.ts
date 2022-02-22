@@ -7,4 +7,3 @@ export * as services from './services';
 export * as Contracts from './artifacts/contracts';
 export * as Exchange from './exchange';
 export * as config from './config';
-export * from './types';
