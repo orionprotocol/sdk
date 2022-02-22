@@ -15,7 +15,7 @@ export class ExtendedError extends Error {
   }
 }
 
-const fetchJsonWithValidation = async <T, U>(
+export const fetchJsonWithValidation = async <T, U>(
   url: string,
   schema: Schema<T>,
   options?: RequestInit,
@@ -51,5 +51,3 @@ const fetchJsonWithValidation = async <T, U>(
     throw e;
   }
 };
-
-export default fetchJsonWithValidation;

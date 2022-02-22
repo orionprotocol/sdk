@@ -1,3 +1,3 @@
 export * as orionAggregator from './OrionAggregator';
 export * as orionBlockchain from './OrionBlockchain';
-export * from './PriceFeed';
+export * as priceFeed from './PriceFeed';
