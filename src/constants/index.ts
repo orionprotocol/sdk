@@ -1,7 +1,8 @@
-export * from './cancelOrderTypes';
+export { default as cancelOrderTypes } from './cancelOrderTypes';
+export { default as orderStatuses } from './orderStatuses';
+export { default as orderTypes } from './orderTypes';
+export { default as subOrderStatuses } from './subOrderStatuses';
+
 export * from './chains';
-export * from './gasLimits';
-export * from './orderStatuses';
-export * from './orderTypes';
 export * from './precisions';
-export * from './subOrderStatuses';
+export * from './gasLimits';
