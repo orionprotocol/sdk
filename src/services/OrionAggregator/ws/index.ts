@@ -1,15 +1,14 @@
 import { z } from 'zod';
 import WebSocket from 'ws';
-import addressUpdateSchema, { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
-import assetPairsConfigSchema from './schemas/assetPairsConfigSchema';
-import orderBookSchema from './schemas/orderBookSchema';
-import brokerMessageSchema from './schemas/brokerMessageSchema';
+import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import { SupportedChainId } from '../../../constants/chains';
 import MessageType from './MessageType';
 import SubscriptionType from './SubscriptionType';
-import errorSchema from './schemas/errorSchema';
-import initMessageSchema from './schemas/initMessageSchema';
-import pingPongMessageSchema from './schemas/pingPongMessageSchema';
+import {
+  pingPongMessageSchema, initMessageSchema,
+  errorSchema, brokerMessageSchema, orderBookSchema,
+  assetPairsConfigSchema, addressUpdateSchema,
+} from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 
 // import errorSchema from './schemas/errorSchema';
@@ -200,6 +199,7 @@ class OrionAggregatorWS {
   }
 }
 
+export * as schemas from './schemas';
 export {
   OrionAggregatorWS, SubscriptionType, UnsubscriptionType, MessageType,
 };

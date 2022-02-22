@@ -1,16 +1,13 @@
 import { z } from 'zod';
 import fetchJsonWithValidation from '../../fetchWithValidation';
-import historySchema from './schemas/historySchema';
-import infoSchema from './schemas/infoSchema';
-import poolsConfigSchema from './schemas/poolsConfigSchema';
-import poolsInfoSchema from './schemas/poolsInfoSchema';
-import adminPoolsListSchema, { PairStatusEnum, pairStatusSchema } from './schemas/adminPoolsListSchema';
-import { addPoolSchemaType } from './schemas/addPoolSchema';
-import IDOSchema from './schemas/IDOSchema';
-import atomicHistorySchema from './schemas/atomicHistorySchema';
+import { PairStatusEnum, pairStatusSchema } from './schemas/adminPoolsListSchema';
+import {
+  IDOSchema, atomicHistorySchema, balancesSchema,
+  poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
+  addPoolSchema, adminPoolsListSchema,
+} from './schemas';
 import OrionBlockchainBalancesSocketIO from './balancesSocketIO';
 import { SupportedChainId } from '../../constants/chains';
-import balancesSchema from './schemas/balancesSchema';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 
 interface IAdminAuthHeaders {
@@ -31,12 +28,16 @@ export interface IEditPool {
   tokensReversed?: boolean;
 }
 
-export default class OrionBlockchain {
+class OrionBlockchain {
   private apiUrl: string;
 
   readonly balancesWs: OrionBlockchainBalancesSocketIO;
 
-  constructor(apiUrl: string, chainId: SupportedChainId, wsMessageCb: (data: z.infer<typeof balancesSchema>) => void) {
+  constructor(
+    apiUrl: string,
+    chainId: SupportedChainId,
+    wsMessageCb: (data: z.infer<typeof balancesSchema>) => void,
+  ) {
     this.apiUrl = apiUrl;
     this.balancesWs = new OrionBlockchainBalancesSocketIO(
       `https://${apiUrl}/`,
@@ -88,7 +89,11 @@ export default class OrionBlockchain {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/has-free-redeem/${walletAddress}`, z.boolean());
   }
 
-  redeemAtomicSwap(redeemOrder: z.infer<typeof redeemOrderSchema>, secret: string, sourceNetwork: string) {
+  redeemAtomicSwap(
+    redeemOrder: z.infer<typeof redeemOrderSchema>,
+    secret: string,
+    sourceNetwork: string,
+  ) {
     return fetchJsonWithValidation(
       `https://${this.apiUrl}/api/atomic/matcher-redeem`,
       z.string(),
@@ -143,7 +148,7 @@ export default class OrionBlockchain {
     );
   }
 
-  addPool(data: addPoolSchemaType) {
+  addPool(data: z.infer<typeof addPoolSchema>) {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/pools/add`, z.number(), {
       method: 'POST',
       body: JSON.stringify(data),
@@ -185,3 +190,6 @@ export default class OrionBlockchain {
     );
   }
 }
+
+export * as schemas from './schemas';
+export { OrionBlockchain };

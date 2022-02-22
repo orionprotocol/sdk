@@ -36,6 +36,7 @@ class PriceFeed {
   get lastPriceWSUrl() { return `wss://${this.apiUrl}/ws2/lastPrice/`; }
 }
 
+export * as schemas from './schemas';
 export {
   PriceFeed, PriceFeedAllTickersWS, PriceFeedTickerWS, PriceFeedLastPriceWS,
 };

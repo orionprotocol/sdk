@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 import { z } from 'zod';
 import { SupportedChainId } from './constants/chains';
-import OrionAggregator from './services/OrionAggregator';
-import OrionBlockchain from './services/OrionBlockchain';
-import balancesSchema from './services/OrionBlockchain/schemas/balancesSchema';
+import { OrionAggregator } from './services/OrionAggregator';
+import { OrionBlockchain } from './services/OrionBlockchain';
+import { balancesSchema } from './services/OrionBlockchain/schemas';
 import { PriceFeed } from './services/PriceFeed';
 
 export default class OrionUnit {

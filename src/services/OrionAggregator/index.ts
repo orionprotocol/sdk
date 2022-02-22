@@ -12,7 +12,7 @@ import { SupportedChainId } from '../../constants/chains';
 import atomicSwapHistorySchema from './schemas/atomicSwapHistorySchema';
 import { SignedCancelOrderRequest, SignedOrder } from '../../types';
 
-export default class OrionAggregator {
+class OrionAggregator {
   private apiUrl: string;
 
   readonly ws: OrionAggregatorWS;
@@ -180,3 +180,6 @@ export default class OrionAggregator {
     return fetchJsonWithValidation(url.toString(), atomicSwapHistorySchema);
   }
 }
+export * as schemas from './schemas';
+export * as ws from './ws';
+export { OrionAggregator };

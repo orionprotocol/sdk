@@ -1,4 +1,3 @@
-export { default as OrionAggregator } from './OrionAggregator';
-export { default as OrionBlockchain } from './OrionBlockchain';
-export * from './OrionAggregator/ws';
+export * as orionAggregator from './OrionAggregator';
+export * as orionBlockchain from './OrionBlockchain';
 export * from './PriceFeed';

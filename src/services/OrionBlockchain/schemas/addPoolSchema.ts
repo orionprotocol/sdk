@@ -8,6 +8,4 @@ const addPoolSchema = z.object({
   tokenBName: z.string().optional(),
 });
 
-export type addPoolSchemaType = z.infer<typeof addPoolSchema>;
-
 export default addPoolSchema;
