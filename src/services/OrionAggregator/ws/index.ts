@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import WebSocket from 'ws';
+import WebSocket from 'isomorphic-ws';
 import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import { SupportedChainId } from '../../../constants/chains';
 import MessageType from './MessageType';

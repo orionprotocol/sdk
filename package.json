@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -51,6 +51,7 @@
     "@ethersproject/abstract-signer": "^5.5.0",
     "bignumber.js": "^9.0.2",
     "ethers": "^5.5.4",
+    "isomorphic-ws": "^4.0.1",
     "node-fetch": "^2.6.7",
     "socket.io-client": "2.4.0",
     "tiny-invariant": "^1.2.0",
