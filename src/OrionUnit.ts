@@ -4,7 +4,7 @@ import { SupportedChainId } from './constants/chains';
 import OrionAggregator from './services/OrionAggregator';
 import OrionBlockchain from './services/OrionBlockchain';
 import balancesSchema from './services/OrionBlockchain/schemas/balancesSchema';
-import PriceFeed from './services/PriceFeed';
+import { PriceFeed } from './services/PriceFeed';
 
 export default class OrionUnit {
   public env: string;

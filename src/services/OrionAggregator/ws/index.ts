@@ -10,13 +10,9 @@ import SubscriptionType from './SubscriptionType';
 import errorSchema from './schemas/errorSchema';
 import initMessageSchema from './schemas/initMessageSchema';
 import pingPongMessageSchema from './schemas/pingPongMessageSchema';
+import UnsubscriptionType from './UnsubscriptionType';
 
 // import errorSchema from './schemas/errorSchema';
-
-export enum UnsubscriptionType {
-  ASSET_PAIRS_CONFIG_UPDATES_UNSUBSCRIBE = 'apcu',
-  BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_UNSUBSCRIBE = 'btasabu',
-}
 
 const UNSUBSCRIBE = 'u';
 
@@ -54,7 +50,7 @@ type Subscription<T extends SubscriptionType> = {
   type: T,
   callback?: SubscriptionCallback[T],
 }
-export class OrionAggregatorWS {
+class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
   private chainId: SupportedChainId;
@@ -203,3 +199,7 @@ export class OrionAggregatorWS {
     };
   }
 }
+
+export {
+  OrionAggregatorWS, SubscriptionType, UnsubscriptionType, MessageType,
+};

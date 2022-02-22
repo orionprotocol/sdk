@@ -1,7 +1,10 @@
 import fetchJsonWithValidation from '../../fetchWithValidation';
 import candlesSchema from './schemas/candlesSchema';
+import PriceFeedAllTickersWS from './PriceFeedAllTickersWS';
+import PriceFeedLastPriceWS from './PriceFeedLastPriceWS';
+import PriceFeedTickerWS from './PriceFeedTickerWS';
 
-export default class PriceFeed {
+class PriceFeed {
   private apiUrl: string;
 
   constructor(apiUrl: string) {
@@ -32,3 +35,7 @@ export default class PriceFeed {
 
   get lastPriceWSUrl() { return `wss://${this.apiUrl}/ws2/lastPrice/`; }
 }
+
+export {
+  PriceFeed, PriceFeedAllTickersWS, PriceFeedTickerWS, PriceFeedLastPriceWS,
+};
