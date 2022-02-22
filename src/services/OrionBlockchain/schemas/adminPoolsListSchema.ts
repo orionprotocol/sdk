@@ -17,7 +17,7 @@ const tokenSchema = z.object({
   isUser: z.boolean().optional(),
 });
 
-const adminPoolListSchema = z.object({
+const poolOnVerificationSchema = z.object({
   tokenA: tokenSchema,
   tokenB: tokenSchema,
   _id: z.string().optional(),
@@ -33,8 +33,6 @@ const adminPoolListSchema = z.object({
   pricePrecision: z.number().optional(),
 });
 
-export type adminPoolType = z.infer<typeof adminPoolListSchema>;
+export type adminPoolType = z.infer<typeof poolOnVerificationSchema>;
 
-const adminPoolsListSchema = z.array(adminPoolListSchema);
-
-export default adminPoolsListSchema;
+export const adminPoolsListSchema = z.array(poolOnVerificationSchema);
