@@ -1,4 +1,4 @@
-import fetchJsonWithValidation from '../../fetchWithValidation';
+import { fetchJsonWithValidation } from '../../fetchWithValidation';
 import candlesSchema from './schemas/candlesSchema';
 import PriceFeedAllTickersWS from './PriceFeedAllTickersWS';
 import PriceFeedLastPriceWS from './PriceFeedLastPriceWS';

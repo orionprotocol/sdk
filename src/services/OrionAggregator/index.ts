@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import fetchJsonWithValidation from '../../fetchWithValidation';
+import { fetchJsonWithValidation } from '../../fetchWithValidation';
 import swapInfoSchema from './schemas/swapInfoSchema';
 import exchangeInfoSchema from './schemas/exchangeInfoSchema';
 import cancelOrderSchema from './schemas/cancelOrderSchema';

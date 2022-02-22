@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import fetchJsonWithValidation from '../../fetchWithValidation';
+import { fetchJsonWithValidation } from '../../fetchWithValidation';
 import { PairStatusEnum, pairStatusSchema } from './schemas/adminPoolsListSchema';
 import {
   IDOSchema, atomicHistorySchema, balancesSchema,
