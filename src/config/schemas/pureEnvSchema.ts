@@ -7,6 +7,7 @@ const pureEnvSchema = z.object({
     api: z.string(),
     matcherAddress: z.string(),
     rpc: z.string().optional(),
+    liquidityMigratorAddress: z.string().optional(),
   })),
 });
 

@@ -18,12 +18,14 @@
             {
                 "chainId": "0x61",
                 "api": "dev-exp.orionprotocol.io",
-                "matcherAddress": "0xfbCAd2c3A90FBD94C335FBdF8E22573456Da7F68"
+                "matcherAddress": "0xfbCAd2c3A90FBD94C335FBdF8E22573456Da7F68",
+                "liquidityMigratorAddress": "0x01b10dd12478C88A5E18e2707E729906bC25CfF6"
             },
             {
                 "chainId": "0x3",
                 "api": "staging.orionprotocol.io",
-                "matcherAddress": "0x1FF516E5ce789085CFF86d37fc27747dF852a80a"
+                "matcherAddress": "0x1FF516E5ce789085CFF86d37fc27747dF852a80a",
+                "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
             },
             {
                 "chainId": "0xfa2",
