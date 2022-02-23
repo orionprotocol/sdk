@@ -1,12 +1,6 @@
 import { z } from 'zod';
 import redeemOrderSchema from './redeemOrderSchema';
 
-enum BackendStatus {
-  SETTLED = 'SETTLED',
-  EXPIRED = 'EXPIRED',
-  ACTIVE = 'ACTIVE',
-}
-
 export const atomicSwapHistorySchema = z.array(z.object({
   id: z.string(),
   sender: z.string(),
@@ -20,7 +14,7 @@ export const atomicSwapHistorySchema = z.array(z.object({
     sourceNetworkCode: z.string(),
   }),
   redeemOrder: redeemOrderSchema,
-  status: z.nativeEnum(BackendStatus),
+  status: z.enum(['SETTLED', 'EXPIRED', 'ACTIVE']),
   creationTime: z.number(),
 }));
 
