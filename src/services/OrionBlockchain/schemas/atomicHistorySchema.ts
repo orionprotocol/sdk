@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { OrionBlockchainAtomicHistoryStatus } from '../../..';
 
 const atomicHistorySchema = z.object({
   success: z.boolean(),
@@ -26,7 +25,7 @@ const atomicHistorySchema = z.object({
       lock: z.number().optional(),
     }).optional(),
     sender: z.string(),
-    state: z.nativeEnum(OrionBlockchainAtomicHistoryStatus),
+    state: z.enum(['LOCKED', 'REDEEMED', 'CLAIMED', 'REFUNDED', 'BEFORE-REDEEM']),
     transactions: z.object({
       lock: z.string().optional(),
       redeem: z.string().optional(),

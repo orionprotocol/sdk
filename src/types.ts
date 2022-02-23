@@ -41,11 +41,3 @@ export interface Pair {
   low: string;
   vol24h: string;
 }
-
-export enum OrionBlockchainAtomicHistoryStatus {
-  LOCKED = 'LOCKED',
-  REDEEMED = 'REDEEMED',
-  CLAIMED = 'CLAIMED',
-  REFUNDED = 'REFUNDED',
-  'BEFORE-REDEEM' = 'BEFORE-REDEEM',
-}
