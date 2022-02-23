@@ -5,4 +5,6 @@ export { default as brokerMessageSchema } from './brokerMessageSchema';
 export { default as errorSchema } from './errorSchema';
 export { default as initMessageSchema } from './initMessageSchema';
 export { default as pingPongMessageSchema } from './pingPongMessageSchema';
+export { default as swapInfoSchema } from './swapInfoSchema';
+
 export * from './orderBookSchema';

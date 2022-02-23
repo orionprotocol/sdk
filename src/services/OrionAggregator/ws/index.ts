@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import WebSocket from 'isomorphic-ws';
+import { validate as uuidValidate } from 'uuid';
 import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import { SupportedChainId } from '../../../constants/chains';
 import MessageType from './MessageType';
@@ -7,10 +8,9 @@ import SubscriptionType from './SubscriptionType';
 import {
   pingPongMessageSchema, initMessageSchema,
   errorSchema, brokerMessageSchema, orderBookSchema,
-  assetPairsConfigSchema, addressUpdateSchema,
+  assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
-
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -35,9 +35,11 @@ type SubscriptionCallback = {
     asset: string;
     balance: number;
   }[]) => void,
+  [SubscriptionType.SWAP_SUBSCRIBE]: (swapInfo: z.infer<typeof swapInfoSchema>) => void,
 }
 
 const subscriptionToMesage: Record<SubscriptionType, MessageType> = {
+  [SubscriptionType.SWAP_SUBSCRIBE]: MessageType.SWAP_INFO,
   [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: MessageType.ADDRESS_UPDATE,
   [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: MessageType.AGGREGATED_ORDER_BOOK_UPDATE,
   [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: MessageType.ASSET_PAIRS_CONFIG_UPDATE,
@@ -48,6 +50,12 @@ const subscriptionToMesage: Record<SubscriptionType, MessageType> = {
 type Subscription<T extends SubscriptionType> = {
   type: T,
   callback?: SubscriptionCallback[T],
+}
+type SwapSubscriptionRequest = {
+  d: string, // swap request UUID, set by client side
+  i: string, // asset in
+  o: string, // asset out
+  a: number // amount in
 }
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
@@ -83,15 +91,12 @@ class OrionAggregatorWS {
     }
   }
 
-  // destroy() {
-  //   if (this.ws) this.ws.close(3000, 'USER_CHANGED_NETWORK');
-  // }
-
   subscribe<T extends SubscriptionType>(
     type: T,
-    subscription?: string,
+    subscription?: string | SwapSubscriptionRequest,
     callback?: SubscriptionCallback[T],
   ) {
+    console.log(type);
     this.send({
       T: type,
       S: subscription,
@@ -115,6 +120,8 @@ class OrionAggregatorWS {
       delete this.subscriptionCallbacks[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
     } else if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       delete this.subscriptionCallbacks[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
+    } else if (uuidValidate(subscription)) { // is swap info subscription
+      delete this.subscriptionCallbacks[SubscriptionType.SWAP_SUBSCRIBE];
     } else if (subscription === UnsubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_UNSUBSCRIBE) {
       delete this.subscriptionCallbacks[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE];
     } else if (subscription === UnsubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_UNSUBSCRIBE) {
@@ -139,6 +146,7 @@ class OrionAggregatorWS {
         assetPairsConfigSchema,
         brokerMessageSchema,
         orderBookSchema,
+        swapInfoSchema,
         errorSchema,
       ]);
 
@@ -147,6 +155,10 @@ class OrionAggregatorWS {
       switch (json.T) {
         case MessageType.ERROR:
           // const { m: errorMessage } = errorSchema.parse(json);
+          break;
+
+        case MessageType.SWAP_INFO:
+          this.subscriptionCallbacks[SubscriptionType.SWAP_SUBSCRIBE]?.(json);
           break;
         case MessageType.PING_PONG:
           this.sendRaw(data.toString());
@@ -164,14 +176,14 @@ class OrionAggregatorWS {
         }
           break;
         case MessageType.ADDRESS_UPDATE:
-          switch (json.k) {
-            case 'i':
+          switch (json.k) { // kins
+            case 'i': // initial
               this.subscriptionCallbacks[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.({
                 fullOrders: json.o,
                 lockedBalances: json.b,
               });
               break;
-            case 'u':
+            case 'u': // update
               this.subscriptionCallbacks[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.({
                 orderUpdate: json.o?.[0],
                 lockedBalances: json.b,

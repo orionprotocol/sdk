@@ -1,6 +1,7 @@
 enum MessageType {
   ERROR = 'e',
   PING_PONG = 'pp',
+  SWAP_INFO = 'si',
   INITIALIZATION = 'i',
   AGGREGATED_ORDER_BOOK_UPDATE = 'aobu',
   ASSET_PAIRS_CONFIG_UPDATE = 'apcu',
