@@ -2,7 +2,7 @@
 
 ## Install
 
-Before install SDK you need create Personal Assess Token.
+Before install SDK you need create Personal Access Token.
 
 1. Create PAT [here](https://github.com/settings/tokens):
    1. type any name (for example `READ_PACKAGES`)
