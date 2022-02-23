@@ -201,5 +201,8 @@ class OrionAggregatorWS {
 
 export * as schemas from './schemas';
 export {
-  OrionAggregatorWS, SubscriptionType, UnsubscriptionType, MessageType,
+  OrionAggregatorWS,
+  SubscriptionType,
+  UnsubscriptionType,
+  MessageType,
 };
