@@ -96,7 +96,6 @@ class OrionAggregatorWS {
     subscription?: string | SwapSubscriptionRequest,
     callback?: SubscriptionCallback[T],
   ) {
-    console.log(type);
     this.send({
       T: type,
       S: subscription,
