@@ -11,6 +11,7 @@ import {
   assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
+import { SwapInfo } from '../../..';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -35,7 +36,7 @@ type SubscriptionCallback = {
     asset: string;
     balance: number;
   }[]) => void,
-  [SubscriptionType.SWAP_SUBSCRIBE]: (swapInfo: z.infer<typeof swapInfoSchema>) => void,
+  [SubscriptionType.SWAP_SUBSCRIBE]: (swapInfo: SwapInfo) => void,
 }
 
 const subscriptionToMesage: Record<SubscriptionType, MessageType> = {
@@ -157,7 +158,21 @@ class OrionAggregatorWS {
           break;
 
         case MessageType.SWAP_INFO:
-          this.subscriptionCallbacks[SubscriptionType.SWAP_SUBSCRIBE]?.(json);
+
+          this.subscriptionCallbacks[SubscriptionType.SWAP_SUBSCRIBE]?.({
+            swapRequestId: json.S,
+            assetIn: json.ai,
+            assetOut: json.ao,
+            amountIn: json.a,
+            amountOut: json.o,
+            price: json.p,
+            marketAmountOut: json.mo,
+            marketPrice: json.mp,
+            minAmount: json.ma,
+            availableAmountIn: json.aa,
+            path: json.ps,
+            poolOptimal: json.po,
+          });
           break;
         case MessageType.PING_PONG:
           this.sendRaw(data.toString());

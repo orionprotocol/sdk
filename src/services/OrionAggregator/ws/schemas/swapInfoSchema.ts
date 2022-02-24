@@ -9,9 +9,9 @@ const swapInfoSchema = baseMessageSchema.extend({
   ao: z.string(), // asset out
   a: z.number(), // amount in
   o: z.number(), // amount out
-  p: z.number(), // price
-  mo: z.number(), // market amount out
-  mp: z.number(), // market price
+  p: z.number().optional(), // price
+  mo: z.number().optional(), // market amount out
+  mp: z.number().optional(), // market price
   ma: z.number(), // min amount
   aa: z.number(), // available amount in
   ps: z.string().array(), // path
