@@ -20,6 +20,11 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
+    'max-len': [
+      1,
+      140,
+      2,
+    ],
     'import/extensions': [
       'error',
       'ignorePackages',

@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "1.0.21-vob",
+  "version": "1.0.22-vob",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -16,56 +16,77 @@ import { SwapInfo } from '../../..';
 
 const UNSUBSCRIBE = 'u';
 
-type SubscriptionCallback = {
-  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: (
-    asks: z.infer<typeof orderBookSchema>['ob']['a'],
-    bids: z.infer<typeof orderBookSchema>['ob']['b'],
-    pair: string
-  ) => void,
-  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]:
-  (
-    chainId: SupportedChainId,
-    data: z.infer<typeof assetPairsConfigSchema>['u'],
-  ) => void,
-  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: ({ fullOrders, orderUpdate, lockedBalances } : {
-    fullOrders?: z.infer<typeof fullOrderSchema>[],
-    orderUpdate?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>,
-    lockedBalances?: Record<string, [string, string]>,
-  }) => void,
-  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: (balances: {
-    asset: string;
-    balance: number;
-  }[]) => void,
-  [SubscriptionType.SWAP_SUBSCRIBE]: (swapInfo: SwapInfo) => void,
-}
-
-const subscriptionToMesage: Record<SubscriptionType, MessageType> = {
-  [SubscriptionType.SWAP_SUBSCRIBE]: MessageType.SWAP_INFO,
-  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: MessageType.ADDRESS_UPDATE,
-  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: MessageType.AGGREGATED_ORDER_BOOK_UPDATE,
-  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: MessageType.ASSET_PAIRS_CONFIG_UPDATE,
-  // eslint-disable-next-line max-len
-  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: MessageType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE,
-};
-
-type Subscription<T extends SubscriptionType> = {
-  type: T,
-  callback?: SubscriptionCallback[T],
-}
 type SwapSubscriptionRequest = {
   d: string, // swap request UUID, set by client side
   i: string, // asset in
   o: string, // asset out
   a: number // amount in
+  s?: 'SELL' | 'BUY' // force order side
 }
+
+type BrokerTradableAtomicSwapBalanceSubscription = {
+  // type: SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE,
+  // payload: string,
+  // messageType: MessageType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE,
+  callback: (balances: {
+    asset: string;
+    balance: number;
+  }[]) => void,
+}
+
+type PairConfigSubscription = {
+  // type: SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE,
+  // messageType: MessageType.ASSET_PAIRS_CONFIG_UPDATE,
+  callback: (
+    chainId: SupportedChainId,
+    data: z.infer<typeof assetPairsConfigSchema>['u'],
+  ) => void,
+}
+
+type AggregatedOrderbookSubscription = {
+  // type: SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE,
+  payload: string,
+  // messageType: MessageType.AGGREGATED_ORDER_BOOK_UPDATE,
+  callback: (
+    asks: z.infer<typeof orderBookSchema>['ob']['a'],
+    bids: z.infer<typeof orderBookSchema>['ob']['b'],
+    pair: string
+  ) => void,
+}
+
+type SwapInfoSubscription = {
+  // type: SubscriptionType.SWAP_SUBSCRIBE,
+  payload: SwapSubscriptionRequest,
+  // messageType: MessageType.SWAP_INFO,
+  callback: (swapInfo: SwapInfo) => void,
+}
+
+type AddressUpdateSubscription = {
+  // type: SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE,
+  payload: string,
+  // messageType: MessageType.ADDRESS_UPDATE,
+  callback: ({ fullOrders, orderUpdate, lockedBalances } : {
+    fullOrders?: z.infer<typeof fullOrderSchema>[],
+    orderUpdate?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>,
+    lockedBalances?: Record<string, [string, string]>,
+  }) => void,
+}
+
+type Subscription = {
+  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription,
+  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription,
+  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
+  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
+  [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
+}
+
+type Subscriptions<T extends SubscriptionType> = { [K in T]: Subscription[K] }
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
   private chainId: SupportedChainId;
 
-  private subscriptions: Subscription<SubscriptionType>[] = [];
-
-  private subscriptionCallbacks: Partial<SubscriptionCallback> = {};
+  private subscriptions: Partial<Subscriptions<SubscriptionType>> = {};
 
   constructor(url: string, chainId: SupportedChainId) {
     this.chainId = chainId;
@@ -94,20 +115,16 @@ class OrionAggregatorWS {
 
   subscribe<T extends SubscriptionType>(
     type: T,
-    subscription?: string | SwapSubscriptionRequest,
-    callback?: SubscriptionCallback[T],
+    subscription: Subscription[T],
   ) {
     this.send({
       T: type,
-      S: subscription,
+      ...('payload' in subscription) && {
+        S: subscription.payload,
+      },
     });
 
-    this.subscriptions.push({
-      type,
-      callback,
-    });
-
-    this.subscriptionCallbacks[type] = callback;
+    this.subscriptions[type] = subscription;
   }
 
   unsubscribe(subscription: UnsubscriptionType | string) {
@@ -117,15 +134,15 @@ class OrionAggregatorWS {
     });
 
     if (subscription.includes('-')) { // is pair name (AGGREGATED_ORDER_BOOK_UPDATE)
-      delete this.subscriptionCallbacks[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
+      delete this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
     } else if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
-      delete this.subscriptionCallbacks[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
+      delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
     } else if (uuidValidate(subscription)) { // is swap info subscription
-      delete this.subscriptionCallbacks[SubscriptionType.SWAP_SUBSCRIBE];
+      delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE];
     } else if (subscription === UnsubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_UNSUBSCRIBE) {
-      delete this.subscriptionCallbacks[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE];
+      delete this.subscriptions[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE];
     } else if (subscription === UnsubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_UNSUBSCRIBE) {
-      delete this.subscriptionCallbacks[SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE];
+      delete this.subscriptions[SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE];
     }
   }
 
@@ -134,6 +151,16 @@ class OrionAggregatorWS {
     this.ws.onclose = (e) => {
       console.log('WS agg Connection closed', e);
       this.init(url);
+    };
+    this.ws.onopen = () => {
+      Object.entries(this.subscriptions).forEach(([type, subscription]) => {
+        this.send({
+          T: type,
+          ...('payload' in subscription) && {
+            S: subscription.payload,
+          },
+        });
+      });
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
@@ -156,10 +183,12 @@ class OrionAggregatorWS {
         case MessageType.ERROR:
           // const { m: errorMessage } = errorSchema.parse(json);
           break;
+        case MessageType.PING_PONG:
+          this.sendRaw(data.toString());
+          break;
 
         case MessageType.SWAP_INFO:
-
-          this.subscriptionCallbacks[SubscriptionType.SWAP_SUBSCRIBE]?.({
+          this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
             swapRequestId: json.S,
             assetIn: json.ai,
             assetOut: json.ao,
@@ -173,32 +202,38 @@ class OrionAggregatorWS {
             path: json.ps,
             poolOptimal: json.po,
           });
-          break;
-        case MessageType.PING_PONG:
-          this.sendRaw(data.toString());
+
           break;
         // case MessageType.INITIALIZATION:
         // break;
         case MessageType.AGGREGATED_ORDER_BOOK_UPDATE: {
           const { ob, S } = json;
-          this.subscriptionCallbacks[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]?.(ob.a, ob.b, S);
+          this.subscriptions[
+            SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE
+          ]?.callback(ob.a, ob.b, S);
         }
           break;
         case MessageType.ASSET_PAIRS_CONFIG_UPDATE: {
           const pairs = json;
-          this.subscriptionCallbacks[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]?.(this.chainId, pairs.u);
+          this.subscriptions[
+            SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE
+          ]?.callback(this.chainId, pairs.u);
         }
           break;
         case MessageType.ADDRESS_UPDATE:
-          switch (json.k) { // kins
+          switch (json.k) { // kind
             case 'i': // initial
-              this.subscriptionCallbacks[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.({
+              this.subscriptions[
+                SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
+              ]?.callback({
                 fullOrders: json.o,
                 lockedBalances: json.b,
               });
               break;
             case 'u': // update
-              this.subscriptionCallbacks[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.({
+              this.subscriptions[
+                SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
+              ]?.callback({
                 orderUpdate: json.o?.[0],
                 lockedBalances: json.b,
               });
@@ -213,9 +248,9 @@ class OrionAggregatorWS {
             return { asset, balance };
           });
 
-          this.subscriptionCallbacks[
+          this.subscriptions[
             SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE
-          ]?.(updatedBrokerBalances);
+          ]?.callback(updatedBrokerBalances);
         }
           break;
         default:
