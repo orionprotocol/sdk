@@ -16,6 +16,12 @@ const swapInfoSchema = baseMessageSchema.extend({
   aa: z.number(), // available amount in
   ps: z.string().array(), // path
   po: z.boolean(), // is swap through pool optimal
+  oi: z.object({ //  info about order equivalent to this swap
+    p: z.string(), // asset pair
+    s: z.enum(['SELL', 'BUY']), // side
+    a: z.number(), // amount
+    sp: z.number(), // safe price (with safe deviation but without slippage)
+  }),
 });
 
 export default swapInfoSchema;
