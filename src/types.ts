@@ -48,14 +48,16 @@ export type SwapInfo = {
   assetOut: string,
   amountIn: number,
   amountOut: number,
-  price?: number,
-  marketAmountOut?: number,
-  marketPrice?: number,
+
   minAmount: number,
   availableAmountIn: number,
   path: string[],
   poolOptimal: boolean,
-  orderInfo: {
+
+  price?: number,
+  marketAmountOut?: number,
+  marketPrice?: number,
+  orderInfo?: {
     pair: string,
     side: 'BUY' | 'SELL',
     amount: number,

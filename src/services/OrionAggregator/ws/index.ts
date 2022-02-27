@@ -198,11 +198,13 @@ class OrionAggregatorWS {
             marketPrice: json.mp,
             minAmount: json.ma,
             availableAmountIn: json.aa,
-            orderInfo: {
-              pair: json.oi.p,
-              side: json.oi.s,
-              amount: json.oi.a,
-              safePrice: json.oi.sp,
+            ...json.oi && {
+              orderInfo: {
+                pair: json.oi.p,
+                side: json.oi.s,
+                amount: json.oi.a,
+                safePrice: json.oi.sp,
+              },
             },
             path: json.ps,
             poolOptimal: json.po,
