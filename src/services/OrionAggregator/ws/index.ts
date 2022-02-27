@@ -186,7 +186,6 @@ class OrionAggregatorWS {
         case MessageType.PING_PONG:
           this.sendRaw(data.toString());
           break;
-
         case MessageType.SWAP_INFO:
           this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
             swapRequestId: json.S,
@@ -199,6 +198,12 @@ class OrionAggregatorWS {
             marketPrice: json.mp,
             minAmount: json.ma,
             availableAmountIn: json.aa,
+            orderInfo: {
+              pair: json.oi.p,
+              side: json.oi.s,
+              amount: json.oi.a,
+              safePrice: json.oi.sp,
+            },
             path: json.ps,
             poolOptimal: json.po,
           });
