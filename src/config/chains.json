@@ -38,5 +38,13 @@
         "code": "ftm",
         "rpc": "https://ftm-dev.orionprotocol.io/ftm/rpc",
         "baseCurrencyName": "FTM"
+    },
+    "0xfa": {
+        "chainId": "0xfa",
+        "explorer": "https://ftmscan.com/",
+        "label": "Fantom Opera",
+        "code": "ftm",
+        "rpc": "https://rpcapi.fantom.network/",
+        "baseCurrencyName": "FTM"
     }
 }
