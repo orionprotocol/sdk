@@ -1,6 +1,7 @@
 export enum SupportedChainId {
   MAINNET = '0x1',
   ROPSTEN = '0x3',
+  FANTOM_OPERA = '0xfa',
 
   FANTOM_TESTNET = '0xfa2',
   BSC = '0x38',
