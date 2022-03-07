@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "Orion Protocol SDK",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^9.0.0",
+    "@types/csprng": "^0.1.2",
     "@types/node": "^17.0.17",
     "@types/node-fetch": "^2.5.12",
     "@types/socket.io-client": "1.4.33",
@@ -51,6 +52,7 @@
   "dependencies": {
     "@ethersproject/abstract-signer": "^5.5.0",
     "bignumber.js": "^9.0.2",
+    "csprng": "^0.1.2",
     "ethers": "^5.5.4",
     "isomorphic-ws": "^4.0.1",
     "node-fetch": "^2.6.7",
