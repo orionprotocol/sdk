@@ -80,44 +80,4 @@ const addressUpdateSchema = z.union([
   updateMessageSchema,
 ]);
 
-// const addressUpdateSchema = z.object({
-//   T: z.string(),
-//   _: z.number(),
-//   S: z.string(),
-//   b: z.record(z.tuple([z.string(), z.string()])).optional(),
-//   o: z.array(
-//     z.object({
-//       I: z.string(), // id
-//       O: z.string().optional(), // sender (owner)
-//       P: z.string().optional(), // asset pair
-//       s: z.enum(['BUY', 'SELL']).optional(), // side
-//       a: z.number().optional(), // amount
-//       A: z.number(), // settled amount
-//       p: z.number().optional(), // price
-//       F: z.string().optional(), // fee asset
-//       f: z.number().optional(), // fee
-//       o: z.boolean().optional(), // internal only
-//       S: z.enum(orderStatuses).optional(), // status
-//       T: z.number().optional(), // creation time
-//       t: z.number(), // update time
-//       c: z
-//         .object({
-//           i: z.number(), // id
-//           I: z.string(), // parent order id
-//           O: z.string(), // sender (owner)
-//           P: z.string(), // asset pair
-//           s: z.enum(['BUY', 'SELL']), // side
-//           a: z.number(), // amount
-//           A: z.number(), // settled amount
-//           p: z.number(), // avg weighed settlement price
-//           e: z.string(), // exchange
-//           b: z.string(), // broker address
-//           S: z.enum(subOrderStatuses), // status
-//           o: z.boolean(), // internal only
-//         })
-//         .array(),
-//     }),
-//   ).optional(),
-// });
-
 export default addressUpdateSchema;
