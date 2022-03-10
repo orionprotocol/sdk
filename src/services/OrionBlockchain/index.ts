@@ -167,12 +167,16 @@ class OrionBlockchain {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/swap-assets`, z.array(z.string()));
   }
 
-  getAtomicSourceNetworkHistory(address: string) {
-    return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/history/?sender=${address}&limit=1000`, atomicHistorySchema);
-  }
-
-  getAtomicTargetNetworkHistory(address: string) {
-    return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/history/?receiver=${address}&limit=1000`, atomicHistorySchema);
+  getAtomicSwapHistory(filter: {
+    limit: number
+    sender?: string,
+    receiver?: string,
+  }) {
+    const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
+    url.searchParams.append('limit', filter.limit.toString());
+    if (filter.sender) url.searchParams.append('sender', filter.sender);
+    if (filter.receiver) url.searchParams.append('receiver', filter.receiver);
+    return fetchJsonWithValidation(url.toString(), atomicHistorySchema);
   }
 
   checkIfHashUsed(secretHashes: string[]) {

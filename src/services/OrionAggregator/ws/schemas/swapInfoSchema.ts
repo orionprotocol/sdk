@@ -9,19 +9,20 @@ const swapInfoSchema = baseMessageSchema.extend({
   ao: z.string(), // asset out
   a: z.number(), // amount in
   o: z.number(), // amount out
-  p: z.number().optional(), // price
-  mo: z.number().optional(), // market amount out
-  mp: z.number().optional(), // market price
   ma: z.number(), // min amount
   aa: z.number(), // available amount in
   ps: z.string().array(), // path
   po: z.boolean(), // is swap through pool optimal
+
+  p: z.number().optional(), // price
+  mo: z.number().optional(), // market amount out
+  mp: z.number().optional(), // market price
   oi: z.object({ //  info about order equivalent to this swap
     p: z.string(), // asset pair
     s: z.enum(['SELL', 'BUY']), // side
     a: z.number(), // amount
     sp: z.number(), // safe price (with safe deviation but without slippage)
-  }),
+  }).optional(),
 });
 
 export default swapInfoSchema;

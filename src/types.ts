@@ -43,16 +43,24 @@ export interface Pair {
 }
 
 export type SwapInfo = {
-      swapRequestId: string,
-      assetIn: string,
-      assetOut: string,
-      amountIn: number,
-      amountOut: number,
-      price?: number,
-      marketAmountOut?: number,
-      marketPrice?: number,
-      minAmount: number,
-      availableAmountIn: number,
-      path: string[],
-      poolOptimal: boolean,
+  swapRequestId: string,
+  assetIn: string,
+  assetOut: string,
+  amountIn: number,
+  amountOut: number,
+
+  minAmount: number,
+  availableAmountIn: number,
+  path: string[],
+  poolOptimal: boolean,
+
+  price?: number,
+  marketAmountOut?: number,
+  marketPrice?: number,
+  orderInfo?: {
+    pair: string,
+    side: 'BUY' | 'SELL',
+    amount: number,
+    safePrice: number,
   }
+}
