@@ -107,7 +107,7 @@ class OrionAggregator {
     );
   }
 
-  getOrderExecutionInfo(
+  getSwapInfo(
     spendingAsset: string,
     receivingAsset: string,
     spendingAssetAmount: string,
@@ -126,9 +126,10 @@ class OrionAggregator {
   }
 
   getLockedBalance(walletAddress: string, currency: string) {
-    const url = `${this.aggregatorUrl}/api/v1/address/balance/reserved/${currency}?address=${walletAddress}`;
+    const url = new URL(`${this.aggregatorUrl}/api/v1/address/balance/reserved/${currency}`);
+    url.searchParams.append('address', walletAddress);
     return fetchJsonWithValidation(
-      url,
+      url.toString(),
       z.record(z.number()),
       undefined,
       errorSchema,
@@ -140,17 +141,25 @@ class OrionAggregator {
     amount: BigNumber,
     isBuy: boolean,
   ) {
+    const url = new URL(`${this.aggregatorUrl}/api/v1/orderBenefits`);
+    url.searchParams.append('symbol', symbol);
+    url.searchParams.append('amount', amount.toString());
+    url.searchParams.append('side', isBuy ? 'buy' : 'sell');
+
     return fetchJsonWithValidation(
-      `${this.aggregatorUrl}/api/v1/orderBenefits`
-        + `?symbol=${symbol}`
-        + `&amount=${amount.toString()}`
-        + `&side=${isBuy ? 'buy' : 'sell'}`,
+      url.toString(),
       orderBenefitsSchema,
       undefined,
       errorSchema,
     );
   }
 
+  /**
+   * Placing atomic swap. Placement must take place on the target chain.
+   * @param secretHash Secret hash
+   * @param sourceNetworkCode uppercase, e.g. BSC, ETH
+   * @returns Fetch promise
+   */
   placeAtomicSwap(
     secretHash: string,
     sourceNetworkCode: string,
@@ -173,10 +182,15 @@ class OrionAggregator {
     );
   }
 
-  getHistoryAtomicSwaps(sender: string) {
+  /**
+   * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Orion Aggregator
+   * @param sender Sender address
+   * @returns Fetch promise
+   */
+  getHistoryAtomicSwaps(sender: string, limit = 1000) {
     const url = new URL(`${this.aggregatorUrl}/api/v1/atomic-swap/history/all`);
-    url.searchParams.append('limit', '1000');
     url.searchParams.append('sender', sender);
+    url.searchParams.append('limit', limit.toString());
     return fetchJsonWithValidation(url.toString(), atomicSwapHistorySchema);
   }
 }
