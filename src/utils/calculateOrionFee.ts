@@ -12,17 +12,17 @@ export default function calculateOrionFee(
     .multipliedBy(new BigNumber(1).div(feeAssetPriceInOrn))
     .toString();
 
-  console.log(`
-  Вычисляем комиссию Ориона в ассете комиссии.
-  Входное количество ${amount} умножаем на процент по даннному ассету (${feePercent}),
-  умножаем на цену Base ассета в Орионах (${baseAssetPriceInOrn}),
-  умножаем на "развернуюую" цену ассета комиссии в орионах (${new BigNumber(1).div(feeAssetPriceInOrn).toString()})
-  Итого: ${amount} 
-  * ${new BigNumber(feePercent).div(100).toString()} 
-  * ${baseAssetPriceInOrn} 
-  * ${new BigNumber(1).div(feeAssetPriceInOrn).toString()}
-  = ${result}
-  `);
+  // console.log(`
+  // Вычисляем комиссию Ориона в ассете комиссии.
+  // Входное количество ${amount} умножаем на процент по даннному ассету (${feePercent}),
+  // умножаем на цену Base ассета в Орионах (${baseAssetPriceInOrn}),
+  // умножаем на "развернуюую" цену ассета комиссии в орионах (${new BigNumber(1).div(feeAssetPriceInOrn).toString()})
+  // Итого: ${amount}
+  // * ${new BigNumber(feePercent).div(100).toString()}
+  // * ${baseAssetPriceInOrn}
+  // * ${new BigNumber(1).div(feeAssetPriceInOrn).toString()}
+  // = ${result}
+  // `);
 
   return result;
 }
