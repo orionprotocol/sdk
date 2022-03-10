@@ -4,7 +4,8 @@
             {
                 "chainId": "0x1",
                 "api": "trade.orionprotocol.io",
-                "matcherAddress": "0x15E030E12cD2C949181BFf268cbEF26F524d7929"
+                "matcherAddress": "0x15E030E12cD2C949181BFf268cbEF26F524d7929",
+                "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
             },
             {
                 "chainId": "0x38",
