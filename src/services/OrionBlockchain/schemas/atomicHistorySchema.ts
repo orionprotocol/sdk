@@ -19,7 +19,7 @@ const baseAtomicHistoryItem = z.object({
   receiver: z.string().optional(),
   secret: z.string().optional(),
 });
-const sourceAtomicHistorySchema = baseAtomicHistoryItem.extend({
+const sourceAtomicHistorySchemaItem = baseAtomicHistoryItem.extend({
   type: z.literal('source'),
   amountToReceive: z.number().optional(),
   amountToSpend: z.number().optional(),
@@ -40,7 +40,7 @@ const sourceAtomicHistorySchema = baseAtomicHistoryItem.extend({
   }).optional(),
 });
 
-const targetAtomicHistorySchema = baseAtomicHistoryItem.extend({
+const targetAtomicHistorySchemaItem = baseAtomicHistoryItem.extend({
   type: z.literal('target'),
   timestamp: z.object({
     redeem: z.number().optional(),
@@ -54,9 +54,17 @@ const targetAtomicHistorySchema = baseAtomicHistoryItem.extend({
   }).optional(),
 });
 
+export const sourceAtomicHistorySchema = baseAtomicHistorySchema.extend({
+  data: z.array(sourceAtomicHistorySchemaItem),
+});
+
+export const targetAtomicHistorySchema = baseAtomicHistorySchema.extend({
+  data: z.array(targetAtomicHistorySchemaItem),
+});
+
 const atomicHistorySchema = baseAtomicHistorySchema.extend({
   data: z.array(
-    z.union([sourceAtomicHistorySchema, targetAtomicHistorySchema]),
+    z.union([sourceAtomicHistorySchemaItem, targetAtomicHistorySchemaItem]),
   ),
 });
 

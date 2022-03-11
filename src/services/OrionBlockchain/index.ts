@@ -9,6 +9,7 @@ import {
 import OrionBlockchainBalancesSocketIO from './balancesSocketIO';
 import { SupportedChainId } from '../../constants/chains';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
+import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 
 interface IAdminAuthHeaders {
   auth: string;
@@ -28,6 +29,25 @@ export interface IEditPool {
   tokensReversed?: boolean;
 }
 
+type AtomicSwapHistoryBaseQuery = {
+  limit?: number
+  sender?: string,
+  receiver?: string,
+  used?: 0 | 1,
+  page?: number,
+}
+
+type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
+  type?: 'source',
+  expiredLock?: 0 | 1,
+  state?: 'LOCKED' | 'CLAIMED' |'REFUNDED',
+
+}
+type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
+  type?: 'target',
+  expiredRedeem?: 0 | 1,
+  state?: 'REDEEMED' | 'BEFORE-REDEEM',
+}
 class OrionBlockchain {
   private apiUrl: string;
 
@@ -167,16 +187,39 @@ class OrionBlockchain {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/swap-assets`, z.array(z.string()));
   }
 
-  getAtomicSwapHistory(filter: {
-    limit: number
-    sender?: string,
-    receiver?: string,
-  }) {
+  /**
+   * Sender is user address in source Orion Blockchain instance \
+   * Receiver is user address in target Orion Blockchain instance
+   */
+  getAtomicSwapHistory(query: AtomicSwapHistorySourceQuery | AtomicSwapHistoryTargetQuery) {
     const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
-    url.searchParams.append('limit', filter.limit.toString());
-    if (filter.sender) url.searchParams.append('sender', filter.sender);
-    if (filter.receiver) url.searchParams.append('receiver', filter.receiver);
+
+    Object.entries(query)
+      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+
     return fetchJsonWithValidation(url.toString(), atomicHistorySchema);
+  }
+
+  getSourceAtomicSwapHistory(query: AtomicSwapHistorySourceQuery) {
+    const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
+
+    Object.entries(query)
+      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+
+    if (!query.type) url.searchParams.append('type', 'source');
+
+    return fetchJsonWithValidation(url.toString(), sourceAtomicHistorySchema);
+  }
+
+  getTargetAtomicSwapHistory(query: AtomicSwapHistoryTargetQuery) {
+    const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
+
+    Object.entries(query)
+      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+
+    if (!query.type) url.searchParams.append('type', 'target');
+
+    return fetchJsonWithValidation(url.toString(), targetAtomicHistorySchema);
   }
 
   checkIfHashUsed(secretHashes: string[]) {
