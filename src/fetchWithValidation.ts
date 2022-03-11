@@ -1,5 +1,5 @@
 import { Schema } from 'zod';
-import fetch, { RequestInit, FetchError } from 'node-fetch';
+import fetch, { RequestInit } from 'node-fetch';
 import { isWithError, isWithReason } from './utils/typeHelpers';
 
 export class ExtendedError extends Error {
@@ -21,37 +21,30 @@ export const fetchJsonWithValidation = async <T, U>(
   options?: RequestInit,
   errorSchema?: Schema<U>,
 ) => {
+  const response = await fetch(url, {
+    ...options || {},
+    headers: {
+      'Cache-Control': 'no-store, max-age=0',
+      ...(options ? options.headers : {}),
+    },
+  });
+  const text = await response.text();
+
+  // The ok read-only property of the Response interface contains a Boolean
+  // stating whether the response was successful (status in the range 200 - 299) or not.
+  if (!response.ok) throw new Error(`HTTP Error Response (${response.url}): ${response.status} ${response.statusText}`);
+  const json = JSON.parse(text);
+
   try {
-    const response = await fetch(url, {
-      ...options || {},
-      headers: {
-        'Cache-Control': 'no-store, max-age=0',
-        ...(options ? options.headers : {}),
-      },
-    });
-    const text = await response.text();
-
-    // The ok read-only property of the Response interface contains a Boolean
-    // stating whether the response was successful (status in the range 200 - 299) or not.
-    if (!response.ok) throw new Error(`HTTP Error Response (${response.url}): ${response.status} ${response.statusText}`);
-    const json = JSON.parse(text);
-
-    try {
-      return schema.parse(json);
-    } catch (e) {
-      if (errorSchema) {
-        const errorObj = errorSchema.parse(json);
-        if (isWithError(errorObj) && isWithReason(errorObj.error)) {
-          throw new ExtendedError(url, response.status, errorObj.error.reason);
-        }
-      }
-      if (e instanceof Error) throw new ExtendedError(url, response.status, e.message);
-      throw e;
-    }
+    return schema.parse(json);
   } catch (e) {
-    if (e instanceof FetchError) {
-      throw new Error(`${e.type}: ${e.name}: ${e.message}: ${e.code}`);
+    if (errorSchema) {
+      const errorObj = errorSchema.parse(json);
+      if (isWithError(errorObj) && isWithReason(errorObj.error)) {
+        throw new ExtendedError(url, response.status, errorObj.error.reason);
+      }
     }
+    if (e instanceof Error) throw new ExtendedError(url, response.status, e.message);
     throw e;
   }
 };
