@@ -29,13 +29,10 @@ export const fetchJsonWithValidation = async <T, U>(
     },
   });
   const text = await response.text();
-  if (!response.ok) {
-    // reportToSentry(new Error(`HTTP Error Response (${response.url}): ${response.status} ${response.statusText}`), {
-    //   text,
-    //   status: response.status,
-    //   headers: response.type,
-    // });
-  }
+
+  // The ok read-only property of the Response interface contains a Boolean
+  // stating whether the response was successful (status in the range 200 - 299) or not.
+  if (!response.ok) throw new Error(`HTTP Error Response (${response.url}): ${response.status} ${response.statusText}`);
   const json = JSON.parse(text);
 
   try {

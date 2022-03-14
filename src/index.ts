@@ -1,4 +1,5 @@
 export * as config from './config';
+export * from './entities';
 export { default as OrionUnit } from './OrionUnit';
 export * from './fetchWithValidation';
 export * as utils from './utils';

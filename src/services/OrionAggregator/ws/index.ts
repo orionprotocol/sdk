@@ -133,12 +133,13 @@ class OrionAggregatorWS {
       S: subscription,
     });
 
-    if (subscription.includes('-')) { // is pair name (AGGREGATED_ORDER_BOOK_UPDATE)
-      delete this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
-    } else if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
+    if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
-    } else if (uuidValidate(subscription)) { // is swap info subscription
+    } else if (uuidValidate(subscription)) { // is swap info subscription (contains hyphen)
       delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE];
+      // !!! swap info subscription is uuid that contains hyphen
+    } else if (subscription.includes('-') && subscription.split('-').length === 2) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
+      delete this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
     } else if (subscription === UnsubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_UNSUBSCRIBE) {
       delete this.subscriptions[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE];
     } else if (subscription === UnsubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_UNSUBSCRIBE) {
