@@ -28,7 +28,7 @@
         "explorer": "https://ropsten.etherscan.io/",
         "label": "Ropsten",
         "code": "eth",
-        "rpc": "https://staging.orionprotocol.io/rpc",
+        "rpc": "https://testing.orionprotocol.io/eth-ropsten/rpc",
         "baseCurrencyName": "ETH"
     },
     "0xfa2": {
@@ -36,7 +36,7 @@
         "explorer": "https://testnet.ftmscan.com/",
         "label": "Fantom Testnet",
         "code": "ftm",
-        "rpc": "https://ftm-dev.orionprotocol.io/ftm/rpc",
+        "rpc": "https://testing.orionprotocol.io/ftm-testnet/rpc",
         "baseCurrencyName": "FTM"
     },
     "0xfa": {
