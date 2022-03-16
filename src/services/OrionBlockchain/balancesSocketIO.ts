@@ -17,6 +17,7 @@ export default class OrionBlockchainBalancesSocketIO {
     updateData: (balancesData: z.infer<typeof balancesSchema>) => void,
   ) {
     const url = new URL(orionBlockchainWSUrl);
+    // https://stackoverflow.com/questions/29511404/connect-to-socket-io-server-with-specific-path-and-namespace
     this.balancesSocket = io(url.origin, {
       path: `${url.pathname}socket.io`,
       transports: ['websocket'],
