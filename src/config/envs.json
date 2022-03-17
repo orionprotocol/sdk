@@ -46,6 +46,11 @@
                 "chainId": "0x38",
                 "api": "stage-exp.orionprotocol.io",
                 "matcherAddress": "0xea2529bf9b63606284589afa5206f2d33baa8628"
+            },
+            {
+                "chainId": "0xfa",
+                "api": "staging-ftm.orionprotocol.io",
+                "matcherAddress": "0xE44bE08d252F00282bF7fB9cDAE786dCe9d3C80e"
             }
         ]
     }
