@@ -223,6 +223,30 @@ class OrionAggregatorWS {
               });
               break;
             case 'byAmountOut':
+              this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
+                kind: json.k,
+                swapRequestId: json.S,
+                assetIn: json.ai,
+                assetOut: json.ao,
+                amountIn: json.a,
+                amountOut: json.o,
+                price: json.p,
+                marketAmountIn: json.mi,
+                marketPrice: json.mp,
+                minAmounOut: json.mao,
+                minAmounIn: json.ma,
+                availableAmountOut: json.aao,
+                ...json.oi && {
+                  orderInfo: {
+                    pair: json.oi.p,
+                    side: json.oi.s,
+                    amount: json.oi.a,
+                    safePrice: json.oi.sp,
+                  },
+                },
+                path: json.ps,
+                poolOptimal: json.po,
+              });
               break;
             default:
               break;
