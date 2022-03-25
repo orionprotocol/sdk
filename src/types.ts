@@ -42,20 +42,19 @@ export interface Pair {
   vol24h: string;
 }
 
-export type SwapInfo = {
+type SwapInfoBase = {
   swapRequestId: string,
   assetIn: string,
   assetOut: string,
   amountIn: number,
   amountOut: number,
+  minAmounIn: number,
+  minAmounOut: number,
 
-  minAmount: number,
-  availableAmountIn: number,
   path: string[],
   poolOptimal: boolean,
 
   price?: number,
-  marketAmountOut?: number,
   marketPrice?: number,
   orderInfo?: {
     pair: string,
@@ -64,3 +63,17 @@ export type SwapInfo = {
     safePrice: number,
   }
 }
+
+export type SwapInfoByAmountIn = SwapInfoBase & {
+  kind: 'byAmountIn',
+  availableAmountIn?: number,
+  marketAmountOut?: number,
+}
+
+export type SwapInfoByAmountOut = SwapInfoBase & {
+  kind: 'byAmountOut',
+  marketAmountIn?: number,
+  availableAmountOut?: number,
+}
+
+export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;

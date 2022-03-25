@@ -2,20 +2,19 @@ import { z } from 'zod';
 import MessageType from '../MessageType';
 import baseMessageSchema from './baseMessageSchema';
 
-const swapInfoSchema = baseMessageSchema.extend({
+const swapInfoSchemaBase = baseMessageSchema.extend({
   T: z.literal(MessageType.SWAP_INFO),
   S: z.string(), // swap request id
   ai: z.string(), // asset in,
   ao: z.string(), // asset out
   a: z.number(), // amount in
   o: z.number(), // amount out
-  ma: z.number(), // min amount
-  aa: z.number(), // available amount in
+  ma: z.number(), // min amount in
+  mao: z.number(), // min amount out
   ps: z.string().array(), // path
   po: z.boolean(), // is swap through pool optimal
 
   p: z.number().optional(), // price
-  mo: z.number().optional(), // market amount out
   mp: z.number().optional(), // market price
   oi: z.object({ //  info about order equivalent to this swap
     p: z.string(), // asset pair
@@ -24,5 +23,26 @@ const swapInfoSchema = baseMessageSchema.extend({
     sp: z.number(), // safe price (with safe deviation but without slippage)
   }).optional(),
 });
+
+const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
+  mo: z.number().optional(), // market amount out
+  aa: z.number(), // available amount in
+}).transform((content) => ({
+  ...content,
+  k: 'byAmountIn' as const,
+}));
+
+const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
+  mi: z.number().optional(), // market amount in
+  aao: z.number(), // available amount out
+}).transform((content) => ({
+  ...content,
+  k: 'byAmountOut' as const,
+}));
+
+const swapInfoSchema = z.union([
+  swapInfoSchemaByAmountIn,
+  swapInfoSchemaByAmountOut,
+]);
 
 export default swapInfoSchema;

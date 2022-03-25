@@ -11,17 +11,19 @@ import {
   assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
-import { SwapInfo } from '../../..';
+import { SwapInfoByAmountIn, SwapInfoByAmountOut } from '../../..';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
 
+// https://github.com/orionprotocol/orion-aggregator/tree/feature/OP-1752-symmetric-swap#swap-info-subscribe
 type SwapSubscriptionRequest = {
   d: string, // swap request UUID, set by client side
   i: string, // asset in
   o: string, // asset out
-  a: number // amount in
-  s?: 'SELL' | 'BUY' // force order side
+  a: number // amount IN/OUT
+  s?: 'SELL' | 'BUY' // force order side, SELL if omitted
+  e?: boolean; // is amount IN? Value `false` means a = amount OUT, `true` if omitted
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
@@ -58,7 +60,7 @@ type SwapInfoSubscription = {
   // type: SubscriptionType.SWAP_SUBSCRIBE,
   payload: SwapSubscriptionRequest,
   // messageType: MessageType.SWAP_INFO,
-  callback: (swapInfo: SwapInfo) => void,
+  callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void,
 }
 
 type AddressUpdateSubscription = {
@@ -88,8 +90,11 @@ class OrionAggregatorWS {
 
   private subscriptions: Partial<Subscriptions<SubscriptionType>> = {};
 
-  constructor(url: string, chainId: SupportedChainId) {
+  private onError?: (err: string) => void;
+
+  constructor(url: string, chainId: SupportedChainId, onError?: (err: string) => void) {
     this.chainId = chainId;
+    this.onError = onError;
     this.init(url);
   }
 
@@ -181,35 +186,71 @@ class OrionAggregatorWS {
       const json = messageSchema.parse(rawJson);
 
       switch (json.T) {
-        case MessageType.ERROR:
-          // const { m: errorMessage } = errorSchema.parse(json);
+        case MessageType.ERROR: {
+          const { m: errorMessage } = errorSchema.parse(json);
+          this.onError?.(errorMessage);
+        }
           break;
         case MessageType.PING_PONG:
           this.sendRaw(data.toString());
           break;
         case MessageType.SWAP_INFO:
-          this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
-            swapRequestId: json.S,
-            assetIn: json.ai,
-            assetOut: json.ao,
-            amountIn: json.a,
-            amountOut: json.o,
-            price: json.p,
-            marketAmountOut: json.mo,
-            marketPrice: json.mp,
-            minAmount: json.ma,
-            availableAmountIn: json.aa,
-            ...json.oi && {
-              orderInfo: {
-                pair: json.oi.p,
-                side: json.oi.s,
-                amount: json.oi.a,
-                safePrice: json.oi.sp,
-              },
-            },
-            path: json.ps,
-            poolOptimal: json.po,
-          });
+          switch (json.k) { // kind
+            case 'byAmountIn':
+              this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
+                kind: json.k,
+                swapRequestId: json.S,
+                assetIn: json.ai,
+                assetOut: json.ao,
+                amountIn: json.a,
+                amountOut: json.o,
+                price: json.p,
+                marketAmountOut: json.mo,
+                marketPrice: json.mp,
+                minAmounOut: json.mao,
+                minAmounIn: json.ma,
+                availableAmountIn: json.aa,
+                ...json.oi && {
+                  orderInfo: {
+                    pair: json.oi.p,
+                    side: json.oi.s,
+                    amount: json.oi.a,
+                    safePrice: json.oi.sp,
+                  },
+                },
+                path: json.ps,
+                poolOptimal: json.po,
+              });
+              break;
+            case 'byAmountOut':
+              this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
+                kind: json.k,
+                swapRequestId: json.S,
+                assetIn: json.ai,
+                assetOut: json.ao,
+                amountIn: json.a,
+                amountOut: json.o,
+                price: json.p,
+                marketAmountIn: json.mi,
+                marketPrice: json.mp,
+                minAmounOut: json.mao,
+                minAmounIn: json.ma,
+                availableAmountOut: json.aao,
+                ...json.oi && {
+                  orderInfo: {
+                    pair: json.oi.p,
+                    side: json.oi.s,
+                    amount: json.oi.a,
+                    safePrice: json.oi.sp,
+                  },
+                },
+                path: json.ps,
+                poolOptimal: json.po,
+              });
+              break;
+            default:
+              break;
+          }
 
           break;
         // case MessageType.INITIALIZATION:
