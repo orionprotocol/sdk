@@ -1,16 +1,16 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "description": "Orion Protocol SDK",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "start": "npm run build-ts && node dist/index.js",
+    "start": "npm run build-ts && node lib/index.js",
     "develop": "concurrently -i -k -p \"[{name}]\" -n \"Node,TypeScript\" -c \"yellow.bold,cyan.bold\" \"yarn watch-js\" \"yarn watch-ts\"",
-    "clean": "rimraf dist/*",
+    "clean": "rimraf lib/*",
     "build-ts": "npm run typechain:generate-types && tsc --skipLibCheck",
     "watch-ts": "npm run typechain:generate-types && tsc -w --skipLibCheck",
-    "watch-js": "nodemon dist/index.js",
+    "watch-js": "nodemon lib/index.js",
     "test": "exit 0",
     "coverage": "jest --coverage",
     "lint:eslint": "eslint ./src --ext .ts,.js,.tsx,.jsx",
@@ -31,41 +31,41 @@
     "url": "https://github.com/orionprotocol/sdk/issues"
   },
   "devDependencies": {
-    "@typechain/ethers-v5": "^9.0.0",
+    "@typechain/ethers-v5": "^10.0.0",
     "@types/csprng": "^0.1.2",
-    "@types/node": "^17.0.21",
+    "@types/node": "^17.0.23",
     "@types/node-fetch": "^2.6.1",
     "@types/socket.io-client": "1.4.33",
     "@types/uuid": "^8.3.4",
-    "@types/ws": "^8.2.2",
-    "@typescript-eslint/eslint-plugin": "^5.11.0",
-    "@typescript-eslint/parser": "^5.11.0",
+    "@types/ws": "^8.5.3",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
     "concurrently": "^7.0.0",
-    "eslint": "^8.9.0",
+    "eslint": "^8.12.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
-    "typechain": "^7.0.0",
-    "typescript": "^4.5.5"
+    "typechain": "^8.0.0",
+    "typescript": "^4.5.3"
   },
   "dependencies": {
-    "@ethersproject/abstract-signer": "^5.5.0",
-    "@ethersproject/providers": "^5.6.0",
+    "@ethersproject/abstract-signer": "^5.6.0",
+    "@ethersproject/providers": "^5.6.2",
     "bignumber.js": "^9.0.2",
     "csprng": "^0.1.2",
-    "ethers": "^5.5.4",
+    "ethers": "^5.6.2",
     "isomorphic-ws": "^4.0.1",
     "node-fetch": "^2.6.7",
     "socket.io-client": "2.4.0",
     "tiny-invariant": "^1.2.0",
     "uuid": "^8.3.2",
-    "websocket-heartbeat-js": "^1.0.13",
+    "websocket-heartbeat-js": "^1.1.0",
     "ws": "^8.5.0",
-    "zod": "^3.13.4"
+    "zod": "^3.14.3"
   },
   "homepage": "https://github.com/orionprotocol/sdk#readme",
   "files": [
-    "dist/**/*"
+    "lib/**/*"
   ]
 }
