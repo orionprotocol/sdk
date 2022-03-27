@@ -16,6 +16,19 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    '@typescript-eslint/consistent-type-assertions': [
+      'error',
+      {
+        assertionStyle: 'never',
+      },
+    ],
+    'import/max-dependencies': [
+      'error',
+      {
+        max: 20,
+        ignoreTypeImports: false,
+      },
+    ],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     'no-shadow': 'off',

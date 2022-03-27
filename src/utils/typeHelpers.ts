@@ -24,6 +24,13 @@ export function isUnknownObject(x: unknown): x is {
   return x !== null && typeof x === 'object';
 }
 
+export function isKeyOfObject<T>(
+  key: string | number | symbol,
+  obj: T,
+): key is keyof T {
+  return key in obj;
+}
+
 export function hasProp<T extends Record<string, unknown>, K extends PropertyKey>(
   obj: T,
   key: K,

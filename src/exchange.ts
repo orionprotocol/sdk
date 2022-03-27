@@ -2,7 +2,6 @@
 import { TypedDataSigner } from '@ethersproject/abstract-signer';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import invariant from 'tiny-invariant';
 import {
   CancelOrderRequest, Order, SignedCancelOrderRequest, SignedOrder,
 } from './types';
@@ -16,12 +15,16 @@ import { SupportedChainId } from './constants/chains';
 import CANCEL_ORDER_TYPES from './constants/cancelOrderTypes';
 import signOrderPersonal from './utils/signOrderPersonal';
 
+const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
+
 type SignerWithTypedDataSign = ethers.Signer & TypedDataSigner;
 
-const numberTo8 = (
+const applyInternalOrionPrecision = (
   n: BigNumber.Value,
-) => Number(new BigNumber(n)
-  .multipliedBy(1e8).toFixed(0)); // todo: можно ли не оборачивать в Number?
+) => new BigNumber(n)
+  .multipliedBy(new BigNumber(10).pow(INTERNAL_ORION_PRECISION))
+  .decimalPlaces(0, BigNumber.ROUND_FLOOR)
+  .toNumber();
 
 const EIP712Domain = eip712DomainSchema.parse(eip712DomainData);
 const { arrayify, joinSignature, splitSignature } = ethers.utils;
@@ -37,20 +40,20 @@ const getDomainData = (chainId: SupportedChainId) => ({
 export const signOrder = async (
   baseAssetAddr: string,
   quoteAssetAddr: string,
-  side: 'buy' | 'sell',
+  side: 'BUY' | 'SELL',
   price: BigNumber,
   amount: BigNumber,
   matcherFee: BigNumber,
   senderAddress: string,
   matcherAddress: string,
   orionFeeAssetAddr: string,
-  expiration: number,
   usePersonalSign: boolean,
   signer: ethers.Signer,
   chainId: SupportedChainId,
   validateOrder: (signedOrder: SignedOrder) => Promise<boolean | undefined>,
 ) => {
   const nonce = Date.now();
+  const expiration = nonce + DEFAULT_EXPIRATION;
 
   const order: Order = {
     senderAddress,
@@ -58,19 +61,20 @@ export const signOrder = async (
     baseAsset: baseAssetAddr,
     quoteAsset: quoteAssetAddr,
     matcherFeeAsset: orionFeeAssetAddr,
-    amount: numberTo8(amount),
-    price: numberTo8(price),
+    amount: applyInternalOrionPrecision(amount),
+    price: applyInternalOrionPrecision(price),
     matcherFee: matcherFee
-      .decimalPlaces(INTERNAL_ORION_PRECISION)
+      // ROUND_CEIL because we don't want get "not enough fee" error
+      .decimalPlaces(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL)
       .multipliedBy(new BigNumber(10).pow(INTERNAL_ORION_PRECISION))
       .toNumber(),
     nonce,
     expiration,
-    buySide: side === 'buy' ? 1 : 0,
+    buySide: side === 'BUY' ? 1 : 0,
     isPersonalSign: usePersonalSign,
   };
 
-  invariant(signer, 'No signer (order signing)');
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
 
   const signature = usePersonalSign
@@ -107,7 +111,6 @@ export const signCancelOrderPersonal = async (
     types,
     ['cancelOrder', cancelOrderRequest.id, cancelOrderRequest.senderAddress],
   );
-  invariant(signer, 'No signer for order cancel sign');
   const signature = await signer.signMessage(arrayify(message));
 
   // NOTE: metamask broke sig.v value and we fix it in next line
@@ -126,6 +129,7 @@ export const signCancelOrder = async (
     senderAddress,
     isPersonalSign: usePersonalSign,
   };
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
 
   const signature = usePersonalSign
