@@ -22,7 +22,6 @@ type SwapSubscriptionRequest = {
   i: string, // asset in
   o: string, // asset out
   a: number // amount IN/OUT
-  s?: 'SELL' | 'BUY' // force order side, SELL if omitted
   e?: boolean; // is amount IN? Value `false` means a = amount OUT, `true` if omitted
 }
 
