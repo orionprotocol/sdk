@@ -1,6 +1,6 @@
 import { Schema } from 'zod';
 import fetch, { RequestInit } from 'node-fetch';
-import { isWithError, isWithReason } from './utils/typeHelpers';
+import { isWithError, isWithReason, HttpError } from './utils';
 
 export class ExtendedError extends Error {
   public url: string;
@@ -32,7 +32,10 @@ export const fetchJsonWithValidation = async <T, U>(
 
   // The ok read-only property of the Response interface contains a Boolean
   // stating whether the response was successful (status in the range 200 - 299) or not.
-  if (!response.ok) throw new Error(`HTTP Error Response (${response.url}): ${response.status} ${response.statusText}`);
+
+  if (!response.ok) {
+    throw new HttpError(response.status, text, 'HTTP', response.statusText);
+  }
   const json = JSON.parse(text);
 
   try {
