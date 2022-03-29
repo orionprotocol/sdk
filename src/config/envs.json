@@ -1,57 +1,69 @@
 {
     "production": {
-        "networks": [
-            {
-                "chainId": "0x1",
+        "networks": {
+            "0x1": {
                 "api": "trade.orionprotocol.io",
-                "matcherAddress": "0x15E030E12cD2C949181BFf268cbEF26F524d7929",
                 "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
             },
-            {
-                "chainId": "0x38",
-                "api": "trade-exp.orionprotocol.io",
-                "matcherAddress": "0x2d23c313feac4810d9d014f840741363fccba675"
+            "0x38": {
+                "api": "trade-exp.orionprotocol.io"
             }
-        ]
+        }
     },
     "testing": {
-        "networks": [
-            {
-                "chainId": "0x61",
+        "networks": {
+            "0x61": {
                 "api": "testing.orionprotocol.io/bsc-testnet",
-                "matcherAddress": "0xfbCAd2c3A90FBD94C335FBdF8E22573456Da7F68",
                 "liquidityMigratorAddress": "0x01b10dd12478C88A5E18e2707E729906bC25CfF6"
             },
-            {
-                "chainId": "0x3",
+            "0x3": {
                 "api": "testing.orionprotocol.io/eth-ropsten",
-                "matcherAddress": "0x1FF516E5ce789085CFF86d37fc27747dF852a80a",
                 "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
             },
-            {
-                "chainId": "0xfa2",
-                "api": "testing.orionprotocol.io/ftm-testnet",
-                "matcherAddress": "0x0dbd7b361989dae564b18db91f96523ca7431fd1"
+            "0xfa2": {
+                "api": "testing.orionprotocol.io/ftm-testnet"
             }
-        ]
+        }
     },
     "staging-mainnet": {
-        "networks": [
-            {
-                "chainId": "0x1",
-                "api": "mns.orionprotocol.io",
-                "matcherAddress": "0x798E811C96FFe470e1FbdFa221E5391016eb014A"
+        "networks": {
+            "0x1": {
+                "api": "mns.orionprotocol.io"
             },
-            {
-                "chainId": "0x38",
-                "api": "stage-exp.orionprotocol.io",
-                "matcherAddress": "0xea2529bf9b63606284589afa5206f2d33baa8628"
+            "0x38": {
+                "api": "stage-exp.orionprotocol.io"
             },
-            {
-                "chainId": "0xfa",
-                "api": "staging-ftm.orionprotocol.io",
-                "matcherAddress": "0xE44bE08d252F00282bF7fB9cDAE786dCe9d3C80e"
+            "0xfa": {
+                "api": "staging-ftm.orionprotocol.io"
             }
-        ]
+        }
+    },
+    "broken": {
+        "networks": {
+            "0x0": {
+                "api": "broken0.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment",
+            },
+            "0x61": {
+                "api": "broken1.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment",
+            }
+        }
+    },
+    "partially-broken": {
+        "networks": {
+            "0x61": {
+                "api": "testing.orionprotocol.io/bsc-testnet",
+                "liquidityMigratorAddress": "0x01b10dd12478C88A5E18e2707E729906bC25CfF6"
+            },
+            "0x3": {
+                "api": "testing.orionprotocol.io/eth-ropsten",
+                "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
+            },
+            "0xfa2": {
+                "api": "testing.orionprotocol.io/ftm-testnet",
+            },
+            "0x0": {
+                "api": "broken.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment",
+            }
+        }
     }
 }

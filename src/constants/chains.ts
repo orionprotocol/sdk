@@ -6,6 +6,9 @@ export enum SupportedChainId {
   FANTOM_TESTNET = '0xfa2',
   BSC = '0x38',
   BSC_TESTNET = '0x61',
+
+  // For testing and debug purpose
+  BROKEN = '0x0',
 }
 
 export const developmentChains = [SupportedChainId.BSC_TESTNET, SupportedChainId.ROPSTEN, SupportedChainId.FANTOM_TESTNET];

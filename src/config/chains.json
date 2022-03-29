@@ -46,5 +46,13 @@
         "code": "ftm",
         "rpc": "https://rpcapi.fantom.network/",
         "baseCurrencyName": "FTM"
+    },
+    "0x0": {
+        "chainId": "0x0",
+        "explorer": "https://brokenscan.io/",
+        "label": "BrokenChain",
+        "code": "bkn",
+        "rpc": "https://brokenscan.io/rpc",
+        "baseCurrencyName": "BKN"
     }
 }
