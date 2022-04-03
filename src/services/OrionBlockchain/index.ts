@@ -131,6 +131,32 @@ class OrionBlockchain {
     );
   }
 
+  redeem2AtomicSwaps(
+    redeemOrder1: z.infer<typeof redeemOrderSchema>,
+    secret1: string,
+    redeemOrder2: z.infer<typeof redeemOrderSchema>,
+    secret2: string,
+    sourceNetwork: string,
+  ) {
+    return fetchJsonWithValidation(
+      `https://${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
+      z.string(),
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          order1: redeemOrder1,
+          secret1,
+          order2: redeemOrder2,
+          secret2,
+          sourceNetwork,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+  }
+
   checkRedeem(secretHash: string) {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`, z.string().nullable());
   }
