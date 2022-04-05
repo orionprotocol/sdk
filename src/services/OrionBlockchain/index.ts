@@ -7,9 +7,9 @@ import {
   addPoolSchema, adminPoolsListSchema,
 } from './schemas';
 import OrionBlockchainBalancesSocketIO from './balancesSocketIO';
-import { SupportedChainId } from '../../constants/chains';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
+import { SupportedChainId } from '../../types';
 
 interface IAdminAuthHeaders {
   auth: string;

@@ -2,7 +2,6 @@ import { z } from 'zod';
 import WebSocket from 'isomorphic-ws';
 import { validate as uuidValidate } from 'uuid';
 import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
-import { SupportedChainId } from '../../../constants/chains';
 import MessageType from './MessageType';
 import SubscriptionType from './SubscriptionType';
 import {
@@ -12,6 +11,7 @@ import {
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 import { SwapInfoByAmountIn, SwapInfoByAmountOut } from '../../..';
+import { SupportedChainId } from '../../../types';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';

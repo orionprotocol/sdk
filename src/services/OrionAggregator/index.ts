@@ -8,9 +8,8 @@ import orderBenefitsSchema from './schemas/orderBenefitsSchema';
 import errorSchema from './errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
-import { SupportedChainId } from '../../constants/chains';
 import atomicSwapHistorySchema from './schemas/atomicSwapHistorySchema';
-import { SignedCancelOrderRequest, SignedOrder } from '../../types';
+import { SignedCancelOrderRequest, SignedOrder, SupportedChainId } from '../../types';
 
 class OrionAggregator {
   private apiUrl: string;

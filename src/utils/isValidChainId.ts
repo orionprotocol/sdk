@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SupportedChainId } from '..';
+import { SupportedChainId } from '../types';
 
 const isValidChainId = (chainId: string): chainId is SupportedChainId => {
   try {

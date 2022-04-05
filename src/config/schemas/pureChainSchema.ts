@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SupportedChainId } from '../../constants/chains';
+import { SupportedChainId } from '../../types';
 
 const pureChainInfoSchema = z.record(
   z.nativeEnum(SupportedChainId),

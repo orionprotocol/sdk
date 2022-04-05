@@ -8,8 +8,9 @@ import {
 import { LibAtomic } from '../artifacts/contracts/Exchange';
 import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, LOCKATOMIC_GAS_LIMIT,
-  REDEEMATOMIC_GAS_LIMIT, SupportedChainId, SWAP_THROUGH_ORION_POOL_GAS_LIMIT, WITHDRAW_GAS_LIMIT,
+  REDEEMATOMIC_GAS_LIMIT, SWAP_THROUGH_ORION_POOL_GAS_LIMIT, WITHDRAW_GAS_LIMIT,
 } from '../constants';
+import { SupportedChainId } from '../types';
 
 export default class Exchange {
   chainId: SupportedChainId;

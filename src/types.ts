@@ -77,3 +77,26 @@ export type SwapInfoByAmountOut = SwapInfoBase & {
 }
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
+
+export enum SupportedChainId {
+  MAINNET = '0x1',
+  ROPSTEN = '0x3',
+  FANTOM_OPERA = '0xfa',
+
+  FANTOM_TESTNET = '0xfa2',
+  BSC = '0x38',
+  BSC_TESTNET = '0x61',
+
+  // For testing and debug purpose
+  BROKEN = '0x0',
+}
+
+export enum SupportedEnv {
+  TESTING = 'testing',
+  PRODUCTION = 'production',
+  STAGING = 'staging-mainnet',
+
+  // For testing and debug purpose
+  BROKEN = 'broken',
+  PARTIALLY_BROKEN = 'partially-broken',
+}

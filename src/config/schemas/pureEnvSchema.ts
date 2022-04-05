@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { SupportedChainId } from '../../constants/chains';
+import { SupportedChainId, SupportedEnv } from '../../types';
 
 const pureEnvSchema = z.record(
-  z.string(),
+  z.nativeEnum(SupportedEnv),
   z.object({
     networks: z.record(
       z.nativeEnum(SupportedChainId),

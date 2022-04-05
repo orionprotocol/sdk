@@ -3,7 +3,7 @@ import { TypedDataSigner } from '@ethersproject/abstract-signer';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import {
-  CancelOrderRequest, Order, SignedCancelOrderRequest, SignedOrder,
+  CancelOrderRequest, Order, SignedCancelOrderRequest, SignedOrder, SupportedChainId,
 } from './types';
 import eip712DomainData from './config/eip712DomainData.json';
 import eip712DomainSchema from './config/schemas/eip712DomainSchema';
@@ -11,7 +11,6 @@ import { hashOrder } from './utils';
 
 import { INTERNAL_ORION_PRECISION } from './constants/precisions';
 import ORDER_TYPES from './constants/orderTypes';
-import { SupportedChainId } from './constants/chains';
 import CANCEL_ORDER_TYPES from './constants/cancelOrderTypes';
 import signOrderPersonal from './utils/signOrderPersonal';
 
