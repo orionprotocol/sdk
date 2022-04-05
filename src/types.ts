@@ -90,13 +90,3 @@ export enum SupportedChainId {
   // For testing and debug purpose
   BROKEN = '0x0',
 }
-
-export enum SupportedEnv {
-  TESTING = 'testing',
-  PRODUCTION = 'production',
-  STAGING = 'staging-mainnet',
-
-  // For testing and debug purpose
-  BROKEN = 'broken',
-  PARTIALLY_BROKEN = 'partially-broken',
-}

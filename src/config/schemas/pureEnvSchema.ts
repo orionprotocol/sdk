@@ -1,18 +1,18 @@
 import { z } from 'zod';
-import { SupportedChainId, SupportedEnv } from '../../types';
+import { SupportedChainId } from '../../types';
 
-const pureEnvSchema = z.record(
-  z.nativeEnum(SupportedEnv),
-  z.object({
-    networks: z.record(
-      z.nativeEnum(SupportedChainId),
-      z.object({
-        api: z.string(),
-        rpc: z.string().optional(),
-        liquidityMigratorAddress: z.string().optional(),
-      }),
-    ),
-  }),
+export const pureEnvPayloadSchema = z.object({
+  networks: z.record(
+    z.nativeEnum(SupportedChainId),
+    z.object({
+      api: z.string(),
+      rpc: z.string().optional(),
+      liquidityMigratorAddress: z.string().optional(),
+    }),
+  ),
+});
+
+export const pureEnvSchema = z.record(
+  z.string(),
+  pureEnvPayloadSchema,
 );
-
-export default pureEnvSchema;

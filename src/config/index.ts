@@ -1,11 +1,13 @@
 import jsonChains from './chains.json';
 import jsonEnvs from './envs.json';
-import { pureChainSchema, pureEnvSchema } from './schemas';
+import { pureEnvSchema, pureChainInfoSchema } from './schemas';
 
-const chains = pureChainSchema.parse(jsonChains);
+const chains = pureChainInfoSchema.parse(jsonChains);
 const envs = pureEnvSchema.parse(jsonEnvs);
 
 export {
+  jsonEnvs,
+  jsonChains,
   chains,
   envs,
 };
