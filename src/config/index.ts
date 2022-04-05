@@ -6,8 +6,6 @@ const chains = pureChainInfoSchema.parse(jsonChains);
 const envs = pureEnvSchema.parse(jsonEnvs);
 
 export {
-  jsonEnvs,
-  jsonChains,
   chains,
   envs,
 };
