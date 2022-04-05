@@ -4,12 +4,12 @@ import calculateNetworkFeeInFeeAsset from './calculateNetworkFeeInFeeAsset';
 import calculateOrionFee from './calculateOrionFee';
 
 const calculateFee = (
-  amount: string,
-  feeAssetPriceInOrn: string,
-  baseAssetPriceInOrn: string,
-  baseCurrencyPriceInOrn: string,
-  gasPrice: string,
-  feePercent: string,
+  amount: BigNumber.Value,
+  feeAssetPriceInOrn: BigNumber.Value,
+  baseAssetPriceInOrn: BigNumber.Value,
+  baseCurrencyPriceInOrn: BigNumber.Value,
+  gasPrice: BigNumber.Value,
+  feePercent: BigNumber.Value,
 ) => {
   const orionFee = calculateOrionFee(
     amount,
