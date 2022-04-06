@@ -2,11 +2,11 @@ import { z } from 'zod';
 import { fetchJsonWithValidation } from '../../fetchWithValidation';
 import { PairStatusEnum, pairStatusSchema } from './schemas/adminPoolsListSchema';
 import {
-  IDOSchema, atomicHistorySchema, balancesSchema,
+  IDOSchema, atomicHistorySchema,
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
   addPoolSchema, adminPoolsListSchema,
 } from './schemas';
-import OrionBlockchainBalancesSocketIO from './balancesSocketIO';
+import OrionBlockchainSocketIO from './ws';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { SupportedChainId } from '../../types';
@@ -49,20 +49,16 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
   state?: 'REDEEMED' | 'BEFORE-REDEEM',
 }
 class OrionBlockchain {
-  private apiUrl: string;
+  private readonly apiUrl: string;
 
-  readonly balancesWs: OrionBlockchainBalancesSocketIO;
+  readonly ws: OrionBlockchainSocketIO;
 
   constructor(
     apiUrl: string,
     chainId: SupportedChainId,
-    wsMessageCb: (data: z.infer<typeof balancesSchema>) => void,
   ) {
     this.apiUrl = apiUrl;
-    this.balancesWs = new OrionBlockchainBalancesSocketIO(
-      `https://${apiUrl}/`,
-      wsMessageCb,
-    );
+    this.ws = new OrionBlockchainSocketIO(`https://${apiUrl}/`);
   }
 
   get orionBlockchainWsUrl() {
