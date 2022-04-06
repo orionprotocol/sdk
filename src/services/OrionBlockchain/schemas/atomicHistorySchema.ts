@@ -19,6 +19,7 @@ const baseAtomicHistoryItem = z.object({
   receiver: z.string().optional(),
   secret: z.string().optional(),
 });
+
 const sourceAtomicHistorySchemaItem = baseAtomicHistoryItem.extend({
   type: z.literal('source'),
   amountToReceive: z.number().optional(),

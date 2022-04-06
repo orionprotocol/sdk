@@ -1,4 +1,4 @@
-import { Schema } from 'zod';
+import { z, ZodType } from 'zod';
 import fetch, { RequestInit } from 'node-fetch';
 import { isWithError, isWithReason, HttpError } from './utils';
 
@@ -15,11 +15,11 @@ export class ExtendedError extends Error {
   }
 }
 
-export const fetchJsonWithValidation = async <T, U>(
+export const fetchJsonWithValidation = async <T extends ZodType, U extends ZodType>(
   url: string,
-  schema: Schema<T>,
+  schema: T,
   options?: RequestInit,
-  errorSchema?: Schema<U>,
+  errorSchema?: U,
 ) => {
   const response = await fetch(url, {
     ...options || {},
@@ -39,10 +39,11 @@ export const fetchJsonWithValidation = async <T, U>(
   const json = JSON.parse(text);
 
   try {
-    return schema.parse(json);
+    const data: z.infer<typeof schema> = schema.parse(json);
+    return data;
   } catch (e) {
     if (errorSchema) {
-      const errorObj = errorSchema.parse(json);
+      const errorObj: z.infer<typeof errorSchema> = errorSchema.parse(json);
       if (isWithError(errorObj) && isWithReason(errorObj.error)) {
         throw new ExtendedError(url, response.status, errorObj.error.reason);
       }
