@@ -12,7 +12,7 @@ import atomicSwapHistorySchema from './schemas/atomicSwapHistorySchema';
 import { SignedCancelOrderRequest, SignedOrder, SupportedChainId } from '../../types';
 
 class OrionAggregator {
-  private apiUrl: string;
+  private readonly apiUrl: string;
 
   readonly ws: OrionAggregatorWS;
 
@@ -34,7 +34,7 @@ class OrionAggregator {
     );
   }
 
-  getExchangeInfo() {
+  getPairConfigs() {
     return fetchJsonWithValidation(
       `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo`,
       exchangeInfoSchema,
