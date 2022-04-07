@@ -57,14 +57,11 @@ class OrionAggregator {
     isCreateInternalOrder: boolean,
     partnerId?: string,
   ) {
-    const headers: Record<string, string> = {
+    const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      ...partnerId && { 'X-Partner-Id': partnerId },
     };
-
-    if (partnerId) {
-      headers['X-Partner-Id'] = partnerId;
-    }
 
     return fetchJsonWithValidation(
       `${this.aggregatorUrl}/api/v1/order/${isCreateInternalOrder ? 'internal' : ''}`,
@@ -129,9 +126,9 @@ class OrionAggregator {
     );
   }
 
-  getLockedBalance(walletAddress: string, currency: string) {
+  getLockedBalance(address: string, currency: string) {
     const url = new URL(`${this.aggregatorUrl}/api/v1/address/balance/reserved/${currency}`);
-    url.searchParams.append('address', walletAddress);
+    url.searchParams.append('address', address);
     return fetchJsonWithValidation(
       url.toString(),
       z.record(z.number()),

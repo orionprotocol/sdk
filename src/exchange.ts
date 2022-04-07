@@ -40,9 +40,9 @@ export const signOrder = async (
   baseAssetAddr: string,
   quoteAssetAddr: string,
   side: 'BUY' | 'SELL',
-  price: BigNumber,
-  amount: BigNumber,
-  matcherFee: BigNumber,
+  price: BigNumber.Value,
+  amount: BigNumber.Value,
+  matcherFee: BigNumber.Value,
   senderAddress: string,
   matcherAddress: string,
   orionFeeAssetAddr: string,
@@ -62,7 +62,7 @@ export const signOrder = async (
     matcherFeeAsset: orionFeeAssetAddr,
     amount: applyInternalOrionPrecision(amount),
     price: applyInternalOrionPrecision(price),
-    matcherFee: matcherFee
+    matcherFee: new BigNumber(matcherFee)
       // ROUND_CEIL because we don't want get "not enough fee" error
       .decimalPlaces(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL)
       .multipliedBy(new BigNumber(10).pow(INTERNAL_ORION_PRECISION))
