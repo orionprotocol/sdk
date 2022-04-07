@@ -8,7 +8,7 @@ const calculateFee = (
   feeAssetPriceInOrn: BigNumber.Value,
   baseAssetPriceInOrn: BigNumber.Value,
   baseCurrencyPriceInOrn: BigNumber.Value,
-  gasPrice: BigNumber.Value,
+  gasPriceGwei: BigNumber.Value,
   feePercent: BigNumber.Value,
 ) => {
   const orionFee = calculateOrionFee(
@@ -18,7 +18,7 @@ const calculateFee = (
     feePercent,
   );
   const networkFeeInFeeAsset = calculateNetworkFeeInFeeAsset(
-    gasPrice,
+    gasPriceGwei,
     FILL_ORDERS_GAS_LIMIT,
     baseCurrencyPriceInOrn,
     feeAssetPriceInOrn,

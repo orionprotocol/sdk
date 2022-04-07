@@ -97,7 +97,7 @@ class OrionBlockchain {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/tokensFee`, z.record(z.string()));
   }
 
-  getGasPriceGwei() {
+  getGasPriceWei() {
     return fetchJsonWithValidation(`https://${this.apiUrl}/api/gasPrice`, z.string());
   }
 
