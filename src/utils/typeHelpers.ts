@@ -18,6 +18,8 @@ type WithError ={
   error: Record<string | number | symbol, unknown>;
 }
 
+export const makePartial = <Key extends string | number | symbol, Value>(value: Record<Key, Value>): Partial<Record<Key, Value>> => value;
+
 export function isUnknownObject(x: unknown): x is {
   [key in PropertyKey]: unknown
 } {

@@ -131,7 +131,9 @@ class OrionAggregator {
     url.searchParams.append('address', address);
     return fetchJsonWithValidation(
       url.toString(),
-      z.record(z.number()),
+      z.object({
+        [currency]: z.number(),
+      }).partial(),
       undefined,
       errorSchema,
     );
