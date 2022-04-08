@@ -65,7 +65,7 @@ export const targetAtomicHistorySchema = baseAtomicHistorySchema.extend({
 
 const atomicHistorySchema = baseAtomicHistorySchema.extend({
   data: z.array(
-    z.union([sourceAtomicHistorySchemaItem, targetAtomicHistorySchemaItem]),
+    z.discriminatedUnion('type', [sourceAtomicHistorySchemaItem, targetAtomicHistorySchemaItem]),
   ),
 });
 

@@ -153,11 +153,13 @@ class OrionAggregatorWS {
 
   init(url: string) {
     this.ws = new WebSocket(url);
-    this.ws.onclose = (e) => {
-      console.warn('Orion Aggregator WS Connection closed', e);
+    this.ws.onclose = () => {
+      console.log(`Orion Aggregator ${this.chainId} WS Connection closed`);
       this.init(url);
     };
     this.ws.onopen = () => {
+      console.log(`Orion Aggregator ${this.chainId} WS Connection established`);
+
       Object.entries(this.subscriptions).forEach(([type, subscription]) => {
         this.send({
           T: type,
