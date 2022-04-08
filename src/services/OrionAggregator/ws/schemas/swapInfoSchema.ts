@@ -29,7 +29,7 @@ const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
   aa: z.number(), // available amount in
 }).transform((content) => ({
   ...content,
-  k: 'byAmountIn' as const,
+  k: 'exactSpend' as const,
 }));
 
 const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
@@ -37,7 +37,7 @@ const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
   aao: z.number(), // available amount out
 }).transform((content) => ({
   ...content,
-  k: 'byAmountOut' as const,
+  k: 'exactReceive' as const,
 }));
 
 const swapInfoSchema = z.union([

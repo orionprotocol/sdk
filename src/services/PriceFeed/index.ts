@@ -17,12 +17,13 @@ class PriceFeed {
     timeEnd: number,
     interval: string,
   ) {
+    const url = new URL(`https://${this.apiUrl}/candles/candles`);
+    url.searchParams.append('symbol', symbol);
+    url.searchParams.append('timeStart', timeStart.toString());
+    url.searchParams.append('timeEnd', timeEnd.toString());
+    url.searchParams.append('interval', interval);
     return fetchJsonWithValidation(
-      `https://${this.apiUrl}/candles/candles`
-        + `?symbol=${symbol}`
-        + `&timeStart=${timeStart}`
-        + `&timeEnd=${timeEnd}`
-        + `&interval=${interval}`,
+      url.toString(),
       candlesSchema,
     );
   }

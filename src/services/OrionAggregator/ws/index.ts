@@ -197,7 +197,7 @@ class OrionAggregatorWS {
           break;
         case MessageType.SWAP_INFO:
           switch (json.k) { // kind
-            case 'byAmountIn':
+            case 'exactSpend':
               this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
                 kind: json.k,
                 swapRequestId: json.S,
@@ -223,7 +223,7 @@ class OrionAggregatorWS {
                 poolOptimal: json.po,
               });
               break;
-            case 'byAmountOut':
+            case 'exactReceive':
               this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
                 kind: json.k,
                 swapRequestId: json.S,

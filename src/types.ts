@@ -65,13 +65,13 @@ type SwapInfoBase = {
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
-  kind: 'byAmountIn',
+  kind: 'exactSpend',
   availableAmountIn?: number,
   marketAmountOut?: number,
 }
 
 export type SwapInfoByAmountOut = SwapInfoBase & {
-  kind: 'byAmountOut',
+  kind: 'exactReceive',
   marketAmountIn?: number,
   availableAmountOut?: number,
 }

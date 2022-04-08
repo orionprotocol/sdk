@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Schema, z } from 'zod';
+import { z } from 'zod';
 import { fetchJsonWithValidation } from '../../fetchWithValidation';
 import swapInfoSchema from './schemas/swapInfoSchema';
 import exchangeInfoSchema from './schemas/exchangeInfoSchema';
@@ -104,7 +104,7 @@ class OrionAggregator {
   }
 
   getSwapInfo(
-    type: 'byAmountIn' | 'byAmountOut',
+    type: 'exactSpend' | 'exactReceive',
     assetIn: string,
     assetOut: string,
     amount: string,
@@ -112,7 +112,7 @@ class OrionAggregator {
     const url = new URL(`${this.aggregatorUrl}/api/v1/swap`);
     url.searchParams.append('assetIn', assetIn);
     url.searchParams.append('assetOut', assetOut);
-    if (type === 'byAmountIn') {
+    if (type === 'exactSpend') {
       url.searchParams.append('amountIn', amount);
     } else {
       url.searchParams.append('amountOut', amount);

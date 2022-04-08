@@ -28,7 +28,7 @@ const swapInfoByAmountIn = swapInfoBase.extend({
   marketAmountIn: z.null(),
 }).transform((val) => ({
   ...val,
-  type: 'byAmountIn' as const,
+  type: 'exactSpend' as const,
 }));
 
 const swapInfoByAmountOut = swapInfoBase.extend({
@@ -38,7 +38,7 @@ const swapInfoByAmountOut = swapInfoBase.extend({
   marketAmountIn: z.number().nullable(),
 }).transform((val) => ({
   ...val,
-  type: 'byAmountOut' as const,
+  type: 'exactReceive' as const,
 }));
 
 const swapInfoSchema = swapInfoByAmountIn.or(swapInfoByAmountOut);
