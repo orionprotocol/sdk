@@ -1,6 +1,13 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 
+/**
+ * Converts denormalized ("human-readable") number to normalized ("machine-readable") number.
+ * @param input Any numeric value
+ * @param decimals Blockchain asset precision
+ * @param roundingMode Rounding mode
+ * @returns ethers.BigNumber
+ */
 export default function normalizeNumber(
   input: BigNumber.Value,
   decimals: BigNumber.Value,

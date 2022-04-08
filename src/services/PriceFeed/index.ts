@@ -1,8 +1,5 @@
 import { fetchJsonWithValidation } from '../../fetchWithValidation';
 import candlesSchema from './schemas/candlesSchema';
-import PriceFeedAllTickersWS from './PriceFeedAllTickersWS';
-import PriceFeedLastPriceWS from './PriceFeedLastPriceWS';
-import PriceFeedTickerWS from './PriceFeedTickerWS';
 
 class PriceFeed {
   private apiUrl: string;
@@ -38,6 +35,8 @@ class PriceFeed {
 }
 
 export * as schemas from './schemas';
+export * as ws from './ws';
+
 export {
-  PriceFeed, PriceFeedAllTickersWS, PriceFeedTickerWS, PriceFeedLastPriceWS,
+  PriceFeed,
 };
