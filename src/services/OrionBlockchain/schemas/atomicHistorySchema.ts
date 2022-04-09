@@ -33,7 +33,7 @@ const sourceAtomicHistorySchemaItem = baseAtomicHistoryItem.extend({
     lock: z.number().optional(),
   }).optional(),
   state: z.enum(['LOCKED', 'REFUNDED', 'CLAIMED']),
-  targetChainId: z.number().optional(),
+  targetChainId: z.number(),
   transactions: z.object({
     lock: z.string().optional(),
     claim: z.string().optional(),
