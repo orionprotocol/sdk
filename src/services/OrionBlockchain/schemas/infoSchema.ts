@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { makePartial } from '../../../utils';
 
 const infoSchema = z.object({
   chainId: z.number(),
@@ -7,9 +8,9 @@ const infoSchema = z.object({
   oracleContractAddress: z.string(),
   matcherAddress: z.string(),
   orderFeePercent: z.number(),
-  assetToAddress: z.record(z.string()),
-  assetToDecimals: z.record(z.number()),
-  assetToIcons: z.record(z.string()).optional(),
+  assetToAddress: z.record(z.string()).transform(makePartial),
+  assetToDecimals: z.record(z.number()).transform(makePartial),
+  assetToIcons: z.record(z.string()).transform(makePartial).optional(),
 });
 
 export default infoSchema;
