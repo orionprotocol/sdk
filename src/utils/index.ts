@@ -10,6 +10,7 @@ export { default as isValidChainId } from './isValidChainId';
 export { default as denormalizeNumber } from './denormalizeNumber';
 export { default as normalizeNumber } from './normalizeNumber';
 export { default as getSwapPair } from './getSwapPair';
+export { default as getSideByPair } from './getSideByPair';
 
 export { default as HttpError } from './httpError';
 
