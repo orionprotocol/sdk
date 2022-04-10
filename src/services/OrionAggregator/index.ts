@@ -10,6 +10,7 @@ import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import atomicSwapHistorySchema from './schemas/atomicSwapHistorySchema';
 import { SignedCancelOrderRequest, SignedOrder, SupportedChainId } from '../../types';
+import { pairConfigSchema } from './schemas';
 
 class OrionAggregator {
   private readonly apiUrl: string;
@@ -38,6 +39,15 @@ class OrionAggregator {
     return fetchJsonWithValidation(
       `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo`,
       exchangeInfoSchema,
+      undefined,
+      errorSchema,
+    );
+  }
+
+  getPairConfig(assetPair: string) {
+    return fetchJsonWithValidation(
+      `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
+      pairConfigSchema,
       undefined,
       errorSchema,
     );
