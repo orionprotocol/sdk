@@ -49,7 +49,6 @@ export const signOrder = async (
   usePersonalSign: boolean,
   signer: ethers.Signer,
   chainId: SupportedChainId,
-  validateOrder: (signedOrder: SignedOrder) => Promise<boolean | undefined>,
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
@@ -95,9 +94,6 @@ export const signOrder = async (
     id: hashOrder(order),
     signature: fixedSignature,
   };
-
-  const orderIsOk = await validateOrder(signedOrder);
-  if (!orderIsOk) throw new Error('Order validation failed');
   return signedOrder;
 };
 
@@ -150,24 +146,5 @@ export const signCancelOrder = async (
     ...cancelOrderRequest,
     signature: fixedSignature,
   };
-
-  // if (!s.privateKey) {
-  // if (usePersonalSign) {
-  // } else {
-  //   const data = {
-  //     types: {
-  //       EIP712Domain: DOMAIN_TYPE,
-  //       DeleteOrder: CANCEL_ORDER_TYPES.DeleteOrder,
-  //     },
-  //     domain: domainData,
-  //     primaryType: 'DeleteOrder',
-  //     message: cancelOrderRequest,
-  //   };
-
-  //   const msgParams = { data };
-  //   const bufferKey = Buffer.from((signer as ethers.Wallet).privateKey.substr(2), 'hex');
-  //   cancelOrderRequest.signature = signTypedMessage(bufferKey, msgParams as any, 'V4');
-  // }
-
   return signedCancelOrderReqeust;
 };
