@@ -20,18 +20,15 @@ Before install SDK you need create Personal Access Token.
 
 ## Entities
 
-```
-import { SupportedChainId } from '@orionprotocol/sdk';
-import { config } from '@orionprotocol/sdk';
-import { services } from '@orionprotocol/sdk';
-import { OrionUnit } from '@orionprotocol/sdk';
-import { contracts } from '@orionprotocol/sdk';
+```ts
 import {
-    INTERNAL_ORION_PRECISION, // 8
-    NATIVE_CURRENCY_PRECISION // 18
- } from '@orionprotocol/sdk';
-
-import { utils } from '@orionprotocol/sdk';
-import { exchange } from '@orionprotocol/sdk';
-
+  SupportedChainId,
+  config,
+  OrionUnit,
+  contracts,
+  utils,
+  exchange,
+  INTERNAL_ORION_PRECISION, // 8
+  NATIVE_CURRENCY_PRECISION, // 18
+} from "@orionprotocol/sdk";
 ```

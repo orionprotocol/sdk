@@ -5,19 +5,19 @@ import { PriceFeed } from './services/PriceFeed';
 import { SupportedChainId } from './types';
 
 export default class OrionUnit {
-  public env: string;
+  public readonly env: string;
 
-  public chainId: SupportedChainId;
+  public readonly chainId: SupportedChainId;
 
-  public provider: ethers.providers.StaticJsonRpcProvider;
+  public readonly provider: ethers.providers.StaticJsonRpcProvider;
 
-  public orionBlockchain: OrionBlockchain;
+  public readonly orionBlockchain: OrionBlockchain;
 
-  public orionAggregator: OrionAggregator;
+  public readonly orionAggregator: OrionAggregator;
 
-  public priceFeed: PriceFeed;
+  public readonly priceFeed: PriceFeed;
 
-  public apiUrl: string;
+  public readonly apiUrl: string;
 
   constructor(
     chainId: SupportedChainId,

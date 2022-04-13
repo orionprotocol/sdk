@@ -155,7 +155,17 @@ class OrionBlockchain {
   }
 
   checkRedeem(secretHash: string) {
-    return fetchJsonWithValidation(`https://${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`, z.string().nullable());
+    return fetchJsonWithValidation(
+      `https://${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`,
+      z.enum(['OK', 'FAIL']).nullable(),
+    );
+  }
+
+  checkRedeem2Atomics(firstSecretHash: string, secondSecretHash: string) {
+    return fetchJsonWithValidation(
+      `https://${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
+      z.enum(['OK', 'FAIL']).nullable(),
+    );
   }
 
   getIDOInfo() {
