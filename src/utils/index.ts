@@ -1,4 +1,4 @@
-export { default as calculateFee } from './calculateFee';
+export { default as calculateFeeInFeeAsset } from './calculateFeeInFeeAsset';
 export { default as calculateNetworkFee } from './calculateNetworkFee';
 export { default as calculateNetworkFeeInFeeAsset } from './calculateNetworkFeeInFeeAsset';
 export { default as calculateOrionFeeInFeeAsset } from './calculateOrionFeeInFeeAsset';
