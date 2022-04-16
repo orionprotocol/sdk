@@ -28,10 +28,10 @@
     "staging-mainnet": {
         "networks": {
             "0x1": {
-                "api": "mns.orionprotocol.io"
+                "api": "staging.orionprotocol.io"
             },
             "0x38": {
-                "api": "stage-exp.orionprotocol.io"
+                "api": "staging-bsc.orionprotocol.io"
             },
             "0xfa": {
                 "api": "staging-ftm.orionprotocol.io"
