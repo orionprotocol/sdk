@@ -1,8 +1,8 @@
 import io from 'socket.io-client';
 import { z } from 'zod';
-import balancesSchema from '../schemas/balancesSchema';
+import balancesSchema from './schemas/balancesSchema';
 
-const handleMessage = (
+const handleBalancesMessage = (
   rawData: unknown,
   updateData: (balancesData: z.infer<typeof balancesSchema>) => void,
 ) => {
@@ -10,7 +10,7 @@ const handleMessage = (
   updateData(data);
 };
 
-type UpdateDataHandler = (balancesData: z.infer<typeof balancesSchema>) => void;
+type UpdateBalanceDataHandler = (balancesData: z.infer<typeof balancesSchema>) => void;
 
 export default class OrionBlockchainSocketIO {
   private socket: typeof io.Socket;
@@ -25,10 +25,10 @@ export default class OrionBlockchainSocketIO {
     });
   }
 
-  connect(updateDataHandler: UpdateDataHandler) {
+  connect(updateDataHandler: UpdateBalanceDataHandler) {
     if (updateDataHandler) {
-      this.socket.on('balanceChange', (data: unknown) => handleMessage(data, updateDataHandler));
-      this.socket.on('balances', (data: unknown) => handleMessage(data, updateDataHandler));
+      this.socket.on('balanceChange', (data: unknown) => handleBalancesMessage(data, updateDataHandler));
+      this.socket.on('balances', (data: unknown) => handleBalancesMessage(data, updateDataHandler));
     }
     this.socket.connect();
   }
@@ -58,8 +58,4 @@ export default class OrionBlockchainSocketIO {
   updateAllBalances(walletAddress: string) {
     this.socket.emit('getAllBalances', walletAddress);
   }
-
-  // killBalancesWS() {
-  //   this.balancesSocket.disconnect();
-  // }
 }

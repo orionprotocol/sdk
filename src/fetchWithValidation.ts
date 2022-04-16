@@ -36,14 +36,15 @@ export const fetchJsonWithValidation = async <DataOut, DataIn, ErrorOut, ErrorIn
   if (!response.ok) {
     throw new HttpError(response.status, text, 'HTTP', response.statusText);
   }
-  const json = JSON.parse(text);
+
+  const payload: unknown = JSON.parse(text);
 
   try {
-    const data = schema.parse(json);
+    const data = schema.parse(payload);
     return data;
   } catch (e) {
     if (errorSchema) {
-      const errorObj = errorSchema.parse(json);
+      const errorObj = errorSchema.parse(payload);
       if (isWithError(errorObj) && isWithReason(errorObj.error)) {
         throw new ExtendedError(url, response.status, errorObj.error.reason);
       }
