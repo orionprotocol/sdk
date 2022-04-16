@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['.eslintrc.js'],
   env: {
     browser: true,
     es2021: true,
@@ -6,9 +7,16 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
+    tsconfigRootDir: "./",
+    project: [
+        "./tsconfig.json"
+    ],
     ecmaVersion: 12,
     sourceType: 'module',
   },

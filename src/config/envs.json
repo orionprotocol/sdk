@@ -41,10 +41,10 @@
     "broken": {
         "networks": {
             "0x0": {
-                "api": "broken0.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment",
+                "api": "broken0.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment"
             },
             "0x61": {
-                "api": "broken1.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment",
+                "api": "broken1.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment"
             }
         }
     },
@@ -59,10 +59,10 @@
                 "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
             },
             "0xfa2": {
-                "api": "testing.orionprotocol.io/ftm-testnet",
+                "api": "testing.orionprotocol.io/ftm-testnet"
             },
             "0x0": {
-                "api": "broken.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment",
+                "api": "broken.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment"
             }
         }
     }
