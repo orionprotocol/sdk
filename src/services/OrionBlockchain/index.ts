@@ -271,5 +271,6 @@ class OrionBlockchain {
   }
 }
 
+export * as ws from './ws';
 export * as schemas from './schemas';
 export { OrionBlockchain };

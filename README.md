@@ -38,6 +38,23 @@ const wallet = new Wallet(privateKey);
 const orionUnit = initOrionUnit(chain, env);
 ```
 
+## Get tradable pairs
+
+```ts
+const pairsList = await orionUnit.orionAggregator.getPairsList();
+```
+
+## Get swap info
+
+```ts
+const swapInfo = await orionUnit.orionAggregator.getSwapInfo(
+  type: 'exactSpend',
+  assetIn: 'ORN',
+  assetOut: 'USDT',
+  amount: 6.23453457,
+);
+```
+
 ## Using contracts
 
 ```ts
