@@ -12,7 +12,7 @@ const handleBalancesMessage = (
 
 type UpdateBalanceDataHandler = (balancesData: z.infer<typeof balancesSchema>) => void;
 
-export default class OrionBlockchainSocketIO {
+export class OrionBlockchainSocketIO {
   private socket: typeof io.Socket;
 
   constructor(orionBlockchainWSUrl: string) {
@@ -59,3 +59,5 @@ export default class OrionBlockchainSocketIO {
     this.socket.emit('getAllBalances', walletAddress);
   }
 }
+
+export * as schemas from './schemas';

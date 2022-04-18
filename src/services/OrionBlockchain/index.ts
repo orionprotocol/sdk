@@ -6,7 +6,7 @@ import {
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
   addPoolSchema, adminPoolsListSchema,
 } from './schemas';
-import OrionBlockchainSocketIO from './ws';
+import { OrionBlockchainSocketIO } from './ws';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { SupportedChainId } from '../../types';
