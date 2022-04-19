@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "1.0.83",
+  "version": "1.0.83-new-balances",
   "description": "Orion Protocol SDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,7 +63,7 @@
     "uuid": "^8.3.2",
     "websocket-heartbeat-js": "^1.1.0",
     "ws": "^8.5.0",
-    "zod": "^3.14.3"
+    "zod": "^3.14.4"
   },
   "homepage": "https://github.com/orionprotocol/sdk#readme",
   "files": [

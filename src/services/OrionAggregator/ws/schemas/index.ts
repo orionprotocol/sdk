@@ -6,5 +6,6 @@ export { default as errorSchema } from './errorSchema';
 export { default as initMessageSchema } from './initMessageSchema';
 export { default as pingPongMessageSchema } from './pingPongMessageSchema';
 export { default as swapInfoSchema } from './swapInfoSchema';
+export { default as balancesSchema } from './balancesSchema';
 
 export * from './orderBookSchema';

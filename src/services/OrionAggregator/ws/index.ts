@@ -26,9 +26,6 @@ type SwapSubscriptionRequest = {
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
-  // type: SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE,
-  // payload: string,
-  // messageType: MessageType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE,
   callback: (balances: {
     asset: string;
     balance: number;
@@ -36,8 +33,6 @@ type BrokerTradableAtomicSwapBalanceSubscription = {
 }
 
 type PairConfigSubscription = {
-  // type: SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE,
-  // messageType: MessageType.ASSET_PAIRS_CONFIG_UPDATE,
   callback: (
     chainId: SupportedChainId,
     data: z.infer<typeof assetPairsConfigSchema>['u'],
@@ -45,9 +40,7 @@ type PairConfigSubscription = {
 }
 
 type AggregatedOrderbookSubscription = {
-  // type: SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE,
   payload: string,
-  // messageType: MessageType.AGGREGATED_ORDER_BOOK_UPDATE,
   callback: (
     asks: z.infer<typeof orderBookSchema>['ob']['a'],
     bids: z.infer<typeof orderBookSchema>['ob']['b'],
@@ -56,20 +49,26 @@ type AggregatedOrderbookSubscription = {
 }
 
 type SwapInfoSubscription = {
-  // type: SubscriptionType.SWAP_SUBSCRIBE,
   payload: SwapSubscriptionRequest,
-  // messageType: MessageType.SWAP_INFO,
   callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void,
 }
 
 type AddressUpdateSubscription = {
-  // type: SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE,
   payload: string,
-  // messageType: MessageType.ADDRESS_UPDATE,
-  callback: ({ fullOrders, orderUpdate, lockedBalances } : {
+  callback: ({ fullOrders, orderUpdate, balances } : {
     fullOrders?: z.infer<typeof fullOrderSchema>[],
     orderUpdate?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>,
-    lockedBalances?: Record<string, [string, string]>,
+    balances?: Partial<
+      Record<
+        string,
+        [
+          string,
+          string,
+          string,
+          string,
+          string
+        ]>
+    >,
   }) => void,
 }
 
@@ -101,6 +100,7 @@ class OrionAggregatorWS {
     if (this.ws?.readyState === 1) {
       this.ws.send(data);
     } else if (this.ws?.readyState === 0) {
+      console.log('asd');
       setTimeout(() => {
         this.sendRaw(data);
       }, 50);
@@ -111,6 +111,8 @@ class OrionAggregatorWS {
     if (this.ws?.readyState === 1) {
       this.ws.send(JSON.stringify(data));
     } else {
+      console.log('wer');
+
       setTimeout(() => {
         this.send(data);
       }, 50);
@@ -171,7 +173,7 @@ class OrionAggregatorWS {
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
-      const rawJson = JSON.parse(data.toString());
+      const rawJson: unknown = JSON.parse(data.toString());
 
       const messageSchema = z.union([
         initMessageSchema,
@@ -277,7 +279,7 @@ class OrionAggregatorWS {
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
                 fullOrders: json.o,
-                lockedBalances: json.b,
+                balances: json.b,
               });
               break;
             case 'u': // update
@@ -285,7 +287,7 @@ class OrionAggregatorWS {
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
                 orderUpdate: json.o?.[0],
-                lockedBalances: json.b,
+                balances: json.b,
               });
               break;
             default:

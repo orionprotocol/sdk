@@ -2,6 +2,7 @@ import { z } from 'zod';
 import orderStatuses from '../../../../constants/orderStatuses';
 import subOrderStatuses from '../../../../constants/subOrderStatuses';
 import MessageType from '../MessageType';
+import balancesSchema from './balancesSchema';
 import baseMessageSchema from './baseMessageSchema';
 
 const baseAddressUpdate = baseMessageSchema.extend({
@@ -57,21 +58,15 @@ export const fullOrderSchema = z.object({
 }));
 
 const updateMessageSchema = baseAddressUpdate.extend({
-  k: z.literal('u'),
-  uc: z.array(z.enum(['b', 'o'])),
-  b: z.record(z.tuple([
-    z.string(), // wallet balance
-    z.string(), // exchange contract balance
-  ])).optional(),
+  k: z.literal('u'), // kind of message: "u" - updates
+  uc: z.array(z.enum(['b', 'o'])), // update content: "o" - orders updates, "b" - balance updates
+  b: balancesSchema.optional(),
   o: z.tuple([fullOrderSchema.or(orderUpdateSchema)]).optional(),
 });
 
 const initialMessageSchema = baseAddressUpdate.extend({
-  k: z.literal('i'),
-  b: z.record(z.tuple([
-    z.string(), // wallet balance
-    z.string(), // exchange contract balance
-  ])),
+  k: z.literal('i'), // kind of message: "i" - initial
+  b: balancesSchema,
   o: z.array(fullOrderSchema).optional(), // When no orders — no field
 });
 
