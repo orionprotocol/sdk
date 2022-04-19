@@ -40,6 +40,25 @@ if (!privateKey) throw new Error("PRIVATE_KEY is required");
 const wallet = new Wallet(privateKey);
 // OrionUnit is chain-in-environment abstraction
 const orionUnit = initOrionUnit(chain, env);
+
+// Make market swap
+orionUnit
+  .swapMarket({
+    type: "exactSpend",
+    assetIn: "ORN",
+    assetOut: "USDT",
+    feeAsset: "ORN",
+    amount: 23.89045345,
+    slippagePercent: 1,
+    signer: wallet,
+    options: {
+      logger: console.log,
+      // Set it to true if you want the issues associated with
+      // the lack of allowance to be automatically corrected
+      autoApprove: true,
+    },
+  })
+  .then(console.log);
 ```
 
 ## Low level methods
