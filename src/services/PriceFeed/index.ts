@@ -12,7 +12,7 @@ class PriceFeed {
     symbol: string,
     timeStart: number,
     timeEnd: number,
-    interval: string,
+    interval: '5m' | '30m' | '1h' | '1d',
     exchange: string,
   ) {
     const url = new URL(`https://${this.apiUrl}/candles/candles`);

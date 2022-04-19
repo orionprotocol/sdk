@@ -109,10 +109,9 @@ export default class BalanceGuard {
 
     // Balance absorption order is important!
     // 1. Exchange-contract only
-    // 2. Exchange + contract
-    // 2. Wallet balance (tokens), because approves
-    // can produce extra requirements for native cryptocurrency
-    // 3. Wallet balance: native cryptocurrency
+    // 2. Exchange + wallet (can produce approves requirements)
+    // 3. Wallet balance (tokens) (can produce approves requirements)
+    // 4. Wallet balance: native cryptocurrency
 
     const requiredApproves: AggregatedBalanceRequirement = {
       asset: this.nativeCryptocurrency,

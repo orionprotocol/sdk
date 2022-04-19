@@ -63,6 +63,18 @@ orionUnit
 
 ## Low level methods
 
+## Get historical price
+
+```ts
+const candles = await orionUnit.priceFeed.getCandles(
+  "ORN-USDT",
+  1650287678, // interval start
+  1650374078, // interval end
+  "5m", // interval
+  "all" // exchange
+);
+```
+
 ### Using contracts
 
 ```ts
