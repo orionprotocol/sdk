@@ -107,3 +107,48 @@ const { orderId } = await orionUnit.orionAggregator.placeOrder(
   false // Place in internal orderbook
 )
 ```
+
+### Orion Aggregator WebSocket
+
+Available subscriptions:
+
+```ts
+ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE = 'apcus',
+AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE = 'aobus',
+ADDRESS_UPDATES_SUBSCRIBE = 'aus', // Orders history, balances info
+BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE = 'btasabus',
+SWAP_SUBSCRIBE = 'ss', // Swap info updates
+```
+
+Example:
+
+```ts
+import { services } from "@orionprotocol/sdk";
+import { v4 as uuidv4 } from "uuid";
+
+const swapRequestId = uuidv4();
+orionUnit.orionAggregator.ws.subscribe(
+  services.orionAggregator.ws.SubscriptionType.SWAP_SUBSCRIBE,
+  {
+    payload: {
+      d: swapRequestId,
+      i: assetIn, // asset in
+      o: assetOut, // asset out
+      e: true, // true when type of swap is exactSpend, can be omitted (true bu default)
+      a: 5.62345343,
+    },
+    // Handle data update in your way
+    callback: (swapInfo) => {
+      switch (swapInfo.kind) {
+        case "exactSpend":
+          console.log(swapInfo.availableAmountOut);
+
+          break;
+        case "exactReceive":
+          console.log(swapInfo.availableAmountOut);
+          break;
+      }
+    },
+  }
+);
+```
