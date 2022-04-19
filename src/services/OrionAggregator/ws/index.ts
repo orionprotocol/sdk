@@ -100,7 +100,6 @@ class OrionAggregatorWS {
     if (this.ws?.readyState === 1) {
       this.ws.send(data);
     } else if (this.ws?.readyState === 0) {
-      console.log('asd');
       setTimeout(() => {
         this.sendRaw(data);
       }, 50);
@@ -111,8 +110,6 @@ class OrionAggregatorWS {
     if (this.ws?.readyState === 1) {
       this.ws.send(JSON.stringify(data));
     } else {
-      console.log('wer');
-
       setTimeout(() => {
         this.send(data);
       }, 50);
