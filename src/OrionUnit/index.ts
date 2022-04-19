@@ -1,8 +1,9 @@
 import { ethers } from 'ethers';
-import { OrionAggregator } from './services/OrionAggregator';
-import { OrionBlockchain } from './services/OrionBlockchain';
-import { PriceFeed } from './services/PriceFeed';
-import { SupportedChainId } from './types';
+import { OrionAggregator } from '../services/OrionAggregator';
+import { OrionBlockchain } from '../services/OrionBlockchain';
+import { PriceFeed } from '../services/PriceFeed';
+import swapMarket, { SwapMarketParams } from './swapMarket';
+import { SupportedChainId } from '../types';
 
 export default class OrionUnit {
   public readonly env: string;
@@ -33,5 +34,12 @@ export default class OrionUnit {
     this.orionBlockchain = new OrionBlockchain(apiUrl, chainId);
     this.orionAggregator = new OrionAggregator(apiUrl, chainId);
     this.priceFeed = new PriceFeed(apiUrl);
+  }
+
+  public swapMarket(params : Omit<SwapMarketParams, 'orionUnit'>) {
+    return swapMarket({
+      ...params,
+      orionUnit: this,
+    });
   }
 }

@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 export interface Order {
   senderAddress: string; // address
   matcherAddress: string; // address
@@ -89,4 +91,39 @@ export enum SupportedChainId {
 
   // For testing and debug purpose
   BROKEN = '0x0',
+}
+
+const balanceTypes = ['exchange', 'wallet'] as const;
+
+export type Source = typeof balanceTypes[number];
+export type Asset = {
+  name: string;
+  address: string;
+}
+export type BalanceRequirement = {
+  readonly reason: string,
+  readonly asset: Asset,
+  readonly amount: string,
+  readonly sources: Source[],
+  readonly spenderAddress?: string;
+}
+
+export type AggregatedBalanceRequirement = {
+  readonly asset: Asset,
+  readonly sources: Source[],
+  readonly spenderAddress?: string;
+  items: Partial<Record<string, string>>,
+}
+
+export type Approve = {
+  readonly targetAmount: BigNumber.Value,
+  readonly spenderAddress: string
+}
+
+export type BalanceIssue = {
+  readonly asset: Asset,
+  readonly message: string;
+  readonly sources: Source[],
+  readonly resetRequired?: boolean;
+  readonly approves?: Approve[];
 }

@@ -7,7 +7,7 @@ import {
 } from './types';
 import eip712DomainData from './config/eip712DomainData.json';
 import eip712DomainSchema from './config/schemas/eip712DomainSchema';
-import { hashOrder } from './utils';
+import { hashOrder, normalizeNumber } from './utils';
 
 import { INTERNAL_ORION_PRECISION } from './constants/precisions';
 import ORDER_TYPES from './constants/orderTypes';
@@ -17,13 +17,6 @@ import signOrderPersonal from './utils/signOrderPersonal';
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
 type SignerWithTypedDataSign = ethers.Signer & TypedDataSigner;
-
-const applyInternalOrionPrecision = (
-  n: BigNumber.Value,
-) => new BigNumber(n)
-  .multipliedBy(new BigNumber(10).pow(INTERNAL_ORION_PRECISION))
-  .decimalPlaces(0, BigNumber.ROUND_FLOOR)
-  .toNumber();
 
 const EIP712Domain = eip712DomainSchema.parse(eip712DomainData);
 const { arrayify, joinSignature, splitSignature } = ethers.utils;
@@ -59,13 +52,21 @@ export const signOrder = async (
     baseAsset: baseAssetAddr,
     quoteAsset: quoteAssetAddr,
     matcherFeeAsset: orionFeeAssetAddr,
-    amount: applyInternalOrionPrecision(amount),
-    price: applyInternalOrionPrecision(price),
-    matcherFee: new BigNumber(matcherFee)
-      // ROUND_CEIL because we don't want get "not enough fee" error
-      .decimalPlaces(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL)
-      .multipliedBy(new BigNumber(10).pow(INTERNAL_ORION_PRECISION))
-      .toNumber(),
+    amount: normalizeNumber(
+      amount,
+      INTERNAL_ORION_PRECISION,
+      BigNumber.ROUND_FLOOR,
+    ).toNumber(),
+    price: normalizeNumber(
+      price,
+      INTERNAL_ORION_PRECISION,
+      BigNumber.ROUND_FLOOR,
+    ).toNumber(),
+    matcherFee: normalizeNumber(
+      matcherFee,
+      INTERNAL_ORION_PRECISION,
+      BigNumber.ROUND_CEIL, // ROUND_CEIL because we don't want get "not enough fee" error
+    ).toNumber(),
     nonce,
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
