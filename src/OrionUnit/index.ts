@@ -5,6 +5,7 @@ import { PriceFeed } from '../services/PriceFeed';
 import swapMarket, { SwapMarketParams } from './swapMarket';
 import { SupportedChainId } from '../types';
 
+type PureSwapMarketParams= Omit<SwapMarketParams, 'orionUnit'>
 export default class OrionUnit {
   public readonly env: string;
 
@@ -36,7 +37,7 @@ export default class OrionUnit {
     this.priceFeed = new PriceFeed(apiUrl);
   }
 
-  public swapMarket(params : Omit<SwapMarketParams, 'orionUnit'>) {
+  public swapMarket(params: PureSwapMarketParams) {
     return swapMarket({
       ...params,
       orionUnit: this,

@@ -212,11 +212,9 @@ export default async function swapMarket({
       type === 'exactSpend',
     );
 
-    const nonce = await provider.getTransactionCount(walletAddress, 'pending');
-
     unsignedSwapThroughOrionPoolTx.chainId = parseInt(chainId, 16);
     unsignedSwapThroughOrionPoolTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
-    unsignedSwapThroughOrionPoolTx.nonce = nonce;
+
     unsignedSwapThroughOrionPoolTx.from = walletAddress;
     const amountSpendBN = new BigNumber(amountSpend);
 
@@ -273,6 +271,9 @@ export default async function swapMarket({
       await promise;
       return fixBalanceIssue(item);
     }, Promise.resolve());
+
+    const nonce = await provider.getTransactionCount(walletAddress, 'pending');
+    unsignedSwapThroughOrionPoolTx.nonce = nonce;
 
     const signedSwapThroughOrionPoolTx = await signer.signTransaction(unsignedSwapThroughOrionPoolTx);
     const swapThroughOrionPoolTxResponse = await provider.sendTransaction(signedSwapThroughOrionPoolTx);
