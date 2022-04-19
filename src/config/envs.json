@@ -25,7 +25,7 @@
             }
         }
     },
-    "staging-mainnet": {
+    "staging": {
         "networks": {
             "0x1": {
                 "api": "staging.orionprotocol.io"
