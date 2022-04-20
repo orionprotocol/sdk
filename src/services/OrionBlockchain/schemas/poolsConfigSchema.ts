@@ -16,7 +16,7 @@ const poolsConfigSchema = z.object({
       qtyPrecision: z.number().int().optional(),
       reverted: z.boolean().optional(),
       rewardToken: z.string().nullable().optional(),
-      state: z.number().int(),
+      state: z.number().int().optional(),
       rewardTokenDecimals: z.number().int().optional(),
       stakingRewardFinish: z.number().optional(),
       stakingRewardAddress: z.string(),
