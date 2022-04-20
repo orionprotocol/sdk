@@ -7,6 +7,7 @@ import baseMessageSchema from './baseMessageSchema';
 const baseAddressUpdate = baseMessageSchema.extend({
   T: z.literal(MessageType.ADDRESS_UPDATE),
   S: z.string(), // subscription
+  uc: z.array(z.enum(['b', 'o'])), // update content
 });
 
 const subOrderSchema = z.object({
@@ -58,7 +59,6 @@ export const fullOrderSchema = z.object({
 
 const updateMessageSchema = baseAddressUpdate.extend({
   k: z.literal('u'),
-  uc: z.array(z.enum(['b', 'o'])),
   b: z.record(z.tuple([
     z.string(), // wallet balance
     z.string(), // exchange contract balance
