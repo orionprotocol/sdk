@@ -1,0 +1,2 @@
+export const INTERNAL_ORION_PRECISION = 8;
+export const NATIVE_CURRENCY_PRECISION = 18;

@@ -1,0 +1,69 @@
+{
+    "production": {
+        "networks": {
+            "0x1": {
+                "api": "trade.orionprotocol.io",
+                "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
+            },
+            "0x38": {
+                "api": "trade-exp.orionprotocol.io"
+            }
+        }
+    },
+    "testing": {
+        "networks": {
+            "0x61": {
+                "api": "testing.orionprotocol.io/bsc-testnet",
+                "liquidityMigratorAddress": "0x01b10dd12478C88A5E18e2707E729906bC25CfF6"
+            },
+            "0x3": {
+                "api": "testing.orionprotocol.io/eth-ropsten",
+                "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
+            },
+            "0xfa2": {
+                "api": "testing.orionprotocol.io/ftm-testnet"
+            }
+        }
+    },
+    "staging": {
+        "networks": {
+            "0x1": {
+                "api": "staging.orionprotocol.io"
+            },
+            "0x38": {
+                "api": "staging-bsc.orionprotocol.io"
+            },
+            "0xfa": {
+                "api": "staging-ftm.orionprotocol.io"
+            }
+        }
+    },
+    "broken": {
+        "networks": {
+            "0x0": {
+                "api": "broken0.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment"
+            },
+            "0x61": {
+                "api": "broken1.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment"
+            }
+        }
+    },
+    "partially-broken": {
+        "networks": {
+            "0x61": {
+                "api": "testing.orionprotocol.io/bsc-testnet",
+                "liquidityMigratorAddress": "0x01b10dd12478C88A5E18e2707E729906bC25CfF6"
+            },
+            "0x3": {
+                "api": "testing.orionprotocol.io/eth-ropsten",
+                "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
+            },
+            "0xfa2": {
+                "api": "testing.orionprotocol.io/ftm-testnet"
+            },
+            "0x0": {
+                "api": "broken.orionprotocol.io/everything-is-fine/this-url-was-created-for-tests-of-a-partially-broken-environment"
+            }
+        }
+    }
+}
