@@ -8,6 +8,7 @@ import baseMessageSchema from './baseMessageSchema';
 const baseAddressUpdate = baseMessageSchema.extend({
   T: z.literal(MessageType.ADDRESS_UPDATE),
   S: z.string(), // subscription
+  uc: z.array(z.enum(['b', 'o'])), // update content
 });
 
 const subOrderSchema = z.object({

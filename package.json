@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "1.0.83-new-balances",
+  "version": "1.0.85-new-balances",
   "description": "Orion Protocol SDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,12 @@
   "publishConfig": {
     "@orionprotocol:registry": "https://npm.pkg.github.com"
   },
-  "keywords": [],
+  "keywords": [
+    "sdk",
+    "orion",
+    "orionprotocol",
+    "trading"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
