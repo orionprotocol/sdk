@@ -15,14 +15,13 @@
     "coverage": "jest --coverage",
     "lint:eslint": "eslint ./src --ext .ts,.js,.tsx,.jsx",
     "lint:eslint:fix": "eslint ./src --ext .ts,.js,.tsx,.jsx --fix",
-    "typechain:generate-types": "typechain --target=ethers-v5 ./src/abis/*.json --out-dir ./src/artifacts/contracts"
+    "typechain:generate-types": "typechain --target=ethers-v5 ./src/abis/*.json --out-dir ./src/artifacts/contracts",
+    "postpublish": "npm run publish-npm",
+    "publish-npm": "npm publish --access public --ignore-scripts --@orionprotocol:registry='https://registry.npmjs.org'"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/orionprotocol/sdk.git"
-  },
-  "publishConfig": {
-    "@orionprotocol:registry": "https://npm.pkg.github.com"
   },
   "keywords": [
     "sdk",
