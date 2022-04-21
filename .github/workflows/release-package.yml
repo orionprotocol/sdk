@@ -13,6 +13,7 @@ jobs:
         with:
           node-version: '17.x'
       - run: npm ci
+      - run: npm run build-ts
       - run: npm test
       - name: Set package registry
         run: npm config set registry https://npm.pkg.github.com
