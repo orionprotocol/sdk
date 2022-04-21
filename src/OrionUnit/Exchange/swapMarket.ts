@@ -1,13 +1,12 @@
 /* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import getBalances from '../utils/getBalances';
-import BalanceGuard from '../BalanceGuard';
-import getAvailableSources from '../utils/getAvailableFundsSources';
-import { Approve, BalanceIssue } from '../types';
-import OrionUnit from '.';
-import { contracts, crypt, utils } from '..';
-import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../constants';
+import getBalances from '../../utils/getBalances';
+import BalanceGuard from '../../BalanceGuard';
+import getAvailableSources from '../../utils/getAvailableFundsSources';
+import OrionUnit from '..';
+import { contracts, crypt, utils } from '../..';
+import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 
 export type SwapMarketParams = {
   type: 'exactSpend' | 'exactReceive',
@@ -56,6 +55,7 @@ export default async function swapMarket({
 
   const amountBN = new BigNumber(amount);
   if (amountBN.isNaN()) throw new Error(`Amount '${amount.toString()}' is not a number`);
+  if (amountBN.lte(0)) throw new Error(`Amount '${amount.toString()}' should be greater than 0`);
 
   const slippagePercentBN = new BigNumber(slippagePercent);
   if (slippagePercentBN.isNaN()) throw new Error(`Slippage percent '${slippagePercent.toString()}' is not a number`);
@@ -117,7 +117,7 @@ export default async function swapMarket({
       address: ethers.constants.AddressZero,
     },
     provider,
-    walletAddress,
+    signer,
   );
 
   const swapInfo = await orionAggregator.getSwapInfo(type, assetIn, assetOut, amount.toString());
@@ -133,40 +133,6 @@ export default async function swapMarket({
   if (swapInfo.orderInfo === null) throw new Error(swapInfo.executionInfo);
 
   const percent = new BigNumber(slippagePercent).div(100);
-
-  const fixBalanceIssue = async (issue: BalanceIssue) => {
-    const tokenContract = contracts.ERC20__factory.connect(issue.asset.address, provider);
-    const approve = async ({ spenderAddress, targetAmount }: Approve) => {
-      const bnTargetAmount = new BigNumber(targetAmount);
-      const unsignedApproveTx = await tokenContract
-        .populateTransaction
-        .approve(
-          spenderAddress,
-          bnTargetAmount.isZero()
-            ? '0' // Reset
-            : ethers.constants.MaxUint256, // Infinite approve
-        );
-
-      const nonce = await provider.getTransactionCount(walletAddress, 'pending');
-
-      unsignedApproveTx.chainId = parseInt(chainId, 16);
-      unsignedApproveTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
-      unsignedApproveTx.nonce = nonce;
-      unsignedApproveTx.from = walletAddress;
-      const gasLimit = await provider.estimateGas(unsignedApproveTx);
-      unsignedApproveTx.gasLimit = gasLimit;
-
-      const signedTx = await signer.signTransaction(unsignedApproveTx);
-      const txResponse = await provider.sendTransaction(signedTx);
-      options?.logger?.(`${issue.asset.name} approve transaction sent ${txResponse.hash}. Waiting for confirmation...`);
-      await txResponse.wait();
-      options?.logger?.(`${issue.asset.name} approve transaction confirmed.`);
-    };
-    await issue.approves?.reduce(async (promise, item) => {
-      await promise;
-      return approve(item);
-    }, Promise.resolve());
-  };
 
   if (swapInfo.isThroughPoolOptimal) {
     options?.logger?.('Swap through pool');
@@ -252,25 +218,7 @@ export default async function swapMarket({
       });
     }
 
-    options?.logger?.(`Balance requirements: ${balanceGuard.requirements
-      .map((requirement) => `${requirement.amount} ${requirement.asset.name} `
-        + `for '${requirement.reason}' `
-        + `from [${requirement.sources.join(' + ')}]`)
-      .join(', ')}`);
-
-    const balanceIssues = await balanceGuard.check();
-    const autofixableBalanceIssues = balanceIssues.filter((balanceIssue) => balanceIssue.approves);
-    const allBalanceIssuesIsAutofixable = autofixableBalanceIssues.length === balanceIssues.length;
-    if (!allBalanceIssuesIsAutofixable) options?.logger?.('Some balance issues is not autofixable');
-
-    if (!allBalanceIssuesIsAutofixable || (options !== undefined && !options.autoApprove)) {
-      throw new Error(`Balance issues: ${balanceIssues.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
-    }
-
-    await autofixableBalanceIssues.reduce(async (promise, item) => {
-      await promise;
-      return fixBalanceIssue(item);
-    }, Promise.resolve());
+    await balanceGuard.check(options?.autoApprove);
 
     const nonce = await provider.getTransactionCount(walletAddress, 'pending');
     unsignedSwapThroughOrionPoolTx.nonce = nonce;
@@ -374,25 +322,7 @@ export default async function swapMarket({
     sources: getAvailableSources('orion_fee', feeAssetAddress, 'aggregator'),
   });
 
-  options?.logger?.(`Balance requirements: ${balanceGuard.requirements
-    .map((requirement) => `${requirement.amount} ${requirement.asset.name} `
-      + `for '${requirement.reason}' `
-      + `from [${requirement.sources.join(' + ')}]`)
-    .join(', ')}`);
-
-  const balanceIssues = await balanceGuard.check();
-  const autofixableBalanceIssues = balanceIssues.filter((balanceIssue) => balanceIssue.approves);
-  const allBalanceIssuesIsAutofixable = autofixableBalanceIssues.length === balanceIssues.length;
-  if (!allBalanceIssuesIsAutofixable) options?.logger?.('Some balance issues is not autofixable');
-
-  if (!allBalanceIssuesIsAutofixable || (options !== undefined && !options.autoApprove)) {
-    throw new Error(`Balance issues: ${balanceIssues.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
-  }
-
-  await autofixableBalanceIssues.reduce(async (promise, item) => {
-    await promise;
-    return fixBalanceIssue(item);
-  }, Promise.resolve());
+  await balanceGuard.check(options?.autoApprove);
 
   const signedOrder = await crypt.signOrder(
     baseAssetAddress,
