@@ -13,11 +13,12 @@ npm i @orionprotocol/sdk
 ### Easy start
 
 ```ts
+// Node.js
 import "dotenv/config";
 import { initOrionUnit } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const chain = process.env.CHAINID; // 0x56
+const chain = process.env.CHAINID; // 0x38
 const env = process.env.ENV; // production
 const privateKey = process.env.PRIVATE_KEY; // 0x...
 
@@ -28,20 +29,58 @@ if (!privateKey) throw new Error("PRIVATE_KEY is required");
 const wallet = new Wallet(privateKey);
 // OrionUnit is chain-in-environment abstraction
 const orionUnit = initOrionUnit(chain, env);
+```
 
-orionUnit.exchange.deposit({
-  amount: 2.5,
-  asset: "ORN",
-  signer: wallet,
+```ts
+// UI
+
+import { initOrionUnit } from "@orionprotocol/sdk";
+import detectEthereumProvider from "@metamask/detect-provider";
+import { BaseProvider } from "@metamask/providers";
+import { providers } from "ethers";
+
+const chain = "0x61"; // bsc-testnet
+const env = "testing";
+
+const startApp = async (provider: BaseProvider) => {
+  const web3provider = new providers.Web3Provider(provider);
+  await web3Provider.ready;
+  const signer = web3Provider.getSigner(account); // ready to go
+  const orionUnit = initOrionUnit(chain, env); // ready to go
+};
+
+detectEthereumProvider().then((provider) => {
+  if (provider) {
+    startApp(provider as BaseProvider);
+  } else {
+    console.log("Please install MetaMask!");
+  }
 });
+```
 
+#### Withdraw
+
+```ts
 orionUnit.exchange.withdraw({
   amount: 435.275,
   asset: "USDT",
-  signer: wallet,
+  signer: wallet, // or signer when UI
 });
+```
 
-// Make market swap
+#### Deposit
+
+```ts
+orionUnit.exchange.deposit({
+  amount: 2.5,
+  asset: "ORN",
+  signer: wallet, // or signer when UI
+});
+```
+
+#### Make swap market
+
+```ts
 orionUnit.exchange
   .swapMarket({
     type: "exactSpend",
@@ -50,7 +89,7 @@ orionUnit.exchange
     feeAsset: "ORN",
     amount: 23.89045345,
     slippagePercent: 1,
-    signer: wallet,
+    signer: wallet, // or signer when UI
     options: {
       logger: console.log,
       // Set it to true if you want the issues associated with
