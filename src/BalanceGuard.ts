@@ -6,6 +6,7 @@ import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants'
 import {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
 } from './types';
+import { denormalizeNumber } from './utils';
 import arrayEquals from './utils/arrayEquals';
 
 export default class BalanceGuard {
@@ -13,7 +14,7 @@ export default class BalanceGuard {
     Record<
       string,
       Record<
-        'exchange' | 'wallet' | 'allowance',
+        'exchange' | 'wallet',
         BigNumber>
     >
     >;
@@ -27,7 +28,7 @@ export default class BalanceGuard {
   private readonly signer: ethers.Signer;
 
   constructor(
-    balances: Partial<Record<string, Record<'exchange' | 'wallet' | 'allowance', BigNumber>>>,
+    balances: Partial<Record<string, Record<'exchange' | 'wallet', BigNumber>>>,
     nativeCryptocurrency: Asset,
     provider: ethers.providers.Provider,
     signer: ethers.Signer,
@@ -220,11 +221,24 @@ export default class BalanceGuard {
         remainingBalance.exchange = remainingBalance.exchange.minus(itemsAmountSum);
         if (remainingBalance.exchange.lt(0)) {
           const lackAmount = remainingBalance.exchange.abs(); // e.g. -435.234234 to 434.234234
+
+          let denormalizedAllowance: BigNumber;
+          if (asset.address === ethers.constants.AddressZero) {
+            denormalizedAllowance = remainingBalance.wallet;
+          } else {
+            if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
+            const tokenContract = contracts.ERC20__factory.connect(asset.address, this.provider);
+            const tokenDecimals = await tokenContract.decimals();
+            const walletAddress = await this.signer.getAddress();
+            const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
+            denormalizedAllowance = denormalizeNumber(tokenAllowance, tokenDecimals);
+          }
+
           // Try to take lack amount from wallet
           const approvedWalletBalance = BigNumber
             .min(
               remainingBalance.wallet,
-              remainingBalance.allowance,
+              denormalizedAllowance,
             // For native cryptocurrency allowance is always just current balance
             );
           if (lackAmount.lte(approvedWalletBalance)) { // We can take lack amount from wallet
@@ -302,10 +316,23 @@ export default class BalanceGuard {
         if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
         const itemsAmountSum = Object.values(items)
           .reduce<BigNumber>((p, c) => (c ? p.plus(c) : p), new BigNumber(0));
+
+        let denormalizedAllowance: BigNumber;
+        if (asset.address === ethers.constants.AddressZero) {
+          denormalizedAllowance = remainingBalance.wallet;
+        } else {
+          if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
+          const tokenContract = contracts.ERC20__factory.connect(asset.address, this.provider);
+          const tokenDecimals = await tokenContract.decimals();
+          const walletAddress = await this.signer.getAddress();
+          const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
+          denormalizedAllowance = denormalizeNumber(tokenAllowance, tokenDecimals);
+        }
+
         const approvedWalletBalance = BigNumber
           .min(
             remainingBalance.wallet,
-            remainingBalance.allowance,
+            denormalizedAllowance,
           );
         if (itemsAmountSum.lte(approvedWalletBalance)) { // Approved wallet balance is enough
           remainingBalance.wallet = remainingBalance.wallet.minus(itemsAmountSum);

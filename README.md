@@ -45,7 +45,7 @@ const env = "testing";
 const startApp = async (provider: BaseProvider) => {
   const web3provider = new providers.Web3Provider(provider);
   await web3Provider.ready;
-  const signer = web3Provider.getSigner(account); // ready to go
+  const signer = web3Provider.getSigner(); // ready to go
   const orionUnit = initOrionUnit(chain, env); // ready to go
 };
 

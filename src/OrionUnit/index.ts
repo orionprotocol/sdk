@@ -4,6 +4,7 @@ import { OrionBlockchain } from '../services/OrionBlockchain';
 import { PriceFeed } from '../services/PriceFeed';
 import { SupportedChainId } from '../types';
 import Exchange from './Exchange';
+import FarmingManager from './FarmingManager';
 
 export default class OrionUnit {
   public readonly env: string;
@@ -19,6 +20,8 @@ export default class OrionUnit {
   public readonly priceFeed: PriceFeed;
 
   public readonly exchange: Exchange;
+
+  public readonly farmingManager: FarmingManager;
 
   public readonly apiUrl: string;
 
@@ -37,5 +40,6 @@ export default class OrionUnit {
     this.orionAggregator = new OrionAggregator(apiUrl, chainId);
     this.priceFeed = new PriceFeed(apiUrl);
     this.exchange = new Exchange(this);
+    this.farmingManager = new FarmingManager(this);
   }
 }

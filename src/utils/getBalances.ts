@@ -33,7 +33,6 @@ export default async (
   return balances.reduce<Partial<Record<string, {
       exchange: BigNumber,
       wallet: BigNumber,
-      allowance: BigNumber,
   }>>>((prev, curr) => ({
     ...prev,
     [curr.asset]: curr.amount,

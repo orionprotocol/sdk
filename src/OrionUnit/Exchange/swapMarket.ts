@@ -7,6 +7,7 @@ import getAvailableSources from '../../utils/getAvailableFundsSources';
 import OrionUnit from '..';
 import { contracts, crypt, utils } from '../..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
+import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 
 export type SwapMarketParams = {
   type: 'exactSpend' | 'exactReceive',
@@ -74,18 +75,7 @@ export default async function swapMarket({
     matcherAddress,
     assetToAddress,
   } = await orionBlockchain.getInfo();
-  const addressToAsset = Object
-    .entries(assetToAddress)
-    .reduce<Partial<Record<string, string>>>((prev, [asset, address]) => {
-      if (!address) return prev;
-      return {
-        ...prev,
-        [address]: asset,
-      };
-    }, {});
-
-  const nativeCryptocurrency = addressToAsset[ethers.constants.AddressZero];
-  if (!nativeCryptocurrency) throw new Error('Native cryptocurrency asset is not found');
+   const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
   const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
   const feeAssets = await orionBlockchain.getTokensFee();

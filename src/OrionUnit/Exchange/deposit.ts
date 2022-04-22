@@ -9,6 +9,7 @@ import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION,
 } from '../../constants';
 import { normalizeNumber } from '../../utils';
+import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 
 export type DepositParams = {
   asset: string,
@@ -38,18 +39,8 @@ export default async function deposit({
     exchangeContractAddress,
     assetToAddress,
   } = await orionBlockchain.getInfo();
-  const addressToAsset = Object
-    .entries(assetToAddress)
-    .reduce<Partial<Record<string, string>>>((prev, [assetName, address]) => {
-      if (!address) return prev;
-      return {
-        ...prev,
-        [address]: assetName,
-      };
-    }, {});
 
-  const nativeCryptocurrency = addressToAsset[ethers.constants.AddressZero];
-  if (!nativeCryptocurrency) throw new Error('Native cryptocurrency asset is not found');
+  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
   const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
   const gasPriceWei = await orionBlockchain.getGasPriceWei();

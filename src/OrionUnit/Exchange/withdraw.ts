@@ -9,6 +9,7 @@ import {
   INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, WITHDRAW_GAS_LIMIT,
 } from '../../constants';
 import { normalizeNumber } from '../../utils';
+import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 
 export type WithdrawParams = {
   asset: string,
@@ -39,19 +40,7 @@ export default async function withdraw({
     assetToAddress,
   } = await orionBlockchain.getInfo();
 
-  const addressToAsset = Object
-    .entries(assetToAddress)
-    .reduce<Partial<Record<string, string>>>((prev, [assetName, address]) => {
-      if (!address) return prev;
-      return {
-        ...prev,
-        [address]: assetName,
-      };
-    }, {});
-
-  const nativeCryptocurrency = addressToAsset[ethers.constants.AddressZero];
-  if (!nativeCryptocurrency) throw new Error('Native cryptocurrency asset is not found');
-
+  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
   const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
   const gasPriceWei = await orionBlockchain.getGasPriceWei();
 
