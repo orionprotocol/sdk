@@ -1,5 +1,6 @@
 module.exports = {
   ignorePatterns: ['.eslintrc.js'],
+  include: ['jest.config.ts'],
   env: {
     browser: true,
     es2021: true,
