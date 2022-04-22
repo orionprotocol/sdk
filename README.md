@@ -29,6 +29,18 @@ const wallet = new Wallet(privateKey);
 // OrionUnit is chain-in-environment abstraction
 const orionUnit = initOrionUnit(chain, env);
 
+orionUnit.exchange.deposit({
+  amount: 2.5,
+  asset: "ORN",
+  signer: wallet,
+});
+
+orionUnit.exchange.withdraw({
+  amount: 435.275,
+  asset: "USDT",
+  signer: wallet,
+});
+
 // Make market swap
 orionUnit.exchange
   .swapMarket({
