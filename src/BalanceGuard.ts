@@ -4,7 +4,7 @@ import clone from 'just-clone';
 import { contracts, utils } from '.';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
 import {
-  AggregatedBalanceRequirement, Approve, Asset, BalanceIssue, BalanceRequirement, Source,
+  AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
 } from './types';
 import arrayEquals from './utils/arrayEquals';
 
@@ -108,7 +108,7 @@ export default class BalanceGuard {
   ) => {
     const fixBalanceIssue = async (issue: BalanceIssue) => {
       const tokenContract = contracts.ERC20__factory.connect(issue.asset.address, this.provider);
-      const approve = async ({ spenderAddress, targetAmount }: Approve) => {
+      const approve = async ({ spenderAddress, targetAmount }: ApproveFix) => {
         const bnTargetAmount = new BigNumber(targetAmount);
         const unsignedApproveTx = await tokenContract
           .populateTransaction
@@ -137,13 +137,14 @@ export default class BalanceGuard {
         await txResponse.wait();
         console.log(`${issue.asset.name} approve transaction confirmed.`);
       };
-      await issue.approves?.reduce(async (promise, item) => {
+      await issue.fixes?.reduce(async (promise, item) => {
         await promise;
-        return approve(item);
+        if (item.type === 'byApprove') return approve(item);
+        return promise;
       }, Promise.resolve());
     };
 
-    const autofixableBalanceIssues = balanceIssues.filter((balanceIssue) => balanceIssue.approves);
+    const autofixableBalanceIssues = balanceIssues.filter((balanceIssue) => balanceIssue.fixes);
 
     await autofixableBalanceIssues.reduce(async (promise, item) => {
       await promise;
@@ -267,12 +268,14 @@ export default class BalanceGuard {
               balanceIssues.push({
                 asset,
                 sources: ['exchange', 'wallet'],
-                approves: [
+                fixes: [
                   ...resetRequired ? [{
+                    type: 'byApprove' as const,
                     targetAmount: 0,
                     spenderAddress,
                   }] : [],
                   {
+                    type: 'byApprove',
                     targetAmount: targetApprove,
                     spenderAddress,
                   },
@@ -342,12 +345,14 @@ export default class BalanceGuard {
             balanceIssues.push({
               asset,
               sources: ['wallet'],
-              approves: [
+              fixes: [
                 ...resetRequired ? [{
+                  type: 'byApprove' as const,
                   targetAmount: 0,
                   spenderAddress,
                 }] : [],
                 {
+                  type: 'byApprove',
                   targetAmount: targetApprove,
                   spenderAddress,
                 },

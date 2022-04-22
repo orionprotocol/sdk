@@ -115,15 +115,23 @@ export type AggregatedBalanceRequirement = {
   items: Partial<Record<string, string>>,
 }
 
-export type Approve = {
+export type ApproveFix = {
+  readonly type: 'byApprove',
   readonly targetAmount: BigNumber.Value,
   readonly spenderAddress: string
 }
+
+export type DepositFix = {
+  readonly type: 'byDeposit',
+  readonly amount: BigNumber.Value,
+  readonly asset: string
+}
+
+type Fix = ApproveFix | DepositFix;
 
 export type BalanceIssue = {
   readonly asset: Asset,
   readonly message: string;
   readonly sources: Source[],
-  readonly resetRequired?: boolean;
-  readonly approves?: Approve[];
+  readonly fixes?: Fix[],
 }
