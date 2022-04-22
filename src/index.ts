@@ -1,3 +1,7 @@
+import BigNumber from 'bignumber.js';
+
+BigNumber.config({ EXPONENTIAL_AT: 1e9 });
+
 export * as config from './config';
 // export * from './entities';
 export { default as OrionUnit } from './OrionUnit';

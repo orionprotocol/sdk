@@ -19,7 +19,7 @@ export type SwapMarketParams = {
   orionUnit: OrionUnit,
   options?: {
     logger?: (message: string) => void,
-    // route?: 'pool' | 'aggregator',
+    route?: 'pool' | 'aggregator',
     autoApprove?: boolean,
   }
 }
@@ -47,6 +47,7 @@ export default async function swapMarket({
   orionUnit,
   options,
 }: SwapMarketParams): Promise<Swap> {
+  if (options?.route) options?.logger?.('Warning! You specified route in options. Please use only if you know what you are doing.');
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
   if (assetOut === '') throw new Error('AssetOut can not be empty');
@@ -134,7 +135,11 @@ export default async function swapMarket({
 
   const percent = new BigNumber(slippagePercent).div(100);
 
-  if (swapInfo.isThroughPoolOptimal) {
+  const isThroughPoolOptimal = options?.route
+    ? options?.route === 'pool'
+    : swapInfo.isThroughPoolOptimal;
+
+  if (isThroughPoolOptimal) {
     options?.logger?.('Swap through pool');
     const pathAddresses = swapInfo.path.map((name) => {
       const assetAddress = assetToAddress?.[name];
@@ -206,17 +211,17 @@ export default async function swapMarket({
       sources: getAvailableSources('network_fee', ethers.constants.AddressZero, 'orion_pool'),
     });
 
-    if (value.gt(0)) {
-      balanceGuard.registerRequirement({
-        reason: 'Transaction value (extra amount)',
-        asset: {
-          name: nativeCryptocurrency,
-          address: ethers.constants.AddressZero,
-        },
-        amount: value.toString(),
-        sources: getAvailableSources('amount', ethers.constants.AddressZero, 'orion_pool'),
-      });
-    }
+    // if (value.gt(0)) {
+    //   balanceGuard.registerRequirement({
+    //     reason: 'Transaction value (extra amount)',
+    //     asset: {
+    //       name: nativeCryptocurrency,
+    //       address: ethers.constants.AddressZero,
+    //     },
+    //     amount: value.toString(),
+    //     sources: getAvailableSources('amount', ethers.constants.AddressZero, 'orion_pool'),
+    //   });
+    // }
 
     await balanceGuard.check(options?.autoApprove);
 
