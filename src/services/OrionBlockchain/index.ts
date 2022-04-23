@@ -9,7 +9,6 @@ import {
 import { OrionBlockchainSocketIO } from './ws';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
-import { SupportedChainId } from '../../types';
 import { utils } from '../..';
 
 interface IAdminAuthHeaders {
@@ -54,10 +53,7 @@ class OrionBlockchain {
 
   readonly ws: OrionBlockchainSocketIO;
 
-  constructor(
-    apiUrl: string,
-    chainId: SupportedChainId,
-  ) {
+  constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
     this.ws = new OrionBlockchainSocketIO(`https://${apiUrl}/`);
   }

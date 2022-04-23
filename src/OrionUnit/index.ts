@@ -36,7 +36,7 @@ export default class OrionUnit {
     this.env = env;
     this.apiUrl = apiUrl;
 
-    this.orionBlockchain = new OrionBlockchain(apiUrl, chainId);
+    this.orionBlockchain = new OrionBlockchain(apiUrl);
     this.orionAggregator = new OrionAggregator(apiUrl, chainId);
     this.priceFeed = new PriceFeed(apiUrl);
     this.exchange = new Exchange(this);
