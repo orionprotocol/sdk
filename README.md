@@ -100,6 +100,26 @@ orionUnit.exchange
   .then(console.log);
 ```
 
+#### Add liquidity
+
+```ts
+orionUnit.farmingManager.addLiquidity({
+  poolName: "ORN-USDT",
+  amountAsset: "ORN", // ORN or USDT for this pool
+  amount: 23.352345,
+  signer: wallet, // or signer when UI
+});
+```
+
+#### Remove all liquidity
+
+```ts
+orionUnit.farmingManager.removeAllLiquidity({
+  poolName: "ORN-USDT",
+  signer: wallet, // or signer when UI
+});
+```
+
 ## Low level methods
 
 ### Get historical price
