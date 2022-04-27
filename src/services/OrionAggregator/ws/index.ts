@@ -90,10 +90,12 @@ class OrionAggregatorWS {
 
   private onError?: (err: string) => void;
 
-  constructor(url: string, chainId: SupportedChainId, onError?: (err: string) => void) {
+  private readonly wsUrl: string;
+
+  constructor(wsUrl: string, chainId: SupportedChainId, onError?: (err: string) => void) {
+    this.wsUrl = wsUrl;
     this.chainId = chainId;
     this.onError = onError;
-    this.init(url);
   }
 
   sendRaw(data: string | ArrayBufferLike | Blob | ArrayBufferView) {
@@ -120,6 +122,7 @@ class OrionAggregatorWS {
     type: T,
     subscription: Subscription[T],
   ) {
+    if (!this.ws) this.init();
     this.send({
       T: type,
       ...('payload' in subscription) && {
@@ -150,11 +153,16 @@ class OrionAggregatorWS {
     }
   }
 
-  init(url: string) {
-    this.ws = new WebSocket(url);
-    this.ws.onclose = () => {
+  destroy() {
+    this.ws?.close(4000);
+    delete this.ws;
+  }
+
+  init() {
+    this.ws = new WebSocket(this.wsUrl);
+    this.ws.onclose = (e) => {
       console.log(`Orion Aggregator ${this.chainId} WS Connection closed`);
-      this.init(url);
+      if (e.code !== 4000) this.init();
     };
     this.ws.onopen = () => {
       console.log(`Orion Aggregator ${this.chainId} WS Connection established`);
