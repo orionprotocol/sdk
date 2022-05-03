@@ -1,5 +1,5 @@
 module.exports = {
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['.eslintrc.js', 'rollup.config.ts'],
   env: {
     browser: true,
     es2021: true,
