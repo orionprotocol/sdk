@@ -55,18 +55,15 @@ type SwapInfoSubscription = {
 
 type AddressUpdateSubscription = {
   payload: string,
-  callback: ({ fullOrders, orderUpdate, balances } : {
+  callback: ({ fullOrders, orderUpdate, lockedBalances } : {
     fullOrders?: z.infer<typeof fullOrderSchema>[],
     orderUpdate?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>,
-    balances?: Partial<
+    lockedBalances?: Partial<
       Record<
         string,
         [
           string,
           string,
-          string,
-          string,
-          string
         ]>
     >,
   }) => void,
@@ -284,7 +281,7 @@ class OrionAggregatorWS {
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
                 fullOrders: json.o,
-                balances: json.b,
+                lockedBalances: json.b,
               });
               break;
             case 'u': // update
@@ -292,7 +289,7 @@ class OrionAggregatorWS {
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
                 orderUpdate: json.o?.[0],
-                balances: json.b,
+                lockedBalances: json.b,
               });
               break;
             default:
