@@ -2,13 +2,14 @@
   "name": "@orionprotocol/sdk",
   "version": "0.3.1",
   "description": "Orion Protocol SDK",
-  "main": "./lib/index.js",
+  "browser": "./lib/index.umd.js",
+  "main": "./lib/index.cjs.js",
   "types": "./lib/index.d.ts",
-  "module": "./lib/index.mjs",
+  "module": "./lib/index.esm.js",
   "exports": {
     ".": {
-      "require": "./lib/index.js",
-      "import": "./lib/index.mjs",
+      "require": "./lib/index.cjs.js",
+      "import": "./lib/index.esm.js",
       "types": "./lib/index.d.ts"
     },
     "./package.json": "./package.json"
@@ -21,7 +22,7 @@
     "watch-js": "nodemon lib/esm/index.js",
     "prepare": "npm run build",
     "prebuild": "npm run typechain:generate-types",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build": "npm run clean && npm run build:esm",
     "build:esm": "rollup --config rollup.config.ts",
     "build:cjs": "tsc --p tsconfig.cjs.json",
     "rollup": "rollup --config rollup.config.ts",
@@ -49,7 +50,10 @@
     "url": "https://github.com/orionprotocol/sdk/issues"
   },
   "devDependencies": {
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-typescript": "^8.3.2",
     "@typechain/ethers-v5": "^10.0.0",
     "@types/csprng": "^0.1.2",
@@ -67,6 +71,8 @@
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "rollup": "^2.71.1",
+    "rollup-plugin-polyfill-node": "^0.9.0",
+    "rollup-plugin-terser": "^7.0.2",
     "ts-loader": "^9.2.8",
     "typechain": "^8.0.0",
     "typescript": "^4.6.3"
@@ -93,6 +99,6 @@
   "homepage": "https://github.com/orionprotocol/sdk#readme",
   "files": [
     "/lib",
-    "/index.d.ts"
+    "/src"
   ]
 }
