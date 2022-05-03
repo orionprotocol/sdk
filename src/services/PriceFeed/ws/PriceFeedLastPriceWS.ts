@@ -1,4 +1,4 @@
-import WebsocketHeartbeatJs from 'websocket-heartbeat-js';
+import WebSocket from 'isomorphic-ws';
 import { z } from 'zod';
 
 const schema = z.tuple([
@@ -7,18 +7,22 @@ const schema = z.tuple([
   z.number(), // price
 ]);
 export default class PriceFeedLastPriceWS {
-  private pairsWebSocket: WebsocketHeartbeatJs;
+  private pairsWebSocket: WebSocket;
 
   constructor(
     url: string,
     pair: string,
     updateData: (price: number) => void,
   ) {
-    this.pairsWebSocket = new WebsocketHeartbeatJs({ url: url + pair });
+    this.pairsWebSocket = new WebSocket(url + pair);
+
+    setInterval(() => {
+      this.pairsWebSocket.send('heartbeat');
+    }, 15000);
 
     this.pairsWebSocket.onmessage = (e) => {
       if (e.data === 'pong') return;
-      const json = JSON.parse(e.data);
+      const json: unknown = JSON.parse(e.data.toString());
       const [,, price] = schema.parse(json);
 
       updateData(price);
