@@ -6,9 +6,6 @@ const balancesSchema = z.record( // changed balances in format
   z.tuple([
     z.string(), // tradable balance
     z.string(), // reserved balance
-    z.string(), // contract balance
-    z.string(), // wallet balance
-    z.string(), // allowance
   ]),
 ).transform(makePartial);
 export default balancesSchema;
