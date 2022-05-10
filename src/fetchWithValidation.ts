@@ -1,5 +1,6 @@
 import { Schema, z } from 'zod';
-import fetch, { FetchError, RequestInit } from 'node-fetch';
+import fetch from 'isomorphic-unfetch';
+
 import {
   err, fromPromise, fromThrowable, ok,
 } from 'neverthrow';
@@ -32,16 +33,9 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
       ...(options ? options.headers : {}),
     },
   }), (e) => {
-    if (e instanceof FetchError) {
+    if (e instanceof Error) {
       return err({
         type: 'fetchError' as const,
-        url,
-        message: `${e.message} (${e.type})`,
-        error: e,
-      });
-    } if (e instanceof Error) {
-      return err({
-        type: 'unknownFetchError' as const,
         url,
         message: e.message,
         error: e,

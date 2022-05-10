@@ -1,5 +1,4 @@
 import { Schema, z } from 'zod';
-import { RequestInit } from 'node-fetch';
 import fetchWithValidation from './fetchWithValidation';
 
 // https://stackoverflow.com/a/64919133
