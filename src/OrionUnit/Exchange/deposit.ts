@@ -107,7 +107,7 @@ export default async function deposit({
     sources: ['wallet'],
   });
 
-  unsignedTx.chainId = parseInt(chainId, 16);
+  unsignedTx.chainId = parseInt(chainId, 10);
   unsignedTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
   unsignedTx.from = walletAddress;
 

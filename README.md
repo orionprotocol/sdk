@@ -21,7 +21,7 @@ import "dotenv/config";
 import { initOrionUnit } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const chain = process.env.CHAINID; // 0x38
+const chain = process.env.CHAINID; // "56"
 const env = process.env.ENV; // production
 const privateKey = process.env.PRIVATE_KEY; // 0x...
 
@@ -42,7 +42,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { BaseProvider } from "@metamask/providers";
 import { providers } from "ethers";
 
-const chain = "0x61"; // bsc-testnet
+const chain = "97"; // bsc-testnet
 const env = "testing";
 
 const startApp = async (provider: BaseProvider) => {

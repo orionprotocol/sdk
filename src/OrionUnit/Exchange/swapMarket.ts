@@ -175,7 +175,7 @@ export default async function swapMarket({
       type === 'exactSpend',
     );
 
-    unsignedSwapThroughOrionPoolTx.chainId = parseInt(chainId, 16);
+    unsignedSwapThroughOrionPoolTx.chainId = parseInt(chainId, 10);
     unsignedSwapThroughOrionPoolTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
 
     unsignedSwapThroughOrionPoolTx.from = walletAddress;

@@ -81,16 +81,16 @@ export type SwapInfoByAmountOut = SwapInfoBase & {
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
 
 export enum SupportedChainId {
-  MAINNET = '0x1',
-  ROPSTEN = '0x3',
-  FANTOM_OPERA = '0xfa',
+  MAINNET = '1',
+  ROPSTEN = '3',
+  FANTOM_OPERA = '250',
 
-  FANTOM_TESTNET = '0xfa2',
-  BSC = '0x38',
-  BSC_TESTNET = '0x61',
+  FANTOM_TESTNET = '4002',
+  BSC = '56',
+  BSC_TESTNET = '97',
 
   // For testing and debug purpose
-  BROKEN = '0x0',
+  BROKEN = '0',
 }
 
 const balanceTypes = ['exchange', 'wallet'] as const;
