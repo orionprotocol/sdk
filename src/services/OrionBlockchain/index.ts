@@ -82,6 +82,8 @@ class OrionBlockchain {
     this.getTargetAtomicSwapHistory = this.getTargetAtomicSwapHistory.bind(this);
     this.checkPoolInformation = this.checkPoolInformation.bind(this);
     this.checkIfHashUsed = this.checkIfHashUsed.bind(this);
+    this.getQueueLength = this.getQueueLength.bind(this);
+    this.getBlockNumber = this.getBlockNumber.bind(this);
   }
 
   get orionBlockchainWsUrl() {
@@ -188,6 +190,10 @@ class OrionBlockchain {
       `https://${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
       z.enum(['OK', 'FAIL']).nullable(),
     );
+  }
+
+  getBlockNumber() {
+    return fetchWithValidation(`https://${this.apiUrl}/api/blocknumber`, z.number().int());
   }
 
   getQueueLength() {
