@@ -11,6 +11,9 @@ import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
 import { SignedCancelOrderRequest, SignedOrder, SupportedChainId } from '../../types';
 import { pairConfigSchema } from './schemas';
+import {
+  aggregatedOrderbookSchema, exchangeOrderbookSchema,
+} from './schemas/aggregatedOrderbookSchema';
 
 class OrionAggregator {
   private readonly apiUrl: string;
@@ -32,6 +35,8 @@ class OrionAggregator {
     this.cancelOrder = this.cancelOrder.bind(this);
     this.checkWhitelisted = this.checkWhitelisted.bind(this);
     this.getLockedBalance = this.getLockedBalance.bind(this);
+    this.getAggregatedOrderbook = this.getAggregatedOrderbook.bind(this);
+    this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
   }
 
   get aggregatorWSUrl() { return `wss://${this.apiUrl}/v1`; }
@@ -44,6 +49,33 @@ class OrionAggregator {
     return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/pairs/list`,
       z.array(z.string()),
+    );
+  }
+
+  getAggregatedOrderbook(pair: string, depth = 20) {
+    const url = new URL(`${this.aggregatorUrl}/api/v1/orderbook`);
+    url.searchParams.append('pair', pair);
+    url.searchParams.append('depth', depth.toString());
+    return fetchWithValidation(
+      url.toString(),
+      aggregatedOrderbookSchema,
+      undefined,
+      errorSchema,
+    );
+  }
+
+  getExchangeOrderbook(pair: string, exchange: string, depth = 20, filterByBrokerBalances: boolean | null = null) {
+    const url = new URL(`${this.aggregatorUrl}/api/v1/orderbook/${exchange}/${pair}`);
+    url.searchParams.append('pair', pair);
+    url.searchParams.append('depth', depth.toString());
+    if (filterByBrokerBalances !== null) {
+      url.searchParams.append('filterByBrokerBalances', filterByBrokerBalances.toString());
+    }
+    return fetchWithValidation(
+      url.toString(),
+      exchangeOrderbookSchema,
+      undefined,
+      errorSchema,
     );
   }
 
