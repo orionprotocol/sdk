@@ -188,7 +188,7 @@ const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 
-// You can yse simpleFetch or "default" (vebose) fetch
+// You can use simpleFetch or "default" (verbose) fetch
 // Simple fetch
 
 const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
@@ -234,7 +234,7 @@ if (placeOrderFetchResult.isErr()) {
     // see src/fetchWithValidation.ts for details
   }
 } else {
-  // Succes result
+  // Success result
   const { orderId } = placeOrderFetchResult.value;
 }
 ```
