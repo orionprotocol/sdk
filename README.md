@@ -211,10 +211,9 @@ const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
 
 // Default ("verbose") fetch
 
-const placeOrderFetchResult = await simpleFetch(
-  orionUnit.orionAggregator.placeOrder
-)();
+const placeOrderFetchResult = await orionUnit.orionAggregator.placeOrder(
 // Same params as above
+);
 
 if (placeOrderFetchResult.isErr()) {
   // You can handle fetching errors here
