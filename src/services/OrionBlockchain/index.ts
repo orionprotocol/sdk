@@ -190,6 +190,10 @@ class OrionBlockchain {
     );
   }
 
+  getQueueLength() {
+    return fetchWithValidation(`https://${this.apiUrl}/api/queueLength`, z.number().int());
+  }
+
   getIDOInfo() {
     return fetchWithValidation(`https://${this.apiUrl}/api/solarflare`, IDOSchema);
   }
