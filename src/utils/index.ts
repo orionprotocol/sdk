@@ -10,6 +10,6 @@ export { default as normalizeNumber } from './normalizeNumber';
 export { default as getSwapPair } from './getSwapPair';
 export { default as getSwapSide } from './getSwapSide';
 
-export { default as HttpError } from './httpError';
+// export { default as HttpError } from './httpError';
 
 export * from './typeHelpers';

@@ -10,6 +10,7 @@ import {
 } from '../../constants';
 import { normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
+import simpleFetch from '../../simpleFetch';
 
 export type DepositParams = {
   asset: string,
@@ -38,12 +39,12 @@ export default async function deposit({
   const {
     exchangeContractAddress,
     assetToAddress,
-  } = await orionBlockchain.getInfo();
+  } = await simpleFetch(orionBlockchain.getInfo)();
 
   const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
   const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
-  const gasPriceWei = await orionBlockchain.getGasPriceWei();
+  const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
 
   const assetAddress = assetToAddress[asset];
   if (!assetAddress) throw new Error(`Asset '${asset}' not found`);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
@@ -8,6 +9,7 @@ import OrionUnit from '..';
 import { contracts, crypt, utils } from '../..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
+import simpleFetch from '../../simpleFetch';
 
 export type SwapMarketParams = {
   type: 'exactSpend' | 'exactReceive',
@@ -74,13 +76,13 @@ export default async function swapMarket({
     exchangeContractAddress,
     matcherAddress,
     assetToAddress,
-  } = await orionBlockchain.getInfo();
-   const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+  } = await simpleFetch(orionBlockchain.getInfo)();
+  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
   const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
-  const feeAssets = await orionBlockchain.getTokensFee();
-  const pricesInOrn = await orionBlockchain.getPrices();
-  const gasPriceWei = await orionBlockchain.getGasPriceWei();
+  const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();
+  const pricesInOrn = await simpleFetch(orionBlockchain.getPrices)();
+  const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
 
   const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
 
@@ -111,7 +113,7 @@ export default async function swapMarket({
     signer,
   );
 
-  const swapInfo = await orionAggregator.getSwapInfo(type, assetIn, assetOut, amount.toString());
+  const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(type, assetIn, assetOut, amount.toString());
 
   if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
     throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
@@ -240,7 +242,7 @@ export default async function swapMarket({
       .toString();
 
   const [baseAssetName, quoteAssetName] = swapInfo.orderInfo.assetPair.split('-');
-  const pairConfig = await orionAggregator.getPairConfig(`${baseAssetName}-${quoteAssetName}`);
+  const pairConfig = await simpleFetch(orionAggregator.getPairConfig)(`${baseAssetName}-${quoteAssetName}`);
   if (!pairConfig) throw new Error(`Pair config ${baseAssetName}-${quoteAssetName} not found`);
 
   const baseAssetAddress = assetToAddress[baseAssetName];
@@ -336,7 +338,7 @@ export default async function swapMarket({
   const orderIsOk = await exchangeContract.validateOrder(signedOrder);
   if (!orderIsOk) throw new Error('Order is not valid');
 
-  const { orderId } = await orionAggregator.placeOrder(signedOrder, false);
+  const { orderId } = await simpleFetch(orionAggregator.placeOrder)(signedOrder, false);
   return {
     through: 'aggregator',
     id: orderId,

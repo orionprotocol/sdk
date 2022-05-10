@@ -30,10 +30,13 @@ export default async function getBalance(
   }
   const assetContractBalance = await exchangeContract.getBalance(assetAddress, walletAddress);
   const denormalizedAssetInContractBalance = utils.denormalizeNumber(assetContractBalance, INTERNAL_ORION_PRECISION);
-  const denormalizedAssetLockedBalance = await orionAggregator.getLockedBalance(walletAddress, asset);
+  const denormalizedAssetLockedBalanceResult = await orionAggregator.getLockedBalance(walletAddress, asset);
+  if (denormalizedAssetLockedBalanceResult.isErr()) {
+    throw new Error(denormalizedAssetLockedBalanceResult.error.message);
+  }
 
   return {
-    exchange: denormalizedAssetInContractBalance.minus(denormalizedAssetLockedBalance[asset] ?? 0),
+    exchange: denormalizedAssetInContractBalance.minus(denormalizedAssetLockedBalanceResult.value[asset] ?? 0),
     wallet: denormalizedAssetInWalletBalance,
   };
 }

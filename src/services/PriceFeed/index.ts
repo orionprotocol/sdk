@@ -1,4 +1,4 @@
-import { fetchJsonWithValidation } from '../../fetchWithValidation';
+import fetchWithValidation from '../../fetchWithValidation';
 import candlesSchema from './schemas/candlesSchema';
 
 class PriceFeed {
@@ -6,6 +6,8 @@ class PriceFeed {
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
+
+    this.getCandles = this.getCandles.bind(this);
   }
 
   getCandles(
@@ -22,7 +24,7 @@ class PriceFeed {
     url.searchParams.append('interval', interval);
     url.searchParams.append('exchange', exchange);
 
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       url.toString(),
       candlesSchema,
     );

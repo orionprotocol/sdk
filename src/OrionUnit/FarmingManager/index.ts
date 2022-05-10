@@ -4,6 +4,7 @@ import OrionUnit from '..';
 import { contracts } from '../..';
 import BalanceGuard from '../../BalanceGuard';
 import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants';
+import simpleFetch from '../../simpleFetch';
 import { denormalizeNumber, normalizeNumber } from '../../utils';
 import getBalances from '../../utils/getBalances';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
@@ -46,7 +47,7 @@ export default class FarmingManager {
       exchangeContractAddress,
       assetToAddress,
       assetToDecimals,
-    } = await this.orionUnit.orionBlockchain.getInfo();
+    } = await simpleFetch(this.orionUnit.orionBlockchain.getInfo)();
 
     const walletAddress = await signer.getAddress();
 
@@ -85,7 +86,7 @@ export default class FarmingManager {
       signer,
     );
 
-    const poolsConfig = await this.orionUnit.orionBlockchain.getPoolsConfig();
+    const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];
     if (!pool) throw new Error(`Pool ${poolName} not found`);
 
@@ -223,7 +224,7 @@ export default class FarmingManager {
       assetToAddress,
       assetToDecimals,
       exchangeContractAddress,
-    } = await this.orionUnit.orionBlockchain.getInfo();
+    } = await simpleFetch(this.orionUnit.orionBlockchain.getInfo)();
 
     const assetAAddress = assetToAddress[assetA];
     if (!assetAAddress) throw new Error(`Asset '${assetA}' not found`);
@@ -235,7 +236,7 @@ export default class FarmingManager {
     const assetBDecimals = assetToDecimals[assetB];
     if (!assetBDecimals) throw new Error(`Decimals for asset '${assetB}' not found`);
 
-    const poolsConfig = await this.orionUnit.orionBlockchain.getPoolsConfig();
+    const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];
     if (!pool) throw new Error(`Pool ${poolName} not found`);
 

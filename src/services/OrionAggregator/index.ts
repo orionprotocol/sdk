@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { fetchJsonWithValidation } from '../../fetchWithValidation';
+import fetchWithValidation from '../../fetchWithValidation';
 import swapInfoSchema from './schemas/swapInfoSchema';
 import exchangeInfoSchema from './schemas/exchangeInfoSchema';
 import cancelOrderSchema from './schemas/cancelOrderSchema';
@@ -8,7 +8,7 @@ import orderBenefitsSchema from './schemas/orderBenefitsSchema';
 import errorSchema from './errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
-import atomicSwapHistorySchema from './schemas/atomicSwapHistorySchema';
+import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
 import { SignedCancelOrderRequest, SignedOrder, SupportedChainId } from '../../types';
 import { pairConfigSchema } from './schemas';
 
@@ -20,6 +20,18 @@ class OrionAggregator {
   constructor(apiUrl: string, chainId: SupportedChainId) {
     this.apiUrl = apiUrl;
     this.ws = new OrionAggregatorWS(this.aggregatorWSUrl, chainId);
+
+    this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
+    this.getPairConfig = this.getPairConfig.bind(this);
+    this.getPairConfigs = this.getPairConfigs.bind(this);
+    this.getPairsList = this.getPairsList.bind(this);
+    this.getSwapInfo = this.getSwapInfo.bind(this);
+    this.getTradeProfits = this.getTradeProfits.bind(this);
+    this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
+    this.placeOrder = this.placeOrder.bind(this);
+    this.cancelOrder = this.cancelOrder.bind(this);
+    this.checkWhitelisted = this.checkWhitelisted.bind(this);
+    this.getLockedBalance = this.getLockedBalance.bind(this);
   }
 
   get aggregatorWSUrl() { return `wss://${this.apiUrl}/v1`; }
@@ -29,14 +41,14 @@ class OrionAggregator {
   }
 
   getPairsList() {
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/pairs/list`,
       z.array(z.string()),
     );
   }
 
   getPairConfigs() {
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo`,
       exchangeInfoSchema,
       undefined,
@@ -45,7 +57,7 @@ class OrionAggregator {
   }
 
   getPairConfig(assetPair: string) {
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
       pairConfigSchema,
       undefined,
@@ -54,7 +66,7 @@ class OrionAggregator {
   }
 
   checkWhitelisted(address: string) {
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/whitelist/check?address=${address}`,
       z.boolean(),
       undefined,
@@ -73,7 +85,7 @@ class OrionAggregator {
       ...partnerId && { 'X-Partner-Id': partnerId },
     };
 
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/order/${isCreateInternalOrder ? 'internal' : ''}`,
       z.object({
         orderId: z.string(),
@@ -95,7 +107,7 @@ class OrionAggregator {
   }
 
   cancelOrder(signedCancelOrderRequest: SignedCancelOrderRequest) {
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/order`,
       cancelOrderSchema,
       {
@@ -128,7 +140,7 @@ class OrionAggregator {
       url.searchParams.append('amountOut', amount);
     }
 
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       url.toString(),
       swapInfoSchema,
       undefined,
@@ -139,7 +151,7 @@ class OrionAggregator {
   getLockedBalance(address: string, currency: string) {
     const url = new URL(`${this.aggregatorUrl}/api/v1/address/balance/reserved/${currency}`);
     url.searchParams.append('address', address);
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       url.toString(),
       z.object({
         [currency]: z.number(),
@@ -159,7 +171,7 @@ class OrionAggregator {
     url.searchParams.append('amount', amount.toString());
     url.searchParams.append('side', isBuy ? 'buy' : 'sell');
 
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       url.toString(),
       orderBenefitsSchema,
       undefined,
@@ -177,7 +189,7 @@ class OrionAggregator {
     secretHash: string,
     sourceNetworkCode: string,
   ) {
-    return fetchJsonWithValidation(
+    return fetchWithValidation(
       `${this.aggregatorUrl}/api/v1/atomic-swap`,
       placeAtomicSwapSchema,
       {
@@ -204,7 +216,7 @@ class OrionAggregator {
     const url = new URL(`${this.aggregatorUrl}/api/v1/atomic-swap/history/all`);
     url.searchParams.append('sender', sender);
     url.searchParams.append('limit', limit.toString());
-    return fetchJsonWithValidation(url.toString(), atomicSwapHistorySchema);
+    return fetchWithValidation(url.toString(), atomicSwapHistorySchema);
   }
 }
 export * as schemas from './schemas';

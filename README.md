@@ -46,7 +46,7 @@ const chain = "0x61"; // bsc-testnet
 const env = "testing";
 
 const startApp = async (provider: BaseProvider) => {
-  const web3provider = new providers.Web3Provider(provider);
+  const web3Provider = new providers.Web3Provider(provider);
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
   const orionUnit = initOrionUnit(chain, env); // ready to go
@@ -128,7 +128,9 @@ orionUnit.farmingManager.removeAllLiquidity({
 ### Get historical price
 
 ```ts
-const candles = await orionUnit.priceFeed.getCandles(
+import { simpleFetch } from "@orionprotocol/sdk";
+
+const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
   "ORN-USDT",
   1650287678, // interval start
   1650374078, // interval end
@@ -163,13 +165,16 @@ const orionVoting = contracts.OrionVoting__factory.connect(
 ### Get tradable pairs
 
 ```ts
-const pairsList = await orionUnit.orionAggregator.getPairsList();
+import { simpleFetch } from "@orionprotocol/sdk";
+const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
 ```
 
 ### Get swap info
 
 ```ts
-const swapInfo = await orionUnit.orionAggregator.getSwapInfo(
+import { simpleFetch } from '@orionprotocol/sdk';
+
+const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
   // Use 'exactSpend' when 'amount' is how much you want spend. Use 'exactReceive' otherwise
   type: 'exactSpend',
   assetIn: 'ORN',
@@ -181,7 +186,12 @@ const swapInfo = await orionUnit.orionAggregator.getSwapInfo(
 ### Place order in Orion Aggregator
 
 ```ts
-const { orderId } = await orionUnit.orionAggregator.placeOrder(
+import { simpleFetch } from "@orionprotocol/sdk";
+
+// You can yse simpleFetch or "default" (vebose) fetch
+// Simple fetch
+
+const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
   {
     senderAddress: "0x61eed69c0d112c690fd6f44bb621357b89fbe67f",
     matcherAddress: "0xfbcad2c3a90fbd94c335fbdf8e22573456da7f68",
@@ -198,6 +208,35 @@ const { orderId } = await orionUnit.orionAggregator.placeOrder(
   },
   false // Place in internal orderbook
 );
+
+// Default ("verbose") fetch
+
+const placeOrderFetchResult = await simpleFetch(
+  orionUnit.orionAggregator.placeOrder
+)();
+// Same params as above
+
+if (placeOrderFetchResult.isErr()) {
+  // You can handle fetching errors here
+  // You can access error text, statuses
+  const { error } = placeOrderFetchResult;
+  switch (error.type) {
+    case "fetchError": // (no network, connection refused, connection break)
+      console.error(error.message);
+      break;
+    case "unknownFetchError": // Instance of Error
+      console.error(`URL: ${error.url}, Error: ${error.message}`);
+      break;
+    case "unknownFetchThrow":
+      console.error("Something wrong happened furing fetching", error.error);
+      break;
+    // ... and 8 errors types more
+    // see src/fetchWithValidation.ts for details
+  }
+} else {
+  // Succes result
+  const { orderId } = placeOrderFetchResult.value;
+}
 ```
 
 ### Orion Aggregator WebSocket
