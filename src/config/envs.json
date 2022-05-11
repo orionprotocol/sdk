@@ -35,6 +35,9 @@
             },
             "250": {
                 "api": "staging-ftm.orionprotocol.io"
+            },
+            "137": {
+                "api": "staging-polygon.orionprotocol.io"
             }
         }
     },
