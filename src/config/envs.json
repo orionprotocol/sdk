@@ -7,6 +7,9 @@
             },
             "56": {
                 "api": "trade-exp.orionprotocol.io"
+            },
+            "250": {
+                "api": "trade-ftm.orionprotocol.io"
             }
         }
     },
