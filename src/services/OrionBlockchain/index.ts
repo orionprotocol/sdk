@@ -103,7 +103,7 @@ class OrionBlockchain {
 
   private getQueueLength = () => fetchWithValidation(
     `https://${this.apiUrl}/api/queueLength`,
-    z.number().int()
+    z.number().int(),
   );
 
   get internal() {
