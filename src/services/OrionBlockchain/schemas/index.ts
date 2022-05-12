@@ -7,3 +7,4 @@ export { default as IDOSchema } from './IDOSchema';
 export { default as infoSchema } from './infoSchema';
 export { default as poolsConfigSchema } from './poolsConfigSchema';
 export { default as poolsInfoSchema } from './poolsInfoSchema';
+export { default as atomicSummarySchema } from './atomicSummarySchema';

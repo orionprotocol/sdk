@@ -5,6 +5,7 @@ import {
   IDOSchema, atomicHistorySchema,
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
   addPoolSchema, adminPoolsListSchema,
+  atomicSummarySchema,
 } from './schemas';
 import { OrionBlockchainSocketIO } from './ws';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
@@ -88,6 +89,29 @@ class OrionBlockchain {
 
   get orionBlockchainWsUrl() {
     return `https://${this.apiUrl}/`;
+  }
+
+  private getSummaryRedeem = (brokerAddress: string) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`,
+    atomicSummarySchema,
+  );
+
+  private getSummaryClaim = (brokerAddress: string) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/summary-claim/${brokerAddress}`,
+    atomicSummarySchema,
+  );
+
+  private getQueueLength = () => fetchWithValidation(
+    `https://${this.apiUrl}/api/queueLength`,
+    z.number().int()
+  );
+
+  get internal() {
+    return {
+      getSummaryRedeem: this.getSummaryRedeem.bind(this),
+      getSummaryClaim: this.getSummaryClaim.bind(this),
+      getQueueLength: this.getQueueLength.bind(this),
+    };
   }
 
   getAuthToken() {
@@ -194,10 +218,6 @@ class OrionBlockchain {
 
   getBlockNumber() {
     return fetchWithValidation(`https://${this.apiUrl}/api/blocknumber`, z.number().int());
-  }
-
-  getQueueLength() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/queueLength`, z.number().int());
   }
 
   getIDOInfo() {
