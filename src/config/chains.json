@@ -57,7 +57,7 @@
         "chainId": "137",
         "label": "Polygon Mainnet",
         "shortName": "Polygon",
-        "code": "poly",
+        "code": "polygon",
         "baseCurrencyName": "MATIC",
         "rpc": "https://polygon-rpc.com/",
         "explorer": "https://polygonscan.com/"
@@ -66,7 +66,7 @@
         "chainId": "80001",
         "label": "Polygon Mumbai",
         "shortName": "Polygon Mumbai",
-        "code": "poly",
+        "code": "polygon",
         "baseCurrencyName": "MATIC",
         "rpc": "https://rpc-mumbai.matic.today",
         "explorer": "https://mumbai.polygonscan.com/"
