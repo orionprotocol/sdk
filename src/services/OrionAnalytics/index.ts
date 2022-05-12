@@ -10,10 +10,8 @@ export default class OrionAnalytics {
     this.getOverview = this.getOverview.bind(this);
   }
 
-  getOverview() {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/stats/overview`,
-      overviewSchema,
-    );
-  }
+  getOverview = () => fetchWithValidation(
+    `https://${this.apiUrl}/api/stats/overview`,
+    overviewSchema,
+  );
 }

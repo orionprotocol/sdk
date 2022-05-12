@@ -10,13 +10,13 @@ class PriceFeed {
     this.getCandles = this.getCandles.bind(this);
   }
 
-  getCandles(
+  getCandles = (
     symbol: string,
     timeStart: number,
     timeEnd: number,
     interval: '5m' | '30m' | '1h' | '1d',
     exchange: string,
-  ) {
+  ) => {
     const url = new URL(`https://${this.apiUrl}/candles/candles`);
     url.searchParams.append('symbol', symbol);
     url.searchParams.append('timeStart', timeStart.toString());
@@ -28,7 +28,7 @@ class PriceFeed {
       url.toString(),
       candlesSchema,
     );
-  }
+  };
 
   get candlesUrl() { return `https://${this.apiUrl}/candles/candles`; }
 

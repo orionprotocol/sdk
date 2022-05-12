@@ -45,14 +45,12 @@ class OrionAggregator {
     return `https://${this.apiUrl}/backend`;
   }
 
-  getPairsList() {
-    return fetchWithValidation(
-      `${this.aggregatorUrl}/api/v1/pairs/list`,
-      z.array(z.string()),
-    );
-  }
+  getPairsList = () => fetchWithValidation(
+    `${this.aggregatorUrl}/api/v1/pairs/list`,
+    z.array(z.string()),
+  );
 
-  getAggregatedOrderbook(pair: string, depth = 20) {
+  getAggregatedOrderbook = (pair: string, depth = 20) => {
     const url = new URL(`${this.aggregatorUrl}/api/v1/orderbook`);
     url.searchParams.append('pair', pair);
     url.searchParams.append('depth', depth.toString());
@@ -62,9 +60,14 @@ class OrionAggregator {
       undefined,
       errorSchema,
     );
-  }
+  };
 
-  getExchangeOrderbook(pair: string, exchange: string, depth = 20, filterByBrokerBalances: boolean | null = null) {
+  getExchangeOrderbook = (
+    pair: string,
+    exchange: string,
+    depth = 20,
+    filterByBrokerBalances: boolean | null = null,
+  ) => {
     const url = new URL(`${this.aggregatorUrl}/api/v1/orderbook/${exchange}/${pair}`);
     url.searchParams.append('pair', pair);
     url.searchParams.append('depth', depth.toString());
@@ -77,40 +80,34 @@ class OrionAggregator {
       undefined,
       errorSchema,
     );
-  }
+  };
 
-  getPairConfigs() {
-    return fetchWithValidation(
-      `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo`,
-      exchangeInfoSchema,
-      undefined,
-      errorSchema,
-    );
-  }
+  getPairConfigs = () => fetchWithValidation(
+    `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo`,
+    exchangeInfoSchema,
+    undefined,
+    errorSchema,
+  );
 
-  getPairConfig(assetPair: string) {
-    return fetchWithValidation(
-      `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
-      pairConfigSchema,
-      undefined,
-      errorSchema,
-    );
-  }
+  getPairConfig = (assetPair: string) => fetchWithValidation(
+    `${this.aggregatorUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
+    pairConfigSchema,
+    undefined,
+    errorSchema,
+  );
 
-  checkWhitelisted(address: string) {
-    return fetchWithValidation(
-      `${this.aggregatorUrl}/api/v1/whitelist/check?address=${address}`,
-      z.boolean(),
-      undefined,
-      errorSchema,
-    );
-  }
+  checkWhitelisted = (address: string) => fetchWithValidation(
+    `${this.aggregatorUrl}/api/v1/whitelist/check?address=${address}`,
+    z.boolean(),
+    undefined,
+    errorSchema,
+  );
 
-  placeOrder(
+  placeOrder = (
     signedOrder: SignedOrder,
     isCreateInternalOrder: boolean,
     partnerId?: string,
-  ) {
+  ) => {
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -136,33 +133,31 @@ class OrionAggregator {
       },
       errorSchema,
     );
-  }
+  };
 
-  cancelOrder(signedCancelOrderRequest: SignedCancelOrderRequest) {
-    return fetchWithValidation(
-      `${this.aggregatorUrl}/api/v1/order`,
-      cancelOrderSchema,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          ...signedCancelOrderRequest,
-          sender: signedCancelOrderRequest.senderAddress,
-        }),
+  cancelOrder = (signedCancelOrderRequest: SignedCancelOrderRequest) => fetchWithValidation(
+    `${this.aggregatorUrl}/api/v1/order`,
+    cancelOrderSchema,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-      errorSchema,
-    );
-  }
+      body: JSON.stringify({
+        ...signedCancelOrderRequest,
+        sender: signedCancelOrderRequest.senderAddress,
+      }),
+    },
+    errorSchema,
+  );
 
-  getSwapInfo(
+  getSwapInfo = (
     type: 'exactSpend' | 'exactReceive',
     assetIn: string,
     assetOut: string,
     amount: string,
-  ) {
+  ) => {
     const url = new URL(`${this.aggregatorUrl}/api/v1/swap`);
     url.searchParams.append('assetIn', assetIn);
     url.searchParams.append('assetOut', assetOut);
@@ -178,9 +173,9 @@ class OrionAggregator {
       undefined,
       errorSchema,
     );
-  }
+  };
 
-  getLockedBalance(address: string, currency: string) {
+  getLockedBalance = (address: string, currency: string) => {
     const url = new URL(`${this.aggregatorUrl}/api/v1/address/balance/reserved/${currency}`);
     url.searchParams.append('address', address);
     return fetchWithValidation(
@@ -191,13 +186,13 @@ class OrionAggregator {
       undefined,
       errorSchema,
     );
-  }
+  };
 
-  getTradeProfits(
+  getTradeProfits = (
     symbol: string,
     amount: BigNumber,
     isBuy: boolean,
-  ) {
+  ) => {
     const url = new URL(`${this.aggregatorUrl}/api/v1/orderBenefits`);
     url.searchParams.append('symbol', symbol);
     url.searchParams.append('amount', amount.toString());
@@ -209,7 +204,7 @@ class OrionAggregator {
       undefined,
       errorSchema,
     );
-  }
+  };
 
   /**
    * Placing atomic swap. Placement must take place on the target chain.
@@ -217,39 +212,37 @@ class OrionAggregator {
    * @param sourceNetworkCode uppercase, e.g. BSC, ETH
    * @returns Fetch promise
    */
-  placeAtomicSwap(
+  placeAtomicSwap = (
     secretHash: string,
     sourceNetworkCode: string,
-  ) {
-    return fetchWithValidation(
-      `${this.aggregatorUrl}/api/v1/atomic-swap`,
-      placeAtomicSwapSchema,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          secretHash,
-          sourceNetworkCode,
-        }),
+  ) => fetchWithValidation(
+    `${this.aggregatorUrl}/api/v1/atomic-swap`,
+    placeAtomicSwapSchema,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-      errorSchema,
-    );
-  }
+      method: 'POST',
+      body: JSON.stringify({
+        secretHash,
+        sourceNetworkCode,
+      }),
+    },
+    errorSchema,
+  );
 
   /**
    * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Orion Aggregator
    * @param sender Sender address
    * @returns Fetch promise
    */
-  getHistoryAtomicSwaps(sender: string, limit = 1000) {
+  getHistoryAtomicSwaps = (sender: string, limit = 1000) => {
     const url = new URL(`${this.aggregatorUrl}/api/v1/atomic-swap/history/all`);
     url.searchParams.append('sender', sender);
     url.searchParams.append('limit', limit.toString());
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema);
-  }
+  };
 }
 export * as schemas from './schemas';
 export * as ws from './ws';

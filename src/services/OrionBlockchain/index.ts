@@ -114,183 +114,145 @@ class OrionBlockchain {
     };
   }
 
-  getAuthToken() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/auth/token`, z.object({ token: z.string() }));
-  }
+  getAuthToken = () => fetchWithValidation(`https://${this.apiUrl}/api/auth/token`, z.object({ token: z.string() }));
 
-  getCirculatingSupply() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/circulating-supply`, z.number());
-  }
+  getCirculatingSupply = () => fetchWithValidation(`https://${this.apiUrl}/api/circulating-supply`, z.number());
 
-  getInfo() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/info`, infoSchema);
-  }
+  getInfo = () => fetchWithValidation(`https://${this.apiUrl}/api/info`, infoSchema);
 
-  getPoolsConfig() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/pools/config`, poolsConfigSchema);
-  }
+  getPoolsConfig = () => fetchWithValidation(`https://${this.apiUrl}/api/pools/config`, poolsConfigSchema);
 
-  getPoolsInfo() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/pools/info`, poolsInfoSchema);
-  }
+  getPoolsInfo = () => fetchWithValidation(`https://${this.apiUrl}/api/pools/info`, poolsInfoSchema);
 
-  getHistory(address: string) {
-    return fetchWithValidation(`https://${this.apiUrl}/api/history/${address}`, historySchema);
-  }
+  getHistory = (address: string) => fetchWithValidation(`https://${this.apiUrl}/api/history/${address}`, historySchema);
 
-  getPrices() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/prices`, z.record(z.string()).transform(makePartial));
-  }
+  getPrices = () => fetchWithValidation(`https://${this.apiUrl}/api/prices`, z.record(z.string()).transform(makePartial));
 
-  getTokensFee() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/tokensFee`, z.record(z.string()).transform(makePartial));
-  }
+  getTokensFee = () => fetchWithValidation(`https://${this.apiUrl}/api/tokensFee`, z.record(z.string()).transform(makePartial));
 
-  getGasPriceWei() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/gasPrice`, z.string());
-  }
+  getGasPriceWei = () => fetchWithValidation(`https://${this.apiUrl}/api/gasPrice`, z.string());
 
-  checkFreeRedeemAvailable(walletAddress: string) {
-    return fetchWithValidation(`https://${this.apiUrl}/api/atomic/has-free-redeem/${walletAddress}`, z.boolean());
-  }
+  checkFreeRedeemAvailable = (walletAddress: string) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/has-free-redeem/${walletAddress}`,
+    z.boolean(),
+  );
 
-  redeemAtomicSwap(
+  redeemAtomicSwap = (
     redeemOrder: z.infer<typeof redeemOrderSchema>,
     secret: string,
     sourceNetwork: string,
-  ) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/atomic/matcher-redeem`,
-      z.string(),
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          order: redeemOrder,
-          secret,
-          sourceNetwork,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+  ) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/matcher-redeem`,
+    z.string(),
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        order: redeemOrder,
+        secret,
+        sourceNetwork,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
-  }
+    },
+  );
 
-  redeem2AtomicSwaps(
+  redeem2AtomicSwaps = (
     redeemOrder1: z.infer<typeof redeemOrderSchema>,
     secret1: string,
     redeemOrder2: z.infer<typeof redeemOrderSchema>,
     secret2: string,
     sourceNetwork: string,
-  ) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
-      z.string(),
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          order1: redeemOrder1,
-          secret1,
-          order2: redeemOrder2,
-          secret2,
-          sourceNetwork,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+  ) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
+    z.string(),
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        order1: redeemOrder1,
+        secret1,
+        order2: redeemOrder2,
+        secret2,
+        sourceNetwork,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
-  }
+    },
+  );
 
-  checkRedeem(secretHash: string) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`,
-      z.enum(['OK', 'FAIL']).nullable(),
-    );
-  }
+  checkRedeem = (secretHash: string) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`,
+    z.enum(['OK', 'FAIL']).nullable(),
+  );
 
-  checkRedeem2Atomics(firstSecretHash: string, secondSecretHash: string) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
-      z.enum(['OK', 'FAIL']).nullable(),
-    );
-  }
+  checkRedeem2Atomics = (firstSecretHash: string, secondSecretHash: string) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
+    z.enum(['OK', 'FAIL']).nullable(),
+  );
 
-  getBlockNumber() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/blocknumber`, z.number().int());
-  }
+  getBlockNumber = () => fetchWithValidation(`https://${this.apiUrl}/api/blocknumber`, z.number().int());
 
-  getIDOInfo() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/solarflare`, IDOSchema);
-  }
+  getIDOInfo = () => fetchWithValidation(`https://${this.apiUrl}/api/solarflare`, IDOSchema);
 
-  checkAuth(headers: IAdminAuthHeaders) {
-    return fetchWithValidation(`https://${this.apiUrl}/api/auth/check`, z.object({
-      auth: z.boolean(),
-    }), { headers });
-  }
+  checkAuth = (headers: IAdminAuthHeaders) => fetchWithValidation(`https://${this.apiUrl}/api/auth/check`, z.object({
+    auth: z.boolean(),
+  }), { headers });
 
-  getPoolsList(headers: IAdminAuthHeaders) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/pools/list`,
-      adminPoolsListSchema,
-      { headers },
-    );
-  }
+  getPoolsList = (headers: IAdminAuthHeaders) => fetchWithValidation(
+    `https://${this.apiUrl}/api/pools/list`,
+    adminPoolsListSchema,
+    { headers },
+  );
 
-  editPool(address: string, data: IEditPool, headers: IAdminAuthHeaders) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/pools/edit/${address}`,
-      pairStatusSchema,
-      {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
+  editPool = (address: string, data: IEditPool, headers: IAdminAuthHeaders) => fetchWithValidation(
+    `https://${this.apiUrl}/api/pools/edit/${address}`,
+    pairStatusSchema,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
       },
-    );
-  }
+    },
+  );
 
-  addPool(data: z.infer<typeof addPoolSchema>) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/pools/add`,
-      z.number(),
-      {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+  addPool = (data: z.infer<typeof addPoolSchema>) => fetchWithValidation(
+    `https://${this.apiUrl}/api/pools/add`,
+    z.number(),
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-      z.string(),
-    );
-  }
+    },
+    z.string(),
+  );
 
-  checkPoolInformation(poolAddress: string) {
-    return fetchWithValidation(`https://${this.apiUrl}/api/pools/check/${poolAddress}`, pairStatusSchema);
-  }
+  checkPoolInformation = (poolAddress: string) => fetchWithValidation(
+    `https://${this.apiUrl}/api/pools/check/${poolAddress}`,
+    pairStatusSchema,
+  );
 
-  getAtomicSwapAssets() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/atomic/swap-assets`, z.array(z.string()));
-  }
+  getAtomicSwapAssets = () => fetchWithValidation(`https://${this.apiUrl}/api/atomic/swap-assets`, z.array(z.string()));
 
   /**
    * Sender is user address in source Orion Blockchain instance \
    * Receiver is user address in target Orion Blockchain instance
    */
-  getAtomicSwapHistory(query: AtomicSwapHistorySourceQuery | AtomicSwapHistoryTargetQuery) {
+  getAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery | AtomicSwapHistoryTargetQuery) => {
     const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
       .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
 
     return fetchWithValidation(url.toString(), atomicHistorySchema);
-  }
+  };
 
-  getSourceAtomicSwapHistory(query: AtomicSwapHistorySourceQuery) {
+  getSourceAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery) => {
     const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
@@ -299,9 +261,9 @@ class OrionBlockchain {
     if (!query.type) url.searchParams.append('type', 'source');
 
     return fetchWithValidation(url.toString(), sourceAtomicHistorySchema);
-  }
+  };
 
-  getTargetAtomicSwapHistory(query: AtomicSwapHistoryTargetQuery) {
+  getTargetAtomicSwapHistory = (query: AtomicSwapHistoryTargetQuery) => {
     const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
@@ -310,22 +272,20 @@ class OrionBlockchain {
     if (!query.type) url.searchParams.append('type', 'target');
 
     return fetchWithValidation(url.toString(), targetAtomicHistorySchema);
-  }
+  };
 
-  checkIfHashUsed(secretHashes: string[]) {
-    return fetchWithValidation(
-      `https://${this.apiUrl}/api/atomic/is-hash-used`,
-      z.record(z.boolean()).transform(makePartial),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify(secretHashes),
+  checkIfHashUsed = (secretHashes: string[]) => fetchWithValidation(
+    `https://${this.apiUrl}/api/atomic/is-hash-used`,
+    z.record(z.boolean()).transform(makePartial),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-    );
-  }
+      method: 'POST',
+      body: JSON.stringify(secretHashes),
+    },
+  );
 }
 
 export * as ws from './ws';
