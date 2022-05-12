@@ -1,7 +1,6 @@
-import { config, OrionUnit } from '.';
+import OrionUnit from './OrionUnit';
 import { isValidChainId } from './utils';
-
-const { chains, envs } = config;
+import { chains, envs } from './config';
 
 export default function initOrionUnit(chain: string, env: string) {
   if (!isValidChainId(chain)) throw new Error(`Chain '${chain}' is not valid.`);

@@ -9,7 +9,7 @@ import {
 import { OrionBlockchainSocketIO } from './ws';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
-import { utils } from '../..';
+import { makePartial } from '../../utils';
 
 interface IAdminAuthHeaders {
   auth: string;
@@ -115,11 +115,11 @@ class OrionBlockchain {
   }
 
   getPrices() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/prices`, z.record(z.string()).transform(utils.makePartial));
+    return fetchWithValidation(`https://${this.apiUrl}/api/prices`, z.record(z.string()).transform(makePartial));
   }
 
   getTokensFee() {
-    return fetchWithValidation(`https://${this.apiUrl}/api/tokensFee`, z.record(z.string()).transform(utils.makePartial));
+    return fetchWithValidation(`https://${this.apiUrl}/api/tokensFee`, z.record(z.string()).transform(makePartial));
   }
 
   getGasPriceWei() {
@@ -295,7 +295,7 @@ class OrionBlockchain {
   checkIfHashUsed(secretHashes: string[]) {
     return fetchWithValidation(
       `https://${this.apiUrl}/api/atomic/is-hash-used`,
-      z.record(z.boolean()).transform(utils.makePartial),
+      z.record(z.boolean()).transform(makePartial),
       {
         headers: {
           'Content-Type': 'application/json',

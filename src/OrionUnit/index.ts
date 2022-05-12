@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import getOrionUnitSiblings from '../getOrionUnitSiblings';
 import { OrionAggregator } from '../services/OrionAggregator';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { OrionBlockchain } from '../services/OrionBlockchain';
@@ -46,5 +47,9 @@ export default class OrionUnit {
     this.orionAnalytics = new OrionAnalytics(orionAnalyticsHost);
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
+  }
+
+  get siblings() {
+    return getOrionUnitSiblings(this.chainId, this.env);
   }
 }

@@ -10,8 +10,7 @@ import {
   assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
-import { SwapInfoByAmountIn, SwapInfoByAmountOut } from '../../..';
-import { SupportedChainId } from '../../../types';
+import { SwapInfoByAmountIn, SwapInfoByAmountOut, SupportedChainId } from '../../../types';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
