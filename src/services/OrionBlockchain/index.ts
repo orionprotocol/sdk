@@ -92,10 +92,19 @@ class OrionBlockchain {
     return `https://${this.apiUrl}/`;
   }
 
-  private getSummaryRedeem = (brokerAddress: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`,
-    atomicSummarySchema,
-  );
+  private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: string) => {
+    const url = new URL(`https://${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`);
+    if (unshifted) {
+      url.searchParams.append('unshifted', unshifted.toString());
+    }
+    if (sourceNetworkCode) {
+      url.searchParams.append('sourceNetworkCode', sourceNetworkCode);
+    }
+    return fetchWithValidation(
+      url.toString(),
+      atomicSummarySchema,
+    );
+  };
 
   private getSummaryClaim = (brokerAddress: string) => fetchWithValidation(
     `https://${this.apiUrl}/api/atomic/summary-claim/${brokerAddress}`,
