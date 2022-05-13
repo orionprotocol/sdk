@@ -47,6 +47,7 @@ export default function initOrionUnit(chain: string, env: string) {
 
   return new OrionUnit(
     chainId,
+    chainInfo.code,
     envNetworkInfo.rpc ?? chainInfo.rpc,
     env,
     envNetworkInfo.api,

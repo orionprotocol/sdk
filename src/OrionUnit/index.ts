@@ -12,6 +12,8 @@ const orionAnalyticsHost = 'trade.orionprotocol.io';
 export default class OrionUnit {
   public readonly env: string;
 
+  public readonly networkCode: string;
+
   public readonly chainId: SupportedChainId;
 
   public readonly provider: ethers.providers.StaticJsonRpcProvider;
@@ -32,11 +34,13 @@ export default class OrionUnit {
 
   constructor(
     chainId: SupportedChainId,
+    networkCode: string,
     rpc: string,
     env: string,
     apiUrl: string,
   ) {
     this.chainId = chainId;
+    this.networkCode = networkCode;
     this.provider = new ethers.providers.StaticJsonRpcProvider(rpc);
     this.env = env;
     this.apiUrl = apiUrl;
