@@ -84,6 +84,9 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
     });
   }
 
+  const textPayload = schema.safeParse(text);
+  if (textPayload.success) return ok(textPayload.data);
+
   const safeParseJson = fromThrowable(JSON.parse, (e) => {
     if (e instanceof Error) {
       return err({
