@@ -6,3 +6,4 @@ export { default as pairConfigSchema } from './pairConfigSchema';
 export { default as placeAtomicSwapSchema } from './placeAtomicSwapSchema';
 export { default as redeemOrderSchema } from './redeemOrderSchema';
 export { default as swapInfoSchema } from './swapInfoSchema';
+export { default as errorSchema } from './errorSchema';

@@ -5,7 +5,7 @@ import swapInfoSchema from './schemas/swapInfoSchema';
 import exchangeInfoSchema from './schemas/exchangeInfoSchema';
 import cancelOrderSchema from './schemas/cancelOrderSchema';
 import orderBenefitsSchema from './schemas/orderBenefitsSchema';
-import errorSchema from './errorSchema';
+import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
