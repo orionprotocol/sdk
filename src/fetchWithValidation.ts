@@ -84,9 +84,6 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
     });
   }
 
-  const textPayload = schema.safeParse(text);
-  if (textPayload.success) return ok(textPayload.data);
-
   const safeParseJson = fromThrowable(JSON.parse, (e) => {
     if (e instanceof Error) {
       return err({
@@ -106,7 +103,11 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
 
   const jsonResult = safeParseJson(text);
 
-  if (jsonResult.isErr()) return jsonResult.error;
+  if (jsonResult.isErr()) {
+    const textPayload = schema.safeParse(text);
+    if (textPayload.success) return ok(textPayload.data);
+    return jsonResult.error;
+  }
 
   const json: unknown = jsonResult.value;
 
