@@ -108,11 +108,14 @@ export default class OrionUnit {
       ?? options?.api
       ?? apiUrl,
     );
+
+    const oaUrl = new URL(options?.services?.orionAggregator?.api ?? options?.api ?? apiUrl);
+    const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
+    const orionAggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/' ? '' : oaUrl.pathname)}/v1`;
     this.orionAggregator = new OrionAggregator(
-      options?.services?.orionAggregator?.api
-      ?? options?.api
-      ?? apiUrl,
       chainId,
+      options?.services?.orionAggregator?.api ?? `${options?.api ?? apiUrl}/backend`,
+      orionAggregatorWsUrl,
     );
     this.priceFeed = new PriceFeed(
       options?.services?.priceFeed?.api
