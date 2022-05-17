@@ -56,7 +56,7 @@ class OrionBlockchain {
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
-    this.ws = new OrionBlockchainSocketIO(`https://${apiUrl}/`);
+    this.ws = new OrionBlockchainSocketIO(`${apiUrl}/`);
 
     this.getAtomicSwapAssets = this.getAtomicSwapAssets.bind(this);
     this.getAtomicSwapHistory = this.getAtomicSwapHistory.bind(this);
@@ -89,11 +89,11 @@ class OrionBlockchain {
   }
 
   get orionBlockchainWsUrl() {
-    return `https://${this.apiUrl}/`;
+    return `${this.apiUrl}/`;
   }
 
   private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: string) => {
-    const url = new URL(`https://${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`);
+    const url = new URL(`${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`);
     if (unshifted) {
       url.searchParams.append('unshifted', unshifted.toString());
     }
@@ -107,12 +107,12 @@ class OrionBlockchain {
   };
 
   private getSummaryClaim = (brokerAddress: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/summary-claim/${brokerAddress}`,
+    `${this.apiUrl}/api/atomic/summary-claim/${brokerAddress}`,
     atomicSummarySchema,
   );
 
   private getQueueLength = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/queueLength`,
+    `${this.apiUrl}/api/queueLength`,
     z.number().int(),
   );
 
@@ -125,54 +125,54 @@ class OrionBlockchain {
   }
 
   getAuthToken = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/auth/token`,
+    `${this.apiUrl}/api/auth/token`,
     z.object({ token: z.string() }),
   );
 
   getCirculatingSupply = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/circulating-supply`,
+    `${this.apiUrl}/api/circulating-supply`,
     z.number(),
   );
 
-  getInfo = () => fetchWithValidation(`https://${this.apiUrl}/api/info`, infoSchema);
+  getInfo = () => fetchWithValidation(`${this.apiUrl}/api/info`, infoSchema);
 
   getPoolsConfig = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/pools/config`,
+    `${this.apiUrl}/api/pools/config`,
     poolsConfigSchema,
   );
 
   getPoolsInfo = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/pools/info`,
+    `${this.apiUrl}/api/pools/info`,
     poolsInfoSchema,
   );
 
   getHistory = (address: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/history/${address}`,
+    `${this.apiUrl}/api/history/${address}`,
     historySchema,
   );
 
   getPrices = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/prices`,
+    `${this.apiUrl}/api/prices`,
     z.record(z.string()).transform(makePartial),
   );
 
   getTokensFee = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/tokensFee`,
+    `${this.apiUrl}/api/tokensFee`,
     z.record(z.string()).transform(makePartial),
   );
 
   getGasPriceWei = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/gasPrice`,
+    `${this.apiUrl}/api/gasPrice`,
     z.string(),
   );
 
   checkFreeRedeemAvailable = (walletAddress: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/has-free-redeem/${walletAddress}`,
+    `${this.apiUrl}/api/atomic/has-free-redeem/${walletAddress}`,
     z.boolean(),
   );
 
   getRedeemOrderBySecretHash = (secretHash: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/redeem-order/${secretHash}`,
+    `${this.apiUrl}/api/atomic/redeem-order/${secretHash}`,
     z.object({
       secretHash: z.string(),
       secret: z.string(),
@@ -181,7 +181,7 @@ class OrionBlockchain {
   );
 
   claimOrder = (secretHash: string, targetNetwork: string, redeemTxHash?: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/claim-order`,
+    `${this.apiUrl}/api/atomic/claim-order`,
     z.string(),
     {
       method: 'POST',
@@ -201,7 +201,7 @@ class OrionBlockchain {
     secret: string,
     sourceNetwork: string,
   ) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/matcher-redeem`,
+    `${this.apiUrl}/api/atomic/matcher-redeem`,
     z.string(),
     {
       method: 'POST',
@@ -223,7 +223,7 @@ class OrionBlockchain {
     secret2: string,
     sourceNetwork: string,
   ) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
+    `${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
     z.string(),
     {
       method: 'POST',
@@ -241,31 +241,31 @@ class OrionBlockchain {
   );
 
   checkRedeem = (secretHash: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`,
+    `${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`,
     z.enum(['OK', 'FAIL']).nullable(),
   );
 
   checkRedeem2Atomics = (firstSecretHash: string, secondSecretHash: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
+    `${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
     z.enum(['OK', 'FAIL']).nullable(),
   );
 
-  getBlockNumber = () => fetchWithValidation(`https://${this.apiUrl}/api/blocknumber`, z.number().int());
+  getBlockNumber = () => fetchWithValidation(`${this.apiUrl}/api/blocknumber`, z.number().int());
 
-  getIDOInfo = () => fetchWithValidation(`https://${this.apiUrl}/api/solarflare`, IDOSchema);
+  getIDOInfo = () => fetchWithValidation(`${this.apiUrl}/api/solarflare`, IDOSchema);
 
-  checkAuth = (headers: IAdminAuthHeaders) => fetchWithValidation(`https://${this.apiUrl}/api/auth/check`, z.object({
+  checkAuth = (headers: IAdminAuthHeaders) => fetchWithValidation(`${this.apiUrl}/api/auth/check`, z.object({
     auth: z.boolean(),
   }), { headers });
 
   getPoolsList = (headers: IAdminAuthHeaders) => fetchWithValidation(
-    `https://${this.apiUrl}/api/pools/list`,
+    `${this.apiUrl}/api/pools/list`,
     adminPoolsListSchema,
     { headers },
   );
 
   editPool = (address: string, data: IEditPool, headers: IAdminAuthHeaders) => fetchWithValidation(
-    `https://${this.apiUrl}/api/pools/edit/${address}`,
+    `${this.apiUrl}/api/pools/edit/${address}`,
     pairStatusSchema,
     {
       method: 'POST',
@@ -278,7 +278,7 @@ class OrionBlockchain {
   );
 
   addPool = (data: z.infer<typeof addPoolSchema>) => fetchWithValidation(
-    `https://${this.apiUrl}/api/pools/add`,
+    `${this.apiUrl}/api/pools/add`,
     z.number(),
     {
       method: 'POST',
@@ -292,12 +292,12 @@ class OrionBlockchain {
   );
 
   checkPoolInformation = (poolAddress: string) => fetchWithValidation(
-    `https://${this.apiUrl}/api/pools/check/${poolAddress}`,
+    `${this.apiUrl}/api/pools/check/${poolAddress}`,
     pairStatusSchema,
   );
 
   getAtomicSwapAssets = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/swap-assets`,
+    `${this.apiUrl}/api/atomic/swap-assets`,
     z.array(z.string()),
   );
 
@@ -306,7 +306,7 @@ class OrionBlockchain {
    * Receiver is user address in target Orion Blockchain instance
    */
   getAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery | AtomicSwapHistoryTargetQuery) => {
-    const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
+    const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
       .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
@@ -315,7 +315,7 @@ class OrionBlockchain {
   };
 
   getSourceAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery) => {
-    const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
+    const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
       .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
@@ -326,7 +326,7 @@ class OrionBlockchain {
   };
 
   getTargetAtomicSwapHistory = (query: AtomicSwapHistoryTargetQuery) => {
-    const url = new URL(`https://${this.apiUrl}/api/atomic/history/`);
+    const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
       .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
@@ -337,7 +337,7 @@ class OrionBlockchain {
   };
 
   checkIfHashUsed = (secretHashes: string[]) => fetchWithValidation(
-    `https://${this.apiUrl}/api/atomic/is-hash-used`,
+    `${this.apiUrl}/api/atomic/is-hash-used`,
     z.record(z.boolean()).transform(makePartial),
     {
       headers: {

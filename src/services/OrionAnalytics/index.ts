@@ -11,7 +11,7 @@ export default class OrionAnalytics {
   }
 
   getOverview = () => fetchWithValidation(
-    `https://${this.apiUrl}/api/stats/overview`,
+    `${this.apiUrl}/api/stats/overview`,
     overviewSchema,
   );
 }

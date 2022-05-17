@@ -39,10 +39,14 @@ class OrionAggregator {
     this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
   }
 
-  get aggregatorWSUrl() { return `wss://${this.apiUrl}/v1`; }
+  get aggregatorWSUrl() {
+    const { host, pathname, protocol } = new URL(this.apiUrl);
+    const wsProtocol = protocol === 'https:' ? 'wss' : 'ws';
+    return `${wsProtocol}://${host + (pathname === '/' ? '' : pathname)}/v1`;
+  }
 
   get aggregatorUrl() {
-    return `https://${this.apiUrl}/backend`;
+    return `${this.apiUrl}/backend`;
   }
 
   getPairsList = () => fetchWithValidation(

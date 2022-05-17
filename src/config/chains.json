@@ -21,7 +21,7 @@
         "chainId": "97",
         "explorer": "https://testnet.bscscan.com/",
         "label": "Binance Smart Chain Testnet",
-        "shortName": "BSC-Testent",
+        "shortName": "BSC-Testnet",
         "code": "bsc",
         "rpc": "https://bsc-stage.node.orionprotocol.io/",
         "baseCurrencyName": "BNB"

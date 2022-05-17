@@ -17,7 +17,7 @@ class PriceFeed {
     interval: '5m' | '30m' | '1h' | '1d',
     exchange: string,
   ) => {
-    const url = new URL(`https://${this.apiUrl}/candles/candles`);
+    const url = new URL(`${this.apiUrl}/candles/candles`);
     url.searchParams.append('symbol', symbol);
     url.searchParams.append('timeStart', timeStart.toString());
     url.searchParams.append('timeEnd', timeEnd.toString());
@@ -30,13 +30,27 @@ class PriceFeed {
     );
   };
 
-  get candlesUrl() { return `https://${this.apiUrl}/candles/candles`; }
+  get wsUrl() {
+    const url = new URL(this.apiUrl);
+    const wsProtocol = url.protocol === 'https:' ? 'wss' : 'ws';
+    return `${wsProtocol}://${url.host + url.pathname}`;
+  }
 
-  get allTickersWSUrl() { return `wss://${this.apiUrl}/ws2/allTickers`; }
+  get candlesUrl() {
+    return `${this.apiUrl}/candles/candles`;
+  }
 
-  get tickerWSUrl() { return `wss://${this.apiUrl}/ws2/ticker/`; }
+  get allTickersWSUrl() {
+    return `${this.wsUrl}/ws2/allTickers`;
+  }
 
-  get lastPriceWSUrl() { return `wss://${this.apiUrl}/ws2/lastPrice/`; }
+  get tickerWSUrl() {
+    return `${this.wsUrl}/ws2/ticker/`;
+  }
+
+  get lastPriceWSUrl() {
+    return `${this.wsUrl}/ws2/lastPrice/`;
+  }
 }
 
 export * as schemas from './schemas';

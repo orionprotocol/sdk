@@ -1,7 +1,7 @@
-import initOrionUnit from './initOrionUnit';
 import { SupportedChainId } from './types';
 import { isValidChainId } from './utils';
 import { envs } from './config';
+import OrionUnit from './OrionUnit';
 
 export default function getOrionUnitSiblings(siblingChain: SupportedChainId, env: string) {
   if (!(env in envs)) throw new Error(`Env '${env}' not found. Available environments is: ${Object.keys(envs).join(', ')}`);
@@ -16,5 +16,5 @@ export default function getOrionUnitSiblings(siblingChain: SupportedChainId, env
     .keys(envNetworks)
     .filter(isValidChainId)
     .filter((chainId) => chainId !== siblingChain);
-  return siblingsNetworks.map((chainId) => initOrionUnit(chainId, env));
+  return siblingsNetworks.map((chainId) => new OrionUnit(chainId, env));
 }

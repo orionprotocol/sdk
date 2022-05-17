@@ -10,6 +10,8 @@ const schema = z.tuple([
 export default class PriceFeedTickerWS {
   priceWebSocket: WebSocket;
 
+  private heartbeatInterval: ReturnType<typeof setInterval>;
+
   constructor(
     symbol: string,
     url: string,
@@ -17,7 +19,7 @@ export default class PriceFeedTickerWS {
   ) {
     this.priceWebSocket = new WebSocket(`${url}${symbol}`);
 
-    setInterval(() => {
+    this.heartbeatInterval = setInterval(() => {
       this.priceWebSocket.send('heartbeat');
     }, 15000);
 
@@ -32,6 +34,7 @@ export default class PriceFeedTickerWS {
   }
 
   kill() {
+    clearInterval(this.heartbeatInterval);
     this.priceWebSocket.close();
   }
 }

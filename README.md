@@ -18,38 +18,38 @@ npm i @orionprotocol/sdk
 ```ts
 // Node.js
 import "dotenv/config";
-import { initOrionUnit } from "@orionprotocol/sdk";
+import { OrionUnit } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const chain = process.env.CHAINID; // "56"
+const chain = process.env.CHAIN; // "56" or "bsc"
 const env = process.env.ENV; // production
 const privateKey = process.env.PRIVATE_KEY; // 0x...
 
-if (!chain) throw new Error("CHAINID is required");
+if (!chain) throw new Error("CHAIN is required");
 if (!env) throw new Error("ENV is required");
 if (!privateKey) throw new Error("PRIVATE_KEY is required");
 
 const wallet = new Wallet(privateKey);
 // OrionUnit is chain-in-environment abstraction
-const orionUnit = initOrionUnit(chain, env);
+const orionUnit = new OrionUnit(chain, env);
 ```
 
 ```ts
 // UI
 
-import { initOrionUnit } from "@orionprotocol/sdk";
+import { OrionUnit } from "@orionprotocol/sdk";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { BaseProvider } from "@metamask/providers";
 import { providers } from "ethers";
 
-const chain = "97"; // bsc-testnet
+const chain = "97"; // or "bsc" (in testing environment point to bsc-testnet)
 const env = "testing";
 
 const startApp = async (provider: BaseProvider) => {
   const web3Provider = new providers.Web3Provider(provider);
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
-  const orionUnit = initOrionUnit(chain, env); // ready to go
+  const orionUnit = new OrionUnit(chain, env); // ready to go
 };
 
 detectEthereumProvider().then((provider) => {
@@ -211,9 +211,10 @@ const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
 
 // Default ("verbose") fetch
 
-const placeOrderFetchResult = await orionUnit.orionAggregator.placeOrder(
-// Same params as above
-);
+const placeOrderFetchResult = await orionUnit.orionAggregator
+  .placeOrder
+  // Same params as above
+  ();
 
 if (placeOrderFetchResult.isErr()) {
   // You can handle fetching errors here
