@@ -9,13 +9,15 @@ const schema = z.array(z.union([
 export default class PriceFeedAllTickersWS {
   private pairsWebSocket: WebSocket;
 
+  private heartbeatInterval: ReturnType<typeof setInterval>;
+
   constructor(
     url: string,
     updateData: (pairs: z.infer<typeof tickerInfoSchema>[]) => void,
   ) {
     this.pairsWebSocket = new WebSocket(url);
 
-    setInterval(() => {
+    this.heartbeatInterval = setInterval(() => {
       this.pairsWebSocket.send('heartbeat');
     }, 15000);
 
@@ -31,6 +33,7 @@ export default class PriceFeedAllTickersWS {
   }
 
   kill() {
+    clearInterval(this.heartbeatInterval);
     this.pairsWebSocket.close();
   }
 }
