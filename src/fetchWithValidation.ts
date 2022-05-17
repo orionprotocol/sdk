@@ -125,6 +125,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
       }
       return err({
         type: 'clientErrorPayloadParseError' as const,
+        url,
         message: 'Can\'t recognize error message',
         status: response.status,
         text,
