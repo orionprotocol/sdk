@@ -44,7 +44,7 @@ export interface Pair {
   vol24h: string;
 }
 
-type SwapInfoBase = {
+export type SwapInfoBase = {
   swapRequestId: string,
   assetIn: string,
   assetOut: string,

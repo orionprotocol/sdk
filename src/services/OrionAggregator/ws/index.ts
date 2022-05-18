@@ -10,8 +10,102 @@ import {
   assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
-import { SwapInfoByAmountIn, SwapInfoByAmountOut, SupportedChainId } from '../../../types';
+import {
+  SwapInfoByAmountIn, SwapInfoByAmountOut, SupportedChainId, SwapInfoBase,
+} from '../../../types';
+import { orderStatuses, subOrderStatuses } from '../../../constants';
 // import errorSchema from './schemas/errorSchema';
+
+type AssetPairUpdate = {
+    minQty: number,
+    pricePrecision: number,
+}
+type SubOrder = {
+    pair: string,
+      exchange: string,
+      id: number,
+      amount: number,
+      settledAmount: number,
+      price: number,
+      status: typeof subOrderStatuses[number],
+      side: 'BUY' | 'SELL',
+      subOrdQty: number
+}
+type FullOrder = {
+      kind: 'full',
+      id: string,
+      settledAmount: number,
+      feeAsset: string,
+      fee: number,
+      status: typeof orderStatuses[number],
+      date: number,
+      clientOrdId: string,
+      type: 'BUY' | 'SELL',
+      pair: string,
+      amount: number,
+      price: number,
+      subOrders: SubOrder[]
+}
+
+type OrderUpdate = {
+      kind: 'update',
+      id: string,
+      settledAmount: number,
+      status: typeof orderStatuses[number],
+      subOrders: SubOrder[]
+}
+
+type Balance = {
+  tradable: string,
+  reserved: string,
+  contract: string,
+  wallet: string,
+  allowance: string,
+}
+
+const mapFullOrder = (o: z.infer<typeof fullOrderSchema>): FullOrder => ({
+  kind: 'full',
+  id: o.I,
+  settledAmount: o.A,
+  feeAsset: o.F,
+  fee: o.f,
+  status: o.S,
+  date: o.T,
+  clientOrdId: o.O,
+  type: o.s,
+  pair: o.P,
+  amount: o.a,
+  price: o.p,
+  subOrders: o.c.map((so) => ({
+    pair: so.P,
+    exchange: so.e,
+    id: so.i,
+    amount: so.a,
+    settledAmount: so.A,
+    price: so.p,
+    status: so.S,
+    side: so.s,
+    subOrdQty: so.A,
+  })),
+});
+
+const mapOrderUpdate = (o: z.infer<typeof orderUpdateSchema>): OrderUpdate => ({
+  kind: 'update',
+  id: o.I,
+  settledAmount: o.A,
+  status: o.S,
+  subOrders: o.c.map((so) => ({
+    pair: so.P,
+    exchange: so.e,
+    id: so.i,
+    amount: so.a,
+    settledAmount: so.A,
+    price: so.p,
+    status: so.S,
+    side: so.s,
+    subOrdQty: so.A,
+  })),
+});
 
 const UNSUBSCRIBE = 'u';
 
@@ -25,16 +119,12 @@ type SwapSubscriptionRequest = {
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
-  callback: (balances: {
-    asset: string;
-    balance: number;
-  }[]) => void,
+  callback: (balances: Partial<Record<string, number>>) => void,
 }
 
 type PairConfigSubscription = {
   callback: (
-    chainId: SupportedChainId,
-    data: z.infer<typeof assetPairsConfigSchema>['u'],
+    data: Partial<Record<string, AssetPairUpdate>>,
   ) => void,
 }
 
@@ -51,22 +141,16 @@ type SwapInfoSubscription = {
   payload: SwapSubscriptionRequest,
   callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void,
 }
-
 type AddressUpdateSubscription = {
   payload: string,
   callback: ({ fullOrders, orderUpdate, balances } : {
-    fullOrders?: z.infer<typeof fullOrderSchema>[],
-    orderUpdate?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>,
+    fullOrders?: FullOrder[],
+    orderUpdate?: OrderUpdate | FullOrder,
     balances?: Partial<
       Record<
         string,
-        [
-          string,
-          string,
-          string,
-          string,
-          string
-        ]>
+        Balance
+      >
     >,
   }) => void,
 }
@@ -160,12 +244,9 @@ class OrionAggregatorWS {
   init() {
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onclose = (e) => {
-      console.log(`Orion Aggregator ${this.chainId} WS Connection closed`);
       if (e.code !== 4000) this.init();
     };
     this.ws.onopen = () => {
-      console.log(`Orion Aggregator ${this.chainId} WS Connection established`);
-
       Object.entries(this.subscriptions).forEach(([type, subscription]) => {
         this.send({
           T: type,
@@ -201,64 +282,51 @@ class OrionAggregatorWS {
         case MessageType.PING_PONG:
           this.sendRaw(data.toString());
           break;
-        case MessageType.SWAP_INFO:
+        case MessageType.SWAP_INFO: {
+          const baseSwapInfo: SwapInfoBase = {
+            swapRequestId: json.S,
+            assetIn: json.ai,
+            assetOut: json.ao,
+            amountIn: json.a,
+            amountOut: json.o,
+            price: json.p,
+            marketPrice: json.mp,
+            minAmounOut: json.mao,
+            minAmounIn: json.ma,
+            path: json.ps,
+            poolOptimal: json.po,
+            ...json.oi && {
+              orderInfo: {
+                pair: json.oi.p,
+                side: json.oi.s,
+                amount: json.oi.a,
+                safePrice: json.oi.sp,
+              },
+            },
+          };
+
           switch (json.k) { // kind
             case 'exactSpend':
               this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
                 kind: json.k,
-                swapRequestId: json.S,
-                assetIn: json.ai,
-                assetOut: json.ao,
-                amountIn: json.a,
-                amountOut: json.o,
-                price: json.p,
                 marketAmountOut: json.mo,
-                marketPrice: json.mp,
-                minAmounOut: json.mao,
-                minAmounIn: json.ma,
                 availableAmountIn: json.aa,
-                ...json.oi && {
-                  orderInfo: {
-                    pair: json.oi.p,
-                    side: json.oi.s,
-                    amount: json.oi.a,
-                    safePrice: json.oi.sp,
-                  },
-                },
-                path: json.ps,
-                poolOptimal: json.po,
+                ...baseSwapInfo,
               });
+
               break;
             case 'exactReceive':
               this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.callback({
                 kind: json.k,
-                swapRequestId: json.S,
-                assetIn: json.ai,
-                assetOut: json.ao,
-                amountIn: json.a,
-                amountOut: json.o,
-                price: json.p,
+                ...baseSwapInfo,
                 marketAmountIn: json.mi,
-                marketPrice: json.mp,
-                minAmounOut: json.mao,
-                minAmounIn: json.ma,
                 availableAmountOut: json.aao,
-                ...json.oi && {
-                  orderInfo: {
-                    pair: json.oi.p,
-                    side: json.oi.s,
-                    amount: json.oi.a,
-                    safePrice: json.oi.sp,
-                  },
-                },
-                path: json.ps,
-                poolOptimal: json.po,
               });
               break;
             default:
               break;
           }
-
+        }
           break;
         // case MessageType.INITIALIZATION:
         // break;
@@ -271,42 +339,90 @@ class OrionAggregatorWS {
           break;
         case MessageType.ASSET_PAIRS_CONFIG_UPDATE: {
           const pairs = json;
+          const priceUpdates = pairs.u.reduce<Partial<Record<string, AssetPairUpdate>>>((acc, [pairName, minQty, pricePrecision]) => ({
+            ...acc,
+            [pairName]: {
+              minQty,
+              pricePrecision,
+            },
+          }), {});
           this.subscriptions[
             SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE
-          ]?.callback(this.chainId, pairs.u);
+          ]?.callback(priceUpdates);
         }
           break;
-        case MessageType.ADDRESS_UPDATE:
-          switch (json.k) { // kind
-            case 'i': // initial
+        case MessageType.ADDRESS_UPDATE: {
+          const balances = json.b
+            ? Object.entries(json.b)
+              .reduce<Partial<Record<string, Balance>>>((prev, [asset, assetBalances]) => {
+                if (!assetBalances) return prev;
+                const [tradable, reserved, contract, wallet, allowance] = assetBalances;
+                return {
+                  ...prev,
+                  [asset]: {
+                    tradable, reserved, contract, wallet, allowance,
+                  },
+                };
+              }, {})
+            : {};
+          switch (json.k) { // message kind
+            case 'i': { // initial
+              const fullOrders = json.o
+                ? json.o.reduce<FullOrder[]>((prev, o) => {
+                  const fullOrder = mapFullOrder(o);
+                  return [
+                    ...prev,
+                    fullOrder,
+                  ];
+                }, [])
+                : undefined;
+
               this.subscriptions[
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
-                fullOrders: json.o,
-                balances: json.b,
+                fullOrders,
+                balances,
               });
+            }
               break;
-            case 'u': // update
+            case 'u': { // update
+              let orderUpdate: OrderUpdate | FullOrder | undefined;
+              if (json.o) {
+                const firstOrder = json.o[0];
+                switch (firstOrder.k) {
+                  case 'full':
+                    orderUpdate = mapFullOrder(firstOrder);
+                    break;
+                  case 'update':
+                    orderUpdate = mapOrderUpdate(firstOrder);
+                    break;
+                  default:
+                    break;
+                }
+              }
+
               this.subscriptions[
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
-                orderUpdate: json.o?.[0],
-                balances: json.b,
+                orderUpdate,
+                balances,
               });
+            }
               break;
             default:
               break;
           }
+        }
           break;
         case MessageType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE: {
-          const updatedBrokerBalances = json.bb.map((bb) => {
-            const [asset, balance] = bb;
-            return { asset, balance };
-          });
+          const brokerBalances = json.bb.reduce<Partial<Record<string, number>>>((acc, [asset, balance]) => ({
+            ...acc,
+            [asset]: balance,
+          }), {});
 
           this.subscriptions[
             SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE
-          ]?.callback(updatedBrokerBalances);
+          ]?.callback(brokerBalances);
         }
           break;
         default:
