@@ -11,7 +11,7 @@ import {
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 import {
-  SwapInfoByAmountIn, SwapInfoByAmountOut, SupportedChainId, SwapInfoBase,
+  SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
 } from '../../../types';
 import { orderStatuses, subOrderStatuses } from '../../../constants';
 // import errorSchema from './schemas/errorSchema';
@@ -167,17 +167,14 @@ type Subscriptions<T extends SubscriptionType> = { [K in T]: Subscription[K] }
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
-  private chainId: SupportedChainId;
-
   private subscriptions: Partial<Subscriptions<SubscriptionType>> = {};
 
   private onError?: (err: string) => void;
 
   private readonly wsUrl: string;
 
-  constructor(wsUrl: string, chainId: SupportedChainId, onError?: (err: string) => void) {
+  constructor(wsUrl: string, onError?: (err: string) => void) {
     this.wsUrl = wsUrl;
-    this.chainId = chainId;
     this.onError = onError;
   }
 

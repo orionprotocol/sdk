@@ -9,7 +9,7 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import { SignedCancelOrderRequest, SignedOrder, SupportedChainId } from '../../types';
+import { SignedCancelOrderRequest, SignedOrder } from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema,
@@ -20,9 +20,9 @@ class OrionAggregator {
 
   readonly ws: OrionAggregatorWS;
 
-  constructor(chainId: SupportedChainId, apiUrl: string, apiWsUrl: string) {
+  constructor(apiUrl: string, apiWsUrl: string) {
     this.apiUrl = apiUrl;
-    this.ws = new OrionAggregatorWS(apiWsUrl, chainId);
+    this.ws = new OrionAggregatorWS(apiWsUrl);
 
     this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
     this.getPairConfig = this.getPairConfig.bind(this);
