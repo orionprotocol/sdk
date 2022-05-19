@@ -318,8 +318,29 @@ orionUnit.orionAggregator.ws.subscribe(
 orionUnit.orionAggregator.ws.subscribe("aobus", {
   payload: "ORN-USDT", // Some trading pair
   callback: (asks, bids, pairName) => {
-    console.log("Orderbook asks", asks);
-    console.log("Orderbook bids", bids);
+    console.log(`${pairName} orderbook asks`, asks);
+    console.log(`${pairName} orderbook bids`, bids);
   },
 });
+```
+
+### Orion Aggregator WS Stream Unsubscribing
+
+```ts
+// Swap request unsubscribe
+orionAggregator.ws.unsubscribe(swapRequestId); // Pass here id that you generate when subscribe
+
+// Address update (balances / order history) unsubscribe
+orionUnit.orionAggregator.ws.unsubscribe(
+  "0x0000000000000000000000000000000000000000"
+);
+
+// Pair orderbook unsubscribe
+orionUnit.orionAggregator.ws.unsubscribe("ORN-USDT");
+
+// Asset pairs config updates unsubscribe
+orionUnit.orionAggregator.ws.unsubscribe("apcu");
+
+// Broker tradable atomic swap assets balance unsubscribe
+orionUnit.orionAggregator.ws.unsubscribe("btasabu");
 ```
