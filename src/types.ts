@@ -1,5 +1,63 @@
 import BigNumber from 'bignumber.js';
+import orderStatuses from './constants/orderStatuses';
+import subOrderStatuses from './constants/subOrderStatuses';
 
+export type OrderbookItem = {
+  price: string,
+  amount: string,
+  exchanges: string[],
+  vob: {
+    side: 'BUY' | 'SELL',
+    pairName: string
+  }[]
+}
+
+export type AssetPairUpdate = {
+    minQty: number,
+    pricePrecision: number,
+}
+export type SubOrder = {
+    pair: string,
+    exchange: string,
+    id: number,
+    amount: number,
+    settledAmount: number,
+    price: number,
+    status: typeof subOrderStatuses[number],
+    side: 'BUY' | 'SELL',
+    subOrdQty: number
+}
+export type FullOrder = {
+    kind: 'full',
+    id: string,
+    settledAmount: number,
+    feeAsset: string,
+    fee: number,
+    status: typeof orderStatuses[number],
+    date: number,
+    clientOrdId: string,
+    type: 'BUY' | 'SELL',
+    pair: string,
+    amount: number,
+    price: number,
+    subOrders: SubOrder[]
+}
+
+export type OrderUpdate = {
+      kind: 'update',
+      id: string,
+      settledAmount: number,
+      status: typeof orderStatuses[number],
+      subOrders: SubOrder[]
+}
+
+export type Balance = {
+  tradable: string,
+  reserved: string,
+  contract: string,
+  wallet: string,
+  allowance: string,
+}
 export interface Order {
   senderAddress: string; // address
   matcherAddress: string; // address

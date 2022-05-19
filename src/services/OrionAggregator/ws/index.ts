@@ -12,56 +12,9 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
+  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance,
 } from '../../../types';
-import { orderStatuses, subOrderStatuses } from '../../../constants';
 // import errorSchema from './schemas/errorSchema';
-
-type AssetPairUpdate = {
-    minQty: number,
-    pricePrecision: number,
-}
-type SubOrder = {
-    pair: string,
-      exchange: string,
-      id: number,
-      amount: number,
-      settledAmount: number,
-      price: number,
-      status: typeof subOrderStatuses[number],
-      side: 'BUY' | 'SELL',
-      subOrdQty: number
-}
-type FullOrder = {
-      kind: 'full',
-      id: string,
-      settledAmount: number,
-      feeAsset: string,
-      fee: number,
-      status: typeof orderStatuses[number],
-      date: number,
-      clientOrdId: string,
-      type: 'BUY' | 'SELL',
-      pair: string,
-      amount: number,
-      price: number,
-      subOrders: SubOrder[]
-}
-
-type OrderUpdate = {
-      kind: 'update',
-      id: string,
-      settledAmount: number,
-      status: typeof orderStatuses[number],
-      subOrders: SubOrder[]
-}
-
-type Balance = {
-  tradable: string,
-  reserved: string,
-  contract: string,
-  wallet: string,
-  allowance: string,
-}
 
 const mapFullOrder = (o: z.infer<typeof fullOrderSchema>): FullOrder => ({
   kind: 'full',
@@ -131,8 +84,8 @@ type PairConfigSubscription = {
 type AggregatedOrderbookSubscription = {
   payload: string,
   callback: (
-    asks: z.infer<typeof orderBookSchema>['ob']['a'],
-    bids: z.infer<typeof orderBookSchema>['ob']['b'],
+    asks: OrderbookItem[],
+    bids: OrderbookItem[],
     pair: string
   ) => void,
 }
@@ -163,11 +116,13 @@ type Subscription = {
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
 }
 
-type Subscriptions<T extends SubscriptionType> = { [K in T]: Subscription[K] }
+type Subscriptions<T extends typeof SubscriptionType[keyof typeof SubscriptionType]> = {
+  [K in T]: Subscription[K]
+}
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
-  private subscriptions: Partial<Subscriptions<SubscriptionType>> = {};
+  private subscriptions: Partial<Subscriptions<typeof SubscriptionType[keyof typeof SubscriptionType]>> = {};
 
   private onError?: (err: string) => void;
 
@@ -198,7 +153,7 @@ class OrionAggregatorWS {
     }
   }
 
-  subscribe<T extends SubscriptionType>(
+  subscribe<T extends typeof SubscriptionType[keyof typeof SubscriptionType]>(
     type: T,
     subscription: Subscription[T],
   ) {
@@ -213,7 +168,7 @@ class OrionAggregatorWS {
     this.subscriptions[type] = subscription;
   }
 
-  unsubscribe(subscription: UnsubscriptionType | string) {
+  unsubscribe(subscription: keyof typeof UnsubscriptionType | string) {
     this.send({
       T: UNSUBSCRIBE,
       S: subscription,
@@ -329,9 +284,33 @@ class OrionAggregatorWS {
         // break;
         case MessageType.AGGREGATED_ORDER_BOOK_UPDATE: {
           const { ob, S } = json;
+          const mapOrderbookItems = (rawItems: typeof ob.a | typeof ob.b) => rawItems.reduce<OrderbookItem[]>((acc, item) => {
+            const [
+              price,
+              amount,
+              exchanges,
+              vob,
+            ] = item;
+            return [
+              ...acc,
+              {
+                price,
+                amount,
+                exchanges,
+                vob: vob.map(([side, pairName]) => ({
+                  side,
+                  pairName,
+                })),
+              },
+            ];
+          }, []);
           this.subscriptions[
             SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE
-          ]?.callback(ob.a, ob.b, S);
+          ]?.callback(
+            mapOrderbookItems(ob.a),
+            mapOrderbookItems(ob.b),
+            S,
+          );
         }
           break;
         case MessageType.ASSET_PAIRS_CONFIG_UPDATE: {
@@ -386,16 +365,9 @@ class OrionAggregatorWS {
               let orderUpdate: OrderUpdate | FullOrder | undefined;
               if (json.o) {
                 const firstOrder = json.o[0];
-                switch (firstOrder.k) {
-                  case 'full':
-                    orderUpdate = mapFullOrder(firstOrder);
-                    break;
-                  case 'update':
-                    orderUpdate = mapOrderUpdate(firstOrder);
-                    break;
-                  default:
-                    break;
-                }
+                orderUpdate = firstOrder.k === 'full'
+                  ? mapFullOrder(firstOrder)
+                  : mapOrderUpdate(firstOrder);
               }
 
               this.subscriptions[
