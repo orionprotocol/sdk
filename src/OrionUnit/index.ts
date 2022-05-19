@@ -14,6 +14,7 @@ const orionAnalyticsUrl = 'https://trade.orionprotocol.io';
 
 type Options = {
   api?: string;
+  nodeJsonRpc?: string;
   services?: {
     orionBlockchain?: {
       api?: string;
@@ -115,7 +116,7 @@ export default class OrionUnit {
 
     this.chainId = chainId;
     this.networkCode = chainInfo.code;
-    this.provider = new ethers.providers.StaticJsonRpcProvider(customRpc ?? chainInfo.rpc);
+    this.provider = new ethers.providers.StaticJsonRpcProvider(options?.nodeJsonRpc ?? customRpc ?? chainInfo.rpc);
     this.env = env;
     this.apiUrl = customApi;
 
