@@ -54,72 +54,88 @@ export default class OrionUnit {
     env: string,
     options?: Options,
   ) {
-    if (!(env in envs)) {
-      throw new Error(`Env '${env}' not found. Available environments is: ${Object.keys(envs).join(', ')}`);
-    }
-
-    const envInfo = envs[env];
-    const envNetworks = envInfo?.networks;
     let chainId: SupportedChainId;
+    let customApi: string | undefined;
+    let customRpc: string | undefined;
+    let chainInfo: typeof chains[SupportedChainId] | undefined;
 
-    if (isValidChainId(chain)) chainId = chain;
-    else {
-      const targetChains = Object
-        .keys(chains)
-        .filter(isValidChainId)
-        .filter((ch) => {
-          const chainInfo = chains[ch];
-          if (!chainInfo) return false;
-          return (chainInfo.chainId in envNetworks)
-          && (chainInfo.code.toLowerCase() === chain.toLowerCase());
-        });
-      if (targetChains.length !== 1) {
-        throw new Error(
-          targetChains.length > 1
-            ? 'Ambiguation detected. '
-            + `Found ${targetChains.length} chain ids [${targetChains.join(', ')}] for chain name '${chain}' in env '${env}'. Expected 1.`
-            : `Chains not found for chain name '${chain}' in env '${env}'.`,
-        );
+    if (!(env in envs)) {
+      if (env === 'custom') {
+        if (!options?.api) throw new Error('Your env is custom. You should provide api url in options');
+        const { api } = options;
+        customApi = api;
+        if (isValidChainId(chain)) {
+          chainId = chain;
+          chainInfo = chains[chain];
+        } else throw new Error('Your chainId is invalid');
+      } else {
+        throw new Error(`Env '${env}' not found. Available environments is: ${Object.keys(envs).join(', ')}`);
       }
-      [chainId] = targetChains;
-    }
+    } else {
+      const envInfo = envs[env];
+      const envNetworks = envInfo?.networks;
 
-    if (!(chainId in envNetworks)) {
-      throw new Error(`Chain '${chainId}' not found. `
+      if (isValidChainId(chain)) chainId = chain;
+      else {
+        const targetChains = Object
+          .keys(chains)
+          .filter(isValidChainId)
+          .filter((ch) => {
+            const chInfo = chains[ch];
+            if (!chInfo) return false;
+            return (chInfo.chainId in envNetworks)
+          && (chInfo.code.toLowerCase() === chain.toLowerCase());
+          });
+        if (targetChains.length !== 1) {
+          throw new Error(
+            targetChains.length > 1
+              ? 'Ambiguation detected. '
+            + `Found ${targetChains.length} chain ids [${targetChains.join(', ')}] for chain name '${chain}' in env '${env}'. Expected 1.`
+              : `Chains not found for chain name '${chain}' in env '${env}'.`,
+          );
+        }
+        [chainId] = targetChains;
+      }
+
+      if (!(chainId in envNetworks)) {
+        throw new Error(`Chain '${chainId}' not found. `
           + `Available chains in selected environment (${env}) is: ${Object.keys(envNetworks).join(', ')}`);
+      }
+
+      const envNetworkInfo = envNetworks[chainId];
+      chainInfo = chains[chainId];
+
+      if (!envNetworkInfo) throw new Error('Env network info is required');
+
+      customApi = envNetworkInfo.api;
+      customRpc = envNetworkInfo.rpc;
     }
 
-    const envNetworkInfo = envNetworks[chainId];
-    const chainInfo = chains[chainId];
-
-    if (!envNetworkInfo) throw new Error('Env network info is required');
     if (!chainInfo) throw new Error('Chain info is required');
-
-    const apiUrl = envNetworkInfo.api;
 
     this.chainId = chainId;
     this.networkCode = chainInfo.code;
-    this.provider = new ethers.providers.StaticJsonRpcProvider(envNetworkInfo.rpc ?? chainInfo.rpc);
+    this.provider = new ethers.providers.StaticJsonRpcProvider(customRpc ?? chainInfo.rpc);
     this.env = env;
-    this.apiUrl = apiUrl;
+    this.apiUrl = customApi;
 
     this.orionBlockchain = new OrionBlockchain(
       options?.services?.orionBlockchain?.api
       ?? options?.api
-      ?? apiUrl,
+      ?? customApi,
     );
 
-    const oaUrl = new URL(options?.services?.orionAggregator?.api ?? options?.api ?? apiUrl);
+    const oaUrl = new URL(options?.services?.orionAggregator?.api ?? options?.api ?? customApi);
     const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
     const orionAggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/' ? '' : oaUrl.pathname)}/v1`;
     this.orionAggregator = new OrionAggregator(
-      options?.services?.orionAggregator?.api ?? `${options?.api ?? apiUrl}/backend`,
+      options?.services?.orionAggregator?.api ?? `${options?.api ?? customApi}/backend`,
       orionAggregatorWsUrl,
     );
     this.priceFeed = new PriceFeed(
       options?.services?.priceFeed?.api
       ?? options?.api
-      ?? apiUrl,
+      ?? customApi,
     );
     this.orionAnalytics = new OrionAnalytics(orionAnalyticsUrl);
     this.exchange = new Exchange(this);
