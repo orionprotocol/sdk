@@ -99,7 +99,9 @@ export default class PriceFeedSubscription<S extends SubscriptionType> {
       this.callback(parseResult.data);
     };
 
-    this.ws.onclose = () => this.init();
+    this.ws.onclose = (e) => {
+      if (e.code !== 4000) this.init();
+    };
 
     this.heartbeatInterval = setInterval(() => {
       this.ws?.send('heartbeat');
@@ -108,6 +110,6 @@ export default class PriceFeedSubscription<S extends SubscriptionType> {
 
   kill() {
     if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
-    this.ws?.close();
+    this.ws?.close(4000);
   }
 }
