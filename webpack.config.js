@@ -2,6 +2,7 @@ const path = require("path");
 
 module.exports = (env, argv) => {
   return {
+    mode: "production",
     entry: {
       index: path.resolve(__dirname, "./lib/esm/index.js")
     },

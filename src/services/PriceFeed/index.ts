@@ -1,11 +1,15 @@
 import fetchWithValidation from '../../fetchWithValidation';
 import candlesSchema from './schemas/candlesSchema';
+import { PriceFeedWS } from './ws';
 
 class PriceFeed {
   private apiUrl: string;
 
+  readonly ws: PriceFeedWS;
+
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
+    this.ws = new PriceFeedWS(this.wsUrl);
 
     this.getCandles = this.getCandles.bind(this);
   }
@@ -17,7 +21,7 @@ class PriceFeed {
     interval: '5m' | '30m' | '1h' | '1d',
     exchange: string,
   ) => {
-    const url = new URL(`${this.apiUrl}/candles/candles`);
+    const url = new URL(this.candlesUrl);
     url.searchParams.append('symbol', symbol);
     url.searchParams.append('timeStart', timeStart.toString());
     url.searchParams.append('timeEnd', timeEnd.toString());
@@ -33,28 +37,15 @@ class PriceFeed {
   get wsUrl() {
     const url = new URL(this.apiUrl);
     const wsProtocol = url.protocol === 'https:' ? 'wss' : 'ws';
-    return `${wsProtocol}://${url.host + url.pathname}`;
+    return `${wsProtocol}://${url.host + url.pathname}/ws2`;
   }
 
   get candlesUrl() {
     return `${this.apiUrl}/candles/candles`;
   }
-
-  get allTickersWSUrl() {
-    return `${this.wsUrl}/ws2/allTickers`;
-  }
-
-  get tickerWSUrl() {
-    return `${this.wsUrl}/ws2/ticker/`;
-  }
-
-  get lastPriceWSUrl() {
-    return `${this.wsUrl}/ws2/lastPrice/`;
-  }
 }
 
 export * as schemas from './schemas';
-export * as ws from './ws';
 
 export {
   PriceFeed,

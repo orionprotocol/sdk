@@ -251,7 +251,7 @@ ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE = 'apcus',
 BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE = 'btasabus', // Need for Orion Bridge
 ```
 
-Example:
+### Swap Info
 
 ```ts
 import { v4 as uuidv4 } from "uuid";
@@ -343,4 +343,37 @@ orionUnit.orionAggregator.ws.unsubscribe("apcu");
 
 // Broker tradable atomic swap assets balance unsubscribe
 orionUnit.orionAggregator.ws.unsubscribe("btasabu");
+```
+
+## Price Feed Websocket Stream
+
+> :warning: **Currently supported only one subscription per subscription type**
+
+```ts
+orionUnit.priceFeed.ws.subscribe(
+  "allTickers",
+  (tickers) => {
+    console.log(tickers);
+  },
+  undefined
+);
+orionUnit.priceFeed.ws.unsubscribe("allTickers");
+
+orionUnit.priceFeed.ws.subscribe(
+  "ticker",
+  (ticker) => {
+    console.log(tricker);
+  },
+  "ORN-USDT"
+);
+orionUnit.priceFeed.ws.unsubscribe("ticker");
+
+orionUnit.priceFeed.ws.subscribe(
+  "lastPrice",
+  ({ pair, price }) => {
+    console.log(`Price: ${price}`);
+  },
+  "ORN-USDT"
+);
+orionUnit.priceFeed.ws.unsubscribe("lastPrice");
 ```
