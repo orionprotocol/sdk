@@ -13,43 +13,30 @@ npm i @orionprotocol/sdk
 
 ## High level methods
 
-### Easy start
+### Initialization
 
-```ts
+```js
 // Node.js
-import "dotenv/config";
 import { OrionUnit } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const chain = process.env.CHAIN; // "56" or "bsc"
-const env = process.env.ENV; // production
-const privateKey = process.env.PRIVATE_KEY; // 0x...
-
-if (!chain) throw new Error("CHAIN is required");
-if (!env) throw new Error("ENV is required");
-if (!privateKey) throw new Error("PRIVATE_KEY is required");
-
-const wallet = new Wallet(privateKey);
+const wallet = new Wallet("0x...");
 // OrionUnit is chain-in-environment abstraction
-const orionUnit = new OrionUnit(chain, env);
+const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm available
 ```
 
 ```ts
-// UI
-
+// Metamask
 import { OrionUnit } from "@orionprotocol/sdk";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { BaseProvider } from "@metamask/providers";
 import { providers } from "ethers";
 
-const chain = "97"; // or "bsc" (in testing environment point to bsc-testnet)
-const env = "testing";
-
 const startApp = async (provider: BaseProvider) => {
   const web3Provider = new providers.Web3Provider(provider);
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
-  const orionUnit = new OrionUnit(chain, env); // ready to go
+  const orionUnit = new OrionUnit("eth", "production"); // ready to go
 };
 
 detectEthereumProvider().then((provider) => {
