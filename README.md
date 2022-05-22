@@ -347,33 +347,30 @@ orionUnit.orionAggregator.ws.unsubscribe("btasabu");
 
 ## Price Feed Websocket Stream
 
-> :warning: **Currently supported only one subscription per subscription type**
-
 ```ts
-orionUnit.priceFeed.ws.subscribe(
-  "allTickers",
-  (tickers) => {
+const allTickersSubscription = orionUnit.priceFeed.ws.subscribe("allTickers", {
+  callback: (tickers) => {
     console.log(tickers);
   },
-  undefined
-);
-orionUnit.priceFeed.ws.unsubscribe("allTickers");
+});
+allTickersSubscription.unsubscribe();
+orionUnit.priceFeed.ws.unsubscribe("allTickers", allTickersSubscription.id); // Also you can unsubscribe like this
 
-orionUnit.priceFeed.ws.subscribe(
-  "ticker",
-  (ticker) => {
+const tickerSubscription = orionUnit.priceFeed.ws.subscribe("ticker", {
+  callback: (ticker) => {
     console.log(tricker);
   },
-  "ORN-USDT"
-);
-orionUnit.priceFeed.ws.unsubscribe("ticker");
+  payload: "ORN-USDT",
+});
+tickerSubscription.subscription();
+orionUnit.priceFeed.ws.unsubscribe("ticker", tickerSubscription.id);
 
-orionUnit.priceFeed.ws.subscribe(
-  "lastPrice",
-  ({ pair, price }) => {
+const lastPriceSubscription = orionUnit.priceFeed.ws.subscribe("lastPrice", {
+  callback: ({ pair, price }) => {
     console.log(`Price: ${price}`);
   },
-  "ORN-USDT"
-);
-orionUnit.priceFeed.ws.unsubscribe("lastPrice");
+  payload: "ORN-USDT",
+});
+lastPriceSubscription.unsubscribe();
+orionUnit.priceFeed.ws.unsubscribe("lastPrice", lastPriceSubscription.id);
 ```

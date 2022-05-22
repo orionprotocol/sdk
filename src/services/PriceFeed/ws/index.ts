@@ -1,11 +1,15 @@
-import { z } from 'zod';
-import PriceFeedSubscription, { Payload, ResponseSchemaType, SubscriptionType } from './PriceFeedSubscription';
+import PriceFeedSubscription, { SubscriptionType, Subscription } from './PriceFeedSubscription';
 
 export * as schemas from './schemas';
 export class PriceFeedWS {
   private subscriptions: Partial<{
-    [S in SubscriptionType]: PriceFeedSubscription<S>
-  }> = { };
+    [K in SubscriptionType]: Partial<
+      Record<
+        string,
+        PriceFeedSubscription<K>
+      >
+    >;
+  }> = {};
 
   private url: string;
 
@@ -15,23 +19,29 @@ export class PriceFeedWS {
 
   subscribe<S extends SubscriptionType>(
     type: S,
-    callback: (data: z.infer<ResponseSchemaType<S>>) => void,
-    payload: Payload<S>,
+    params: Subscription<S>,
   ) {
-    if (this.subscriptions[type]) throw new Error(`Subscription already exists for '${type}'. Please unsubscribe first.`);
+    const sub = new PriceFeedSubscription(
+      type,
+      this.url,
+      params,
+    );
     this.subscriptions = {
       ...this.subscriptions,
-      [type]: new PriceFeedSubscription(
-        type,
-        this.url,
-        callback,
-        payload,
-      ),
+      [type]: {
+        ...this.subscriptions[type],
+        [sub.id]: sub,
+      },
+    };
+    return {
+      type: sub.type,
+      id: sub.id,
+      unsubscribe: () => this.unsubscribe(sub.type, sub.id),
     };
   }
 
-  unsubscribe<S extends SubscriptionType>(type: S) {
-    this.subscriptions[type]?.kill();
-    delete this.subscriptions[type];
+  unsubscribe(subType: SubscriptionType, subId: string) {
+    this.subscriptions[subType]?.[subId]?.kill();
+    delete this.subscriptions[subType]?.[subId];
   }
 }

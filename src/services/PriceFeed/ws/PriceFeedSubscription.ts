@@ -38,7 +38,7 @@ export const subscriptions = {
     payload: false as const,
   },
   [priceFeedSubscriptions.TICKER]: {
-    schema: z.tuple([z.number(), tickerInfoSchema]),
+    schema: z.tuple([z.number(), tickerInfoSchema]).transform(([, tickerInfo]) => tickerInfo),
     payload: true as const,
   },
   [priceFeedSubscriptions.LAST_PRICE]: {
@@ -47,18 +47,24 @@ export const subscriptions = {
   },
 };
 
-export type SubscriptionType = keyof typeof subscriptions
+export type SubscriptionType = keyof typeof subscriptions;
+export type Subscription<
+  T extends SubscriptionType,
+  Schema = z.infer<typeof subscriptions[T]['schema']>
+> = typeof subscriptions[T] extends { payload: true }
+  ? {
+  callback: (data: Schema) => void,
+  payload: string,
+} : {
+   callback: (data: Schema) => void,
+}
 
-export type Payload<T extends SubscriptionType> = typeof subscriptions[T] extends { payload: true } ? string : undefined;
-
-export type ResponseSchemaType<T extends SubscriptionType> = typeof subscriptions[T]['schema'];
-
-export default class PriceFeedSubscription<S extends SubscriptionType> {
+export default class PriceFeedSubscription<T extends SubscriptionType = SubscriptionType> {
   public readonly id: string;
 
-  private readonly callback: (data: z.infer<ResponseSchemaType<S>>) => void;
+  private readonly callback: Subscription<T>['callback'];
 
-  private readonly payload: Payload<S>;
+  private readonly payload?: string;
 
   private ws?: WebSocket;
 
@@ -66,19 +72,20 @@ export default class PriceFeedSubscription<S extends SubscriptionType> {
 
   private heartbeatInterval?: ReturnType<typeof setInterval>;
 
-  private readonly type: S;
+  readonly type: T;
 
   constructor(
-    type: S,
+    type: T,
     url: string,
-    callback: (data: z.infer<ResponseSchemaType<S>>) => void,
-    payload: Payload<S>,
+    params: Subscription<T>,
   ) {
     this.id = uuidv4();
     this.url = url;
     this.type = type;
-    this.payload = payload;
-    this.callback = callback;
+    if ('payload' in params) {
+      this.payload = params.payload;
+    }
+    this.callback = params.callback;
 
     this.init();
   }
