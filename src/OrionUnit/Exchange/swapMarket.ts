@@ -22,7 +22,6 @@ export type SwapMarketParams = {
   orionUnit: OrionUnit,
   options?: {
     logger?: (message: string) => void,
-    route?: 'pool' | 'aggregator',
     autoApprove?: boolean,
   }
 }
@@ -50,7 +49,6 @@ export default async function swapMarket({
   orionUnit,
   options,
 }: SwapMarketParams): Promise<Swap> {
-  if (options?.route) options?.logger?.('Warning! You specified route in options. Please use only if you know what you are doing.');
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
   if (assetOut === '') throw new Error('AssetOut can not be empty');
@@ -127,9 +125,7 @@ export default async function swapMarket({
 
   const percent = new BigNumber(slippagePercent).div(100);
 
-  const isThroughPoolOptimal = options?.route
-    ? options?.route === 'pool'
-    : swapInfo.isThroughPoolOptimal;
+  const { isThroughPoolOptimal } = swapInfo;
 
   if (isThroughPoolOptimal) {
     options?.logger?.('Swap through pool');
