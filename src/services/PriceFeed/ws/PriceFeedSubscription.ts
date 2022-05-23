@@ -18,8 +18,8 @@ const allTickersSchema = z.unknown().array()
   .transform((tickers) => {
     const data = [...tickers];
     data.shift();
-    const parsedDate = tickerInfoSchema.array().parse(data);
-    return parsedDate.reduce<
+    const parsedData = tickerInfoSchema.array().parse(data);
+    return parsedData.reduce<
       Partial<
         Record<
           string,
