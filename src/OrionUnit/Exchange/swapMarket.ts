@@ -23,8 +23,8 @@ export type SwapMarketParams = {
   options?: {
     logger?: (message: string) => void,
     autoApprove?: boolean,
-    developer: {
-      route: 'aggregator' | 'pool',
+    developer?: {
+      route?: 'aggregator' | 'pool',
     }
   }
 }
@@ -129,7 +129,7 @@ export default async function swapMarket({
 
   const percent = new BigNumber(slippagePercent).div(100);
 
-  const isThroughPoolOptimal = options?.developer.route === 'pool' ?? swapInfo.isThroughPoolOptimal;
+  const isThroughPoolOptimal = options?.developer?.route === 'pool' ?? swapInfo.isThroughPoolOptimal;
 
   if (isThroughPoolOptimal) {
     options?.logger?.('Swap through pool');
