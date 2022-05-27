@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.10.4-rc.0",
+  "version": "0.10.4-rc.1",
   "description": "Orion Protocol SDK",
   "main": "./lib/esm/index.js",
   "module": "./lib/esm/index.js",
@@ -76,7 +76,7 @@
     "tiny-invariant": "^1.2.0",
     "uuid": "^8.3.2",
     "ws": "^8.5.0",
-    "zod": "^3.16.0"
+    "zod": "^3.17.3"
   },
   "homepage": "https://github.com/orionprotocol/sdk#readme",
   "files": [

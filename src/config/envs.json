@@ -44,6 +44,16 @@
             }
         }
     },
+    "experimental": {
+        "networks": {
+            "97": {
+                "api": "https://dn-dev.orionprotocol.io/bsc-testnet"
+            },
+            "3": {
+                "api": "https://dn-dev.orionprotocol.io/eth-ropsten"
+            }
+        }
+    },
     "broken": {
         "networks": {
             "0": {

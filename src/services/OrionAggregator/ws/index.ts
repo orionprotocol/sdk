@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import WebSocket from 'isomorphic-ws';
-import { validate as uuidValidate } from 'uuid';
+import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
 import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import MessageType from './MessageType';
 import SubscriptionType from './SubscriptionType';
@@ -14,6 +14,7 @@ import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
   FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance,
 } from '../../../types';
+import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 // import errorSchema from './schemas/errorSchema';
 
 const mapFullOrder = (o: z.infer<typeof fullOrderSchema>): FullOrder => ({
@@ -76,9 +77,10 @@ type BrokerTradableAtomicSwapBalanceSubscription = {
 }
 
 type PairConfigSubscription = {
-  callback: (
+  callback: ({ kind, data }: {
+    kind: 'initial' | 'update',
     data: Partial<Record<string, AssetPairUpdate>>,
-  ) => void,
+  }) => void,
 }
 
 type AggregatedOrderbookSubscription = {
@@ -94,18 +96,32 @@ type SwapInfoSubscription = {
   payload: SwapSubscriptionRequest,
   callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void,
 }
-type AddressUpdateSubscription = {
-  payload: string,
-  callback: ({ fullOrders, orderUpdate, balances } : {
-    fullOrders?: FullOrder[],
-    orderUpdate?: OrderUpdate | FullOrder,
-    balances?: Partial<
+
+type AddressUpdateUpdate = {
+  kind: 'update',
+  balances: Partial<
       Record<
         string,
         Balance
       >
-    >,
-  }) => void,
+  >,
+  order?: OrderUpdate | FullOrder
+}
+
+type AddressUpdateInitial = {
+  kind: 'initial',
+  balances: Partial<
+      Record<
+        string,
+        Balance
+      >
+  >,
+  orders?: FullOrder[] // The field is not defined if the user has no orders
+}
+
+type AddressUpdateSubscription = {
+  payload: string,
+  callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void,
 }
 
 type Subscription = {
@@ -115,21 +131,22 @@ type Subscription = {
   [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
 }
-
-type Subscriptions<T extends typeof SubscriptionType[keyof typeof SubscriptionType]> = {
-  [K in T]: Subscription[K]
-}
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
-  private subscriptions: Partial<Subscriptions<typeof SubscriptionType[keyof typeof SubscriptionType]>> = {};
+  private subscriptions: Partial<{
+    [K in keyof Subscription]: Subscription[K]
+  }> = {};
+
+  private onInit?: () => void;
 
   private onError?: (err: string) => void;
 
   private readonly wsUrl: string;
 
-  constructor(wsUrl: string, onError?: (err: string) => void) {
+  constructor(wsUrl: string, onInit?: () => void, onError?: (err: string) => void) {
     this.wsUrl = wsUrl;
+    this.onInit = onInit;
     this.onError = onError;
   }
 
@@ -160,6 +177,7 @@ class OrionAggregatorWS {
     if (!this.ws) this.init();
     this.send({
       T: type,
+      id: uuidv4(),
       ...('payload' in subscription) && {
         S: subscription.payload,
       },
@@ -170,6 +188,7 @@ class OrionAggregatorWS {
 
   unsubscribe(subscription: keyof typeof UnsubscriptionType | string) {
     this.send({
+      id: uuidv4(),
       T: UNSUBSCRIBE,
       S: subscription,
     });
@@ -221,6 +240,7 @@ class OrionAggregatorWS {
         orderBookSchema,
         swapInfoSchema,
         errorSchema,
+        unsubscriptionDoneSchema,
       ]);
 
       const json = messageSchema.parse(rawJson);
@@ -280,8 +300,9 @@ class OrionAggregatorWS {
           }
         }
           break;
-        // case MessageType.INITIALIZATION:
-        // break;
+        case MessageType.INITIALIZATION:
+          this.onInit?.();
+          break;
         case MessageType.AGGREGATED_ORDER_BOOK_UPDATE: {
           const { ob, S } = json;
           const mapOrderbookItems = (rawItems: typeof ob.a | typeof ob.b) => rawItems.reduce<OrderbookItem[]>((acc, item) => {
@@ -324,7 +345,10 @@ class OrionAggregatorWS {
           }), {});
           this.subscriptions[
             SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE
-          ]?.callback(priceUpdates);
+          ]?.callback({
+            kind: json.k === 'i' ? 'initial' : 'update',
+            data: priceUpdates,
+          });
         }
           break;
         case MessageType.ADDRESS_UPDATE: {
@@ -356,7 +380,8 @@ class OrionAggregatorWS {
               this.subscriptions[
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
-                fullOrders,
+                kind: 'initial',
+                orders: fullOrders,
                 balances,
               });
             }
@@ -373,7 +398,8 @@ class OrionAggregatorWS {
               this.subscriptions[
                 SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE
               ]?.callback({
-                orderUpdate,
+                kind: 'update',
+                order: orderUpdate,
                 balances,
               });
             }
