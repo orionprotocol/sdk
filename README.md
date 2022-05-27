@@ -276,24 +276,28 @@ orionUnit.orionAggregator.ws.subscribe(
   "aus", // ADDRESS_UPDATES_SUBSCRIBE — orders, balances
   {
     payload: "0x0000000000000000000000000000000000000000", // Some wallet address
-    callback: ({ fullOrders, orderUpdate, balances }) => {
-      // Each field is optional
-      if (fullOrders) console.log(fullOrders); // Completed orders
-
-      if (orderUpdate) {
-        switch (orderUpdate.kind) {
-          case "full":
-            console.log("Order completed", orderUpdate);
-            break;
-          case "update":
-            console.log("Order in the process of execution", orderUpdate);
-            break;
-          default:
-            break;
+    callback: (data) => {
+      switch (data.kind) {
+        case "initial":
+          if (data.orders) console.log(data.orders); // All orders. "orders" is undefined if you don't have any orders yet
+          console.log(data.balances); // Since this is initial message, the balances contain all assets
+          break;
+        case "update": {
+          if (data.order) {
+            switch (data.order.kind) {
+              case "full":
+                console.log("Pool order", data.order); // Orders from the pool go into history with the SETTLED status
+                break;
+              case "update":
+                console.log("Order in the process of execution", data.order);
+                break;
+              default:
+                break;
+            }
+          }
+          if (balances) console.log("Balance update", balances); // Since this is an update message, the balances only contain the changed assets
         }
       }
-
-      if (balances) console.log("Balance update", balances);
     },
   }
 );
