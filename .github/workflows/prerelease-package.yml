@@ -2,8 +2,8 @@ name: Prerelease
 
 on:
   push:
-    branches:    
-      - 'develop'
+      branches-ignore:    
+      - 'main'
 
 jobs:
   build-and-publish:
