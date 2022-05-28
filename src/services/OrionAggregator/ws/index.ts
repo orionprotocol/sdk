@@ -12,7 +12,7 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance,
+  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 // import errorSchema from './schemas/errorSchema';
@@ -69,6 +69,7 @@ type SwapSubscriptionRequest = {
   i: string, // asset in
   o: string, // asset out
   a: number // amount IN/OUT
+  es?: Exchange[], // exchange list
   e?: boolean; // is amount IN? Value `false` means a = amount OUT, `true` if omitted
 }
 

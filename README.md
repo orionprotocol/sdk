@@ -81,6 +81,8 @@ orionUnit.exchange
     slippagePercent: 1,
     signer: wallet, // or signer when UI
     options: {
+      // All options are optional 🙂
+      poolOnly: true, // You can specify whether you want to perform the exchange only through the pool
       logger: console.log,
       // Set it to true if you want the issues associated with
       // the lack of allowance to be automatically corrected
@@ -252,6 +254,7 @@ orionUnit.orionAggregator.ws.subscribe(
       i: assetIn, // asset in
       o: assetOut, // asset out
       e: true, // true when type of swap is exactSpend, can be omitted (true by default)
+      es: ['ORION_POOL'] // OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
       a: 5.62345343, // amount
     },
     // Handle data update in your way

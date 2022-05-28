@@ -21,6 +21,7 @@ export type SwapMarketParams = {
   signer: ethers.Signer,
   orionUnit: OrionUnit,
   options?: {
+    poolOnly?: boolean,
     logger?: (message: string) => void,
     autoApprove?: boolean,
     developer?: {
@@ -115,7 +116,17 @@ export default async function swapMarket({
     signer,
   );
 
-  const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(type, assetIn, assetOut, amount.toString());
+  const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(
+    type,
+    assetIn,
+    assetOut,
+    amount.toString(),
+    options?.poolOnly ? ['ORION_POOL'] : undefined,
+  );
+
+  if (options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
+    throw new Error(`Unexpected Orion Aggregator response. Please, contact support. Report swap request id: ${swapInfo.id}`);
+  }
 
   if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
     throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
