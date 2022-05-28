@@ -169,6 +169,7 @@ const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
   assetIn: 'ORN',
   assetOut: 'USDT',
   amount: 6.23453457,
+  exchanges: ['ORION_POOL'] // OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
 );
 ```
 
@@ -200,10 +201,12 @@ const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
 
 // Default ("verbose") fetch
 
-const placeOrderFetchResult = await orionUnit.orionAggregator
-  .placeOrder
-  // Same params as above
-  ();
+const placeOrderFetchResult = await orionUnit.orionAggregator.placeOrder(
+  {
+    // Same params as above
+  },
+  false
+);
 
 if (placeOrderFetchResult.isErr()) {
   // You can handle fetching errors here

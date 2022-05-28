@@ -162,7 +162,9 @@ class OrionAggregator {
       url.searchParams.append('amountOut', amount);
     }
     if (exchanges) {
-      url.searchParams.append('exchanges', exchanges.join(','));
+      exchanges.forEach((exchange) => {
+        url.searchParams.append('exchanges', exchange);
+      });
     }
 
     return fetchWithValidation(
