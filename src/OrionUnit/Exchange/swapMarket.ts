@@ -114,6 +114,7 @@ export default async function swapMarket({
     },
     provider,
     signer,
+    options?.logger,
   );
 
   const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(
@@ -231,8 +232,8 @@ export default async function swapMarket({
     const nonce = await provider.getTransactionCount(walletAddress, 'pending');
     unsignedSwapThroughOrionPoolTx.nonce = nonce;
 
-    const signedSwapThroughOrionPoolTx = await signer.signTransaction(unsignedSwapThroughOrionPoolTx);
-    const swapThroughOrionPoolTxResponse = await provider.sendTransaction(signedSwapThroughOrionPoolTx);
+    options?.logger?.('Signing transaction...');
+    const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughOrionPoolTx);
     return {
       through: 'orion_pool',
       txHash: swapThroughOrionPoolTxResponse.hash,

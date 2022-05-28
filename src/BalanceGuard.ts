@@ -27,16 +27,20 @@ export default class BalanceGuard {
 
   private readonly signer: ethers.Signer;
 
+  private readonly logger?: (message: string) => void;
+
   constructor(
     balances: Partial<Record<string, Record<'exchange' | 'wallet', BigNumber>>>,
     nativeCryptocurrency: Asset,
     provider: ethers.providers.Provider,
     signer: ethers.Signer,
+    logger?: (message: string) => void,
   ) {
     this.balances = balances;
     this.nativeCryptocurrency = nativeCryptocurrency;
     this.provider = provider;
     this.signer = signer;
+    this.logger = logger;
   }
 
   registerRequirement(expense: BalanceRequirement) {
@@ -132,11 +136,12 @@ export default class BalanceGuard {
         const gasLimit = await this.provider.estimateGas(unsignedApproveTx);
         unsignedApproveTx.gasLimit = gasLimit;
 
+        this.logger?.('Approve transaction signing...');
         const signedTx = await this.signer.signTransaction(unsignedApproveTx);
         const txResponse = await this.provider.sendTransaction(signedTx);
-        console.log(`${issue.asset.name} approve transaction sent ${txResponse.hash}. Waiting for confirmation...`);
+        this.logger?.(`${issue.asset.name} approve transaction sent ${txResponse.hash}. Waiting for confirmation...`);
         await txResponse.wait();
-        console.log(`${issue.asset.name} approve transaction confirmed.`);
+        this.logger?.(`${issue.asset.name} approve transaction confirmed.`);
       };
       await issue.fixes?.reduce(async (promise, item) => {
         await promise;
@@ -156,7 +161,7 @@ export default class BalanceGuard {
   };
 
   async check(fixAutofixable?: boolean) {
-    console.log(`Balance requirements: ${this.requirements
+    this.logger?.(`Balance requirements: ${this.requirements
       .map((requirement) => `${requirement.amount} ${requirement.asset.name} `
         + `for '${requirement.reason}' `
         + `from [${requirement.sources.join(' + ')}]`)
