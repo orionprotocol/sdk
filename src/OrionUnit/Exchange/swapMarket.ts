@@ -2,11 +2,12 @@
 /* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { Exchange__factory } from '@orionprotocol/contracts/ethers';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import getAvailableSources from '../../utils/getAvailableFundsSources';
 import OrionUnit from '..';
-import { contracts, crypt, utils } from '../..';
+import { crypt, utils } from '../..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
@@ -82,7 +83,7 @@ export default async function swapMarket({
   } = await simpleFetch(orionBlockchain.getInfo)();
   const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
-  const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
+  const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();
   const pricesInOrn = await simpleFetch(orionBlockchain.getPrices)();
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();

@@ -1,6 +1,9 @@
+import { ERC20__factory } from '@orionprotocol/contracts/ethers';
+import type { Exchange } from '@orionprotocol/contracts/ethers';
+
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { contracts, utils } from '..';
+import { utils } from '..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../constants';
 import { OrionAggregator } from '../services/OrionAggregator';
 
@@ -9,7 +12,7 @@ export default async function getBalance(
   asset: string,
   assetAddress: string,
   walletAddress: string,
-  exchangeContract: contracts.Exchange,
+  exchangeContract: Exchange,
   provider: ethers.providers.Provider,
 ) {
   const assetIsNativeCryptocurrency = assetAddress === ethers.constants.AddressZero;
@@ -19,7 +22,7 @@ export default async function getBalance(
   let denormalizedAssetInWalletBalance: BigNumber | undefined;
 
   if (!assetIsNativeCryptocurrency) {
-    const assetContract = contracts.ERC20__factory.connect(assetAddress, provider);
+    const assetContract = ERC20__factory.connect(assetAddress, provider);
     const assetDecimals = await assetContract.decimals();
     assetWalletBalance = await assetContract.balanceOf(walletAddress);
 

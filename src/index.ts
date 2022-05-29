@@ -10,7 +10,6 @@ export { default as fetchWithValidation } from './fetchWithValidation';
 export { default as simpleFetch } from './simpleFetch';
 export * as utils from './utils';
 export * as services from './services';
-export * as contracts from './artifacts/contracts';
 export * as crypt from './crypt';
 export * from './constants';
 export * from './types';

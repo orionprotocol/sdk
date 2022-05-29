@@ -26,6 +26,7 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "camelcase": "off",
     '@typescript-eslint/consistent-type-assertions': [
       'error',
       {

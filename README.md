@@ -131,21 +131,23 @@ const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
 ### Using contracts
 
 ```ts
-import { contracts } from "@orionprotocol/sdk";
+import {
+  Exchange__factory,
+  ERC20__factory,
+  OrionGovernance__factory,
+  OrionVoting__factory,
+} from "@orionprotocol/contracts/ethers";
 
-const exchangeContract = contracts.Exchange__factory.connect(
+const exchangeContract = Exchange__factory.connect(
   exchangeContractAddress,
   orionUnit.provider
 );
-const erc20Contract = contracts.ERC20__factory.connect(
-  tokenAddress,
-  orionUnit.provider
-);
-const governanceContract = contracts.OrionGovernance__factory.connect(
+const erc20Contract = ERC20__factory.connect(tokenAddress, orionUnit.provider);
+const governanceContract = OrionGovernance__factory.connect(
   governanceAddress,
   orionUnit.provider
 );
-const orionVoting = contracts.OrionVoting__factory.connect(
+const orionVoting = OrionVoting__factory.connect(
   votingContractAddress,
   orionUnit.provider
 );

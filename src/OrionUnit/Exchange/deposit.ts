@@ -1,10 +1,11 @@
 /* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { Exchange__factory } from '@orionprotocol/contracts/ethers';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import OrionUnit from '..';
-import { contracts, utils } from '../..';
+import { utils } from '../..';
 import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION,
 } from '../../constants';
@@ -43,7 +44,7 @@ export default async function deposit({
 
   const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
-  const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
+  const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
 
   const assetAddress = assetToAddress[asset];

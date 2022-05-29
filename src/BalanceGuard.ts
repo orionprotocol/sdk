@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import clone from 'just-clone';
-import { contracts, utils } from '.';
+import { ERC20__factory } from '@orionprotocol/contracts/ethers';
+import { utils } from '.';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
 import {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
@@ -59,7 +60,7 @@ export default class BalanceGuard {
     spenderAddress: string,
   ) {
     const walletAddress = await this.signer.getAddress();
-    const tokenContract = contracts.ERC20__factory
+    const tokenContract = ERC20__factory
       .connect(assetAddress, this.provider);
     const unsignedTx = await tokenContract.populateTransaction
       .approve(
@@ -112,7 +113,7 @@ export default class BalanceGuard {
     balanceIssues: BalanceIssue[],
   ) => {
     const fixBalanceIssue = async (issue: BalanceIssue) => {
-      const tokenContract = contracts.ERC20__factory.connect(issue.asset.address, this.provider);
+      const tokenContract = ERC20__factory.connect(issue.asset.address, this.provider);
       const approve = async ({ spenderAddress, targetAmount }: ApproveFix) => {
         const bnTargetAmount = new BigNumber(targetAmount);
         const unsignedApproveTx = await tokenContract
@@ -232,7 +233,7 @@ export default class BalanceGuard {
             denormalizedAllowance = remainingBalance.wallet;
           } else {
             if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
-            const tokenContract = contracts.ERC20__factory.connect(asset.address, this.provider);
+            const tokenContract = ERC20__factory.connect(asset.address, this.provider);
             const tokenDecimals = await tokenContract.decimals();
             const walletAddress = await this.signer.getAddress();
             const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
@@ -327,7 +328,7 @@ export default class BalanceGuard {
           denormalizedAllowance = remainingBalance.wallet;
         } else {
           if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
-          const tokenContract = contracts.ERC20__factory.connect(asset.address, this.provider);
+          const tokenContract = ERC20__factory.connect(asset.address, this.provider);
           const tokenDecimals = await tokenContract.decimals();
           const walletAddress = await this.signer.getAddress();
           const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
