@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/ethers';
+import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import OrionUnit from '..';

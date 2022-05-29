@@ -1,4 +1,4 @@
-import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts/ethers';
+import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import OrionUnit from '..';

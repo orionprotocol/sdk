@@ -3,8 +3,8 @@ import { Provider } from '@ethersproject/providers';
 import {
   Exchange as ExchangeContract,
   Exchange__factory as ExchangeContract__factory,
-} from '@orionprotocol/contracts/ethers';
-import { LibAtomic } from '@orionprotocol/contracts/ethers/Exchange';
+} from '@orionprotocol/contracts';
+import { LibAtomic } from '@orionprotocol/contracts/lib/ethers/Exchange';
 import { BytesLike, ethers, Signer } from 'ethers';
 import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, LOCKATOMIC_GAS_LIMIT,

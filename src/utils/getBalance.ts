@@ -1,5 +1,4 @@
-import { ERC20__factory } from '@orionprotocol/contracts/ethers';
-import type { Exchange } from '@orionprotocol/contracts/ethers';
+import { ERC20__factory, Exchange } from '@orionprotocol/contracts';
 
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
