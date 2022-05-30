@@ -126,7 +126,7 @@ export default async function swapMarket({
     options?.poolOnly ? ['ORION_POOL'] : undefined,
   );
 
-  if (options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
+  if (swapInfo.orderInfo !== null && options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
     throw new Error(`Unexpected Orion Aggregator response. Please, contact support. Report swap request id: ${swapInfo.id}`);
   }
 
@@ -142,7 +142,11 @@ export default async function swapMarket({
 
   const percent = new BigNumber(slippagePercent).div(100);
 
-  const isThroughPoolOptimal = options?.developer?.route === 'pool' ?? swapInfo.isThroughPoolOptimal;
+  let isThroughPoolOptimal: boolean;
+  if (options?.developer?.route !== undefined) {
+    isThroughPoolOptimal = options.developer.route === 'pool';
+  } else if (options?.poolOnly) isThroughPoolOptimal = true;
+  else isThroughPoolOptimal = swapInfo.isThroughPoolOptimal;
 
   if (isThroughPoolOptimal) {
     options?.logger?.('Swap through pool');
