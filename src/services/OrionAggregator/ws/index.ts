@@ -14,6 +14,7 @@ import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
   FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance,
 } from '../../../types';
+import { isKeyOfObject, isUnknownObject } from '../../../utils';
 // import errorSchema from './schemas/errorSchema';
 
 const mapFullOrder = (o: z.infer<typeof fullOrderSchema>): FullOrder => ({
@@ -211,6 +212,11 @@ class OrionAggregatorWS {
     this.ws.onmessage = (e) => {
       const { data } = e;
       const rawJson: unknown = JSON.parse(data.toString());
+      if (
+        isUnknownObject(rawJson)
+        && isKeyOfObject('T', rawJson)
+        && rawJson.T === 'ud'
+      ) return;
 
       const messageSchema = z.union([
         initMessageSchema,
