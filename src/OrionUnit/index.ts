@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import getOrionUnitSiblings from '../getOrionUnitSiblings';
 import { OrionAggregator } from '../services/OrionAggregator';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { OrionBlockchain } from '../services/OrionBlockchain';
@@ -143,6 +142,13 @@ export default class OrionUnit {
   }
 
   get siblings() {
-    return getOrionUnitSiblings(this.chainId, this.env);
+    const envInfo = envs[this.env];
+    const envNetworks = envInfo?.networks;
+
+    const siblingsNetworks = Object
+      .keys(envNetworks)
+      .filter(isValidChainId)
+      .filter((chainId) => chainId !== this.chainId);
+    return siblingsNetworks.map((chainId) => new OrionUnit(chainId, this.env));
   }
 }
