@@ -37,11 +37,11 @@ class PriceFeed {
   get wsUrl() {
     const url = new URL(this.apiUrl);
     const wsProtocol = url.protocol === 'https:' ? 'wss' : 'ws';
-    return `${wsProtocol}://${url.host + url.pathname}/ws2`;
+    return `${wsProtocol}://${url.host + url.pathname}/api/v1`;
   }
 
   get candlesUrl() {
-    return `${this.apiUrl}/candles/candles`;
+    return `${this.apiUrl}/api/v1/candles`;
   }
 }
 

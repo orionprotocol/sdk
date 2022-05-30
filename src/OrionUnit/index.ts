@@ -135,8 +135,7 @@ export default class OrionUnit {
     );
     this.priceFeed = new PriceFeed(
       options?.services?.priceFeed?.api
-      ?? options?.api
-      ?? customApi,
+      ?? `${options?.api ?? customApi}/price-feed`,
     );
     this.orionAnalytics = new OrionAnalytics(orionAnalyticsUrl);
     this.exchange = new Exchange(this);
