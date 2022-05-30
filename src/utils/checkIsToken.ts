@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
+import { ERC20__factory } from '@orionprotocol/contracts';
 import { ethers } from 'ethers';
 import invariant from 'tiny-invariant';
-import { ERC20__factory } from '../artifacts/contracts';
 
 const checkIsToken = async (address: string, provider?: ethers.providers.Provider) => {
   invariant(provider, 'No provider for token checking');

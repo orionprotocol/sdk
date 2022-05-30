@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import clone from 'just-clone';
-import { contracts, utils } from '.';
+import { ERC20__factory } from '@orionprotocol/contracts';
+import { utils } from '.';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
 import {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
@@ -27,16 +28,20 @@ export default class BalanceGuard {
 
   private readonly signer: ethers.Signer;
 
+  private readonly logger?: (message: string) => void;
+
   constructor(
     balances: Partial<Record<string, Record<'exchange' | 'wallet', BigNumber>>>,
     nativeCryptocurrency: Asset,
     provider: ethers.providers.Provider,
     signer: ethers.Signer,
+    logger?: (message: string) => void,
   ) {
     this.balances = balances;
     this.nativeCryptocurrency = nativeCryptocurrency;
     this.provider = provider;
     this.signer = signer;
+    this.logger = logger;
   }
 
   registerRequirement(expense: BalanceRequirement) {
@@ -55,7 +60,7 @@ export default class BalanceGuard {
     spenderAddress: string,
   ) {
     const walletAddress = await this.signer.getAddress();
-    const tokenContract = contracts.ERC20__factory
+    const tokenContract = ERC20__factory
       .connect(assetAddress, this.provider);
     const unsignedTx = await tokenContract.populateTransaction
       .approve(
@@ -108,7 +113,7 @@ export default class BalanceGuard {
     balanceIssues: BalanceIssue[],
   ) => {
     const fixBalanceIssue = async (issue: BalanceIssue) => {
-      const tokenContract = contracts.ERC20__factory.connect(issue.asset.address, this.provider);
+      const tokenContract = ERC20__factory.connect(issue.asset.address, this.provider);
       const approve = async ({ spenderAddress, targetAmount }: ApproveFix) => {
         const bnTargetAmount = new BigNumber(targetAmount);
         const unsignedApproveTx = await tokenContract
@@ -132,11 +137,12 @@ export default class BalanceGuard {
         const gasLimit = await this.provider.estimateGas(unsignedApproveTx);
         unsignedApproveTx.gasLimit = gasLimit;
 
+        this.logger?.('Approve transaction signing...');
         const signedTx = await this.signer.signTransaction(unsignedApproveTx);
         const txResponse = await this.provider.sendTransaction(signedTx);
-        console.log(`${issue.asset.name} approve transaction sent ${txResponse.hash}. Waiting for confirmation...`);
+        this.logger?.(`${issue.asset.name} approve transaction sent ${txResponse.hash}. Waiting for confirmation...`);
         await txResponse.wait();
-        console.log(`${issue.asset.name} approve transaction confirmed.`);
+        this.logger?.(`${issue.asset.name} approve transaction confirmed.`);
       };
       await issue.fixes?.reduce(async (promise, item) => {
         await promise;
@@ -156,7 +162,7 @@ export default class BalanceGuard {
   };
 
   async check(fixAutofixable?: boolean) {
-    console.log(`Balance requirements: ${this.requirements
+    this.logger?.(`Balance requirements: ${this.requirements
       .map((requirement) => `${requirement.amount} ${requirement.asset.name} `
         + `for '${requirement.reason}' `
         + `from [${requirement.sources.join(' + ')}]`)
@@ -227,7 +233,7 @@ export default class BalanceGuard {
             denormalizedAllowance = remainingBalance.wallet;
           } else {
             if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
-            const tokenContract = contracts.ERC20__factory.connect(asset.address, this.provider);
+            const tokenContract = ERC20__factory.connect(asset.address, this.provider);
             const tokenDecimals = await tokenContract.decimals();
             const walletAddress = await this.signer.getAddress();
             const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
@@ -322,7 +328,7 @@ export default class BalanceGuard {
           denormalizedAllowance = remainingBalance.wallet;
         } else {
           if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
-          const tokenContract = contracts.ERC20__factory.connect(asset.address, this.provider);
+          const tokenContract = ERC20__factory.connect(asset.address, this.provider);
           const tokenDecimals = await tokenContract.decimals();
           const walletAddress = await this.signer.getAddress();
           const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);

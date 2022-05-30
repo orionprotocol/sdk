@@ -81,6 +81,8 @@ orionUnit.exchange
     slippagePercent: 1,
     signer: wallet, // or signer when UI
     options: {
+      // All options are optional 🙂
+      poolOnly: true, // You can specify whether you want to perform the exchange only through the pool
       logger: console.log,
       // Set it to true if you want the issues associated with
       // the lack of allowance to be automatically corrected
@@ -129,21 +131,23 @@ const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
 ### Using contracts
 
 ```ts
-import { contracts } from "@orionprotocol/sdk";
+import {
+  Exchange__factory,
+  ERC20__factory,
+  OrionGovernance__factory,
+  OrionVoting__factory,
+} from "@orionprotocol/contracts/ethers";
 
-const exchangeContract = contracts.Exchange__factory.connect(
+const exchangeContract = Exchange__factory.connect(
   exchangeContractAddress,
   orionUnit.provider
 );
-const erc20Contract = contracts.ERC20__factory.connect(
-  tokenAddress,
-  orionUnit.provider
-);
-const governanceContract = contracts.OrionGovernance__factory.connect(
+const erc20Contract = ERC20__factory.connect(tokenAddress, orionUnit.provider);
+const governanceContract = OrionGovernance__factory.connect(
   governanceAddress,
   orionUnit.provider
 );
-const orionVoting = contracts.OrionVoting__factory.connect(
+const orionVoting = OrionVoting__factory.connect(
   votingContractAddress,
   orionUnit.provider
 );
@@ -167,6 +171,7 @@ const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
   assetIn: 'ORN',
   assetOut: 'USDT',
   amount: 6.23453457,
+  exchanges: ['ORION_POOL'] // OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
 );
 ```
 
@@ -198,10 +203,12 @@ const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
 
 // Default ("verbose") fetch
 
-const placeOrderFetchResult = await orionUnit.orionAggregator
-  .placeOrder
-  // Same params as above
-  ();
+const placeOrderFetchResult = await orionUnit.orionAggregator.placeOrder(
+  {
+    // Same params as above
+  },
+  false
+);
 
 if (placeOrderFetchResult.isErr()) {
   // You can handle fetching errors here
@@ -252,6 +259,7 @@ orionUnit.orionAggregator.ws.subscribe(
       i: assetIn, // asset in
       o: assetOut, // asset out
       e: true, // true when type of swap is exactSpend, can be omitted (true by default)
+      es: ['ORION_POOL'] // OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
       a: 5.62345343, // amount
     },
     // Handle data update in your way
@@ -276,24 +284,28 @@ orionUnit.orionAggregator.ws.subscribe(
   "aus", // ADDRESS_UPDATES_SUBSCRIBE — orders, balances
   {
     payload: "0x0000000000000000000000000000000000000000", // Some wallet address
-    callback: ({ fullOrders, orderUpdate, balances }) => {
-      // Each field is optional
-      if (fullOrders) console.log(fullOrders); // Completed orders
-
-      if (orderUpdate) {
-        switch (orderUpdate.kind) {
-          case "full":
-            console.log("Order completed", orderUpdate);
-            break;
-          case "update":
-            console.log("Order in the process of execution", orderUpdate);
-            break;
-          default:
-            break;
+    callback: (data) => {
+      switch (data.kind) {
+        case "initial":
+          if (data.orders) console.log(data.orders); // All orders. "orders" is undefined if you don't have any orders yet
+          console.log(data.balances); // Since this is initial message, the balances contain all assets
+          break;
+        case "update": {
+          if (data.order) {
+            switch (data.order.kind) {
+              case "full":
+                console.log("Pool order", data.order); // Orders from the pool go into history with the SETTLED status
+                break;
+              case "update":
+                console.log("Order in the process of execution", data.order);
+                break;
+              default:
+                break;
+            }
+          }
+          if (balances) console.log("Balance update", balances); // Since this is an update message, the balances only contain the changed assets
         }
       }
-
-      if (balances) console.log("Balance update", balances);
     },
   }
 );

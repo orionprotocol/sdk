@@ -195,3 +195,7 @@ export type BalanceIssue = {
   readonly sources: Source[],
   readonly fixes?: Fix[],
 }
+
+const availableExchanges = ['ORION_POOL', 'ASCENDEX', 'BINANCE', 'KUCOIN'] as const;
+
+export type Exchange = typeof availableExchanges[number];

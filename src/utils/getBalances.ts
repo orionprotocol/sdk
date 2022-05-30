@@ -1,6 +1,6 @@
+import { Exchange } from '@orionprotocol/contracts';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { contracts } from '..';
 import { OrionAggregator } from '../services/OrionAggregator';
 import getBalance from './getBalance';
 
@@ -8,7 +8,7 @@ export default async (
   balancesRequired: Partial<Record<string, string>>,
   orionAggregator: OrionAggregator,
   walletAddress: string,
-  exchangeContract: contracts.Exchange,
+  exchangeContract: Exchange,
   provider: ethers.providers.Provider,
 ) => {
   const balances = await Promise.all(

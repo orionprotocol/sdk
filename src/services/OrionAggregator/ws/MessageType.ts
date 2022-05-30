@@ -7,6 +7,7 @@ const MessageType = {
   ASSET_PAIRS_CONFIG_UPDATE: 'apcu',
   ADDRESS_UPDATE: 'au',
   BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE: 'btasabu',
+  UNSUBSCRIPTION_DONE: 'ud',
 } as const;
 
 export default MessageType;

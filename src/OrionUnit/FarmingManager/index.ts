@@ -1,7 +1,7 @@
+import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import OrionUnit from '..';
-import { contracts } from '../..';
 import BalanceGuard from '../../BalanceGuard';
 import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants';
 import simpleFetch from '../../simpleFetch';
@@ -51,7 +51,7 @@ export default class FarmingManager {
 
     const walletAddress = await signer.getAddress();
 
-    const exchangeContract = contracts.Exchange__factory
+    const exchangeContract = Exchange__factory
       .connect(exchangeContractAddress, this.orionUnit.provider);
 
     const assetAAddress = assetToAddress[assetA];
@@ -90,9 +90,9 @@ export default class FarmingManager {
     const pool = poolsConfig.pools[poolName];
     if (!pool) throw new Error(`Pool ${poolName} not found`);
 
-    const pairContract = contracts.IUniswapV2Pair__factory
+    const pairContract = IUniswapV2Pair__factory
       .connect(pool.lpTokenAddress, this.orionUnit.provider);
-    const routerContract = contracts.IUniswapV2Router__factory
+    const routerContract = IUniswapV2Router__factory
       .connect(poolsConfig.routerAddress, this.orionUnit.provider);
 
     let pairTokensIsInversed = false;
@@ -242,7 +242,7 @@ export default class FarmingManager {
 
     const walletAddress = await signer.getAddress();
 
-    const exchangeContract = contracts.Exchange__factory
+    const exchangeContract = Exchange__factory
       .connect(exchangeContractAddress, this.orionUnit.provider);
     const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
     const balances = await getBalances(
@@ -268,12 +268,12 @@ export default class FarmingManager {
       signer,
     );
 
-    const pairContract = contracts.IUniswapV2Pair__factory
+    const pairContract = IUniswapV2Pair__factory
       .connect(pool.lpTokenAddress, this.orionUnit.provider);
 
     const { _reserve0, _reserve1 } = await pairContract.getReserves();
 
-    const routerContract = contracts.IUniswapV2Router__factory
+    const routerContract = IUniswapV2Router__factory
       .connect(poolsConfig.routerAddress, this.orionUnit.provider);
 
     let pairTokensIsInversed = false;

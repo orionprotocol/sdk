@@ -9,7 +9,7 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import { SignedCancelOrderRequest, SignedOrder } from '../../types';
+import { Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema,
@@ -151,6 +151,7 @@ class OrionAggregator {
     assetIn: string,
     assetOut: string,
     amount: string,
+    exchanges?: Exchange[],
   ) => {
     const url = new URL(`${this.apiUrl}/api/v1/swap`);
     url.searchParams.append('assetIn', assetIn);
@@ -159,6 +160,11 @@ class OrionAggregator {
       url.searchParams.append('amountIn', amount);
     } else {
       url.searchParams.append('amountOut', amount);
+    }
+    if (exchanges) {
+      exchanges.forEach((exchange) => {
+        url.searchParams.append('exchanges', exchange);
+      });
     }
 
     return fetchWithValidation(

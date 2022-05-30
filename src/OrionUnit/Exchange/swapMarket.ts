@@ -2,11 +2,12 @@
 /* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import getAvailableSources from '../../utils/getAvailableFundsSources';
 import OrionUnit from '..';
-import { contracts, crypt, utils } from '../..';
+import { crypt, utils } from '../..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
@@ -21,6 +22,7 @@ export type SwapMarketParams = {
   signer: ethers.Signer,
   orionUnit: OrionUnit,
   options?: {
+    poolOnly?: boolean,
     logger?: (message: string) => void,
     autoApprove?: boolean,
     developer?: {
@@ -81,7 +83,7 @@ export default async function swapMarket({
   } = await simpleFetch(orionBlockchain.getInfo)();
   const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
 
-  const exchangeContract = contracts.Exchange__factory.connect(exchangeContractAddress, provider);
+  const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();
   const pricesInOrn = await simpleFetch(orionBlockchain.getPrices)();
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
@@ -113,9 +115,20 @@ export default async function swapMarket({
     },
     provider,
     signer,
+    options?.logger,
   );
 
-  const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(type, assetIn, assetOut, amount.toString());
+  const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(
+    type,
+    assetIn,
+    assetOut,
+    amount.toString(),
+    options?.poolOnly ? ['ORION_POOL'] : undefined,
+  );
+
+  if (options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
+    throw new Error(`Unexpected Orion Aggregator response. Please, contact support. Report swap request id: ${swapInfo.id}`);
+  }
 
   if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
     throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
@@ -220,8 +233,8 @@ export default async function swapMarket({
     const nonce = await provider.getTransactionCount(walletAddress, 'pending');
     unsignedSwapThroughOrionPoolTx.nonce = nonce;
 
-    const signedSwapThroughOrionPoolTx = await signer.signTransaction(unsignedSwapThroughOrionPoolTx);
-    const swapThroughOrionPoolTxResponse = await provider.sendTransaction(signedSwapThroughOrionPoolTx);
+    options?.logger?.('Signing transaction...');
+    const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughOrionPoolTx);
     return {
       through: 'orion_pool',
       txHash: swapThroughOrionPoolTxResponse.hash,
