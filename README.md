@@ -163,15 +163,15 @@ const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
 ### Get swap info
 
 ```ts
-import { simpleFetch } from '@orionprotocol/sdk';
+import { simpleFetch } from "@orionprotocol/sdk";
 
 const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
   // Use 'exactSpend' when 'amount' is how much you want spend. Use 'exactReceive' otherwise
-  type: 'exactSpend',
-  assetIn: 'ORN',
-  assetOut: 'USDT',
-  amount: 6.23453457,
-  exchanges: ['ORION_POOL'] // OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
+  "exactSpend", // type
+  "ORN", // asset in
+  "USDT", // asset out
+  6.23453457, // amount
+  ["ORION_POOL"] // Exchanges. OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
 );
 ```
 
