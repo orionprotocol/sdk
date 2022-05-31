@@ -20,9 +20,9 @@ npm i @orionprotocol/sdk
 import { OrionUnit } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const wallet = new Wallet("0x...");
-// OrionUnit is chain-in-environment abstraction
 const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm available
+const wallet = new Wallet("0x...", orionUnit.provider);
+// OrionUnit is chain-in-environment abstraction
 ```
 
 ```ts
@@ -136,7 +136,7 @@ import {
   ERC20__factory,
   OrionGovernance__factory,
   OrionVoting__factory,
-} from "@orionprotocol/contracts/ethers";
+} from "@orionprotocol/contracts";
 
 const exchangeContract = Exchange__factory.connect(
   exchangeContractAddress,
@@ -222,7 +222,7 @@ if (placeOrderFetchResult.isErr()) {
       console.error(`URL: ${error.url}, Error: ${error.message}`);
       break;
     case "unknownFetchThrow":
-      console.error("Something wrong happened furing fetching", error.error);
+      console.error("Something wrong happened during fetching", error.error);
       break;
     // ... and 8 errors types more
     // see src/fetchWithValidation.ts for details
@@ -303,7 +303,7 @@ orionUnit.orionAggregator.ws.subscribe(
                 break;
             }
           }
-          if (balances) console.log("Balance update", balances); // Since this is an update message, the balances only contain the changed assets
+          if (data.balances) console.log("Balance update", data.balances); // Since this is an update message, the balances only contain the changed assets
         }
       }
     },
