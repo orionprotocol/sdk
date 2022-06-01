@@ -3,6 +3,8 @@
         "ASCENDEX",
         "bignumber",
         "denormalized",
-        "KUCOIN"
+        "KUCOIN",
+        "orderbook",
+        "orionprotocol"
     ]
 }

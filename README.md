@@ -116,6 +116,60 @@ orionUnit.farmingManager.removeAllLiquidity({
 
 ## Low level methods
 
+## About our fetching system
+
+Data fetching is often a pain. Network issue, fetching library errors, server errors, wrong response data. We want to be able to handle all these errors in a human way and be sure that we get the expected data.
+
+1. We overcome the limitations of exception handling (for example, in the `catch` block, the thrown exception can be anything) with [neverthrow](https://github.com/supermacro/neverthrow).
+2. Predictability (validation) is provided to us by [zod](https://github.com/colinhacks/zod)
+
+We have two options for interacting with our services.
+
+1.  [**Verbose**](./src/fetchWithValidation.ts). Provides a result object that can be successful or not. Provides data to handle fetching error: http code, http status, response body, response status and .etc)
+2.  [**Simple Fetch**](./src/simpleFetch.ts). Is a wrapper over a verbose way. Allows you to "just fetch" (perhaps as you usually do)
+
+```ts
+// Verbose way example
+
+const getCandlesResult = await orionUnit.priceFeed.getCandles(
+  "ORN-USDT",
+  1650287678,
+  1650374078,
+  "5m"
+);
+if (getCandlesResult.isErr()) {
+  // You can handle fetching errors here
+  // You can access error text, statuses
+  const { error } = placeOrderFetchResult;
+  switch (error.type) {
+    case "fetchError": // Instance of Error
+      console.error(error.message);
+      break;
+    case "unknownFetchError":
+      console.error(`URL: ${error.url}, Error: ${error.message}`);
+      break;
+    case "unknownFetchThrow":
+      console.error("Something wrong happened during fetching", error.error);
+      break;
+    // ... more error types see in src/fetchWithValidation.ts
+  }
+} else {
+  // Success result
+  const { candles, timeStart, timeEnd } = getCandlesResult.value;
+  // Here we can handle response data
+}
+```
+
+```ts
+// Simple Fetch
+
+const { candles, timeStart, timeEnd } = await simpleFetch(
+  orionUnit.priceFeed.getCandles
+)("ORN-USDT", 1650287678, 1650374078, "5m");
+
+// Here we can handle response data
+```
+
 ### Get historical price
 
 ```ts
@@ -193,7 +247,7 @@ Swap info eesponse example:
   "minAmountIn": 8.2,
   "minAmountOut": 12,
   "availableAmountIn": 25.2,
-  "availableAmountOut": null,
+  "availableAmountOut": null, // Null when type is 'exactSpend'
   "path": ["ORN", "USDT"],
   "isThroughPoolOptimal": true,
   "orderInfo": {
@@ -209,59 +263,48 @@ Swap info eesponse example:
 ### Place order in Orion Aggregator
 
 ```ts
-import { simpleFetch } from "@orionprotocol/sdk";
+import { simpleFetch, crypt } from "@orionprotocol/sdk";
+import { crypt } from "@orionprotocol/sdk";
 
-// You can use simpleFetch or "default" (verbose) fetch
-// Simple fetch
+const myAddress = await signer.getAddress(); // or wallet.address (without await)
+const {
+  matcherAddress, // The address that will transfer funds to you during the exchange process
+} = await simpleFetch(orionUnit.orionBlockchain.getInfo)();
+const baseAssetAddress = "0xfbcad2c3a90fbd94c335fbdf8e22573456da7f68";
+const quoteAssetAddress = "0xcb2951e90d8dcf16e1fa84ac0c83f48906d6a744";
+const amount = "345.623434";
+const price = "2.55";
+const feeAssetAddress = "0xf223eca06261145b3287a0fefd8cfad371c7eb34";
+const fee = "0.7235"; // Orion Fee + Network Fee in fee asset
+const side = "BUY"; // or 'SELL'
+const isPersonalSign = false; // https://docs.metamask.io/guide/signing-data.html#a-brief-history
+const { chainId } = orionUnit;
+
+const signedOrder = await crypt.signOrder(
+  baseAssetAddress,
+  quoteAssetAddress,
+  side,
+  price,
+  amount,
+  fee,
+  myAddress,
+  matcherAddress,
+  feeAssetAddress,
+  isPersonalSign,
+  wallet, // or signer when UI
+  chainId
+);
+const exchangeContract = Exchange__factory.connect(
+  exchangeContractAddress,
+  orionUnit.provider
+);
+
+const orderIsOk = await exchangeContract.validateOrder(signedOrder);
 
 const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
-  {
-    senderAddress: "0x61eed69c0d112c690fd6f44bb621357b89fbe67f",
-    matcherAddress: "0xfbcad2c3a90fbd94c335fbdf8e22573456da7f68",
-    baseAsset: "0xf223eca06261145b3287a0fefd8cfad371c7eb34",
-    quoteAsset: "0xcb2951e90d8dcf16e1fa84ac0c83f48906d6a744",
-    matcherFeeAsset: "0xf223eca06261145b3287a0fefd8cfad371c7eb34",
-    amount: 500000000,
-    price: 334600000,
-    matcherFee: 29296395, // Orion Fee + Network Fee
-    nonce: 1650345051276,
-    expiration: 1652850651276,
-    buySide: 0,
-    isPersonalSign: false, // https://docs.metamask.io/guide/signing-data.html#a-brief-history
-  },
+  signedOrder,
   false // Place in internal orderbook
 );
-
-// Default ("verbose") fetch
-
-const placeOrderFetchResult = await orionUnit.orionAggregator.placeOrder(
-  {
-    // Same params as above
-  },
-  false
-);
-
-if (placeOrderFetchResult.isErr()) {
-  // You can handle fetching errors here
-  // You can access error text, statuses
-  const { error } = placeOrderFetchResult;
-  switch (error.type) {
-    case "fetchError": // (no network, connection refused, connection break)
-      console.error(error.message);
-      break;
-    case "unknownFetchError": // Instance of Error
-      console.error(`URL: ${error.url}, Error: ${error.message}`);
-      break;
-    case "unknownFetchThrow":
-      console.error("Something wrong happened during fetching", error.error);
-      break;
-    // ... and 8 errors types more
-    // see src/fetchWithValidation.ts for details
-  }
-} else {
-  // Success result
-  const { orderId } = placeOrderFetchResult.value;
-}
 ```
 
 ### Orion Aggregator WebSocket
@@ -297,7 +340,7 @@ orionUnit.orionAggregator.ws.subscribe(
     callback: (swapInfo) => {
       switch (swapInfo.kind) {
         case "exactSpend":
-          console.log(swapInfo.availableAmountOut);
+          console.log(swapInfo.availableAmountIn);
           break;
         case "exactReceive":
           console.log(swapInfo.availableAmountOut);

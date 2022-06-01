@@ -12,19 +12,18 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
   errorSchema?: Schema<ErrorOut, z.ZodTypeDef, ErrorIn>,
 ) {
   // Cases:
-  // 1. fetchError (no network, connection refused, connection break)
-  // 2. unknownFetchError
-  // 3. unknownFetchThrow
-  // 4. unknownGetTextError
-  // 5. unknownGetTextUnknownError
-  // 6. serverError
-  // 7. jsonParseError
-  // 8. jsonParseUnknownError
-  // 9. clientErrorWithResponsePayload
-  // 10. clientErrorPayloadParseError
-  // 11. clientError
-  // 12. payloadParseError
-  // 13. payload
+  // fetchError (no network, connection refused, connection break)
+  // unknownFetchThrow
+  // unknownGetTextError
+  // unknownGetTextUnknownError
+  // serverError
+  // jsonParseError
+  // jsonParseUnknownError
+  // clientErrorWithResponsePayload
+  // clientErrorPayloadParseError
+  // clientError
+  // payloadParseError
+  // payload
 
   const fetchResult = await fromPromise(fetch(url, {
     ...options || {},
