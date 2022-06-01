@@ -19,7 +19,7 @@ class PriceFeed {
     timeStart: number,
     timeEnd: number,
     interval: '5m' | '30m' | '1h' | '1d',
-    exchange: string,
+    exchange = 'all',
   ) => {
     const url = new URL(this.candlesUrl);
     url.searchParams.append('symbol', symbol);

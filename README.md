@@ -15,6 +15,8 @@ npm i @orionprotocol/sdk
 
 ### Initialization
 
+> :warning: **Ethers ^5.6.0 required**
+
 ```js
 // Node.js
 import { OrionUnit } from "@orionprotocol/sdk";
@@ -121,10 +123,9 @@ import { simpleFetch } from "@orionprotocol/sdk";
 
 const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
   "ORN-USDT",
-  1650287678, // interval start
-  1650374078, // interval end
-  "5m", // interval
-  "all" // exchange
+  1650287678, // interval start, unix timestamp
+  1650374078, // interval end, unix timestamp
+  "5m" // '5m' or '30m' or '1h' or '1d',
 );
 ```
 
@@ -158,6 +159,7 @@ const orionVoting = OrionVoting__factory.connect(
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
+console.log(pairsList); // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN']
 ```
 
 ### Get swap info
@@ -170,9 +172,38 @@ const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
   "exactSpend", // type
   "ORN", // asset in
   "USDT", // asset out
-  6.23453457, // amount
+  25.23453457, // amount
   ["ORION_POOL"] // Exchanges. OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
 );
+```
+
+Swap info eesponse example:
+
+```json
+{
+  "id": "2275c9b1-5c42-40c4-805f-bb1e685029f9",
+  "assetIn": "ORN",
+  "amountIn": 25.23453457,
+  "assetOut": "USDT",
+  "amountOut": 37.11892965,
+  "price": 1.47095757,
+  "marketAmountOut": 37.11892965,
+  "marketAmountIn": null,
+  "marketPrice": 1.47095757,
+  "minAmountIn": 8.2,
+  "minAmountOut": 12,
+  "availableAmountIn": 25.2,
+  "availableAmountOut": null,
+  "path": ["ORN", "USDT"],
+  "isThroughPoolOptimal": true,
+  "orderInfo": {
+    "assetPair": "ORN-USDT",
+    "side": "SELL",
+    "amount": 25.2,
+    "safePrice": 1.468
+  },
+  "executionInfo": "ORION_POOL: ORN -> USDT (length = 1): 25.23453457 ORN -> 37.11892965 USDT, market amount out = 37.11892965 USDT, price = 1.47095757 USDT/ORN (order SELL 25.2 @ 1.47 (safe price 1.468) on ORN-USDT), available amount in = 25.2 ORN, steps: {[1]: 25.23453457 ORN -> 37.11892965 USDT, price = 1.47095757 USDT/ORN, passed amount in = 25.23453457 ORN, amount out = cost of SELL on ORN-USDT order by min price = 1.47095757 USDT/ORN (sell by amount), avgWeighedPrice = 1.47095757 USDT/ORN, cost by avgWeighedPrice = 37.11892965 USDT, executed sell amount = 25.23453457 ORN}"
+}
 ```
 
 ### Place order in Orion Aggregator
