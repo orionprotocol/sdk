@@ -9,6 +9,7 @@
 - [High level methods](#high-level-methods)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
+  - [Get swap market fee info](#get-swap-market-fee-info)
   - [Make swap market](#make-swap-market)
   - [Add liquidity](#add-liquidity)
   - [Remove all liquidity](#remove-all-liquidity)
@@ -93,7 +94,7 @@ orionUnit.exchange.deposit({
 });
 ```
 
-### Get fee info
+### Get swap market fee info
 
 ```ts
 orionUnit.exchange
