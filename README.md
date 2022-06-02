@@ -93,6 +93,36 @@ orionUnit.exchange.deposit({
 });
 ```
 
+### Get fee info
+
+```ts
+orionUnit.exchange
+  .getSwapMarketFeeInfo({
+    type: "exactSpend",
+    assetIn: "ORN",
+    assetOut: "USDT",
+    feeAsset: "ORN",
+    amount: 23.89045345,
+    options: {
+      // Optional
+      poolOnly: false,
+    },
+  })
+  .then(console.log);
+
+// {
+//   feeAsset: 'BNB',
+//   feeAssetAddress: '0x0000000000000000000000000000000000000000',
+//   feeAmount: '0.006'
+//  }
+
+// {
+//   feeAsset: 'ORN',
+//   feeAssetAddress: '0xf223eca06261145b3287a0fefd8cfad371c7eb34',
+//   feeAmount: '2.5910754708713146879833915507960091181362655'
+// }
+```
+
 ### Make swap market
 
 ```ts
@@ -216,7 +246,7 @@ Swap info eesponse example:
   "minAmountIn": 8.2,
   "minAmountOut": 12,
   "availableAmountIn": 25.2,
-  "availableAmountOut": null, // Null when type is 'exactSpend'
+  "availableAmountOut": null,
   "path": ["ORN", "USDT"],
   "isThroughPoolOptimal": true,
   "orderInfo": {
