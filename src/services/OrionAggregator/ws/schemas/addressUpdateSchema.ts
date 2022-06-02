@@ -6,6 +6,7 @@ import balancesSchema from './balancesSchema';
 import baseMessageSchema from './baseMessageSchema';
 
 const baseAddressUpdate = baseMessageSchema.extend({
+  id: z.string(),
   T: z.literal(MessageType.ADDRESS_UPDATE),
   S: z.string(), // subscription
   uc: z.array(z.enum(['b', 'o'])), // update content

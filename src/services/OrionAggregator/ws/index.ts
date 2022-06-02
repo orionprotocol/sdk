@@ -132,6 +132,7 @@ type Subscription = {
   [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
 }
+
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
@@ -139,9 +140,9 @@ class OrionAggregatorWS {
     [K in keyof Subscription]: Subscription[K]
   }> = {};
 
-  private onInit?: () => void;
+  public onInit?: () => void;
 
-  private onError?: (err: string) => void;
+  public onError?: (err: string) => void;
 
   private readonly wsUrl: string;
 
@@ -174,11 +175,16 @@ class OrionAggregatorWS {
   subscribe<T extends typeof SubscriptionType[keyof typeof SubscriptionType]>(
     type: T,
     subscription: Subscription[T],
+    strict = false,
   ) {
     if (!this.ws) this.init();
+    const subscriptionExists = type in this.subscriptions;
+    if (strict && subscriptionExists) throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
+
+    const id = uuidv4;
     this.send({
       T: type,
-      id: uuidv4(),
+      id,
       ...('payload' in subscription) && {
         S: subscription.payload,
       },
@@ -189,7 +195,6 @@ class OrionAggregatorWS {
 
   unsubscribe(subscription: keyof typeof UnsubscriptionType | string) {
     this.send({
-      id: uuidv4(),
       T: UNSUBSCRIBE,
       S: subscription,
     });
@@ -254,6 +259,9 @@ class OrionAggregatorWS {
           break;
         case MessageType.PING_PONG:
           this.sendRaw(data.toString());
+          break;
+        case MessageType.UNSUBSCRIPTION_DONE:
+          // To implement
           break;
         case MessageType.SWAP_INFO: {
           const baseSwapInfo: SwapInfoBase = {
