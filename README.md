@@ -3,17 +3,38 @@
 [![npm version](https://img.shields.io/npm/v/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 [![Downloads](https://img.shields.io/npm/dm/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 
-# Install
+- [Install](#install)
+- [Usage](#usage)
+- [Initialization](#initialization)
+- [High level methods](#high-level-methods)
+  - [Withdraw](#withdraw)
+  - [Deposit](#deposit)
+  - [Make swap market](#make-swap-market)
+  - [Add liquidity](#add-liquidity)
+  - [Remove all liquidity](#remove-all-liquidity)
+- [Low level methods](#low-level-methods)
+  - [Get historical price](#get-historical-price)
+  - [Using contracts](#using-contracts)
+  - [Get tradable pairs](#get-tradable-pairs)
+  - [Get swap info](#get-swap-info)
+  - [Place order in Orion Aggregator](#place-order-in-orion-aggregator)
+  - [Orion Aggregator WebSocket](#orion-aggregator-websocket)
+  - [Swap Info](#swap-info)
+  - [Balances and order history stream](#balances-and-order-history-stream)
+  - [Orderbook stream](#orderbook-stream)
+  - [Orion Aggregator WS Stream Unsubscribing](#orion-aggregator-ws-stream-unsubscribing)
+- [Price Feed Websocket Stream](#price-feed-websocket-stream)
+- [About our fetching system](#about-our-fetching-system)
+
+## Install
 
 ```console
 npm i @orionprotocol/sdk
 ```
 
-# Usage
+## Usage
 
-## High level methods
-
-### Initialization
+## Initialization
 
 > :warning: **Ethers ^5.6.0 required**
 
@@ -50,7 +71,9 @@ detectEthereumProvider().then((provider) => {
 });
 ```
 
-#### Withdraw
+## High level methods
+
+### Withdraw
 
 ```ts
 orionUnit.exchange.withdraw({
@@ -60,7 +83,7 @@ orionUnit.exchange.withdraw({
 });
 ```
 
-#### Deposit
+### Deposit
 
 ```ts
 orionUnit.exchange.deposit({
@@ -70,7 +93,7 @@ orionUnit.exchange.deposit({
 });
 ```
 
-#### Make swap market
+### Make swap market
 
 ```ts
 orionUnit.exchange
@@ -94,7 +117,7 @@ orionUnit.exchange
   .then(console.log);
 ```
 
-#### Add liquidity
+### Add liquidity
 
 ```ts
 orionUnit.farmingManager.addLiquidity({
@@ -105,7 +128,7 @@ orionUnit.farmingManager.addLiquidity({
 });
 ```
 
-#### Remove all liquidity
+### Remove all liquidity
 
 ```ts
 orionUnit.farmingManager.removeAllLiquidity({
@@ -115,60 +138,6 @@ orionUnit.farmingManager.removeAllLiquidity({
 ```
 
 ## Low level methods
-
-## About our fetching system
-
-Data fetching is often a pain. Network issue, fetching library errors, server errors, wrong response data. We want to be able to handle all these errors in a human way and be sure that we get the expected data.
-
-1. We overcome the limitations of exception handling (for example, in the `catch` block, the thrown exception can be anything) with [neverthrow](https://github.com/supermacro/neverthrow).
-2. Predictability (validation) is provided to us by [zod](https://github.com/colinhacks/zod)
-
-We have two options for interacting with our services.
-
-1.  [**Verbose**](./src/fetchWithValidation.ts). Provides a result object that can be successful or not. Provides data to handle fetching error: http code, http status, response body, response status and .etc)
-2.  [**Simple Fetch**](./src/simpleFetch.ts). Is a wrapper over a verbose way. Allows you to "just fetch" (perhaps as you usually do)
-
-```ts
-// Verbose way example
-
-const getCandlesResult = await orionUnit.priceFeed.getCandles(
-  "ORN-USDT",
-  1650287678,
-  1650374078,
-  "5m"
-);
-if (getCandlesResult.isErr()) {
-  // You can handle fetching errors here
-  // You can access error text, statuses
-  const { error } = placeOrderFetchResult;
-  switch (error.type) {
-    case "fetchError": // Instance of Error
-      console.error(error.message);
-      break;
-    case "unknownFetchError":
-      console.error(`URL: ${error.url}, Error: ${error.message}`);
-      break;
-    case "unknownFetchThrow":
-      console.error("Something wrong happened during fetching", error.error);
-      break;
-    // ... more error types see in src/fetchWithValidation.ts
-  }
-} else {
-  // Success result
-  const { candles, timeStart, timeEnd } = getCandlesResult.value;
-  // Here we can handle response data
-}
-```
-
-```ts
-// Simple Fetch
-
-const { candles, timeStart, timeEnd } = await simpleFetch(
-  orionUnit.priceFeed.getCandles
-)("ORN-USDT", 1650287678, 1650374078, "5m");
-
-// Here we can handle response data
-```
 
 ### Get historical price
 
@@ -264,12 +233,9 @@ Swap info eesponse example:
 
 ```ts
 import { simpleFetch, crypt } from "@orionprotocol/sdk";
-import { crypt } from "@orionprotocol/sdk";
+import { Exchange__factory } from "@orionprotocol/contracts";
 
 const myAddress = await signer.getAddress(); // or wallet.address (without await)
-const {
-  matcherAddress, // The address that will transfer funds to you during the exchange process
-} = await simpleFetch(orionUnit.orionBlockchain.getInfo)();
 const baseAssetAddress = "0xfbcad2c3a90fbd94c335fbdf8e22573456da7f68";
 const quoteAssetAddress = "0xcb2951e90d8dcf16e1fa84ac0c83f48906d6a744";
 const amount = "345.623434";
@@ -279,6 +245,9 @@ const fee = "0.7235"; // Orion Fee + Network Fee in fee asset
 const side = "BUY"; // or 'SELL'
 const isPersonalSign = false; // https://docs.metamask.io/guide/signing-data.html#a-brief-history
 const { chainId } = orionUnit;
+const {
+  matcherAddress, // The address that will transfer funds to you during the exchange process
+} = await simpleFetch(orionUnit.orionBlockchain.getInfo)();
 
 const signedOrder = await crypt.signOrder(
   baseAssetAddress,
@@ -294,6 +263,7 @@ const signedOrder = await crypt.signOrder(
   wallet, // or signer when UI
   chainId
 );
+
 const exchangeContract = Exchange__factory.connect(
   exchangeContractAddress,
   orionUnit.provider
@@ -303,7 +273,7 @@ const orderIsOk = await exchangeContract.validateOrder(signedOrder);
 
 const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
   signedOrder,
-  false // Place in internal orderbook
+  false // True if you want place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with the another "internal" order(s).
 );
 ```
 
@@ -446,4 +416,58 @@ const lastPriceSubscription = orionUnit.priceFeed.ws.subscribe("lastPrice", {
 });
 lastPriceSubscription.unsubscribe();
 orionUnit.priceFeed.ws.unsubscribe("lastPrice", lastPriceSubscription.id);
+```
+
+## About our fetching system
+
+Data fetching is often a pain. Network issue, fetching library errors, server errors, wrong response data. We want to be able to handle all these errors in a human way and be sure that we get the expected data.
+
+1. We overcome the limitations of exception handling (for example, in the `catch` block, the thrown exception can be anything) with [neverthrow](https://github.com/supermacro/neverthrow).
+2. Predictability (validation) is provided to us by [zod](https://github.com/colinhacks/zod)
+
+We have two options for interacting with our services.
+
+1.  [**Verbose**](./src/fetchWithValidation.ts). Provides a result object that can be successful or not. Provides data to handle fetching error: http code, http status, response body, response status and .etc)
+2.  [**Simple Fetch**](./src/simpleFetch.ts). Is a wrapper over a verbose way. Allows you to "just fetch" (perhaps as you usually do)
+
+```ts
+// Verbose way example
+
+const getCandlesResult = await orionUnit.priceFeed.getCandles(
+  "ORN-USDT",
+  1650287678,
+  1650374078,
+  "5m"
+);
+if (getCandlesResult.isErr()) {
+  // You can handle fetching errors here
+  // You can access error text, statuses
+  const { error } = placeOrderFetchResult;
+  switch (error.type) {
+    case "fetchError": // Instance of Error
+      console.error(error.message);
+      break;
+    case "unknownFetchError":
+      console.error(`URL: ${error.url}, Error: ${error.message}`);
+      break;
+    case "unknownFetchThrow":
+      console.error("Something wrong happened during fetching", error.error);
+      break;
+    // ... more error types see in src/fetchWithValidation.ts
+  }
+} else {
+  // Success result
+  const { candles, timeStart, timeEnd } = getCandlesResult.value;
+  // Here we can handle response data
+}
+```
+
+```ts
+// Simple Fetch
+
+const { candles, timeStart, timeEnd } = await simpleFetch(
+  orionUnit.priceFeed.getCandles
+)("ORN-USDT", 1650287678, 1650374078, "5m");
+
+// Here we can handle response data
 ```

@@ -6,5 +6,10 @@
         "KUCOIN",
         "orderbook",
         "orionprotocol"
-    ]
+    ],
+    "markdown.extension.toc.omittedFromToc": {
+        "./README.md": [
+            "# Orion Protocol SDK"
+        ]
+    }
 }
