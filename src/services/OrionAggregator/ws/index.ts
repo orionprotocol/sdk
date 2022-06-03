@@ -133,6 +133,7 @@ type Subscription = {
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
 }
 
+type WsMessage = string | ArrayBufferLike | Blob | ArrayBufferView;
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
@@ -152,7 +153,7 @@ class OrionAggregatorWS {
     this.onError = onError;
   }
 
-  sendRaw(data: string | ArrayBufferLike | Blob | ArrayBufferView) {
+  private sendRaw(data: WsMessage) {
     if (this.ws?.readyState === 1) {
       this.ws.send(data);
     } else if (this.ws?.readyState === 0) {
@@ -162,7 +163,7 @@ class OrionAggregatorWS {
     }
   }
 
-  send(data: unknown) {
+  private send(data: unknown) {
     if (this.ws?.readyState === 1) {
       this.ws.send(JSON.stringify(data));
     } else {
@@ -181,7 +182,7 @@ class OrionAggregatorWS {
     const subscriptionExists = type in this.subscriptions;
     if (strict && subscriptionExists) throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
 
-    const id = uuidv4;
+    const id = uuidv4();
     this.send({
       T: type,
       id,
@@ -218,20 +219,23 @@ class OrionAggregatorWS {
     delete this.ws;
   }
 
-  init() {
+  init(isReconnect = false) {
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onclose = (e) => {
-      if (e.code !== 4000) this.init();
+      if (e.code !== 4000) this.init(true);
     };
     this.ws.onopen = () => {
-      Object.entries(this.subscriptions).forEach(([type, subscription]) => {
-        this.send({
-          T: type,
-          ...('payload' in subscription) && {
-            S: subscription.payload,
-          },
+      // Re-subscribe to all subscriptions
+      if (isReconnect) {
+        Object.entries(this.subscriptions).forEach(([type, subscription]) => {
+          this.send({
+            T: type,
+            ...('payload' in subscription) && {
+              S: subscription.payload,
+            },
+          });
         });
-      });
+      }
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
