@@ -142,7 +142,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
 
   const payload = schema.safeParse(json);
   if (!payload.success) {
-    const issuesMessages = payload.error.issues.map((issue) => `[${issue.path.join(', ')}]  ${issue.message}`).join(', ');
+    const issuesMessages = payload.error.issues.map((issue) => `[${issue.path.join('.')}]  ${issue.message}`).join(', ');
     return err({
       type: 'payloadParseError' as const,
       url,
