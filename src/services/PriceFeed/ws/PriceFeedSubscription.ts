@@ -100,7 +100,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
       const subscription = subscriptions[type];
       const parseResult = subscription.schema.safeParse(json);
       if (parseResult.success === false) {
-        const errorsMessage = parseResult.error.errors.map((error) => error.message).join(', ');
+        const errorsMessage = parseResult.error.errors.map((error) => `[${error.path.join('.')}] ${error.message}`).join(', ');
         throw new Error(`Can't recognize PriceFeed "${type}" subscription message "${e.data.toString()}": ${errorsMessage}`);
       }
       this.callback(parseResult.data);
