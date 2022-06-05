@@ -484,4 +484,4 @@ const { candles, timeStart, timeEnd } = await simpleFetch(
 
 ## Using contracts
 
-Use package [@prionprotocol/contracts](https://github.com/orionprotocol/contracts)
+Use package [@orionprotocol/contracts](https://github.com/orionprotocol/contracts)

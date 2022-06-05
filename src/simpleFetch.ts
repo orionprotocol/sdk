@@ -21,7 +21,10 @@ export default function simpleFetch<O, I, EO, EI, P extends unknown[]>(
 ) {
   return async (...params: Parameters<typeof f>) => {
     const result = await f(...params);
-    if (result.isErr()) throw new Error(result.error.message);
+    if (result.isErr()) {
+      const { message, url } = result.error;
+      throw new Error(`${message} (${url})`);
+    }
     return result.value;
   };
 }
