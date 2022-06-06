@@ -107,6 +107,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     };
 
     this.ws.onclose = (e) => {
+      if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
       if (e.code !== 4000) this.init();
     };
 
@@ -116,7 +117,6 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
   }
 
   kill() {
-    if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
     this.ws?.close(4000);
   }
 }
