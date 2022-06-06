@@ -286,6 +286,8 @@ const exchangeContract = Exchange__factory.connect(
 
 const orderIsOk = await exchangeContract.validateOrder(signedOrder);
 
+if (!orderIsOk) throw new Error("Order invalid");
+
 const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
   signedOrder,
   false // True if you want place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with the another "internal" order(s).

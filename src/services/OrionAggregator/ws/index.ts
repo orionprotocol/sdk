@@ -139,6 +139,8 @@ const exclusiveSubscriptions = [
 ] as const;
 
 type WsMessage = string | ArrayBufferLike | Blob | ArrayBufferView;
+
+const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
@@ -264,14 +266,17 @@ class OrionAggregatorWS {
     this.ws.onopen = () => {
       // Re-subscribe to all subscriptions
       if (isReconnect) {
-        Object.entries(this.subscriptions).forEach(([type, subscription]) => {
-          this.send({
-            T: type,
-            ...('payload' in subscription) && {
-              S: subscription.payload,
-            },
+        Object.keys(this.subscriptions)
+          .filter(isSubType)
+          .forEach((subType) => {
+            const subscriptions = this.subscriptions[subType];
+            if (subscriptions) {
+              Object.keys(subscriptions).forEach((subKey) => {
+                const sub = subscriptions[subKey];
+                if (sub) this.subscribe(subType, sub);
+              });
+            }
           });
-        });
       }
     };
     this.ws.onmessage = (e) => {
