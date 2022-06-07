@@ -179,6 +179,17 @@ orionUnit.farmingManager.removeAllLiquidity({
 
 ## Low level methods
 
+### Get aggregated orderbook
+
+```ts
+import { simpleFetch } from "@orionprotocol/sdk";
+
+const orderbook = await simpleFetch(orionUnit.orionBlockchain.getAggregatedOrderbook)(
+  "ORN-USDT",
+  20, // Depth
+);
+```
+
 ### Get historical price
 
 ```ts
