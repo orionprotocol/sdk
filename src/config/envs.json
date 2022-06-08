@@ -10,6 +10,9 @@
             },
             "250": {
                 "api": "https://trade-ftm.orionprotocol.io"
+            },
+            "137": {
+                "api": "https://trade-polygon.orionprotocol.io"
             }
         }
     },
