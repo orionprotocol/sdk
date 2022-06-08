@@ -367,18 +367,18 @@ class OrionAggregatorWS {
               exchanges,
               vob,
             ] = item;
-            return [
-              ...acc,
-              {
-                price,
-                amount,
-                exchanges,
-                vob: vob.map(([side, pairName]) => ({
-                  side,
-                  pairName,
-                })),
-              },
-            ];
+
+            acc.push({
+              price,
+              amount,
+              exchanges,
+              vob: vob.map(([side, pairName]) => ({
+                side,
+                pairName,
+              })),
+            });
+
+            return acc;
           }, []);
           this.subscriptions[
             SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE
@@ -391,13 +391,15 @@ class OrionAggregatorWS {
           break;
         case MessageType.ASSET_PAIRS_CONFIG_UPDATE: {
           const pairs = json;
-          const priceUpdates = pairs.u.reduce<Partial<Record<string, AssetPairUpdate>>>((acc, [pairName, minQty, pricePrecision]) => ({
-            ...acc,
-            [pairName]: {
+          let priceUpdates: Partial<Record<string, AssetPairUpdate>> = {};
+
+          pairs.u.forEach(([pairName, minQty, pricePrecision]) => {
+            priceUpdates[pairName] = {
               minQty,
               pricePrecision,
-            },
-          }), {});
+            }
+          });
+
           this.subscriptions[
             SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE
           ]?.default?.callback({
@@ -412,12 +414,12 @@ class OrionAggregatorWS {
               .reduce<Partial<Record<string, Balance>>>((prev, [asset, assetBalances]) => {
                 if (!assetBalances) return prev;
                 const [tradable, reserved, contract, wallet, allowance] = assetBalances;
-                return {
-                  ...prev,
-                  [asset]: {
-                    tradable, reserved, contract, wallet, allowance,
-                  },
-                };
+
+                prev[asset] = {
+                  tradable, reserved, contract, wallet, allowance,
+                }
+
+                return prev;
               }, {})
             : {};
           switch (json.k) { // message kind
@@ -425,10 +427,10 @@ class OrionAggregatorWS {
               const fullOrders = json.o
                 ? json.o.reduce<FullOrder[]>((prev, o) => {
                   const fullOrder = mapFullOrder(o);
-                  return [
-                    ...prev,
-                    fullOrder,
-                  ];
+
+                  prev.push(fullOrder);
+                  
+                  return prev;
                 }, [])
                 : undefined;
 
@@ -465,10 +467,11 @@ class OrionAggregatorWS {
         }
           break;
         case MessageType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE: {
-          const brokerBalances = json.bb.reduce<Partial<Record<string, number>>>((acc, [asset, balance]) => ({
-            ...acc,
-            [asset]: balance,
-          }), {});
+          let brokerBalances: Partial<Record<string, number>> = {};
+
+          json.bb.forEach(([asset, balance]) => {
+            brokerBalances[asset] = balance
+          });
 
           this.subscriptions[
             SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE
