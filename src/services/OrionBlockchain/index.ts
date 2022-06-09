@@ -7,7 +7,6 @@ import {
   addPoolSchema, adminPoolsListSchema,
   atomicSummarySchema,
 } from './schemas';
-import { OrionBlockchainSocketIO } from './ws';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
@@ -52,11 +51,8 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
 class OrionBlockchain {
   private readonly apiUrl: string;
 
-  readonly ws: OrionBlockchainSocketIO;
-
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
-    this.ws = new OrionBlockchainSocketIO(`${apiUrl}/`);
 
     this.getAtomicSwapAssets = this.getAtomicSwapAssets.bind(this);
     this.getAtomicSwapHistory = this.getAtomicSwapHistory.bind(this);
@@ -350,6 +346,5 @@ class OrionBlockchain {
   );
 }
 
-export * as ws from './ws';
 export * as schemas from './schemas';
 export { OrionBlockchain };
