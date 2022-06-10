@@ -35,6 +35,7 @@ type AtomicSwapHistoryBaseQuery = {
   receiver?: string,
   used?: 0 | 1,
   page?: number,
+  sourceNetworkCode?: string,
 }
 
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
