@@ -15,6 +15,7 @@ import {
   FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
+import assetPairConfigSchema from './schemas/assetPairConfigSchema';
 // import errorSchema from './schemas/errorSchema';
 
 const mapFullOrder = (o: z.infer<typeof fullOrderSchema>): FullOrder => ({
@@ -77,10 +78,16 @@ type BrokerTradableAtomicSwapBalanceSubscription = {
   callback: (balances: Partial<Record<string, number>>) => void,
 }
 
-type PairConfigSubscription = {
+type PairsConfigSubscription = {
   callback: ({ kind, data }: {
     kind: 'initial' | 'update',
     data: Partial<Record<string, AssetPairUpdate>>,
+  }) => void,
+}
+
+type PairConfigSubscription = {
+  callback: ({ data }: {
+    data: AssetPairUpdate,
   }) => void,
 }
 
@@ -128,7 +135,8 @@ type AddressUpdateSubscription = {
 type Subscription = {
   [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription,
   [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription,
-  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
+  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription,
+  [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
   [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
 }
@@ -243,8 +251,10 @@ class OrionAggregatorWS {
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
       }
-    } else if (uuidValidate(subscription)) { // is swap info subscription (contains hyphen)
+    } else if (uuidValidate(subscription)) {
+      // is swap info subscription (contains hyphen)
       delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[subscription];
+      delete this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[subscription];
       // !!! swap info subscription is uuid that contains hyphen
     } else if (subscription.includes('-') && subscription.split('-').length === 2) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
@@ -305,6 +315,7 @@ class OrionAggregatorWS {
         pingPongMessageSchema,
         addressUpdateSchema,
         assetPairsConfigSchema,
+        assetPairConfigSchema,
         brokerMessageSchema,
         orderBookSchema,
         swapInfoSchema,
@@ -407,6 +418,16 @@ class OrionAggregatorWS {
           );
         }
           break;
+        case MessageType.ASSET_PAIR_CONFIG_UPDATE: {
+          const pair = json;
+          const [, minQty, pricePrecision] = pair.u;
+
+          this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[json.id]?.callback({
+            data: { minQty, pricePrecision },
+          });
+
+          break;
+        }
         case MessageType.ASSET_PAIRS_CONFIG_UPDATE: {
           const pairs = json;
           const priceUpdates: Partial<Record<string, AssetPairUpdate>> = {};
