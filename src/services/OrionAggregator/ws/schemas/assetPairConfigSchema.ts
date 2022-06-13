@@ -8,7 +8,7 @@ const assetPairConfigSchema = baseMessageSchema.extend({
   u: z.tuple([
     z.string(), // pairName
     z.number(), // minQty
-    z.number(), // pricePrecision
+    z.number().int(), // pricePrecision
   ]),
 });
 

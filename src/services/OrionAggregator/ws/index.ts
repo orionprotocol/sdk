@@ -86,9 +86,8 @@ type PairsConfigSubscription = {
 }
 
 type PairConfigSubscription = {
-  callback: ({ data }: {
-    data: AssetPairUpdate,
-  }) => void,
+  payload: string,
+  callback: (data: AssetPairUpdate) => void,
 }
 
 type AggregatedOrderbookSubscription = {
@@ -422,9 +421,7 @@ class OrionAggregatorWS {
           const pair = json;
           const [, minQty, pricePrecision] = pair.u;
 
-          this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[json.id]?.callback({
-            data: { minQty, pricePrecision },
-          });
+          this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[json.id]?.callback({ minQty, pricePrecision });
 
           break;
         }
