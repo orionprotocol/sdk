@@ -87,7 +87,10 @@ type PairsConfigSubscription = {
 
 type PairConfigSubscription = {
   payload: string,
-  callback: (data: AssetPairUpdate) => void,
+  callback: ({ kind, data }: {
+    kind: 'initial' | 'update',
+    data: AssetPairUpdate,
+  }) => void,
 }
 
 type AggregatedOrderbookSubscription = {
@@ -418,10 +421,18 @@ class OrionAggregatorWS {
         }
           break;
         case MessageType.ASSET_PAIR_CONFIG_UPDATE: {
-          const pair = json;
-          const [, minQty, pricePrecision] = pair.u;
+          const pair = json.u;
+          const [, minQty, pricePrecision] = pair;
 
-          this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[json.id]?.callback({ minQty, pricePrecision });
+          this.subscriptions[
+            SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE
+          ]?.[json.id]?.callback({
+            data: {
+              minQty,
+              pricePrecision,
+            },
+            kind: json.k === 'i' ? 'initial' : 'update',
+          });
 
           break;
         }
