@@ -184,7 +184,7 @@ orionUnit.farmingManager.removeAllLiquidity({
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 
-const orderbook = await simpleFetch(orionUnit.orionBlockchain.getAggregatedOrderbook)(
+const orderbook = await simpleFetch(orionUnit.orionAggregator.getAggregatedOrderbook)(
   "ORN-USDT",
   20, // Depth
 );
