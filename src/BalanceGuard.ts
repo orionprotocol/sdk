@@ -216,6 +216,7 @@ export default class BalanceGuard {
     const exchangePlusWalletAggregatedRequirements = aggregatedRequirements
       .filter(({ sources }) => sources[0] === 'exchange' && sources[1] === 'wallet');
 
+    const walletAddress = await this.signer.getAddress();
     // This requirements can be fulfilled by exchange + wallet
     await Promise.all(exchangePlusWalletAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
@@ -235,7 +236,6 @@ export default class BalanceGuard {
             if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
             const tokenContract = ERC20__factory.connect(asset.address, this.provider);
             const tokenDecimals = await tokenContract.decimals();
-            const walletAddress = await this.signer.getAddress();
             const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
             denormalizedAllowance = denormalizeNumber(tokenAllowance, tokenDecimals);
           }
@@ -330,7 +330,6 @@ export default class BalanceGuard {
           if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
           const tokenContract = ERC20__factory.connect(asset.address, this.provider);
           const tokenDecimals = await tokenContract.decimals();
-          const walletAddress = await this.signer.getAddress();
           const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
           denormalizedAllowance = denormalizeNumber(tokenAllowance, tokenDecimals);
         }
@@ -428,7 +427,7 @@ export default class BalanceGuard {
       const unfixed = await this.fixAllAutofixableBalanceIssues(balanceIssues);
       if (unfixed.length > 0) throw new Error(`Balance issues: ${unfixed.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
     } else if (balanceIssues.length > 0) {
-      throw new Error(`Balance issues: ${balanceIssues.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
+      throw new Error(`Balance issues (address ${walletAddress}): ${balanceIssues.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
     }
   }
 }
