@@ -144,7 +144,7 @@ const isSubType = (subType: string): subType is keyof Subscription => Object.val
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
-  private isClosedIntentionally: boolean = false;
+  private isClosedIntentionally = false;
 
   private subscriptions: Partial<{
     [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
@@ -263,7 +263,7 @@ class OrionAggregatorWS {
 
   init(isReconnect = false) {
     this.ws = new WebSocket(this.wsUrl);
-    this.ws.onclose = (e) => {
+    this.ws.onclose = () => {
       if (!this.isClosedIntentionally) this.init(true);
     };
     this.ws.onopen = () => {
