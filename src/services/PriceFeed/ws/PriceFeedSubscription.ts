@@ -74,6 +74,12 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
 
   readonly type: T;
 
+  // is used to make sure we do not need to renew ws subscription
+  // we can not be sure that onclose event will recieve our code when we do `ws.close(4000)`
+  // since sometimes it can be replaced with system one.
+  // https://stackoverflow.com/questions/19304157/getting-the-reason-why-websockets-closed-with-close-code-1006
+  private isClosedIntentionally = false;
+
   constructor(
     type: T,
     url: string,
@@ -91,6 +97,8 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
   }
 
   init() {
+    this.isClosedIntentionally = false;
+
     const { payload, url, type } = this;
     this.ws = new WebSocket(`${url}/${type}${payload ? `/${payload.toString()}` : ''}`);
 
@@ -106,9 +114,9 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
       this.callback(parseResult.data);
     };
 
-    this.ws.onclose = (e) => {
+    this.ws.onclose = () => {
       if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
-      if (e.code !== 4000) this.init();
+      if (!this.isClosedIntentionally) this.init();
     };
 
     this.heartbeatInterval = setInterval(() => {
@@ -117,6 +125,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
   }
 
   kill() {
-    this.ws?.close(4000);
+    this.isClosedIntentionally = true;
+    this.ws?.close();
   }
 }
