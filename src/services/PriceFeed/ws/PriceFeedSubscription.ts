@@ -74,6 +74,8 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
 
   readonly type: T;
 
+  private isClosedIntentionally: boolean = false;
+
   constructor(
     type: T,
     url: string,
@@ -108,7 +110,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
 
     this.ws.onclose = (e) => {
       if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
-      if (this.ws) this.init();
+      if (!this.isClosedIntentionally) this.init();
     };
 
     this.heartbeatInterval = setInterval(() => {
@@ -117,7 +119,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
   }
 
   kill() {
+    this.isClosedIntentionally = true;
     this.ws?.close();
-    delete this.ws;
   }
 }
