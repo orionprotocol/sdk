@@ -254,14 +254,14 @@ class OrionAggregatorWS {
   }
 
   destroy() {
-    this.ws?.close(4000);
+    this.ws?.close();
     delete this.ws;
   }
 
   init(isReconnect = false) {
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onclose = (e) => {
-      if (e.code !== 4000) this.init(true);
+      if (this.ws) this.init(true);
     };
     this.ws.onopen = () => {
       // Re-subscribe to all subscriptions
