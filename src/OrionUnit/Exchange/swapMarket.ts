@@ -176,17 +176,19 @@ export default async function swapMarket({
     });
 
     const amountReceive = swapInfo.type === 'exactReceive' ? swapInfo.amountOut : amountOutWithSlippage;
+    const amountSpendBlockchainParam = utils.normalizeNumber(
+      amountSpend,
+      INTERNAL_ORION_PRECISION,
+      BigNumber.ROUND_CEIL,
+    );
+    const amountReceiveBlockchainParam = utils.normalizeNumber(
+      amountReceive,
+      INTERNAL_ORION_PRECISION,
+      BigNumber.ROUND_FLOOR,
+    );
     const unsignedSwapThroughOrionPoolTx = await exchangeContract.populateTransaction.swapThroughOrionPool(
-      utils.normalizeNumber(
-        amountSpend,
-        INTERNAL_ORION_PRECISION,
-        BigNumber.ROUND_CEIL,
-      ),
-      utils.normalizeNumber(
-        amountReceive,
-        INTERNAL_ORION_PRECISION,
-        BigNumber.ROUND_FLOOR,
-      ),
+      amountSpendBlockchainParam,
+      amountReceiveBlockchainParam,
       pathAddresses,
       type === 'exactSpend',
     );
@@ -203,7 +205,11 @@ export default async function swapMarket({
     if (assetIn === nativeCryptocurrency && amountSpendBN.gt(denormalizedAssetInExchangeBalance)) {
       value = amountSpendBN.minus(denormalizedAssetInExchangeBalance);
     }
-    unsignedSwapThroughOrionPoolTx.value = utils.normalizeNumber(value, NATIVE_CURRENCY_PRECISION, BigNumber.ROUND_CEIL);
+    unsignedSwapThroughOrionPoolTx.value = utils.normalizeNumber(
+      value.dp(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL),
+      NATIVE_CURRENCY_PRECISION,
+      BigNumber.ROUND_CEIL,
+    );
     unsignedSwapThroughOrionPoolTx.gasLimit = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
 
     const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
