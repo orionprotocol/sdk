@@ -262,6 +262,7 @@ class OrionAggregatorWS {
   }
 
   init(isReconnect = false) {
+    this.isClosedIntentionally = false;
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onclose = () => {
       if (!this.isClosedIntentionally) this.init(true);
