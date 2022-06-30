@@ -144,6 +144,10 @@ const isSubType = (subType: string): subType is keyof Subscription => Object.val
 class OrionAggregatorWS {
   private ws: WebSocket | undefined;
 
+  // is used to make sure we do not need to renew ws subscription
+  // we can not be sure that onclose event will recieve our code when we do `ws.close(4000)`
+  // since sometimes it can be replaced with system one.
+  // https://stackoverflow.com/questions/19304157/getting-the-reason-why-websockets-closed-with-close-code-1006
   private isClosedIntentionally = false;
 
   private subscriptions: Partial<{

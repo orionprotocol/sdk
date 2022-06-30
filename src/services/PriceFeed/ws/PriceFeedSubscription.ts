@@ -74,6 +74,10 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
 
   readonly type: T;
 
+  // is used to make sure we do not need to renew ws subscription
+  // we can not be sure that onclose event will recieve our code when we do `ws.close(4000)`
+  // since sometimes it can be replaced with system one.
+  // https://stackoverflow.com/questions/19304157/getting-the-reason-why-websockets-closed-with-close-code-1006
   private isClosedIntentionally = false;
 
   constructor(
