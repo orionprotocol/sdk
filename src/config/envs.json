@@ -28,6 +28,9 @@
             },
             "4002": {
                 "api": "https://testing.orionprotocol.io/ftm-testnet"
+            },
+            "80001": {
+                "api": "https://testing.orionprotocol.io/polygon-mumbai"
             }
         }
     },
