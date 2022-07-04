@@ -15,6 +15,7 @@ const swapInfoBase = z.object({
     amount: z.number(),
     safePrice: z.number(),
   }).nullable(),
+  exchanges: z.array(z.string()).optional(),
   price: z.number().nullable(), // spending asset price
   minAmountOut: z.number(),
   minAmountIn: z.number(),

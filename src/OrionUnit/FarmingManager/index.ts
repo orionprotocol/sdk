@@ -41,6 +41,8 @@ export default class FarmingManager {
     if (amountBN.lte(0)) throw new Error('Amount must be greater than 0');
     if (!poolName.includes('-')) throw new Error('Pool name must be in the format of "assetA-AssetB"');
     const [assetA, assetB] = poolName.split('-');
+    if (assetA === undefined) throw new Error('Asset A undefined');
+    if (assetB === undefined) throw new Error('Asset B undefined');
     if (amountAsset !== assetA && amountAsset !== assetB) throw new Error('Amount asset must be either assetA or assetB');
 
     const {
@@ -219,6 +221,8 @@ export default class FarmingManager {
   }: RemoveAllLiquidityParams) {
     if (!poolName.includes('-')) throw new Error('Pool name must be in the format of "assetA-AssetB"');
     const [assetA, assetB] = poolName.split('-');
+    if (assetA === undefined) throw new Error('Asset A is not defined');
+    if (assetB === undefined) throw new Error('Asset B is not defined');
 
     const {
       assetToAddress,

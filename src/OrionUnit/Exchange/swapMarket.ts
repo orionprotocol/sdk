@@ -86,6 +86,8 @@ export default async function swapMarket({
   const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();
   const pricesInOrn = await simpleFetch(orionBlockchain.getPrices)();
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
+  const { factories } = await simpleFetch(orionBlockchain.getPoolsConfig)();
+  const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
 
   const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
 
@@ -125,6 +127,12 @@ export default async function swapMarket({
     options?.poolOnly ? ['ORION_POOL'] : undefined,
   );
 
+  const { exchanges: swapExchanges } = swapInfo;
+
+  const firstSwapExchange = swapExchanges?.[0];
+
+  if (swapExchanges) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
+
   if (swapInfo.orderInfo !== null && options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
     throw new Error(`Unexpected Orion Aggregator response. Please, contact support. Report swap request id: ${swapInfo.id}`);
   }
@@ -139,16 +147,49 @@ export default async function swapMarket({
 
   if (swapInfo.orderInfo === null) throw new Error(swapInfo.executionInfo);
 
+  const [baseAssetName, quoteAssetName] = swapInfo.orderInfo.assetPair.split('-');
+  if (baseAssetName === undefined) throw new Error('Base asset name is undefined');
+  if (quoteAssetName === undefined) throw new Error('Quote asset name is undefined');
+
+  const pairConfig = await simpleFetch(orionAggregator.getPairConfig)(`${baseAssetName}-${quoteAssetName}`);
+  if (!pairConfig) throw new Error(`Pair config ${baseAssetName}-${quoteAssetName} not found`);
+
+  const qtyPrecisionBN = new BigNumber(pairConfig.qtyPrecision);
+  const qtyDecimalPlaces = amountBN.dp();
+
+  if (qtyPrecisionBN.lt(qtyDecimalPlaces)) throw new Error(`Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`);
+
   const percent = new BigNumber(slippagePercent).div(100);
 
   let isThroughPoolOptimal: boolean;
+
   if (options?.developer?.route !== undefined) {
     isThroughPoolOptimal = options.developer.route === 'pool';
-  } else if (options?.poolOnly) isThroughPoolOptimal = true;
-  else isThroughPoolOptimal = swapInfo.isThroughPoolOptimal;
+    options?.logger?.('Swap is through pool (because route forced to pool)');
+  } else if (options?.poolOnly) {
+    options?.logger?.('Swap is through pool (because "poolOnly" option is true)');
+    isThroughPoolOptimal = true;
+  } else if (
+    swapExchanges !== undefined
+    && poolExchangesList.length > 0
+    && swapExchanges.length === 1
+    && firstSwapExchange
+    && poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
+  ) {
+    options?.logger?.(`Swap is through pool [via ${firstSwapExchange}] (detected by "exchanges" field)`);
+    isThroughPoolOptimal = true;
+  } else {
+    if (swapInfo.isThroughPoolOptimal) options?.logger?.('Swap is through pool (detected by "isThroughPoolOptimal" field)');
+    isThroughPoolOptimal = swapInfo.isThroughPoolOptimal;
+  }
 
   if (isThroughPoolOptimal) {
-    options?.logger?.('Swap through pool');
+    let factoryAddress: string | undefined;
+    if (factories && firstSwapExchange) {
+      factoryAddress = factories?.[firstSwapExchange];
+      if (factoryAddress) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
+    }
+
     const pathAddresses = swapInfo.path.map((name) => {
       const assetAddress = assetToAddress?.[name];
       if (!assetAddress) throw new Error(`No asset address for ${name}`);
@@ -189,7 +230,7 @@ export default async function swapMarket({
     const unsignedSwapThroughOrionPoolTx = await exchangeContract.populateTransaction.swapThroughOrionPool(
       amountSpendBlockchainParam,
       amountReceiveBlockchainParam,
-      pathAddresses,
+      factoryAddress ? [factoryAddress, ...pathAddresses] : pathAddresses,
       type === 'exactSpend',
     );
 
@@ -244,6 +285,7 @@ export default async function swapMarket({
 
     options?.logger?.('Signing transaction...');
     const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughOrionPoolTx);
+    options?.logger?.(`Transaction sent. Tx hash: ${swapThroughOrionPoolTxResponse.hash}`);
     return {
       through: 'orion_pool',
       txHash: swapThroughOrionPoolTxResponse.hash,
@@ -262,10 +304,6 @@ export default async function swapMarket({
     : new BigNumber(swapInfo.orderInfo.safePrice)
       .multipliedBy(slippageMultiplier)
       .toString();
-
-  const [baseAssetName, quoteAssetName] = swapInfo.orderInfo.assetPair.split('-');
-  const pairConfig = await simpleFetch(orionAggregator.getPairConfig)(`${baseAssetName}-${quoteAssetName}`);
-  if (!pairConfig) throw new Error(`Pair config ${baseAssetName}-${quoteAssetName} not found`);
 
   const baseAssetAddress = assetToAddress[baseAssetName];
   if (!baseAssetAddress) throw new Error(`No asset address for ${baseAssetName}`);
@@ -361,6 +399,8 @@ export default async function swapMarket({
   if (!orderIsOk) throw new Error('Order is not valid');
 
   const { orderId } = await simpleFetch(orionAggregator.placeOrder)(signedOrder, false);
+  options?.logger?.(`Order placed. Order id: ${orderId}`);
+
   return {
     through: 'aggregator',
     id: orderId,

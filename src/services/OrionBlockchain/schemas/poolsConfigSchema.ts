@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { z } from 'zod';
 import { makePartial } from '../../../utils';
 
@@ -7,6 +8,12 @@ const poolsConfigSchema = z.object({
   governanceAddress: z.string(),
   routerAddress: z.string(),
   votingAddress: z.string(),
+  factories: z.record(
+    z.string(),
+    z.string().refine(ethers.utils.isAddress, 'Factory should be an address'),
+  )
+    .transform(makePartial)
+    .optional(),
   pools: z.record(
     z.string(),
     z.object({

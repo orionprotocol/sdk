@@ -94,6 +94,7 @@ export default async function getSwapMarketFeeInfo({
   }
 
   const [baseAssetName] = swapInfo.orderInfo.assetPair.split('-');
+  if (baseAssetName === undefined) throw new Error('Base asset name is undefined');
   const baseAssetAddress = assetToAddress[baseAssetName];
   if (!baseAssetAddress) throw new Error(`No asset address for ${baseAssetName}`);
 

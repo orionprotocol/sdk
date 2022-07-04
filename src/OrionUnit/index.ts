@@ -74,6 +74,7 @@ export default class OrionUnit {
     } else {
       const envInfo = envs[env];
       const envNetworks = envInfo?.networks;
+      if (envNetworks === undefined) throw new Error('Env networks is undefined (constructor)');
 
       if (isValidChainId(chain)) chainId = chain;
       else {
@@ -94,7 +95,9 @@ export default class OrionUnit {
               : `Chains not found for chain name '${chain}' in env '${env}'.`,
           );
         }
-        [chainId] = targetChains;
+        const firstTargetChain = targetChains[0];
+        if (firstTargetChain === undefined) throw new Error('First target chain is undefined');
+        chainId = firstTargetChain;
       }
 
       if (!(chainId in envNetworks)) {
@@ -144,6 +147,8 @@ export default class OrionUnit {
   get siblings() {
     const envInfo = envs[this.env];
     const envNetworks = envInfo?.networks;
+
+    if (envNetworks === undefined) throw new Error('Env networks is undefined (siblings)');
 
     const siblingsNetworks = Object
       .keys(envNetworks)

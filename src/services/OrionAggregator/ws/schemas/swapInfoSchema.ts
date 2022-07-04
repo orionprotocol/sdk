@@ -13,7 +13,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
   mao: z.number(), // min amount out
   ps: z.string().array(), // path
   po: z.boolean(), // is swap through pool optimal
-
+  e: z.string().array().optional(), // Exchanges
   p: z.number().optional(), // price
   mp: z.number().optional(), // market price
   oi: z.object({ //  info about order equivalent to this swap

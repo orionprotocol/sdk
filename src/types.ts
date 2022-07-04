@@ -112,6 +112,7 @@ export type SwapInfoBase = {
   minAmounOut: number,
 
   path: string[],
+  exchanges?: string[],
   poolOptimal: boolean,
 
   price?: number,

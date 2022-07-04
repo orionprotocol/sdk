@@ -329,6 +329,7 @@ class OrionAggregatorWS {
             minAmounOut: json.mao,
             minAmounIn: json.ma,
             path: json.ps,
+            exchanges: json.e,
             poolOptimal: json.po,
             ...json.oi && {
               orderInfo: {
@@ -399,13 +400,13 @@ class OrionAggregatorWS {
           break;
         case MessageType.ASSET_PAIRS_CONFIG_UPDATE: {
           const pairs = json;
-          let priceUpdates: Partial<Record<string, AssetPairUpdate>> = {};
+          const priceUpdates: Partial<Record<string, AssetPairUpdate>> = {};
 
           pairs.u.forEach(([pairName, minQty, pricePrecision]) => {
             priceUpdates[pairName] = {
               minQty,
               pricePrecision,
-            }
+            };
           });
 
           this.subscriptions[
@@ -425,7 +426,7 @@ class OrionAggregatorWS {
 
                 prev[asset] = {
                   tradable, reserved, contract, wallet, allowance,
-                }
+                };
 
                 return prev;
               }, {})
@@ -437,7 +438,7 @@ class OrionAggregatorWS {
                   const fullOrder = mapFullOrder(o);
 
                   prev.push(fullOrder);
-                  
+
                   return prev;
                 }, [])
                 : undefined;
@@ -475,10 +476,10 @@ class OrionAggregatorWS {
         }
           break;
         case MessageType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATE: {
-          let brokerBalances: Partial<Record<string, number>> = {};
+          const brokerBalances: Partial<Record<string, number>> = {};
 
           json.bb.forEach(([asset, balance]) => {
-            brokerBalances[asset] = balance
+            brokerBalances[asset] = balance;
           });
 
           this.subscriptions[
