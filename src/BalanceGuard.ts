@@ -262,9 +262,10 @@ export default class BalanceGuard {
 
             const issueMessage = `Not enough ${asset.name} on exchange + wallet balance. `
                 + `Needed: ${itemsAmountSum.toString()}, available: ${available?.toString()} `
-                + `(exchange: ${exchangeBalance?.toString()}, wallet: ${approvedWalletBalance.toString()}). ${approveIsHelpful
-                  ? `You need to be allowed to spend another ${lackAmount.toString()} ${asset.name} more`
-                  : 'Approve is not helpful'}`;
+              + `(exchange: ${exchangeBalance?.toString()}, available (approved): ${approvedWalletBalance.toString()}).`
+              + ` ${approveIsHelpful
+                ? `You need approve at least ${lackAmount.toString()} ${asset.name}`
+                : 'Approve is not helpful'}`;
             if (approveIsHelpful) {
               if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
               const resetRequired = await this.checkResetRequired(
@@ -351,8 +352,8 @@ export default class BalanceGuard {
           const targetApprove = approvedWalletBalance.plus(lackAmount);
 
           const issueMessage = `Not enough ${asset.name} on wallet balance. `
-            + `Needed: ${itemsAmountSum.toString()}, available: ${approvedWalletBalance.toString()}. ${approveIsHelpful
-              ? `You need to be allowed to spend another ${lackAmount.toString()} ${asset.name} more`
+            + `Needed: ${itemsAmountSum.toString()}, available (approved): ${approvedWalletBalance.toString()}. ${approveIsHelpful
+              ? `You need approve at least ${lackAmount.toString()} ${asset.name}`
               : 'Approve is not helpful'}`;
           if (approveIsHelpful) {
             if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
