@@ -142,7 +142,7 @@ orionUnit.exchange
     assetIn: "ORN",
     assetOut: "USDT",
     feeAsset: "ORN",
-    amount: 23.89045345,
+    amount: 23,
     slippagePercent: 1,
     signer: wallet, // or signer when UI
     options: {
