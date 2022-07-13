@@ -135,6 +135,7 @@ orionUnit.exchange
 
 ### Make swap market
 
+```ts
 // Each trading pair has its own quantity precision
 // You need to prepare (round) the quantity according to quantity precision
 
@@ -146,7 +147,6 @@ const { qtyPrecision } = pairConfig;
 const amount = 23.5346563;
 const roundedAmount = new BigNumber(amount).dp(qtyPrecision, BigNumber.ROUND_FLOOR); // You can use you own Math lib
 
-```ts
 orionUnit.exchange
   .swapMarket({
     type: "exactSpend",
