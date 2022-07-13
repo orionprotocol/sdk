@@ -135,6 +135,17 @@ orionUnit.exchange
 
 ### Make swap market
 
+// Each trading pair has its own quantity precision
+// You need to prepare (round) the quantity according to quantity precision
+
+const pairConfig = await simpleFetch(orionAggregator.getPairConfig)('ORN-USDT');
+if (!pairConfig) throw new Error(`Pair config ORN-USDT not found`);
+
+const { qtyPrecision } = pairConfig;
+
+const amount = 23.5346563;
+const roundedAmount = new BigNumber(amount).dp(qtyPrecision, BigNumber.ROUND_FLOOR); // You can use you own Math lib
+
 ```ts
 orionUnit.exchange
   .swapMarket({
@@ -142,7 +153,7 @@ orionUnit.exchange
     assetIn: "ORN",
     assetOut: "USDT",
     feeAsset: "ORN",
-    amount: 23,
+    amount: roundedAmount.toNumber(),
     slippagePercent: 1,
     signer: wallet, // or signer when UI
     options: {
