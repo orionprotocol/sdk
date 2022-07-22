@@ -158,7 +158,7 @@ class OrionAggregatorWS {
 
   public onError?: (err: string) => void;
 
-  private logger?: (message: string) => void;
+  public logger?: (message: string) => void;
 
   private readonly wsUrl: string;
 
