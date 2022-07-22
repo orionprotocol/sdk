@@ -26,6 +26,13 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": ["acc", "prev"]
+      }
+    ],
     "camelcase": "off",
     '@typescript-eslint/consistent-type-assertions': [
       'error',

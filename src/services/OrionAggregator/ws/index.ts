@@ -158,10 +158,13 @@ class OrionAggregatorWS {
 
   public onError?: (err: string) => void;
 
+  private logger?: (message: string) => void;
+
   private readonly wsUrl: string;
 
-  constructor(wsUrl: string, onInit?: () => void, onError?: (err: string) => void) {
+  constructor(wsUrl: string, logger?: (msg: string) => void, onInit?: () => void, onError?: (err: string) => void) {
     this.wsUrl = wsUrl;
+    this.logger = logger;
     this.onInit = onInit;
     this.onError = onError;
   }
@@ -268,7 +271,11 @@ class OrionAggregatorWS {
   init(isReconnect = false) {
     this.isClosedIntentionally = false;
     this.ws = new WebSocket(this.wsUrl);
+    this.ws.onerror = (err) => {
+      this.logger?.(`OrionAggregatorWS: ${err.message}`);
+    };
     this.ws.onclose = () => {
+      this.logger?.(`OrionAggregatorWS: connection closed ${this.isClosedIntentionally ? 'intentionally' : ''}`);
       if (!this.isClosedIntentionally) this.init(true);
     };
     this.ws.onopen = () => {
@@ -286,9 +293,11 @@ class OrionAggregatorWS {
             }
           });
       }
+      this.logger?.(`OrionAggregatorWS: connection opened${isReconnect ? ' (reconnect)' : ''}`);
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
+      this.logger?.(`OrionAggregatorWS: received message: ${e.data.toString()}`);
       const rawJson: unknown = JSON.parse(data.toString());
 
       const messageSchema = z.union([
