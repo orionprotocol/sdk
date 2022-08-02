@@ -210,7 +210,9 @@ class OrionAggregatorWS {
       throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
     }
 
-    const id = uuidv4();
+    const id = type === 'aobus'
+      ? ((subscription as any).payload as string) // TODO: Refactor!!!
+      : uuidv4();
     const subRequest: Partial<Record<string, unknown>> = {};
     subRequest.T = type;
     subRequest.id = id;
@@ -413,7 +415,7 @@ class OrionAggregatorWS {
           }, []);
           this.subscriptions[
             SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE
-          ]?.[json.id]?.callback(
+          ]?.[json.S]?.callback(
             mapOrderbookItems(ob.a),
             mapOrderbookItems(ob.b),
             S,

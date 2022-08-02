@@ -13,7 +13,7 @@ export const orderBookItemSchema = z.tuple([
 ]);
 
 export const orderBookSchema = baseMessageSchema.extend({
-  id: z.string(),
+  // id: z.string(),
   T: z.literal(MessageType.AGGREGATED_ORDER_BOOK_UPDATE),
   S: z.string(),
   ob: z.object({
