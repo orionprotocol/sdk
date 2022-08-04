@@ -295,10 +295,12 @@ class OrionAggregatorWS {
     this.ws.onopen = () => {
       // Re-subscribe to all subscriptions
       if (isReconnect) {
-        Object.keys(this.subscriptions)
+        const subscriptionsToReconnect = this.subscriptions;
+        this.subscriptions = {};
+        Object.keys(subscriptionsToReconnect)
           .filter(isSubType)
           .forEach((subType) => {
-            const subscriptions = this.subscriptions[subType];
+            const subscriptions = subscriptionsToReconnect[subType];
             if (subscriptions) {
               Object.keys(subscriptions).forEach((subKey) => {
                 const sub = subscriptions[subKey];
