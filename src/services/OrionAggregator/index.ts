@@ -151,6 +151,7 @@ class OrionAggregator {
     assetIn: string,
     assetOut: string,
     amount: string,
+    instantSettlement?: boolean,
     exchanges?: Exchange[],
   ) => {
     const url = new URL(`${this.apiUrl}/api/v1/swap`);
@@ -165,6 +166,9 @@ class OrionAggregator {
       exchanges.forEach((exchange) => {
         url.searchParams.append('exchanges', exchange);
       });
+    }
+    if (instantSettlement) {
+      url.searchParams.append('instantSettlement', 'true');
     }
 
     return fetchWithValidation(

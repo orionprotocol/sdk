@@ -61,6 +61,7 @@ export default async function getSwapMarketFeeInfo({
     assetIn,
     assetOut,
     amount.toString(),
+    false,
     options?.poolOnly ? ['ORION_POOL'] : undefined,
   );
 

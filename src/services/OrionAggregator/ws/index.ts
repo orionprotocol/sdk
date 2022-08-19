@@ -70,8 +70,9 @@ type SwapSubscriptionRequest = {
   i: string, // asset in
   o: string, // asset out
   a: number // amount IN/OUT
-  es?: Exchange[], // exchange list
+  es?: Exchange[] | 'cex' | 'pools', // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
   e?: boolean; // is amount IN? Value `false` means a = amount OUT, `true` if omitted
+  is?: boolean; // instant settlement
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
