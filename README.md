@@ -139,13 +139,16 @@ orionUnit.exchange
 // Each trading pair has its own quantity precision
 // You need to prepare (round) the quantity according to quantity precision
 
-const pairConfig = await simpleFetch(orionAggregator.getPairConfig)('ORN-USDT');
+const pairConfig = await simpleFetch(orionAggregator.getPairConfig)("ORN-USDT");
 if (!pairConfig) throw new Error(`Pair config ORN-USDT not found`);
 
 const { qtyPrecision } = pairConfig;
 
 const amount = 23.5346563;
-const roundedAmount = new BigNumber(amount).dp(qtyPrecision, BigNumber.ROUND_FLOOR); // You can use you own Math lib
+const roundedAmount = new BigNumber(amount).dp(
+  qtyPrecision,
+  BigNumber.ROUND_FLOOR
+); // You can use you own Math lib
 
 orionUnit.exchange
   .swapMarket({
@@ -159,6 +162,7 @@ orionUnit.exchange
     options: {
       // All options are optional 🙂
       poolOnly: true, // You can specify whether you want to perform the exchange only through the pool
+      instantSettlement: true, // Set true to ensure that funds can be instantly transferred to wallet (otherwise, there is a possibility of receiving funds to the balance of the exchange contract)
       logger: console.log,
       // Set it to true if you want the issues associated with
       // the lack of allowance to be automatically corrected
@@ -195,9 +199,11 @@ orionUnit.farmingManager.removeAllLiquidity({
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 
-const orderbook = await simpleFetch(orionUnit.orionAggregator.getAggregatedOrderbook)(
+const orderbook = await simpleFetch(
+  orionUnit.orionAggregator.getAggregatedOrderbook
+)(
   "ORN-USDT",
-  20, // Depth
+  20 // Depth
 );
 ```
 

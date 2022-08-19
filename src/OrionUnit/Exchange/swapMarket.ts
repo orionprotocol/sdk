@@ -22,6 +22,7 @@ export type SwapMarketParams = {
   orionUnit: OrionUnit,
   options?: {
     poolOnly?: boolean,
+    instantSettlement?: boolean,
     logger?: (message: string) => void,
     autoApprove?: boolean,
     developer?: {
@@ -124,6 +125,7 @@ export default async function swapMarket({
     assetIn,
     assetOut,
     amount.toString(),
+    options?.instantSettlement,
     options?.poolOnly ? ['ORION_POOL'] : undefined,
   );
 
