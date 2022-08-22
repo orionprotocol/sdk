@@ -6,6 +6,9 @@ import {
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
   addPoolSchema, adminPoolsListSchema,
   atomicSummarySchema,
+  poolsLpAndStakedSchema,
+  userVotesSchema,
+  userEarnedSchema,
 } from './schemas';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
@@ -62,6 +65,9 @@ class OrionBlockchain {
     this.getInfo = this.getInfo.bind(this);
     this.getPoolsConfig = this.getPoolsConfig.bind(this);
     this.getPoolsInfo = this.getPoolsInfo.bind(this);
+    this.getPoolsLpAndStaked = this.getPoolsLpAndStaked.bind(this);
+    this.getUserVotes = this.getUserVotes.bind(this);
+    this.getUserEarned = this.getUserEarned.bind(this);
     this.getHistory = this.getHistory.bind(this);
     this.getPrices = this.getPrices.bind(this);
     this.getTokensFee = this.getTokensFee.bind(this);
@@ -141,6 +147,21 @@ class OrionBlockchain {
   getPoolsInfo = () => fetchWithValidation(
     `${this.apiUrl}/api/pools/info`,
     poolsInfoSchema,
+  );
+
+  getPoolsLpAndStaked = (address: string) => fetchWithValidation(
+    `${this.apiUrl}/api/pools/user-lp/${address}`,
+    poolsLpAndStakedSchema,
+  );
+
+  getUserVotes = (address: string) => fetchWithValidation(
+    `${this.apiUrl}/api/pools/user-votes/${address}`,
+    userVotesSchema,
+  );
+
+  getUserEarned = (address: string) => fetchWithValidation(
+    `${this.apiUrl}/api/pools/user-earned/${address}`,
+    userEarnedSchema,
   );
 
   getHistory = (address: string) => fetchWithValidation(

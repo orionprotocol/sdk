@@ -8,3 +8,6 @@ export { default as infoSchema } from './infoSchema';
 export { default as poolsConfigSchema } from './poolsConfigSchema';
 export { default as poolsInfoSchema } from './poolsInfoSchema';
 export { default as atomicSummarySchema } from './atomicSummarySchema';
+export { default as poolsLpAndStakedSchema } from './poolsLpAndStakedSchema';
+export { default as userVotesSchema } from './userVotesSchema';
+export { default as userEarnedSchema } from './userEarnedSchema';
