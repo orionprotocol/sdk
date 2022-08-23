@@ -16,6 +16,7 @@ const poolsInfoSchema = z.object({
       totalLiquidityInDollars: z.string(),
       totalRewardRatePerWeek: z.string(),
       totalStakedAmountInDollars: z.string(),
+      totalSupply: z.string(),
       totalVoted: z.string(),
       weight: z.string(),
     }),
