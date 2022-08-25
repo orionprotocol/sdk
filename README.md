@@ -123,6 +123,7 @@ console.log(swapInfo);
 console.log(fee);
 
 // {
+//   route: 'pool',
 //   swapInfo: {
 //     id: 'e5d50b8e-ca82-4826-b454-3fa12b693c11',
 //     amountIn: 20,
@@ -149,9 +150,10 @@ console.log(fee);
 //     type: 'exactSpend'
 //   },
 //   fee: {
-//     assetName: 'ORN',
-//     assetAddress: '0xf223eca06261145b3287a0fefd8cfad371c7eb34',
-//     amount: '1.0247136357221697138126003277499197658871168'
+//     assetName: 'FTM',
+//     assetAddress: '0x0000000000000000000000000000000000000000',
+//     networkFeeInFeeAsset: '0.00073929546',
+//     protocolFeeInFeeAsset: undefined
 //   }
 // }
 ```

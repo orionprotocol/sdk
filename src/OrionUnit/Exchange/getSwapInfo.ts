@@ -106,12 +106,11 @@ export default async function getSwapInfo({
       fee: {
         assetName: nativeCryptocurrency,
         assetAddress: ethers.constants.AddressZero,
-        amount: denormalizedTransactionCost.toString(),
+        networkFeeInFeeAsset: denormalizedTransactionCost.toString(),
+        protocolFeeInFeeAsset: undefined,
       },
     };
   }
-
-  let feeAmount: string | undefined;
 
   if (swapInfo.orderInfo) {
     const [baseAssetName] = swapInfo.orderInfo.assetPair.split('-');
@@ -129,7 +128,10 @@ export default async function getSwapInfo({
     const feePercent = feeAssets?.[feeAsset];
     if (!feePercent) throw new Error(`Fee asset ${feeAsset} not available`);
 
-    const { totalFeeInFeeAsset } = utils.calculateFeeInFeeAsset(
+    const {
+      orionFeeInFeeAsset,
+      networkFeeInFeeAsset,
+    } = utils.calculateFeeInFeeAsset(
       swapInfo.orderInfo.amount,
       feeAssetPriceInOrn,
       baseAssetPriceInOrn,
@@ -137,7 +139,17 @@ export default async function getSwapInfo({
       gasPriceGwei,
       feePercent,
     );
-    feeAmount = totalFeeInFeeAsset;
+
+    return {
+      route,
+      swapInfo,
+      fee: {
+        assetName: feeAsset,
+        assetAddress: feeAssetAddress,
+        networkFeeInFeeAsset,
+        protocolFeeInFeeAsset: orionFeeInFeeAsset,
+      },
+    };
   }
 
   return {
@@ -146,7 +158,8 @@ export default async function getSwapInfo({
     fee: {
       assetName: feeAsset,
       assetAddress: feeAssetAddress,
-      amount: feeAmount,
+      networkFeeInFeeAsset: undefined,
+      protocolFeeInFeeAsset: undefined,
     },
   };
 }
