@@ -18,7 +18,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 - [High level methods](#high-level-methods)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
-  - [Get swap market fee info](#get-swap-market-fee-info)
+  - [Get swap info](#get-swap-info)
   - [Make swap market](#make-swap-market)
   - [Add liquidity](#add-liquidity)
   - [Remove all liquidity](#remove-all-liquidity)
