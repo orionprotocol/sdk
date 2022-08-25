@@ -131,13 +131,9 @@ export default async function swapMarket({
 
   const { exchanges: swapExchanges } = swapInfo;
 
-  const firstSwapExchange = swapExchanges?.[0];
+  const [firstSwapExchange] = swapExchanges;
 
   if (swapExchanges) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
-
-  if (swapInfo.orderInfo !== null && options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
-    throw new Error(`Unexpected Orion Aggregator response. Please, contact support. Report swap request id: ${swapInfo.id}`);
-  }
 
   if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
     throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
@@ -161,16 +157,16 @@ export default async function swapMarket({
 
   if (qtyPrecisionBN.lt(qtyDecimalPlaces)) throw new Error(`Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`);
 
+  let route: 'aggregator' | 'pool';
+
   const percent = new BigNumber(slippagePercent).div(100);
 
-  let isThroughPoolOptimal: boolean;
-
   if (options?.developer?.route !== undefined) {
-    isThroughPoolOptimal = options.developer.route === 'pool';
-    options?.logger?.('Swap is through pool (because route forced to pool)');
+    route = options.developer.route;
+    options?.logger?.(`Swap is through ${route} (because route forced to ${route})`);
   } else if (options?.poolOnly) {
     options?.logger?.('Swap is through pool (because "poolOnly" option is true)');
-    isThroughPoolOptimal = true;
+    route = 'pool';
   } else if (
     swapExchanges !== undefined
     && poolExchangesList.length > 0
@@ -179,13 +175,12 @@ export default async function swapMarket({
     && poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
   ) {
     options?.logger?.(`Swap is through pool [via ${firstSwapExchange}] (detected by "exchanges" field)`);
-    isThroughPoolOptimal = true;
+    route = 'pool';
   } else {
-    if (swapInfo.isThroughPoolOptimal) options?.logger?.('Swap is through pool (detected by "isThroughPoolOptimal" field)');
-    isThroughPoolOptimal = swapInfo.isThroughPoolOptimal;
+    route = 'aggregator';
   }
 
-  if (isThroughPoolOptimal) {
+  if (route === 'pool') {
     let factoryAddress: string | undefined;
     if (factories && firstSwapExchange) {
       factoryAddress = factories?.[firstSwapExchange];

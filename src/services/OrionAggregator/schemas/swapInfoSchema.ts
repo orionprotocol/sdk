@@ -7,7 +7,7 @@ const swapInfoBase = z.object({
   assetIn: z.string(),
   assetOut: z.string(),
   path: z.array(z.string()),
-  isThroughPoolOptimal: z.boolean(),
+  // isThroughPoolOptimal: z.boolean(), // deprecated
   executionInfo: z.string(),
   orderInfo: z.object({
     assetPair: z.string(),
@@ -15,7 +15,7 @@ const swapInfoBase = z.object({
     amount: z.number(),
     safePrice: z.number(),
   }).nullable(),
-  exchanges: z.array(z.string()).optional(),
+  exchanges: z.array(z.string()),
   price: z.number().nullable(), // spending asset price
   minAmountOut: z.number(),
   minAmountIn: z.number(),

@@ -130,7 +130,6 @@ console.log(fee);
 //     assetIn: 'ORN',
 //     assetOut: 'USDT',
 //     path: [ 'ORN', 'USDT' ],
-//     isThroughPoolOptimal: false,
 //     executionInfo: '...',
 //     orderInfo: {
 //       assetPair: 'ORN-USDT',
@@ -285,7 +284,6 @@ Swap info response example:
   "availableAmountIn": 25.2,
   "availableAmountOut": null,
   "path": ["ORN", "USDT"],
-  "isThroughPoolOptimal": true,
   "orderInfo": {
     "assetPair": "ORN-USDT",
     "side": "SELL",

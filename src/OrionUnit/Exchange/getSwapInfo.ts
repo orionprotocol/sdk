@@ -66,9 +66,10 @@ export default async function getSwapInfo({
     options?.poolOnly ? 'pools' : undefined,
   );
 
-  if (swapInfo.orderInfo !== null && options?.poolOnly === true && options.poolOnly !== swapInfo.isThroughPoolOptimal) {
-    throw new Error(`Unexpected Orion Aggregator response. Please, contact support. Report swap request id: ${swapInfo.id}`);
-  }
+  const { exchanges: swapExchanges } = swapInfo;
+  const { factories } = await simpleFetch(orionBlockchain.getPoolsConfig)();
+  const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
+  const [firstSwapExchange] = swapExchanges;
 
   // if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
   //   throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
@@ -80,15 +81,27 @@ export default async function getSwapInfo({
 
   // if (swapInfo.orderInfo === null) throw new Error(swapInfo.executionInfo);
 
-  let isThroughPoolOptimal: boolean;
-  if (options?.poolOnly) isThroughPoolOptimal = true;
-  else isThroughPoolOptimal = swapInfo.isThroughPoolOptimal;
+  let route: 'pool' | 'aggregator';
+  if (options?.poolOnly) {
+    route = 'pool';
+  } else if (
+    swapExchanges !== undefined
+    && poolExchangesList.length > 0
+    && swapExchanges.length === 1
+    && firstSwapExchange
+    && poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
+  ) {
+    route = 'pool';
+  } else {
+    route = 'aggregator';
+  }
 
-  if (isThroughPoolOptimal) {
+  if (route === 'pool') {
     const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
     const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
     return {
+      route,
       swapInfo,
       fee: {
         assetName: nativeCryptocurrency,
@@ -128,6 +141,7 @@ export default async function getSwapInfo({
   }
 
   return {
+    route,
     swapInfo,
     fee: {
       assetName: feeAsset,
