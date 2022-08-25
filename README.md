@@ -103,33 +103,57 @@ orionUnit.exchange.deposit({
 });
 ```
 
-### Get swap market fee info
+### Get swap info
 
 ```ts
-orionUnit.exchange
-  .getSwapMarketFeeInfo({
-    type: "exactSpend",
-    assetIn: "ORN",
-    assetOut: "USDT",
-    feeAsset: "ORN",
-    amount: 23.89045345,
-    options: {
-      // Optional
-      poolOnly: false,
-    },
-  })
-  .then(console.log);
+const { swapInfo, fee } = await orionUnit.exchange.getSwapInfo({
+  type: "exactSpend",
+  assetIn: "ORN",
+  assetOut: "USDT",
+  feeAsset: "ORN",
+  amount: 23.89045345,
+  options: {
+    // Optional
+    instantSettlement: true,
+    poolOnly: false,
+  },
+});
+
+console.log(swapInfo);
+console.log(fee);
 
 // {
-//   feeAsset: 'BNB',
-//   feeAssetAddress: '0x0000000000000000000000000000000000000000',
-//   feeAmount: '0.006'
-//  }
-
-// {
-//   feeAsset: 'ORN',
-//   feeAssetAddress: '0xf223eca06261145b3287a0fefd8cfad371c7eb34',
-//   feeAmount: '2.5910754708713146879833915507960091181362655'
+//   swapInfo: {
+//     id: 'e5d50b8e-ca82-4826-b454-3fa12b693c11',
+//     amountIn: 20,
+//     amountOut: 25.68,
+//     assetIn: 'ORN',
+//     assetOut: 'USDT',
+//     path: [ 'ORN', 'USDT' ],
+//     isThroughPoolOptimal: false,
+//     executionInfo: '...',
+//     orderInfo: {
+//       assetPair: 'ORN-USDT',
+//       side: 'SELL',
+//       amount: 20,
+//       safePrice: 1.284
+//     },
+//     exchanges: [ 'BINANCE' ],
+//     price: 1.284,
+//     minAmountOut: 12,
+//     minAmountIn: 9.4,
+//     marketPrice: 1.284,
+//     availableAmountOut: null,
+//     availableAmountIn: 20,
+//     marketAmountOut: 25.68,
+//     marketAmountIn: null,
+//     type: 'exactSpend'
+//   },
+//   fee: {
+//     assetName: 'ORN',
+//     assetAddress: '0xf223eca06261145b3287a0fefd8cfad371c7eb34',
+//     amount: '1.0247136357221697138126003277499197658871168'
+//   }
 // }
 ```
 
