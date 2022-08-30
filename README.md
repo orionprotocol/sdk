@@ -3,6 +3,8 @@
 [![npm version](https://img.shields.io/npm/v/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 [![Downloads](https://img.shields.io/npm/dm/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 
+Do you want to integrate the Orion protocol into your application? See [integration guide](./docs/INTEGRATION.md)
+
 ## Overview
 
 Orion Software Developer Kit is a set of functions and methods that allow dApp developers connect to the superior aggregated liquidity of Orion Protocol which combines orderbooks of centralized exchanges as well decentralized automatic market makers such as Uniswap or Spookyswap across several supported blockchains.
@@ -170,7 +172,7 @@ if (!pairConfig) throw new Error(`Pair config ORN-USDT not found`);
 const { qtyPrecision } = pairConfig;
 
 const amount = 23.5346563;
-const roundedAmount = new BigNumber(amount).dp(
+const roundedAmount = new BigNumber(amount).decimalPlaces(
   qtyPrecision,
   BigNumber.ROUND_FLOOR
 ); // You can use you own Math lib
@@ -251,6 +253,13 @@ const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
 import { simpleFetch } from "@orionprotocol/sdk";
 const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
 console.log(pairsList); // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN']
+```
+
+### Get fee assets
+
+```ts
+import { simpleFetch } from "@orionprotocol/sdk";
+const feeAssets = await simpleFetch(orionUnit.orionBlockchain.getTokensFee)();
 ```
 
 ### Get swap info
