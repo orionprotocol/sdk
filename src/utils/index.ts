@@ -10,6 +10,7 @@ export { default as normalizeNumber } from './normalizeNumber';
 export { default as getSwapPair } from './getSwapPair';
 export { default as getSwapSide } from './getSwapSide';
 export { default as isNetworkCodeInEnvironment } from './isNetworkCodeInEnvironment';
+export { default as parseExchangeTradeTransaction } from './parseExchangeTradeTransaction';
 
 // export { default as HttpError } from './httpError';
 
