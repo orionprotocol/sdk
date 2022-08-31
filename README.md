@@ -568,13 +568,13 @@ const data = utils.parseExchangeTradeTransaction({
 });
 
 switch (data.type) {
-  case "fillOrders":
+  case "fillOrders": // through aggregator — CEX
     console.log(data.args.orders.buyOrder);
     break;
-  case "fillThroughOrionPool":
+  case "fillThroughOrionPool": // through aggregator — DEX (pools)
     console.log(data.args.order);
     break;
-  case "swapThroughOrionPool":
+  case "swapThroughOrionPool": // through DEX (pools) directly
     console.log(data.args.amount_spend);
     break;
 }
