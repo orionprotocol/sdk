@@ -274,8 +274,8 @@ const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
   "exactSpend", // type
   "ORN", // asset in
   "USDT", // asset out
-  25.23453457, // amount
-  ["ORION_POOL"] // Exchanges. OPTIONAL! Specify ['ORION_POOL'] if you want "pool only" swap execution
+  25.23453457 // amount
+  // Exchanges. OPTIONAL! Specify 'pools' if you want "pool only" swap execution. Specify 'cex' if you want "cex only" execution
 );
 ```
 

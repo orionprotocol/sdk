@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import exchanges from './constants/exchanges';
 import orderStatuses from './constants/orderStatuses';
 import subOrderStatuses from './constants/subOrderStatuses';
 
@@ -197,6 +198,4 @@ export type BalanceIssue = {
   readonly fixes?: Fix[],
 }
 
-const availableExchanges = ['ORION_POOL', 'ASCENDEX', 'BINANCE', 'KUCOIN'] as const;
-
-export type Exchange = typeof availableExchanges[number];
+export type Exchange = typeof exchanges[number];

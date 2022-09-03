@@ -126,7 +126,7 @@ export default async function swapMarket({
     assetOut,
     amount.toString(),
     options?.instantSettlement,
-    options?.poolOnly ? ['ORION_POOL'] : undefined,
+    options?.poolOnly ? 'pools' : undefined,
   );
 
   const { exchanges: swapExchanges } = swapInfo;
