@@ -7,8 +7,6 @@ export { default as generateSecret } from './generateSecret';
 export { default as isValidChainId } from './isValidChainId';
 export { default as denormalizeNumber } from './denormalizeNumber';
 export { default as normalizeNumber } from './normalizeNumber';
-export { default as getSwapPair } from './getSwapPair';
-export { default as getSwapSide } from './getSwapSide';
 export { default as isNetworkCodeInEnvironment } from './isNetworkCodeInEnvironment';
 export { default as parseExchangeTradeTransaction } from './parseExchangeTradeTransaction';
 
