@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const pairConfigSchema = z.object({
   // baseAssetPrecision: z.number().int(), // Deprecated. DO NOT USE
-  executableOnBrokersPriceDeviation: z.number().nullable(),
+  // executableOnBrokersPriceDeviation: z.number().nullable(), // Deprecated. DO NOT USE
   maxPrice: z.number(),
   maxQty: z.number(),
   minPrice: z.number(),
