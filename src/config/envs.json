@@ -13,6 +13,9 @@
             },
             "137": {
                 "api": "https://trade-polygon.orionprotocol.io"
+            },
+            "66": {
+                "api": "https://trade-okc.orionprotocol.io"
             }
         }
     },
@@ -47,6 +50,9 @@
             },
             "137": {
                 "api": "https://staging-polygon.orionprotocol.io"
+            },
+            "66": {
+                "api": "https://staging-okc.orionprotocol.io"
             }
         }
     },
