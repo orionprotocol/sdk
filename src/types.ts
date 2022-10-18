@@ -145,11 +145,13 @@ export enum SupportedChainId {
   ROPSTEN = '3',
   FANTOM_OPERA = '250',
   POLYGON = '137',
+  OKC = '66',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
   BSC = '56',
   BSC_TESTNET = '97',
+  OKC_TESTNET = '65',
 
   // For testing and debug purpose
   BROKEN = '0',
