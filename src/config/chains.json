@@ -71,6 +71,24 @@
         "rpc": "https://rpc-mumbai.matic.today",
         "explorer": "https://mumbai.polygonscan.com/"
     },
+    "66": {
+        "chainId": "66",
+        "explorer": "https://www.oklink.com/okc/",
+        "label": "OKC Mainnet",
+        "shortName": "OKC",
+        "code": "okc",
+        "rpc": "https://exchainrpc.okex.org/",
+        "baseCurrencyName": "OKT"
+    },
+    "65": {
+        "chainId": "65",
+        "explorer": "https://www.oklink.com/okc-test/",
+        "label": "OKC Testnet",
+        "shortName": "OKC-Testnet",
+        "code": "okc",
+        "rpc": "https://exchaintestrpc.okex.org/",
+        "baseCurrencyName": "OKT"
+    },
     "0": {
         "chainId": "0",
         "explorer": "https://brokenscan.io/",
