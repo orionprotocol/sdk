@@ -24,8 +24,6 @@ export interface IEditPool {
   tokenBIcon?: string;
   symbol?: string;
   status: PairStatusEnum;
-  qtyPrecision?: number;
-  pricePrecision?: number;
   minQty?: number;
   tokenASymbol?: string;
   tokenBSymbol?: string;

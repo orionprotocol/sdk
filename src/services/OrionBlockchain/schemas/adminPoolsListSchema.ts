@@ -29,8 +29,6 @@ const poolOnVerificationSchema = z.object({
   status: pairStatusSchema,
   updatedAt: z.number(),
   createdAt: z.number(),
-  qtyPrecision: z.number().optional(),
-  pricePrecision: z.number().optional(),
 });
 
 export type adminPoolType = z.infer<typeof poolOnVerificationSchema>;
