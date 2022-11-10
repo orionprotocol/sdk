@@ -19,8 +19,6 @@ const poolsConfigSchema = z.object({
     z.object({
       lpTokenAddress: z.string(),
       minQty: z.number().optional(),
-      pricePrecision: z.number().int().optional(),
-      qtyPrecision: z.number().int().optional(),
       reverted: z.boolean().optional(),
       rewardToken: z.string().nullable().optional(),
       state: z.number().int().optional(),
