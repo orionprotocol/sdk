@@ -155,6 +155,8 @@ export default async function swapMarket({
   const qtyPrecisionBN = new BigNumber(pairConfig.qtyPrecision);
   const qtyDecimalPlaces = amountBN.dp();
 
+  if (qtyDecimalPlaces === null) throw new Error('Qty decimal places is null. Likely amount is -Infinity, +Infinity or NaN');
+
   if (qtyPrecisionBN.lt(qtyDecimalPlaces)) throw new Error(`Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`);
 
   let route: 'aggregator' | 'pool';
