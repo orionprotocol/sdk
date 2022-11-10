@@ -1,14 +1,15 @@
 import { z } from 'zod';
 import fetchWithValidation from '../../fetchWithValidation';
-import { PairStatusEnum, pairStatusSchema } from './schemas/adminPoolsListSchema';
 import {
   IDOSchema, atomicHistorySchema,
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
-  addPoolSchema, adminPoolsListSchema,
+  addPoolSchema, adminPoolsListSchema, adminPoolSchema,
   atomicSummarySchema,
   poolsLpAndStakedSchema,
   userVotesSchema,
   userEarnedSchema,
+  PairStatusEnum,
+  pairStatusSchema,
 } from './schemas';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
@@ -81,6 +82,7 @@ class OrionBlockchain {
     this.checkAuth = this.checkAuth.bind(this);
     this.addPool = this.addPool.bind(this);
     this.editPool = this.editPool.bind(this);
+    this.getPool = this.getPool.bind(this);
     this.getPoolsList = this.getPoolsList.bind(this);
     this.getSourceAtomicSwapHistory = this.getSourceAtomicSwapHistory.bind(this);
     this.getTargetAtomicSwapHistory = this.getTargetAtomicSwapHistory.bind(this);
@@ -275,6 +277,12 @@ class OrionBlockchain {
   checkAuth = (headers: IAdminAuthHeaders) => fetchWithValidation(`${this.apiUrl}/api/auth/check`, z.object({
     auth: z.boolean(),
   }), { headers });
+
+  getPool = (address: string, headers: IAdminAuthHeaders) => fetchWithValidation(
+    `${this.apiUrl}/api/pools/${address}`,
+    adminPoolSchema,
+    { headers },
+  );
 
   getPoolsList = (headers: IAdminAuthHeaders) => fetchWithValidation(
     `${this.apiUrl}/api/pools/list`,

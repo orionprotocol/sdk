@@ -1,4 +1,5 @@
-export * from './adminPoolsListSchema';
+export * from './adminPoolSchema';
+export { default as adminPoolsListSchema } from './adminPoolsListSchema';
 export { default as addPoolSchema } from './addPoolSchema';
 export { default as atomicHistorySchema } from './atomicHistorySchema';
 export { default as checkRedeemOrderSchema } from './checkRedeemOrderSchema';
