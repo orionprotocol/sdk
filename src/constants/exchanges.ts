@@ -4,6 +4,7 @@ export default [
   'OKX',
   'BINANCE',
   'KUCOIN',
+  'ORION', // Internal
 
   // DEXes
   'SPOOKYSWAP',
@@ -11,4 +12,7 @@ export default [
   'UNISWAP',
   'QUICKSWAP',
   'ORION_POOL',
+  'CHERRYSWAP',
+  'OKXSWAP',
+  'CURVE',
 ] as const;
