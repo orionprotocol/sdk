@@ -57,7 +57,7 @@ npm i @orionprotocol/sdk
 import { OrionUnit } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm available
+const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm, polygon, okc available
 const wallet = new Wallet("0x...", orionUnit.provider);
 // OrionUnit is chain-in-environment abstraction
 ```
