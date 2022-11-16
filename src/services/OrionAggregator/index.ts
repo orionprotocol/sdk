@@ -15,6 +15,7 @@ import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema,
 } from './schemas/aggregatedOrderbookSchema';
 import networkCodes from '../../constants/networkCodes';
+import toUpperCase from '../../utils/toUpperCase';
 
 class OrionAggregator {
   private readonly apiUrl: string;
@@ -40,10 +41,15 @@ class OrionAggregator {
     this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
   }
 
-  getPairsList = () => fetchWithValidation(
-    `${this.apiUrl}/api/v1/pairs/list`,
-    z.array(z.string()),
-  );
+  getPairsList = (market: 'spot' | 'futures') => {
+    const url = new URL(`${this.apiUrl}/api/v1/pairs/list`);
+    url.searchParams.append('market', toUpperCase(market));
+
+    return fetchWithValidation(
+      url.toString(),
+      z.array(z.string()),
+    );
+  };
 
   getAggregatedOrderbook = (pair: string, depth = 20) => {
     const url = new URL(`${this.apiUrl}/api/v1/orderbook`);
