@@ -14,6 +14,7 @@ import {
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
+import { networkCodes } from '../../constants';
 
 interface IAdminAuthHeaders {
   auth: string;
@@ -37,7 +38,7 @@ type AtomicSwapHistoryBaseQuery = {
   receiver?: string,
   used?: 0 | 1,
   page?: number,
-  sourceNetworkCode?: string,
+  sourceNetworkCode?: 'ftm' | 'bsc' | 'eth' | 'polygon' | 'okc',
 }
 
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
@@ -95,7 +96,7 @@ class OrionBlockchain {
     return `${this.apiUrl}/`;
   }
 
-  private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: string) => {
+  private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: typeof networkCodes[number]) => {
     const url = new URL(`${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`);
     if (unshifted) {
       url.searchParams.append('unshifted', unshifted.toString());
