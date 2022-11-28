@@ -199,7 +199,11 @@ class OrionBlockchain {
     }),
   );
 
-  claimOrder = (secretHash: string, targetNetwork: string, redeemTxHash?: string) => fetchWithValidation(
+  claimOrder = (
+    secretHash: string,
+    targetNetwork: typeof networkCodes[number],
+    redeemTxHash?: string,
+  ) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/claim-order`,
     z.string(),
     {
@@ -218,7 +222,7 @@ class OrionBlockchain {
   redeemAtomicSwap = (
     redeemOrder: z.infer<typeof redeemOrderSchema>,
     secret: string,
-    sourceNetwork: string,
+    sourceNetwork: typeof networkCodes[number],
   ) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/matcher-redeem`,
     z.string(),
@@ -240,7 +244,7 @@ class OrionBlockchain {
     secret1: string,
     redeemOrder2: z.infer<typeof redeemOrderSchema>,
     secret2: string,
-    sourceNetwork: string,
+    sourceNetwork: typeof networkCodes[number],
   ) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
     z.string(),
