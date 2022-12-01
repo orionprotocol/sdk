@@ -1,4 +1,5 @@
 import fetchWithValidation from '../../fetchWithValidation';
+import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas';
 import candlesSchema from './schemas/candlesSchema';
 import { PriceFeedWS } from './ws';
 
@@ -12,6 +13,8 @@ class PriceFeed {
     this.ws = new PriceFeedWS(this.wsUrl);
 
     this.getCandles = this.getCandles.bind(this);
+    this.getStatisticsOverview = this.getStatisticsOverview.bind(this);
+    this.getTopPairStatistics = this.getTopPairStatistics.bind(this);
   }
 
   getCandles = (
@@ -28,11 +31,22 @@ class PriceFeed {
     url.searchParams.append('interval', interval);
     url.searchParams.append('exchange', exchange);
 
-    return fetchWithValidation(
-      url.toString(),
-      candlesSchema,
-    );
+    return fetchWithValidation(url.toString(), candlesSchema);
   };
+
+  getStatisticsOverview(exchange = 'ALL') {
+    const url = new URL(`${this.statisticsUrl}/overview`);
+    url.searchParams.append('exchange', exchange);
+
+    return fetchWithValidation(url.toString(), statisticsOverviewSchema);
+  }
+
+  getTopPairStatistics(exchange = 'ALL') {
+    const url = new URL(`${this.statisticsUrl}/top-pairs`);
+    url.searchParams.append('exchange', exchange);
+
+    return fetchWithValidation(url.toString(), topPairsStatisticsSchema);
+  }
 
   get wsUrl() {
     const url = new URL(this.apiUrl);
@@ -43,10 +57,12 @@ class PriceFeed {
   get candlesUrl() {
     return `${this.apiUrl}/api/v1/candles`;
   }
+
+  get statisticsUrl() {
+    return `${this.apiUrl}/api/v1/statistics`;
+  }
 }
 
 export * as schemas from './schemas';
 
-export {
-  PriceFeed,
-};
+export { PriceFeed };
