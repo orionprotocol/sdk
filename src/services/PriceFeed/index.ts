@@ -1,4 +1,5 @@
 import fetchWithValidation from '../../fetchWithValidation';
+import { Exchange } from '../../types';
 import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas';
 import candlesSchema from './schemas/candlesSchema';
 import { PriceFeedWS } from './ws';
@@ -22,7 +23,7 @@ class PriceFeed {
     timeStart: number,
     timeEnd: number,
     interval: '5m' | '30m' | '1h' | '1d',
-    exchange = 'all',
+    exchange = 'all'
   ) => {
     const url = new URL(this.candlesUrl);
     url.searchParams.append('symbol', symbol);
@@ -34,14 +35,14 @@ class PriceFeed {
     return fetchWithValidation(url.toString(), candlesSchema);
   };
 
-  getStatisticsOverview(exchange = 'ALL') {
+  getStatisticsOverview(exchange: Exchange | 'ALL' = 'ALL') {
     const url = new URL(`${this.statisticsUrl}/overview`);
     url.searchParams.append('exchange', exchange);
 
     return fetchWithValidation(url.toString(), statisticsOverviewSchema);
   }
 
-  getTopPairStatistics(exchange = 'ALL') {
+  getTopPairStatistics(exchange: Exchange | 'ALL' = 'ALL') {
     const url = new URL(`${this.statisticsUrl}/top-pairs`);
     url.searchParams.append('exchange', exchange);
 
