@@ -154,7 +154,7 @@ export enum SupportedChainId {
   OKC_TESTNET = '65',
 
   // For testing and debug purpose
-  BROKEN = '0',
+  // BROKEN = '0',
 }
 
 const balanceTypes = ['exchange', 'wallet'] as const;
