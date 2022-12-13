@@ -37,6 +37,22 @@ export const orderUpdateSchema = z.object({
   .transform((val) => ({
     ...val,
     k: 'update' as const,
+  })).transform((o) => ({
+    kind: o.k,
+    id: o.I,
+    settledAmount: o.A,
+    status: o.S,
+    subOrders: o.c.map((so) => ({
+      pair: so.P,
+      exchange: so.e,
+      id: so.i,
+      amount: so.a,
+      settledAmount: so.A,
+      price: so.p,
+      status: so.S,
+      side: so.s,
+      subOrdQty: so.A,
+    })),
   }));
 
 export const fullOrderSchema = z.object({
@@ -57,6 +73,30 @@ export const fullOrderSchema = z.object({
 }).transform((val) => ({
   ...val,
   k: 'full' as const,
+})).transform((o) => ({
+  kind: o.k,
+  id: o.I,
+  settledAmount: o.A,
+  feeAsset: o.F,
+  fee: o.f,
+  status: o.S,
+  date: o.T,
+  clientOrdId: o.O,
+  type: o.s,
+  pair: o.P,
+  amount: o.a,
+  price: o.p,
+  subOrders: o.c.map((so) => ({
+    pair: so.P,
+    exchange: so.e,
+    id: so.i,
+    amount: so.a,
+    settledAmount: so.A,
+    price: so.p,
+    status: so.S,
+    side: so.s,
+    subOrdQty: so.A,
+  })),
 }));
 
 const updateMessageSchema = baseAddressUpdate.extend({
@@ -69,7 +109,8 @@ const updateMessageSchema = baseAddressUpdate.extend({
 const initialMessageSchema = baseAddressUpdate.extend({
   k: z.literal('i'), // kind of message: "i" - initial
   b: balancesSchema,
-  o: z.array(fullOrderSchema).optional(), // When no orders — no field
+  o: z.array(fullOrderSchema)
+    .optional(), // When no orders — no field
 });
 
 const addressUpdateSchema = z.union([
