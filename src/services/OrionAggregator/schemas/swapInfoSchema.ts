@@ -20,6 +20,20 @@ const swapInfoBase = z.object({
   minAmountOut: z.number(),
   minAmountIn: z.number(),
   marketPrice: z.number().nullable(), // spending asset market price
+  alternatives: z.object({ // execution alternatives
+    exchanges: z.string().array(),
+    path: z.object({
+      units: z.object({
+        assetPair: z.string(),
+        action: z.string(),
+      }).array(),
+    }),
+    marketAmountOut: z.number().nullable(),
+    marketAmountIn: z.number().nullable(),
+    marketPrice: z.number(),
+    availableAmountIn: z.number().nullable(),
+    availableAmountOut: z.number().nullable(),
+  }).array(),
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({
