@@ -11,10 +11,11 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange,
+  AssetPairUpdate, OrderbookItem, Balance, Exchange,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
+import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -71,7 +72,7 @@ type AddressUpdateUpdate = {
         Balance
       >
   >,
-  order?: OrderUpdate | FullOrder
+  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
 type AddressUpdateInitial = {
@@ -82,7 +83,7 @@ type AddressUpdateInitial = {
         Balance
       >
   >,
-  orders?: FullOrder[] // The field is not defined if the user has no orders
+  orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
 }
 
 type AddressUpdateSubscription = {
@@ -441,7 +442,7 @@ class OrionAggregatorWS {
           switch (json.k) { // message kind
             case 'i': { // initial
               const fullOrders = json.o
-                ? json.o.reduce<FullOrder[]>((prev, o) => {
+                ? json.o.reduce<z.infer<typeof fullOrderSchema>[]>((prev, o) => {
                   prev.push(o);
 
                   return prev;
@@ -458,7 +459,7 @@ class OrionAggregatorWS {
             }
               break;
             case 'u': { // update
-              let orderUpdate: OrderUpdate | FullOrder | undefined;
+              let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
               if (json.o) {
                 const firstOrder = json.o[0];
                 orderUpdate = firstOrder;

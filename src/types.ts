@@ -1,18 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { z } from 'zod';
 import exchanges from './constants/exchanges';
 import subOrderStatuses from './constants/subOrderStatuses';
-import { fullOrderSchema, orderUpdateSchema } from './services/OrionAggregator/ws/schemas/addressUpdateSchema';
-
-export type OrderbookItem = {
-  price: string,
-  amount: string,
-  exchanges: string[],
-  vob: {
-    side: 'BUY' | 'SELL',
-    pairName: string
-  }[]
-}
 
 export type AssetPairUpdate = {
     minQty: number,
@@ -29,9 +17,6 @@ export type SubOrder = {
     side: 'BUY' | 'SELL',
     subOrdQty: number
 }
-export type FullOrder = z.infer<typeof fullOrderSchema>;
-
-export type OrderUpdate = z.infer<typeof orderUpdateSchema>;
 
 export type Balance = {
   tradable: string,
@@ -83,54 +68,6 @@ export interface Pair {
   low: string;
   vol24h: string;
 }
-
-export type SwapInfoAlternative = {
-  exchanges: string[],
-  path: string[],
-  marketAmountOut?: number,
-  marketAmountIn?: number,
-  marketPrice: number,
-  availableAmountIn?: number,
-  availableAmountOut?: number,
-}
-
-export type SwapInfoBase = {
-  swapRequestId: string,
-  assetIn: string,
-  assetOut: string,
-  amountIn: number,
-  amountOut: number,
-  minAmountIn: number,
-  minAmountOut: number,
-
-  path: string[],
-  exchanges?: string[],
-  poolOptimal: boolean,
-
-  price?: number,
-  marketPrice?: number,
-  orderInfo?: {
-    pair: string,
-    side: 'BUY' | 'SELL',
-    amount: number,
-    safePrice: number,
-  },
-  alternatives: SwapInfoAlternative[],
-}
-
-export type SwapInfoByAmountIn = SwapInfoBase & {
-  kind: 'exactSpend',
-  availableAmountIn?: number,
-  marketAmountOut?: number,
-}
-
-export type SwapInfoByAmountOut = SwapInfoBase & {
-  kind: 'exactReceive',
-  marketAmountIn?: number,
-  availableAmountOut?: number,
-}
-
-export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
 
 export enum SupportedChainId {
   MAINNET = '1',
@@ -193,3 +130,61 @@ export type BalanceIssue = {
 }
 
 export type Exchange = typeof exchanges[number];
+
+export type OrderbookItem = {
+  price: string,
+  amount: string,
+  exchanges: Exchange[],
+  vob: {
+    side: 'BUY' | 'SELL',
+    pairName: string
+  }[]
+}
+
+export type SwapInfoAlternative = {
+  exchanges: Exchange[],
+  path: string[],
+  marketAmountOut?: number,
+  marketAmountIn?: number,
+  marketPrice: number,
+  availableAmountIn?: number,
+  availableAmountOut?: number,
+}
+
+export type SwapInfoBase = {
+  swapRequestId: string,
+  assetIn: string,
+  assetOut: string,
+  amountIn: number,
+  amountOut: number,
+  minAmountIn: number,
+  minAmountOut: number,
+
+  path: string[],
+  exchanges?: string[],
+  poolOptimal: boolean,
+
+  price?: number,
+  marketPrice?: number,
+  orderInfo?: {
+    pair: string,
+    side: 'BUY' | 'SELL',
+    amount: number,
+    safePrice: number,
+  },
+  alternatives: SwapInfoAlternative[],
+}
+
+export type SwapInfoByAmountIn = SwapInfoBase & {
+  kind: 'exactSpend',
+  availableAmountIn?: number,
+  marketAmountOut?: number,
+}
+
+export type SwapInfoByAmountOut = SwapInfoBase & {
+  kind: 'exactReceive',
+  marketAmountIn?: number,
+  availableAmountOut?: number,
+}
+
+export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
