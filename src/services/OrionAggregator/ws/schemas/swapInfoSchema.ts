@@ -25,11 +25,11 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
   as: z.object({ // execution alternatives
     e: z.string().array(), // exchanges
     ps: z.string().array(), // path
-    mo: z.number().nullable(), // market amount out
-    mi: z.number().nullable(), // market amount in
+    mo: z.number().optional(), // market amount out
+    mi: z.number().optional(), // market amount in
     mp: z.number(), // market price
-    aa: z.number().nullable(), // available amount in
-    aao: z.number().nullable(), // available amount out
+    aa: z.number().optional(), // available amount in
+    aao: z.number().optional(), // available amount out
   }).array(),
 });
 
