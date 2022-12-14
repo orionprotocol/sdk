@@ -28,11 +28,11 @@ const swapInfoBase = z.object({
         action: z.string(),
       }).array(),
     }),
-    marketAmountOut: z.number().nullable(),
-    marketAmountIn: z.number().nullable(),
+    marketAmountOut: z.number().optional(),
+    marketAmountIn: z.number().optional(),
     marketPrice: z.number(),
-    availableAmountIn: z.number().nullable(),
-    availableAmountOut: z.number().nullable(),
+    availableAmountIn: z.number().optional(),
+    availableAmountOut: z.number().optional(),
   }).array(),
 });
 

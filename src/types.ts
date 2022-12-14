@@ -103,6 +103,16 @@ export interface Pair {
   vol24h: string;
 }
 
+export type SwapInfoAlternative = {
+  exchanges: string[],
+  path: string[],
+  marketAmountOut?: number,
+  marketAmountIn?: number,
+  marketPrice: number,
+  availableAmountIn?: number,
+  availableAmountOut?: number,
+}
+
 export type SwapInfoBase = {
   swapRequestId: string,
   assetIn: string,
@@ -123,7 +133,8 @@ export type SwapInfoBase = {
     side: 'BUY' | 'SELL',
     amount: number,
     safePrice: number,
-  }
+  },
+  alternatives: SwapInfoAlternative[],
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
