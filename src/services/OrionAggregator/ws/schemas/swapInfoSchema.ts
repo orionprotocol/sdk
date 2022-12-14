@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import exchanges from '../../../../constants/exchanges';
 import MessageType from '../MessageType';
 import baseMessageSchema from './baseMessageSchema';
 
@@ -13,7 +14,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
   mao: z.number(), // min amount out
   ps: z.string().array(), // path
   po: z.boolean(), // is swap through pool optimal
-  e: z.string().array().optional(), // Exchanges
+  e: z.enum(exchanges).array().optional(), // Exchanges
   p: z.number().optional(), // price
   mp: z.number().optional(), // market price
   oi: z.object({ //  info about order equivalent to this swap
