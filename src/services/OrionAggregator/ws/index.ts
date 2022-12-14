@@ -11,7 +11,7 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange, SwapInfoAlternative,
+  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
@@ -300,20 +300,6 @@ class OrionAggregatorWS {
           // To implement
           break;
         case MessageType.SWAP_INFO: {
-          let alternatives: SwapInfoAlternative[] = [];
-
-          if (json.as) {
-            alternatives = json.as.map((item) => ({
-              exchanges: item.e,
-              path: item.ps,
-              marketAmountOut: item.mo,
-              marketAmountIn: item.mi,
-              marketPrice: item.mp,
-              availableAmountIn: item.aa,
-              availableAmountOut: item.aao,
-            }));
-          }
-
           const baseSwapInfo: SwapInfoBase = {
             swapRequestId: json.S,
             assetIn: json.ai,
@@ -322,8 +308,8 @@ class OrionAggregatorWS {
             amountOut: json.o,
             price: json.p,
             marketPrice: json.mp,
-            minAmounOut: json.mao,
-            minAmounIn: json.ma,
+            minAmountOut: json.mao,
+            minAmountIn: json.ma,
             path: json.ps,
             exchanges: json.e,
             poolOptimal: json.po,
@@ -335,7 +321,15 @@ class OrionAggregatorWS {
                 safePrice: json.oi.sp,
               },
             },
-            alternatives,
+            alternatives: json.as.map((item) => ({
+              exchanges: item.e,
+              path: item.ps,
+              marketAmountOut: item.mo,
+              marketAmountIn: item.mi,
+              marketPrice: item.mp,
+              availableAmountIn: item.aa,
+              availableAmountOut: item.aao,
+            })),
           };
 
           switch (json.k) { // kind

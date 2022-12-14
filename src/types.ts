@@ -100,8 +100,8 @@ export type SwapInfoBase = {
   assetOut: string,
   amountIn: number,
   amountOut: number,
-  minAmounIn: number,
-  minAmounOut: number,
+  minAmountIn: number,
+  minAmountOut: number,
 
   path: string[],
   exchanges?: string[],
