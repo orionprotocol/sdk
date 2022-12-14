@@ -30,7 +30,7 @@ class ReferralSystem {
 
   getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/view/link`, linkSchema, {
     headers: {
-      referer_address: refererAddress,
+      'referer-address': refererAddress,
     },
   });
 
@@ -39,7 +39,7 @@ class ReferralSystem {
     distinctAnalyticsSchema,
     {
       headers: {
-        referer_address: refererAddress,
+        'referer-address': refererAddress,
       },
     },
   );
