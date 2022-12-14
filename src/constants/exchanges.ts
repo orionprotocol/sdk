@@ -15,4 +15,5 @@ export default [
   'CHERRYSWAP',
   'OKXSWAP',
   'CURVE',
+  'CURVE_FACTORY',
 ] as const;
