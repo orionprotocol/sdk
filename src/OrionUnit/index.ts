@@ -8,6 +8,7 @@ import Exchange from './Exchange';
 import FarmingManager from './FarmingManager';
 import { chains, envs } from '../config';
 import { isValidChainId } from '../utils';
+import { ReferralSystem } from '../services/ReferralSystem';
 
 const orionAnalyticsUrl = 'https://trade.orionprotocol.io';
 
@@ -48,6 +49,8 @@ export default class OrionUnit {
   public readonly farmingManager: FarmingManager;
 
   public readonly apiUrl: string;
+
+  public readonly referralSystem: ReferralSystem;
 
   constructor(
     chain: string,
@@ -142,6 +145,7 @@ export default class OrionUnit {
     this.orionAnalytics = new OrionAnalytics(orionAnalyticsUrl);
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
+    this.referralSystem = new ReferralSystem(`${options?.api ?? customApi}/referral-api/referer`);
   }
 
   get siblings() {
