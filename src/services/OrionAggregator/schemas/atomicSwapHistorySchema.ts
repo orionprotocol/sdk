@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import networkCodes from '../../../constants/networkCodes';
+import uppercasedNetworkCodes from '../../../constants/uppercasedNetworkCodes';
 import redeemOrderSchema from './redeemOrderSchema';
 
 export const atomicSwapHistorySchema = z.array(z.object({
@@ -12,7 +12,7 @@ export const atomicSwapHistorySchema = z.array(z.object({
     expiration: z.number(),
     secretHash: z.string(),
     used: z.boolean(),
-    sourceNetworkCode: z.enum(networkCodes),
+    sourceNetworkCode: z.enum(uppercasedNetworkCodes),
   }),
   redeemOrder: redeemOrderSchema,
   status: z.enum(['SETTLED', 'EXPIRED', 'ACTIVE']),
