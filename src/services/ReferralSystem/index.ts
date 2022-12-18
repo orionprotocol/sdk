@@ -26,6 +26,7 @@ class ReferralSystem {
     this.getSubscribersList = this.getSubscribersList.bind(this);
     this.createReferralLink = this.createReferralLink.bind(this);
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
+    this.getMyReferral = this.getMyReferral.bind(this);
   }
 
   getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
