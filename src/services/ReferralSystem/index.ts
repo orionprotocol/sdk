@@ -28,14 +28,24 @@ class ReferralSystem {
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
   }
 
-  getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/view/link`, linkSchema, {
+  getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
     headers: {
       'referer-address': refererAddress,
     },
   });
 
+  getMyReferral = (myWalletAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/referral/view/link`,
+    linkSchema,
+    {
+      headers: {
+        referral: myWalletAddress,
+      },
+    },
+  );
+
   getSubscribersList = (refererAddress: string) => fetchWithValidation(
-    `${this.apiUrl}/view/distinct-analytics`,
+    `${this.apiUrl}/referer/view/distinct-analytics`,
     distinctAnalyticsSchema,
     {
       headers: {
@@ -45,7 +55,7 @@ class ReferralSystem {
   );
 
   createReferralLink = (payload: CreateLinkPayloadType, signature: SignatureType) => fetchWithValidation(
-    `${this.apiUrl}/create`,
+    `${this.apiUrl}/referer/create`,
     linkSchema,
     {
       headers: {
@@ -57,7 +67,7 @@ class ReferralSystem {
   );
 
   subscribeToReferral = (payload: SubscribePayloadType, signature: SignatureType) => fetchWithValidation(
-    `${this.apiUrl}/subscribe`,
+    `${this.apiUrl}/referer/subscribe`,
     linkSchema,
     {
       headers: {
