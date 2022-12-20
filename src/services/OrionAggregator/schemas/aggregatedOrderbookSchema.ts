@@ -23,3 +23,9 @@ export const exchangeOrderbookSchema = z.object({
   asks: z.array(orderbookElementSchema),
   bids: z.array(orderbookElementSchema),
 });
+
+export const poolReservesSchema = z.object({
+  a: z.number(),
+  p: z.number(),
+  indicativePrice: z.number(),
+});
