@@ -38,6 +38,7 @@ class OrionAggregator {
     this.getLockedBalance = this.getLockedBalance.bind(this);
     this.getAggregatedOrderbook = this.getAggregatedOrderbook.bind(this);
     this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
+    this.getPoolReserves = this.getPoolReserves.bind(this);
   }
 
   getPairsList = () => fetchWithValidation(
