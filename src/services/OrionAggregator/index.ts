@@ -60,7 +60,7 @@ class OrionAggregator {
 
   getExchangeOrderbook = (
     pair: string,
-    exchange: string,
+    exchange: Exchange,
     depth = 20,
     filterByBrokerBalances: boolean | null = null,
   ) => {
@@ -80,7 +80,7 @@ class OrionAggregator {
 
   getPoolReserves = (
     pair: string,
-    exchange: string,
+    exchange: Exchange,
   ) => {
     const url = new URL(`${this.apiUrl}/api/v1/pools/reserves/${exchange}/${pair}`);
     return fetchWithValidation(

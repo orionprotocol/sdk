@@ -25,7 +25,7 @@ export const exchangeOrderbookSchema = z.object({
 });
 
 export const poolReservesSchema = z.object({
-  a: z.number(),
-  p: z.number(),
+  a: z.number(), // amount asset
+  p: z.number(), // price asset
   indicativePrice: z.number(),
 });
