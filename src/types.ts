@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
+import { z } from 'zod';
 import exchanges from './constants/exchanges';
-import orderStatuses from './constants/orderStatuses';
 import subOrderStatuses from './constants/subOrderStatuses';
+import { fullOrderSchema, orderUpdateSchema } from './services/OrionAggregator/ws/schemas/addressUpdateSchema';
 
 export type OrderbookItem = {
   price: string,
@@ -28,29 +29,9 @@ export type SubOrder = {
     side: 'BUY' | 'SELL',
     subOrdQty: number
 }
-export type FullOrder = {
-    kind: 'full',
-    id: string,
-    settledAmount: number,
-    feeAsset: string,
-    fee: number,
-    status: typeof orderStatuses[number],
-    date: number,
-    clientOrdId: string,
-    type: 'BUY' | 'SELL',
-    pair: string,
-    amount: number,
-    price: number,
-    subOrders: SubOrder[]
-}
+export type FullOrder = z.infer<typeof fullOrderSchema>;
 
-export type OrderUpdate = {
-      kind: 'update',
-      id: string,
-      settledAmount: number,
-      status: typeof orderStatuses[number],
-      subOrders: SubOrder[]
-}
+export type OrderUpdate = z.infer<typeof orderUpdateSchema>;
 
 export type Balance = {
   tradable: string,
@@ -154,7 +135,7 @@ export enum SupportedChainId {
   OKC_TESTNET = '65',
 
   // For testing and debug purpose
-  BROKEN = '0',
+  // BROKEN = '0',
 }
 
 const balanceTypes = ['exchange', 'wallet'] as const;

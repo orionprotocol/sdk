@@ -26,7 +26,7 @@ export function isUnknownObject(x: unknown): x is {
   return x !== null && typeof x === 'object';
 }
 
-export function isKeyOfObject<T>(
+export function isKeyOfObject<T extends object>(
   key: string | number | symbol,
   obj: T,
 ): key is keyof T {

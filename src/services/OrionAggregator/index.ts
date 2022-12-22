@@ -14,6 +14,7 @@ import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema,
 } from './schemas/aggregatedOrderbookSchema';
+import networkCodes from '../../constants/networkCodes';
 import toUpperCase from '../../utils/toUpperCase';
 
 class OrionAggregator {
@@ -228,7 +229,7 @@ class OrionAggregator {
    */
   placeAtomicSwap = (
     secretHash: string,
-    sourceNetworkCode: string,
+    sourceNetworkCode: Uppercase<typeof networkCodes[number]>,
   ) => fetchWithValidation(
     `${this.apiUrl}/api/v1/atomic-swap`,
     placeAtomicSwapSchema,

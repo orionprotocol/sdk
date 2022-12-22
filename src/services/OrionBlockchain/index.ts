@@ -14,6 +14,7 @@ import {
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
+import { networkCodes } from '../../constants';
 
 interface IAdminAuthHeaders {
   auth: string;
@@ -37,7 +38,7 @@ type AtomicSwapHistoryBaseQuery = {
   receiver?: string,
   used?: 0 | 1,
   page?: number,
-  sourceNetworkCode?: string,
+  sourceNetworkCode?: 'ftm' | 'bsc' | 'eth' | 'polygon' | 'okc',
 }
 
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
@@ -95,7 +96,7 @@ class OrionBlockchain {
     return `${this.apiUrl}/`;
   }
 
-  private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: string) => {
+  private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: typeof networkCodes[number]) => {
     const url = new URL(`${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`);
     if (unshifted) {
       url.searchParams.append('unshifted', unshifted.toString());
@@ -198,7 +199,11 @@ class OrionBlockchain {
     }),
   );
 
-  claimOrder = (secretHash: string, targetNetwork: string, redeemTxHash?: string) => fetchWithValidation(
+  claimOrder = (
+    secretHash: string,
+    targetNetwork: typeof networkCodes[number],
+    redeemTxHash?: string,
+  ) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/claim-order`,
     z.string(),
     {
@@ -217,7 +222,7 @@ class OrionBlockchain {
   redeemAtomicSwap = (
     redeemOrder: z.infer<typeof redeemOrderSchema>,
     secret: string,
-    sourceNetwork: string,
+    sourceNetwork: typeof networkCodes[number],
   ) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/matcher-redeem`,
     z.string(),
@@ -239,7 +244,7 @@ class OrionBlockchain {
     secret1: string,
     redeemOrder2: z.infer<typeof redeemOrderSchema>,
     secret2: string,
-    sourceNetwork: string,
+    sourceNetwork: typeof networkCodes[number],
   ) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/matcher-redeem2atomics`,
     z.string(),

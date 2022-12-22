@@ -37,7 +37,7 @@
     "url": "https://github.com/orionprotocol/sdk/issues"
   },
   "devDependencies": {
-    "@types/node": "^17.0.23",
+    "@types/node": "^18.11.9",
     "@types/socket.io-client": "1.4.33",
     "@types/uuid": "^8.3.4",
     "@types/ws": "^8.5.3",
@@ -52,7 +52,7 @@
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "ts-loader": "^9.3.0",
-    "typescript": "^4.7.2",
+    "typescript": "^4.9.3",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
   },
@@ -66,7 +66,7 @@
     "crypto-browserify": "^3.12.0",
     "ethers": "^5.6.2",
     "isomorphic-unfetch": "^3.1.0",
-    "isomorphic-ws": "^4.0.1",
+    "isomorphic-ws": "^5.0.0",
     "just-clone": "^5.0.1",
     "neverthrow": "^4.3.1",
     "stream-browserify": "^3.0.0",

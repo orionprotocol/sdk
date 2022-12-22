@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import WebSocket from 'isomorphic-ws';
 import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
-import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import MessageType from './MessageType';
 import SubscriptionType from './SubscriptionType';
 import {
@@ -17,50 +16,6 @@ import {
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
 // import errorSchema from './schemas/errorSchema';
-
-const mapFullOrder = (o: z.infer<typeof fullOrderSchema>): FullOrder => ({
-  kind: 'full',
-  id: o.I,
-  settledAmount: o.A,
-  feeAsset: o.F,
-  fee: o.f,
-  status: o.S,
-  date: o.T,
-  clientOrdId: o.O,
-  type: o.s,
-  pair: o.P,
-  amount: o.a,
-  price: o.p,
-  subOrders: o.c.map((so) => ({
-    pair: so.P,
-    exchange: so.e,
-    id: so.i,
-    amount: so.a,
-    settledAmount: so.A,
-    price: so.p,
-    status: so.S,
-    side: so.s,
-    subOrdQty: so.A,
-  })),
-});
-
-const mapOrderUpdate = (o: z.infer<typeof orderUpdateSchema>): OrderUpdate => ({
-  kind: 'update',
-  id: o.I,
-  settledAmount: o.A,
-  status: o.S,
-  subOrders: o.c.map((so) => ({
-    pair: so.P,
-    exchange: so.e,
-    id: so.i,
-    amount: so.a,
-    settledAmount: so.A,
-    price: so.p,
-    status: so.S,
-    side: so.s,
-    subOrdQty: so.A,
-  })),
-});
 
 const UNSUBSCRIBE = 'u';
 
@@ -478,9 +433,7 @@ class OrionAggregatorWS {
             case 'i': { // initial
               const fullOrders = json.o
                 ? json.o.reduce<FullOrder[]>((prev, o) => {
-                  const fullOrder = mapFullOrder(o);
-
-                  prev.push(fullOrder);
+                  prev.push(o);
 
                   return prev;
                 }, [])
@@ -499,9 +452,7 @@ class OrionAggregatorWS {
               let orderUpdate: OrderUpdate | FullOrder | undefined;
               if (json.o) {
                 const firstOrder = json.o[0];
-                orderUpdate = firstOrder.k === 'full'
-                  ? mapFullOrder(firstOrder)
-                  : mapOrderUpdate(firstOrder);
+                orderUpdate = firstOrder;
               }
 
               this.subscriptions[
