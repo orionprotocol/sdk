@@ -15,6 +15,7 @@ import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
 import { networkCodes } from '../../constants';
+import CFDContractsSchema from './schemas/CFDContractsSchema';
 
 interface IAdminAuthHeaders {
   auth: string;
@@ -90,6 +91,7 @@ class OrionBlockchain {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
+    this.getCFDContracts = this.getCFDContracts.bind(this);
   }
 
   get orionBlockchainWsUrl() {
@@ -376,6 +378,11 @@ class OrionBlockchain {
       method: 'POST',
       body: JSON.stringify(secretHashes),
     },
+  );
+
+  getCFDContracts = () => fetchWithValidation(
+    `${this.apiUrl}/api/cfd/contracts`,
+    CFDContractsSchema,
   );
 }
 
