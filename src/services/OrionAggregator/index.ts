@@ -83,12 +83,17 @@ class OrionAggregator {
     );
   };
 
-  getPairConfigs = () => fetchWithValidation(
-    `${this.apiUrl}/api/v1/pairs/exchangeInfo`,
-    exchangeInfoSchema,
-    undefined,
-    errorSchema,
-  );
+  getPairConfigs = (market: 'spot' | 'futures') => {
+    const url = new URL(`${this.apiUrl}/api/v1/pairs/exchangeInfo`);
+    url.searchParams.append('market', toUpperCase(market));
+
+    return fetchWithValidation(
+      url.toString(),
+      exchangeInfoSchema,
+      undefined,
+      errorSchema,
+    );
+  }
 
   getPairConfig = (assetPair: string) => fetchWithValidation(
     `${this.apiUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
