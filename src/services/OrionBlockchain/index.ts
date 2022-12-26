@@ -10,12 +10,12 @@ import {
   userEarnedSchema,
   PairStatusEnum,
   pairStatusSchema,
+  CFDContractsSchema,
 } from './schemas';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
 import { networkCodes } from '../../constants';
-import CFDContractsSchema from './schemas/CFDContractsSchema';
 
 interface IAdminAuthHeaders {
   auth: string;

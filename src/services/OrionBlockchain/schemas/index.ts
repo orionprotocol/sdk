@@ -12,3 +12,4 @@ export { default as atomicSummarySchema } from './atomicSummarySchema';
 export { default as poolsLpAndStakedSchema } from './poolsLpAndStakedSchema';
 export { default as userVotesSchema } from './userVotesSchema';
 export { default as userEarnedSchema } from './userEarnedSchema';
+export { default as CFDContractsSchema } from './CFDContractsSchema';
