@@ -11,10 +11,11 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange,
+  FullOrder, OrderUpdate, AssetPairUpdate, OrderbookItem, Balance, Exchange, CFDBalance,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
+import cfdAddressUpdateSchema from "./schemas/cfdAddressUpdateSchema";
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -85,13 +86,31 @@ type AddressUpdateInitial = {
   orders?: FullOrder[] // The field is not defined if the user has no orders
 }
 
+type CfdAddressUpdateUpdate = {
+  kind: 'update',
+  balances: CFDBalance[],
+  order?: OrderUpdate | FullOrder
+}
+
+type CfdAddressUpdateInitial = {
+  kind: 'initial',
+  balances: CFDBalance[],
+  orders?: FullOrder[] // The field is not defined if the user has no orders
+}
+
 type AddressUpdateSubscription = {
   payload: string,
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void,
 }
 
+type CfdAddressUpdateSubscription = {
+  payload: string,
+  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void,
+}
+
 type Subscription = {
   [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription,
+  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription,
   [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription,
   [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription,
   [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
@@ -211,6 +230,15 @@ class OrionAggregatorWS {
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
       }
+
+      const aufSubscriptions = this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE];
+      if (aufSubscriptions) {
+        const targetAufSub = Object.entries(aufSubscriptions).find(([, value]) => value?.payload === subscription);
+        if (targetAufSub) {
+          const [key] = targetAufSub;
+          delete this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]?.[key];
+        }
+      }
     } else if (uuidValidate(subscription)) {
       // is swap info subscription (contains hyphen)
       delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[subscription];
@@ -276,6 +304,7 @@ class OrionAggregatorWS {
         initMessageSchema,
         pingPongMessageSchema,
         addressUpdateSchema,
+        cfdAddressUpdateSchema,
         assetPairsConfigSchema,
         assetPairConfigSchema,
         brokerMessageSchema,
@@ -413,6 +442,48 @@ class OrionAggregatorWS {
             kind: json.k === 'i' ? 'initial' : 'update',
             data: priceUpdates,
           });
+        }
+          break;
+        case MessageType.CFD_ADDRESS_UPDATE: {
+          const balances = json.b ?? []
+          switch (json.k) { // message kind
+            case 'i': { // initial
+              const fullOrders = json.o
+                ? json.o.reduce<FullOrder[]>((prev, o) => {
+                  prev.push(o);
+
+                  return prev;
+                }, [])
+                : undefined;
+
+              this.subscriptions[
+                SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE
+                ]?.[json.id]?.callback({
+                kind: 'initial',
+                orders: fullOrders,
+                balances,
+              });
+            }
+              break;
+            case 'u': { // update
+              let orderUpdate: OrderUpdate | FullOrder | undefined;
+              if (json.o) {
+                const firstOrder = json.o[0];
+                orderUpdate = firstOrder;
+              }
+
+              this.subscriptions[
+                SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE
+                ]?.[json.id]?.callback({
+                kind: 'update',
+                order: orderUpdate,
+                balances,
+              });
+            }
+              break;
+            default:
+              break;
+          }
         }
           break;
         case MessageType.ADDRESS_UPDATE: {

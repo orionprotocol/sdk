@@ -40,6 +40,17 @@ export type Balance = {
   wallet: string,
   allowance: string,
 }
+
+export type CFDBalance = {
+  instrument: string,
+  balance: number,
+  position: number,
+  positionPrice: number,
+  fundingRate: number,
+  lastShortFundingRate: number,
+  lastLongFundingRate: number,
+}
+
 export interface Order {
   senderAddress: string; // address
   matcherAddress: string; // address
@@ -54,6 +65,25 @@ export interface Order {
   buySide: number; // uint8, 1=buy, 0=sell
   isPersonalSign: boolean; // bool
 }
+
+export interface CFDOrder {
+  senderAddress: string; // address
+  matcherAddress: string; // address
+  instrumentAddress: string; // address
+  amount: number; // uint64
+  price: number; // uint64
+  matcherFee: number; // uint64
+  nonce: number; // uint64
+  expiration: number; // uint64
+  buySide: number; // uint8, 1=buy, 0=sell
+  isPersonalSign: boolean; // bool
+}
+
+export interface SignedCFDOrder extends CFDOrder {
+  id: string; // hash of Order (it's not part of order structure in smart-contract)
+  signature: string; // bytes
+}
+
 export interface SignedOrder extends Order {
   id: string; // hash of Order (it's not part of order structure in smart-contract)
   signature: string; // bytes
