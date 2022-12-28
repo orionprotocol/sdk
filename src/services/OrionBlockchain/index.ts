@@ -10,7 +10,8 @@ import {
   userEarnedSchema,
   PairStatusEnum,
   pairStatusSchema,
-  CFDContractsSchema,
+  cfdContractsSchema,
+  cfdHistorySchema,
 } from './schemas';
 import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
@@ -53,6 +54,12 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
   expiredRedeem?: 0 | 1,
   state?: 'REDEEMED' | 'BEFORE-REDEEM',
 }
+
+type CfdHistoryQuery = {
+  instrument?: string,
+  page?: number,
+  limit?: number,
+}
 class OrionBlockchain {
   private readonly apiUrl: string;
 
@@ -92,6 +99,7 @@ class OrionBlockchain {
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
     this.getCFDContracts = this.getCFDContracts.bind(this);
+    this.getCFDHistory = this.getCFDHistory.bind(this);
   }
 
   get orionBlockchainWsUrl() {
@@ -382,8 +390,17 @@ class OrionBlockchain {
 
   getCFDContracts = () => fetchWithValidation(
     `${this.apiUrl}/api/cfd/contracts`,
-    CFDContractsSchema,
+    cfdContractsSchema,
   );
+
+  getCFDHistory = (address: string, query: CfdHistoryQuery) => {
+    const url = new URL(`${this.apiUrl}/api/cfd/deposit-withdraw/${address}`);
+
+    Object.entries(query)
+      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+
+    return fetchWithValidation(url.toString(), cfdHistorySchema);
+  };
 }
 
 export * as schemas from './schemas';

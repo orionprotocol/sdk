@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const CFDContractsSchema = z.array(z.object({
+const cfdContractsSchema = z.array(z.object({
   name: z.string(),
   alias: z.string(),
   address: z.string(),
@@ -14,4 +14,4 @@ const CFDContractsSchema = z.array(z.object({
   priceIndex: z.number(),
 }));
 
-export default CFDContractsSchema;
+export default cfdContractsSchema;
