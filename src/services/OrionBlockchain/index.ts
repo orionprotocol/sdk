@@ -393,7 +393,7 @@ class OrionBlockchain {
     cfdContractsSchema,
   );
 
-  getCFDHistory = (address: string, query: CfdHistoryQuery) => {
+  getCFDHistory = (address: string, query: CfdHistoryQuery = {}) => {
     const url = new URL(`${this.apiUrl}/api/cfd/deposit-withdraw/${address}`);
 
     Object.entries(query)
