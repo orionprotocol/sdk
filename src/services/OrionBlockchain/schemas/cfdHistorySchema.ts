@@ -7,6 +7,8 @@ const cfdHistoryItem = z.object({
   instrument: z.string(),
   instrumentAddress: z.string(),
   balance: z.string(),
+  amount: z.string(),
+  amountNumber: z.string(),
   position: z.string(),
   reason: z.enum(['WITHDRAW', 'DEPOSIT']),
   positionPrice: z.string(),
