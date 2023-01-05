@@ -12,7 +12,7 @@ import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
 import { Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
-  aggregatedOrderbookSchema, exchangeOrderbookSchema,
+  aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
 } from './schemas/aggregatedOrderbookSchema';
 import networkCodes from '../../constants/networkCodes';
 
@@ -38,6 +38,7 @@ class OrionAggregator {
     this.getLockedBalance = this.getLockedBalance.bind(this);
     this.getAggregatedOrderbook = this.getAggregatedOrderbook.bind(this);
     this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
+    this.getPoolReserves = this.getPoolReserves.bind(this);
   }
 
   getPairsList = () => fetchWithValidation(
@@ -59,7 +60,7 @@ class OrionAggregator {
 
   getExchangeOrderbook = (
     pair: string,
-    exchange: string,
+    exchange: Exchange,
     depth = 20,
     filterByBrokerBalances: boolean | null = null,
   ) => {
@@ -72,6 +73,19 @@ class OrionAggregator {
     return fetchWithValidation(
       url.toString(),
       exchangeOrderbookSchema,
+      undefined,
+      errorSchema,
+    );
+  };
+
+  getPoolReserves = (
+    pair: string,
+    exchange: Exchange,
+  ) => {
+    const url = new URL(`${this.apiUrl}/api/v1/pools/reserves/${exchange}/${pair}`);
+    return fetchWithValidation(
+      url.toString(),
+      poolReservesSchema,
       undefined,
       errorSchema,
     );
