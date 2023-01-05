@@ -33,13 +33,13 @@ class ReferralSystem {
   // testing.orionprotocol.io/referral-api вместо обычного
   // testing.orionprotocol.io/bsc-testnet/referral-api, поэтому лишняя часть вырезается
   static getActualApiUrl = (apiUrl: string, env: string) => {
-    if (env !== 'testing') {
-      return `${apiUrl}/referral-api`;
+    if (env === 'testing' || env === 'custom') {
+      const { protocol, hostname } = new URL(apiUrl);
+
+      return `${protocol}//${hostname}/referral-api`;
     }
 
-    const { protocol, hostname } = new URL(apiUrl);
-
-    return `${protocol}//${hostname}/referral-api`;
+    return `${apiUrl}/referral-api`;
   };
 
   getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
