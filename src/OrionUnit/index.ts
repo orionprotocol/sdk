@@ -145,7 +145,7 @@ export default class OrionUnit {
     this.orionAnalytics = new OrionAnalytics(orionAnalyticsUrl);
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
-    this.referralSystem = new ReferralSystem(`${options?.api ?? customApi}/referral-api`);
+    this.referralSystem = new ReferralSystem(options?.api ?? customApi, env);
   }
 
   get siblings() {

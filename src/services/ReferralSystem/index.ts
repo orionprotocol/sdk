@@ -19,8 +19,8 @@ type SignatureType = {
 class ReferralSystem {
   private apiUrl: string;
 
-  constructor(apiUrl: string) {
-    this.apiUrl = apiUrl;
+  constructor(apiUrl: string, env: string) {
+    this.apiUrl = ReferralSystem.getActualApiUrl(apiUrl, env);
 
     this.getLink = this.getLink.bind(this);
     this.getSubscribersList = this.getSubscribersList.bind(this);
@@ -28,6 +28,19 @@ class ReferralSystem {
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
     this.getMyReferral = this.getMyReferral.bind(this);
   }
+
+  // ресурсы реферальной системы в тестинг окружении имеют вид
+  // testing.orionprotocol.io/referral-api вместо обычного
+  // testing.orionprotocol.io/bsc-testnet/referral-api, поэтому лишняя часть вырезается
+  static getActualApiUrl = (apiUrl: string, env: string) => {
+    if (env !== 'testing') {
+      return `${apiUrl}/referral-api`;
+    }
+
+    const { protocol, hostname } = new URL(apiUrl);
+
+    return `${protocol}//${hostname}/referral-api`;
+  };
 
   getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
     headers: {
