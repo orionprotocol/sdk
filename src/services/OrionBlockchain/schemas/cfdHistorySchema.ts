@@ -1,4 +1,10 @@
 import { z } from 'zod';
+import { HistoryTransactionStatus } from '../../../types';
+
+export enum historyTransactionType {
+  WITHDRAW = 'withdrawal',
+  DEPOSIT = 'deposit',
+}
 
 const cfdHistoryItem = z.object({
   _id: z.string(),
@@ -29,13 +35,14 @@ const cfdHistorySchema = z.object({
     const {
       createdAt, reason, transactionHash, amountNumber,
     } = item;
+    const type = historyTransactionType[reason];
 
     return {
-      type: reason === 'WITHDRAW' ? 'withdrawal' : 'deposit',
+      type,
       date: createdAt,
       token: 'USDT',
       amount: amountNumber,
-      status: 'Done',
+      status: HistoryTransactionStatus.DONE,
       transactionHash,
       user: item.address,
     };

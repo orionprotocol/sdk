@@ -212,3 +212,10 @@ export type BalanceIssue = {
 }
 
 export type Exchange = typeof exchanges[number];
+
+export enum HistoryTransactionStatus {
+  PENDING = 'Pending',
+  DONE = 'Done',
+  APPROVING = 'Approving',
+  CANCELLED = 'Cancelled',
+}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { HistoryTransactionStatus } from '../../../types';
 
 const historySchema = z.array(z.object(
   {
@@ -23,7 +24,7 @@ const historySchema = z.array(z.object(
       date: createdAt * 1000,
       token: item.asset,
       amount: item.amountNumber,
-      status: 'Done',
+      status: HistoryTransactionStatus.DONE,
       transactionHash,
       user,
     };
