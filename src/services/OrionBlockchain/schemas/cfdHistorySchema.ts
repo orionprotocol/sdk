@@ -24,6 +24,22 @@ const cfdHistorySchema = z.object({
   total: z.number(),
   pagination: z.object({}),
   data: z.array(cfdHistoryItem),
+}).transform((response) => {
+  return response.data.map((item) => {
+    const {
+      createdAt, reason, transactionHash, amountNumber,
+    } = item;
+
+    return {
+      type: reason === 'WITHDRAW' ? 'withdrawal' : 'deposit',
+      date: createdAt,
+      token: 'USDT',
+      amount: amountNumber,
+      status: 'Done',
+      transactionHash,
+      user: item.address,
+    };
+  });
 });
 
 export default cfdHistorySchema;
