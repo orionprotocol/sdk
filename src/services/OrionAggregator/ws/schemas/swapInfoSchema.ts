@@ -23,6 +23,15 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     a: z.number(), // amount
     sp: z.number(), // safe price (with safe deviation but without slippage)
   }).optional(),
+  as: z.object({ // execution alternatives
+    e: z.enum(exchanges).array(), // exchanges
+    ps: z.string().array(), // path
+    mo: z.number().optional(), // market amount out
+    mi: z.number().optional(), // market amount in
+    mp: z.number(), // market price
+    aa: z.number().optional(), // available amount in
+    aao: z.number().optional(), // available amount out
+  }).array(),
 });
 
 const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
