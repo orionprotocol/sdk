@@ -12,6 +12,8 @@ const cfdContractsSchema = z.array(z.object({
   longFRStored: z.number(),
   lastFRPriceUpdateTime: z.number(),
   priceIndex: z.number(),
+  feePercent: z.number(),
+  withdrawMarginLevel: z.number(),
 }));
 
 export default cfdContractsSchema;
