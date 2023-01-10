@@ -9,7 +9,7 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import { Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types';
+import {Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder} from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
@@ -34,6 +34,7 @@ class OrionAggregator {
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
+    this.placeCFDOrder = this.placeCFDOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
     this.checkWhitelisted = this.checkWhitelisted.bind(this);
     this.getLockedBalance = this.getLockedBalance.bind(this);
@@ -171,6 +172,35 @@ class OrionAggregator {
     },
     errorSchema,
   );
+
+  placeCFDOrder = (
+    signedOrder: SignedCFDOrder
+  ) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+
+    return fetchWithValidation(
+      `${this.apiUrl}/api/v1/order/futures`,
+      z.object({
+        orderId: z.string(),
+        placementRequests: z.array(
+          z.object({
+            amount: z.number(),
+            brokerAddress: z.string(),
+            exchange: z.string(),
+          }),
+        ).optional(),
+      }),
+      {
+        headers,
+        method: 'POST',
+        body: JSON.stringify(signedOrder),
+      },
+      errorSchema,
+    );
+  };
 
   getSwapInfo = (
     type: 'exactSpend' | 'exactReceive',

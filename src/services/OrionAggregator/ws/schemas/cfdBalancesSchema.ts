@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 const cfdBalanceSchema = z.object({
     i: z.string(),
-    b: z.number(),
-    p: z.number(),
-    pp: z.number(),
-    fr: z.number(),
-    sfrl: z.number(),
-    lfrl: z.number(),
+    b: z.string(),
+    p: z.string(),
+    pp: z.string(),
+    fr: z.string(),
+    sfrl: z.string(),
+    lfrl: z.string(),
 })
   .transform((obj) => ({
     instrument: obj.i,

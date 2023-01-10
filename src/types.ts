@@ -28,12 +28,12 @@ export type Balance = {
 
 export type CFDBalance = {
   instrument: string,
-  balance: number,
-  position: number,
-  positionPrice: number,
-  fundingRate: number,
-  lastShortFundingRate: number,
-  lastLongFundingRate: number,
+  balance: string,
+  position: string,
+  positionPrice: string,
+  fundingRate: string,
+  lastShortFundingRate: string,
+  lastLongFundingRate: string,
 }
 
 export interface Order {
