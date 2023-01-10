@@ -34,6 +34,7 @@ export type CFDBalance = {
   fundingRate: string,
   lastShortFundingRate: string,
   lastLongFundingRate: string,
+  availableWithdrawBalance: string,
 }
 
 export interface Order {

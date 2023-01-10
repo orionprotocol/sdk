@@ -216,10 +216,11 @@ class OrionAggregatorWS {
     return id;
   }
 
-  unsubscribe(subscription: keyof typeof UnsubscriptionType | string) {
+  unsubscribe(subscription: keyof typeof UnsubscriptionType | string, details?: string) {
     this.send({
       T: UNSUBSCRIBE,
       S: subscription,
+      d: details,
     });
 
     if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)

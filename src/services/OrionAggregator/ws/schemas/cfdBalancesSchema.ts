@@ -8,6 +8,7 @@ const cfdBalanceSchema = z.object({
     fr: z.string(),
     sfrl: z.string(),
     lfrl: z.string(),
+    awb: z.string(),
 })
   .transform((obj) => ({
     instrument: obj.i,
@@ -17,6 +18,7 @@ const cfdBalanceSchema = z.object({
     fundingRate: obj.fr,
     lastShortFundingRate: obj.sfrl,
     lastLongFundingRate: obj.lfrl,
+    availableWithdrawBalance: obj.awb,
 }));
 
 const cfdBalancesSchema = z.array(cfdBalanceSchema)
