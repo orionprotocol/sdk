@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { exchanges } from '../../../constants';
 
 const orderbookElementSchema = z.object({
   price: z.number(),
@@ -11,7 +12,7 @@ const orderbookElementSchema = z.object({
 
 const aggregatedOrderbookElementSchema = orderbookElementSchema
   .extend({
-    exchanges: z.string().array(),
+    exchanges: z.enum(exchanges).array(),
   });
 
 export const aggregatedOrderbookSchema = z.object({

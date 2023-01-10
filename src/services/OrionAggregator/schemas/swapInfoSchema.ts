@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { exchanges } from '../../../constants';
 
 const swapInfoBase = z.object({
   id: z.string(),
@@ -15,11 +16,25 @@ const swapInfoBase = z.object({
     amount: z.number(),
     safePrice: z.number(),
   }).nullable(),
-  exchanges: z.array(z.string()),
+  exchanges: z.array(z.enum(exchanges)),
   price: z.number().nullable(), // spending asset price
   minAmountOut: z.number(),
   minAmountIn: z.number(),
   marketPrice: z.number().nullable(), // spending asset market price
+  alternatives: z.object({ // execution alternatives
+    exchanges: z.array(z.enum(exchanges)),
+    path: z.object({
+      units: z.object({
+        assetPair: z.string(),
+        action: z.string(),
+      }).array(),
+    }),
+    marketAmountOut: z.number().optional(),
+    marketAmountIn: z.number().optional(),
+    marketPrice: z.number(),
+    availableAmountIn: z.number().optional(),
+    availableAmountOut: z.number().optional(),
+  }).array(),
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({

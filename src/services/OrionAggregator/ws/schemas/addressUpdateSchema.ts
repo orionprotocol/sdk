@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { exchanges } from '../../../../constants';
 import orderStatuses from '../../../../constants/orderStatuses';
 import subOrderStatuses from '../../../../constants/subOrderStatuses';
 import MessageType from '../MessageType';
@@ -21,7 +22,7 @@ const subOrderSchema = z.object({
   a: z.number(), // amount
   A: z.number(), // settled amount
   p: z.number(), // avg weighed settlement price
-  e: z.string(), // exchange
+  e: z.enum(exchanges), // exchange
   b: z.string(), // broker address
   S: z.enum(subOrderStatuses), // status
   o: z.boolean(), // internal only
