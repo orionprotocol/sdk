@@ -29,11 +29,15 @@ export type Balance = {
 export type CFDBalance = {
   instrument: string,
   balance: string,
+  profitLoss: string,
+  fundingRate: string,
+  equity: string,
   position: string,
   positionPrice: string,
-  fundingRate: string,
-  lastShortFundingRate: string,
-  lastLongFundingRate: string,
+  reserves: string,
+  margin: string,
+  marginUSD: string,
+  freeMarginUSD: string,
   availableWithdrawBalance: string,
 }
 
