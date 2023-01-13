@@ -185,6 +185,11 @@ class OrionBlockchain {
     z.record(z.string()).transform(makePartial),
   );
 
+  getCFDPrices = () => fetchWithValidation(
+    `${this.apiUrl}/api/cfd/prices`,
+    z.record(z.string()).transform(makePartial),
+  );
+
   getTokensFee = () => fetchWithValidation(
     `${this.apiUrl}/api/tokensFee`,
     z.record(z.string()).transform(makePartial),
