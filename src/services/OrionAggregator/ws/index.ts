@@ -89,7 +89,7 @@ type AddressUpdateInitial = {
 
 type CfdAddressUpdateUpdate = {
   kind: 'update',
-  balances: CFDBalance[],
+  balances?: CFDBalance[],
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
