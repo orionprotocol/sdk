@@ -456,7 +456,6 @@ class OrionAggregatorWS {
         }
           break;
         case MessageType.CFD_ADDRESS_UPDATE: {
-          const balances = json.b ?? [];
           switch (json.k) { // message kind
             case 'i': { // initial
               const fullOrders = json.o
@@ -472,7 +471,7 @@ class OrionAggregatorWS {
               ]?.[json.id]?.callback({
                 kind: 'initial',
                 orders: fullOrders,
-                balances,
+                balances: json.b ?? [],
               });
             }
               break;
@@ -488,7 +487,7 @@ class OrionAggregatorWS {
               ]?.[json.id]?.callback({
                 kind: 'update',
                 order: orderUpdate,
-                balances,
+                balances: json.b,
               });
             }
               break;
