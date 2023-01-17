@@ -56,9 +56,16 @@ export const signCFDOrder = async (
   };
 
   const serialize = (o: any) =>  Object.keys(o).map(key => `${key}=${o[key]}`).join(';\n ');
-  console.log('[SDK] Signing CFD Order:')
-  console.log(`[SDK] CFDOrder:\n ${serialize(order)}`)
-  console.log('[SDK] =====================================\n\n')
+  const debug = (name: string, o: any, title?: string) => {
+    if(title) {
+      console.log(`[SDK] ${title}:`)
+    }
+    console.log(`[SDK] ${name}:\n ${serialize(o)}`)
+    console.log('[SDK] =====================================\n\n')
+  }
+
+  debug('CFDOrder', order, 'Signing CFDOrder');
+  debug('DomainData', getDomainData(chainId));
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
@@ -82,9 +89,7 @@ export const signCFDOrder = async (
     signature: fixedSignature,
   };
 
-  console.log(`[SDK] Signed Order`)
-  console.log(serialize(signedOrder))
-  console.log('[SDK] =====================================')
+  debug('SignedOrder', signedOrder);
 
   return signedOrder;
 };
