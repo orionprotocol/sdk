@@ -33,6 +33,7 @@ export type CFDBalance = {
   fundingRate: string,
   equity: string,
   position: string,
+  currentPrice: string,
   positionPrice: string,
   reserves: string,
   margin: string,
