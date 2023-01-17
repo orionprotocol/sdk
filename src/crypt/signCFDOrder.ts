@@ -55,6 +55,11 @@ export const signCFDOrder = async (
     isPersonalSign: usePersonalSign,
   };
 
+  const serialize = (o: any) =>  Object.keys(o).map(key => `${key}=${o[key]}`).join(';\n ');
+  console.log('[SDK] Signing CFD Order:')
+  console.log(`[SDK] CFDOrder:\n ${serialize(order)}`)
+  console.log('[SDK] =====================================\n\n')
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
   const signature = usePersonalSign
@@ -76,6 +81,11 @@ export const signCFDOrder = async (
     id: hashCFDOrder(order),
     signature: fixedSignature,
   };
+
+  console.log(`[SDK] Signed Order`)
+  console.log(serialize(signedOrder))
+  console.log('[SDK] =====================================')
+
   return signedOrder;
 };
 
