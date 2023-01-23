@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import positionStatuses from "../../../../constants/positionStatuses";
 
 const cfdBalanceSchema = z
   .object({
@@ -17,6 +18,8 @@ const cfdBalanceSchema = z
     awb: z.string(),
     mli: z.string(),
     msi: z.string(),
+    l: z.string(),
+    s: z.enum(positionStatuses),
   })
   .transform((obj) => ({
     instrument: obj.i,
@@ -34,6 +37,8 @@ const cfdBalanceSchema = z
     availableWithdrawBalance: obj.awb,
     maxAvailableLong: obj.mli,
     maxAvailableShort: obj.msi,
+    leverage: obj.l,
+    status: obj.s,
   }));
 
 const cfdBalancesSchema = z.array(cfdBalanceSchema);

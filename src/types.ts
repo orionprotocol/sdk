@@ -42,6 +42,8 @@ export type CFDBalance = {
   availableWithdrawBalance: string,
   maxAvailableLong: string,
   maxAvailableShort: string,
+  leverage: string,
+  status: PositionStatus,
 }
 
 export interface Order {
@@ -233,3 +235,5 @@ export enum HistoryTransactionStatus {
   APPROVING = 'Approving',
   CANCELLED = 'Cancelled',
 }
+
+export type PositionStatus  = 'SHORT' | 'LONG' | 'CLOSED' | 'LIQUIDATED' | 'NOT_OPEN';
