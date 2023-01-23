@@ -40,6 +40,8 @@ export type CFDBalance = {
   marginUSD: string,
   freeMarginUSD: string,
   availableWithdrawBalance: string,
+  maxAvailableLong: string,
+  maxAvailableShort: string,
 }
 
 export interface Order {

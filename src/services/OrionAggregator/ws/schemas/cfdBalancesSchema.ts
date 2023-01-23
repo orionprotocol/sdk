@@ -15,6 +15,8 @@ const cfdBalanceSchema = z
     mu: z.string(),
     fmu: z.string(),
     awb: z.string(),
+    mli: z.string(),
+    msi: z.string(),
   })
   .transform((obj) => ({
     instrument: obj.i,
@@ -30,6 +32,8 @@ const cfdBalanceSchema = z
     marginUSD: obj.mu,
     freeMarginUSD: obj.fmu,
     availableWithdrawBalance: obj.awb,
+    maxAvailableLong: obj.mli,
+    maxAvailableShort: obj.msi,
   }));
 
 const cfdBalancesSchema = z.array(cfdBalanceSchema);
