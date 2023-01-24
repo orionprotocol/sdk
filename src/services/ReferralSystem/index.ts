@@ -19,23 +19,47 @@ type SignatureType = {
 class ReferralSystem {
   private apiUrl: string;
 
-  constructor(apiUrl: string) {
-    this.apiUrl = apiUrl;
+  constructor(apiUrl: string, env: string) {
+    this.apiUrl = ReferralSystem.getActualApiUrl(apiUrl, env);
 
     this.getLink = this.getLink.bind(this);
     this.getSubscribersList = this.getSubscribersList.bind(this);
     this.createReferralLink = this.createReferralLink.bind(this);
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
+    this.getMyReferral = this.getMyReferral.bind(this);
   }
 
-  getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/view/link`, linkSchema, {
+  // ресурсы реферальной системы в тестинг окружении имеют вид
+  // testing.orionprotocol.io/referral-api вместо обычного
+  // testing.orionprotocol.io/bsc-testnet/referral-api, поэтому лишняя часть вырезается
+  static getActualApiUrl = (apiUrl: string, env: string) => {
+    if (env === 'testing' || env === 'custom') {
+      const { protocol, hostname } = new URL(apiUrl);
+
+      return `${protocol}//${hostname}/referral-api`;
+    }
+
+    return `${apiUrl}/referral-api`;
+  };
+
+  getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
     headers: {
       'referer-address': refererAddress,
     },
   });
 
+  getMyReferral = (myWalletAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/referral/view/link`,
+    linkSchema,
+    {
+      headers: {
+        referral: myWalletAddress,
+      },
+    },
+  );
+
   getSubscribersList = (refererAddress: string) => fetchWithValidation(
-    `${this.apiUrl}/view/distinct-analytics`,
+    `${this.apiUrl}/referer/view/distinct-analytics`,
     distinctAnalyticsSchema,
     {
       headers: {
@@ -45,7 +69,7 @@ class ReferralSystem {
   );
 
   createReferralLink = (payload: CreateLinkPayloadType, signature: SignatureType) => fetchWithValidation(
-    `${this.apiUrl}/create`,
+    `${this.apiUrl}/referer/create`,
     linkSchema,
     {
       headers: {
@@ -57,7 +81,7 @@ class ReferralSystem {
   );
 
   subscribeToReferral = (payload: SubscribePayloadType, signature: SignatureType) => fetchWithValidation(
-    `${this.apiUrl}/subscribe`,
+    `${this.apiUrl}/referer/subscribe`,
     linkSchema,
     {
       headers: {
