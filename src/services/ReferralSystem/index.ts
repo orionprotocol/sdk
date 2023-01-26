@@ -1,4 +1,5 @@
 import fetchWithValidation from '../../fetchWithValidation';
+import { errorSchema } from './schemas';
 import distinctAnalyticsSchema from './schemas/distinctAnalyticsSchema';
 import linkSchema from './schemas/linkSchema';
 
@@ -90,6 +91,7 @@ class ReferralSystem {
       method: 'POST',
       body: JSON.stringify({ payload, signature }),
     },
+    errorSchema,
   );
 }
 
