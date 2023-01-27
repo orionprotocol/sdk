@@ -9,12 +9,13 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import { Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types';
+import {Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder} from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
 } from './schemas/aggregatedOrderbookSchema';
 import networkCodes from '../../constants/networkCodes';
+import toUpperCase from '../../utils/toUpperCase';
 
 class OrionAggregator {
   private readonly apiUrl: string;
@@ -33,6 +34,7 @@ class OrionAggregator {
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
+    this.placeCFDOrder = this.placeCFDOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
     this.checkWhitelisted = this.checkWhitelisted.bind(this);
     this.getLockedBalance = this.getLockedBalance.bind(this);
@@ -41,10 +43,15 @@ class OrionAggregator {
     this.getPoolReserves = this.getPoolReserves.bind(this);
   }
 
-  getPairsList = () => fetchWithValidation(
-    `${this.apiUrl}/api/v1/pairs/list`,
-    z.array(z.string()),
-  );
+  getPairsList = (market: 'spot' | 'futures') => {
+    const url = new URL(`${this.apiUrl}/api/v1/pairs/list`);
+    url.searchParams.append('market', toUpperCase(market));
+
+    return fetchWithValidation(
+      url.toString(),
+      z.array(z.string()),
+    );
+  };
 
   getAggregatedOrderbook = (pair: string, depth = 20) => {
     const url = new URL(`${this.apiUrl}/api/v1/orderbook`);
@@ -78,6 +85,18 @@ class OrionAggregator {
     );
   };
 
+  getPairConfigs = (market: 'spot' | 'futures') => {
+    const url = new URL(`${this.apiUrl}/api/v1/pairs/exchangeInfo`);
+    url.searchParams.append('market', toUpperCase(market));
+
+    return fetchWithValidation(
+      url.toString(),
+      exchangeInfoSchema,
+      undefined,
+      errorSchema,
+    );
+  }
+
   getPoolReserves = (
     pair: string,
     exchange: Exchange,
@@ -90,13 +109,6 @@ class OrionAggregator {
       errorSchema,
     );
   };
-
-  getPairConfigs = () => fetchWithValidation(
-    `${this.apiUrl}/api/v1/pairs/exchangeInfo`,
-    exchangeInfoSchema,
-    undefined,
-    errorSchema,
-  );
 
   getPairConfig = (assetPair: string) => fetchWithValidation(
     `${this.apiUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
@@ -160,6 +172,35 @@ class OrionAggregator {
     },
     errorSchema,
   );
+
+  placeCFDOrder = (
+    signedOrder: SignedCFDOrder
+  ) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+
+    return fetchWithValidation(
+      `${this.apiUrl}/api/v1/order/futures`,
+      z.object({
+        orderId: z.string(),
+        placementRequests: z.array(
+          z.object({
+            amount: z.number(),
+            brokerAddress: z.string(),
+            exchange: z.string(),
+          }),
+        ).optional(),
+      }),
+      {
+        headers,
+        method: 'POST',
+        body: JSON.stringify(signedOrder),
+      },
+      errorSchema,
+    );
+  };
 
   getSwapInfo = (
     type: 'exactSpend' | 'exactReceive',

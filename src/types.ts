@@ -25,6 +25,27 @@ export type Balance = {
   wallet: string,
   allowance: string,
 }
+
+export type CFDBalance = {
+  instrument: string,
+  balance: string,
+  profitLoss: string,
+  fundingRate: string,
+  equity: string,
+  position: string,
+  currentPrice: string,
+  positionPrice: string,
+  reserves: string,
+  margin: string,
+  marginUSD: string,
+  freeMarginUSD: string,
+  availableWithdrawBalance: string,
+  maxAvailableLong: string,
+  maxAvailableShort: string,
+  leverage: string,
+  status: PositionStatus,
+}
+
 export interface Order {
   senderAddress: string; // address
   matcherAddress: string; // address
@@ -39,6 +60,25 @@ export interface Order {
   buySide: number; // uint8, 1=buy, 0=sell
   isPersonalSign: boolean; // bool
 }
+
+export interface CFDOrder {
+  senderAddress: string; // address
+  matcherAddress: string; // address
+  instrumentAddress: string; // address
+  amount: number; // uint64
+  price: number; // uint64
+  matcherFee: number; // uint64
+  nonce: number; // uint64
+  expiration: number; // uint64
+  buySide: number; // uint8, 1=buy, 0=sell
+  isPersonalSign: boolean; // bool
+}
+
+export interface SignedCFDOrder extends CFDOrder {
+  id: string; // hash of Order (it's not part of order structure in smart-contract)
+  signature: string; // bytes
+}
+
 export interface SignedOrder extends Order {
   id: string; // hash of Order (it's not part of order structure in smart-contract)
   signature: string; // bytes
@@ -188,3 +228,12 @@ export type SwapInfoByAmountOut = SwapInfoBase & {
 }
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
+
+export enum HistoryTransactionStatus {
+  PENDING = 'Pending',
+  DONE = 'Done',
+  APPROVING = 'Approving',
+  CANCELLED = 'Cancelled',
+}
+
+export type PositionStatus  = 'SHORT' | 'LONG' | 'CLOSED' | 'LIQUIDATED' | 'NOT_OPEN';

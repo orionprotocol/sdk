@@ -11,11 +11,12 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import {
   SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  AssetPairUpdate, OrderbookItem, Balance, Exchange,
+  AssetPairUpdate, OrderbookItem, Balance, Exchange, CFDBalance,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
 import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
+import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -86,13 +87,31 @@ type AddressUpdateInitial = {
   orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
 }
 
+type CfdAddressUpdateUpdate = {
+  kind: 'update',
+  balances?: CFDBalance[],
+  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
+}
+
+type CfdAddressUpdateInitial = {
+  kind: 'initial',
+  balances: CFDBalance[],
+  orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
+}
+
 type AddressUpdateSubscription = {
   payload: string,
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void,
 }
 
+type CfdAddressUpdateSubscription = {
+  payload: string,
+  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void,
+}
+
 type Subscription = {
   [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription,
+  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription,
   [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription,
   [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription,
   [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
@@ -197,10 +216,11 @@ class OrionAggregatorWS {
     return id;
   }
 
-  unsubscribe(subscription: keyof typeof UnsubscriptionType | string) {
+  unsubscribe(subscription: keyof typeof UnsubscriptionType | string, details?: string) {
     this.send({
       T: UNSUBSCRIBE,
       S: subscription,
+      d: details,
     });
 
     if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
@@ -210,6 +230,15 @@ class OrionAggregatorWS {
         if (targetAuSub) {
           const [key] = targetAuSub;
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
+        }
+      }
+
+      const aufSubscriptions = this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE];
+      if (aufSubscriptions) {
+        const targetAufSub = Object.entries(aufSubscriptions).find(([, value]) => value?.payload === subscription);
+        if (targetAufSub) {
+          const [key] = targetAufSub;
+          delete this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
       }
     } else if (uuidValidate(subscription)) {
@@ -277,6 +306,7 @@ class OrionAggregatorWS {
         initMessageSchema,
         pingPongMessageSchema,
         addressUpdateSchema,
+        cfdAddressUpdateSchema,
         assetPairsConfigSchema,
         assetPairConfigSchema,
         brokerMessageSchema,
@@ -423,6 +453,47 @@ class OrionAggregatorWS {
             kind: json.k === 'i' ? 'initial' : 'update',
             data: priceUpdates,
           });
+        }
+          break;
+        case MessageType.CFD_ADDRESS_UPDATE: {
+          switch (json.k) { // message kind
+            case 'i': { // initial
+              const fullOrders = json.o
+                ? json.o.reduce<z.infer<typeof fullOrderSchema>[]>((prev, o) => {
+                  prev.push(o);
+
+                  return prev;
+                }, [])
+                : undefined;
+
+              this.subscriptions[
+                SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE
+              ]?.[json.id]?.callback({
+                kind: 'initial',
+                orders: fullOrders,
+                balances: json.b ?? [],
+              });
+            }
+              break;
+            case 'u': { // update
+              let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
+              if (json.o) {
+                const firstOrder = json.o[0];
+                orderUpdate = firstOrder;
+              }
+
+              this.subscriptions[
+                SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE
+              ]?.[json.id]?.callback({
+                kind: 'update',
+                order: orderUpdate,
+                balances: json.b,
+              });
+            }
+              break;
+            default:
+              break;
+          }
         }
           break;
         case MessageType.ADDRESS_UPDATE: {

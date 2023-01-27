@@ -3,7 +3,7 @@ type WithReason = {
 }
 
 type WithCodeError = Error & {
-  code: number;
+  code: number | string;
 }
 
 type WithMessage = {
@@ -41,9 +41,9 @@ export function hasProp<T extends Record<string, unknown>, K extends PropertyKey
 }
 
 export function isWithCode(candidate: unknown): candidate is WithCodeError {
-  if (!isUnknownObject(candidate)) return false;
-  const hasCodeProperty = hasProp(candidate, 'code') && typeof candidate.code === 'number';
-  return hasCodeProperty;
+  if (!isUnknownObject(candidate) || !hasProp(candidate, 'code')) return false;
+  const type = typeof candidate.code;
+  return type === 'number' || type === 'string';
 }
 
 export function isWithReason(candidate: unknown): candidate is WithReason {
