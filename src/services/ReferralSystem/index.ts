@@ -1,6 +1,7 @@
 import fetchWithValidation from '../../fetchWithValidation';
-import { errorSchema } from './schemas';
+import { errorSchema, miniStatsSchema, rewardsMappingSchema } from './schemas';
 import distinctAnalyticsSchema from './schemas/distinctAnalyticsSchema';
+import globalAnalyticsSchema from './schemas/globalAnalyticsSchema';
 import linkSchema from './schemas/linkSchema';
 
 type CreateLinkPayloadType = {
@@ -65,6 +66,31 @@ class ReferralSystem {
     {
       headers: {
         'referer-address': refererAddress,
+      },
+    },
+  );
+
+  getGlobalAnalytics = () => fetchWithValidation(
+    `${this.apiUrl}/referer/view/global-analytics`,
+    globalAnalyticsSchema,
+  );
+
+  getMiniStats = (refererAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/referer/view/mini-latest-stats`,
+    miniStatsSchema,
+    {
+      headers: {
+        'referer-address': refererAddress,
+      },
+    },
+  );
+
+  getRewardsMapping = (referralAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/referer/view/rewards-mapping`,
+    rewardsMappingSchema,
+    {
+      headers: {
+        referral: referralAddress,
       },
     },
   );
