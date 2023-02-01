@@ -24,7 +24,7 @@ class ReferralSystem {
     this.apiUrl = ReferralSystem.getActualApiUrl(apiUrl, env);
 
     this.getLink = this.getLink.bind(this);
-    this.getSubscribersList = this.getSubscribersList.bind(this);
+    this.getDistinctAnalytics = this.getDistinctAnalytics.bind(this);
     this.createReferralLink = this.createReferralLink.bind(this);
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
     this.getMyReferral = this.getMyReferral.bind(this);
@@ -59,7 +59,7 @@ class ReferralSystem {
     },
   );
 
-  getSubscribersList = (refererAddress: string) => fetchWithValidation(
+  getDistinctAnalytics = (refererAddress: string) => fetchWithValidation(
     `${this.apiUrl}/referer/view/distinct-analytics`,
     distinctAnalyticsSchema,
     {
@@ -67,6 +67,7 @@ class ReferralSystem {
         'referer-address': refererAddress,
       },
     },
+    errorSchema,
   );
 
   createReferralLink = (payload: CreateLinkPayloadType, signature: SignatureType) => fetchWithValidation(
