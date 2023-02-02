@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import exchanges from './constants/exchanges';
 import subOrderStatuses from './constants/subOrderStatuses';
+import positionStatuses from './constants/positionStatuses';
 
 export type AssetPairUpdate = {
     minQty: number,
@@ -25,6 +26,8 @@ export type Balance = {
   wallet: string,
   allowance: string,
 }
+
+export type PositionStatus = typeof positionStatuses[number];
 
 export type CFDBalance = {
   instrument: string,
@@ -235,5 +238,3 @@ export enum HistoryTransactionStatus {
   APPROVING = 'Approving',
   CANCELLED = 'Cancelled',
 }
-
-export type PositionStatus  = 'SHORT' | 'LONG' | 'CLOSED' | 'LIQUIDATED' | 'NOT_OPEN';
