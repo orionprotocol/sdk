@@ -44,6 +44,7 @@ export const orderUpdateSchema = z.object({
     id: o.I,
     settledAmount: o.A,
     status: o.S,
+    liquidated: o.l,
     subOrders: o.c.map((so) => ({
       pair: so.P,
       exchange: so.e,
@@ -82,6 +83,7 @@ export const fullOrderSchema = z.object({
   settledAmount: o.A,
   feeAsset: o.F,
   fee: o.f,
+  liquidated: o.l,
   status: o.S,
   date: o.T,
   clientOrdId: o.O,
