@@ -32,6 +32,7 @@ export const orderUpdateSchema = z.object({
   I: z.string(), // id
   A: z.number(), // settled amount
   S: z.enum(orderStatuses), // status
+  l: z.boolean().optional(), // is liquidation order
   t: z.number(), // update time
   c: subOrderSchema.array(),
 })
@@ -66,6 +67,7 @@ export const fullOrderSchema = z.object({
   p: z.number(), // price
   F: z.string(), // fee asset
   f: z.number(), // fee
+  l: z.boolean().optional(), // is liquidation order
   o: z.boolean(), // internal only
   S: z.enum(orderStatuses), // status
   T: z.number(), // creation time / unix timestamp

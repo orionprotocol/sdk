@@ -26,6 +26,8 @@ export type Balance = {
   allowance: string,
 }
 
+export type PositionStatus = 'SHORT' | 'LONG' | 'CLOSING' | 'LIQUIDATION' | 'ZERO';
+
 export type CFDBalance = {
   instrument: string,
   balance: string,
@@ -235,5 +237,3 @@ export enum HistoryTransactionStatus {
   APPROVING = 'Approving',
   CANCELLED = 'Cancelled',
 }
-
-export type PositionStatus  = 'SHORT' | 'LONG' | 'CLOSED' | 'LIQUIDATED' | 'NOT_OPEN';

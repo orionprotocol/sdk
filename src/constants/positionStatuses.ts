@@ -1,9 +1,9 @@
 const positionStatuses = [
   'SHORT',
   'LONG',
-  'CLOSED',
-  'LIQUIDATED',
-  'NOT_OPEN',
+  'CLOSING',
+  'LIQUIDATION',
+  'ZERO',
 ] as const;
 
 export default positionStatuses;
