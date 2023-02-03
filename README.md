@@ -353,7 +353,7 @@ if (!orderIsOk) throw new Error("Order invalid");
 
 const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
   signedOrder,
-  false // True if you want tp place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with other "internal" order(s).
+  false // True if you want to place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with other "internal" order(s).
 );
 ```
 
