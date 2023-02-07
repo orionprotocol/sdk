@@ -265,5 +265,87 @@
         }
       }
     }
+  },
+  "kucoin-production": {
+    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
+    "referralAPI": "https://trade.orionprotocol.io/referral-api",
+    "networks": {
+      "1": {
+        "api": "https://trade.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        },
+        "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
+      },
+      "56": {
+        "api": "https://trade-exp.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
+      },
+      "250": {
+        "api": "https://trade-ftm.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
+      },
+      "137": {
+        "api": "https://trade-polygon.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
+      },
+      "66": {
+        "api": "https://trade-okc.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
+      }
+    }
   }
 }
