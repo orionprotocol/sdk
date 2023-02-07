@@ -23,4 +23,25 @@ const orion = new Orion({
     },
   },
 });
+
+const orionUnit = orion.getUnit("bsc");
+// OR
+const orionUnit = orion.getUnit(SupportedChainId.BSC);
+// OR
+const orionUnit = new OrionUnit({
+  chainId: SupportedChainId.BSC,
+  nodeJsonRpc: "https://bsc-dataseed.binance.org/",
+  services: {
+    orionBlockchain: {
+      http: "https://orion-bsc-api.orionprotocol.io",
+    },
+    orionAggregator: {
+      http: "https://orion-bsc-api.orionprotocol.io/backend",
+      ws: "https://orion-bsc-api.orionprotocol.io/v1",
+    },
+    priceFeed: {
+      api: "https://orion-bsc-api.orionprotocol.io/price-feed",
+    },
+  },
+});
 ```

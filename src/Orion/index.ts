@@ -108,9 +108,18 @@ export default class Orion {
     return Object.entries(this.units).map(([, unit]) => unit);
   }
 
-  getUnit(networkCode: string) {
-    const unit = this.unitsArray.find((unit) => unit.networkCode === networkCode);
-    if (!unit) throw new Error(`Invalid network code: ${networkCode}. Available network codes: ${this.unitsArray.map((unit) => unit.networkCode).join(', ')}`);
+  getUnit(chainId: SupportedChainId): OrionUnit;
+
+  getUnit(networkCode: string): OrionUnit;
+
+  getUnit(networkCodeOrChainId: string): OrionUnit {
+    let unit: OrionUnit | undefined;
+    if (isValidChainId(networkCodeOrChainId)) {
+      unit = this.units[networkCodeOrChainId];
+    } else {
+      unit = this.unitsArray.find((unit) => unit.networkCode === networkCodeOrChainId);
+    }
+    if (!unit) throw new Error(`Invalid network code: ${networkCodeOrChainId}. Available network codes: ${this.unitsArray.map((unit) => unit.networkCode).join(', ')}`);
     return unit;
   }
 
