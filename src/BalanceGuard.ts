@@ -4,7 +4,7 @@ import clone from 'just-clone';
 import { ERC20__factory } from '@orionprotocol/contracts';
 import { utils } from '.';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
-import {
+import type {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
 } from './types';
 import { denormalizeNumber } from './utils';

@@ -9,6 +9,10 @@ class PriceFeed {
 
   readonly ws: PriceFeedWS;
 
+  get api() {
+    return this.apiUrl;
+  }
+
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
     this.ws = new PriceFeedWS(this.wsUrl);

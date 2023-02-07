@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import fetchWithValidation from '../../fetchWithValidation';
 import { errorSchema, miniStatsSchema, rewardsMappingSchema } from './schemas';
 import distinctAnalyticsSchema from './schemas/distinctAnalyticsSchema';
@@ -21,8 +22,12 @@ type SignatureType = {
 class ReferralSystem {
   private apiUrl: string;
 
-  constructor(apiUrl: string, env: string) {
-    this.apiUrl = ReferralSystem.getActualApiUrl(apiUrl, env);
+  get api() {
+    return this.apiUrl;
+  }
+
+  constructor(apiUrl: string) {
+    this.apiUrl = apiUrl;
 
     this.getLink = this.getLink.bind(this);
     this.getDistinctAnalytics = this.getDistinctAnalytics.bind(this);
@@ -30,19 +35,6 @@ class ReferralSystem {
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
     this.getMyReferral = this.getMyReferral.bind(this);
   }
-
-  // ресурсы реферальной системы в тестинг окружении имеют вид
-  // testing.orionprotocol.io/referral-api вместо обычного
-  // testing.orionprotocol.io/bsc-testnet/referral-api, поэтому лишняя часть вырезается
-  static getActualApiUrl = (apiUrl: string, env: string) => {
-    if (env === 'testing' || env === 'custom') {
-      const { protocol, hostname } = new URL(apiUrl);
-
-      return `${protocol}//${hostname}/referral-api`;
-    }
-
-    return `${apiUrl}/referral-api`;
-  };
 
   getLink = (refererAddress: string) => fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
     headers: {
@@ -76,6 +68,9 @@ class ReferralSystem {
     globalAnalyticsSchema,
   );
 
+  /**
+   * @param refererAddress Address without 0x prefix
+   */
   getMiniStats = (refererAddress: string) => fetchWithValidation(
     `${this.apiUrl}/referer/view/mini-latest-stats`,
     miniStatsSchema,
@@ -84,6 +79,10 @@ class ReferralSystem {
         'referer-address': refererAddress,
       },
     },
+    z.object({
+      status: z.string(),
+      message: z.string(),
+    }),
   );
 
   getRewardsMapping = (referralAddress: string) => fetchWithValidation(

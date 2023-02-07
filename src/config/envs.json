@@ -1,68 +1,268 @@
 {
   "production": {
+    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
+    "referralAPI": "https://trade.orionprotocol.io/referral-api",
     "networks": {
       "1": {
         "api": "https://trade.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
       },
       "56": {
-        "api": "https://trade-exp.orionprotocol.io"
+        "api": "https://trade-exp.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "250": {
-        "api": "https://trade-ftm.orionprotocol.io"
+        "api": "https://trade-ftm.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "137": {
-        "api": "https://trade-polygon.orionprotocol.io"
+        "api": "https://trade-polygon.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "66": {
-        "api": "https://trade-okc.orionprotocol.io"
+        "api": "https://trade-okc.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       }
     }
   },
   "testing": {
+    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
+    "referralAPI": "https://testing.orionprotocol.io/referral-api",
     "networks": {
       "97": {
         "api": "https://testing.orionprotocol.io/bsc-testnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        },
         "liquidityMigratorAddress": "0x01b10dds12478C88A5E18e2707E729906bC25CfF6"
       },
       "3": {
         "api": "https://testing.orionprotocol.io/eth-ropsten",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        },
         "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
       },
       "4002": {
-        "api": "https://testing.orionprotocol.io/ftm-testnet"
+        "api": "https://testing.orionprotocol.io/ftm-testnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "80001": {
-        "api": "https://testing.orionprotocol.io/polygon-mumbai"
+        "api": "https://testing.orionprotocol.io/polygon-mumbai",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       }
     }
   },
   "staging": {
+    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
+    "referralAPI": "https://staging.orionprotocol.io/referral-api",
     "networks": {
       "1": {
-        "api": "https://staging.orionprotocol.io"
+        "api": "https://staging.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "56": {
-        "api": "https://staging-bsc.orionprotocol.io"
+        "api": "https://staging-bsc.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "250": {
-        "api": "https://staging-ftm.orionprotocol.io"
+        "api": "https://staging-ftm.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "137": {
-        "api": "https://staging-polygon.orionprotocol.io"
+        "api": "https://staging-polygon.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "66": {
-        "api": "https://staging-okc.orionprotocol.io"
+        "api": "https://staging-okc.orionprotocol.io",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       }
     }
   },
   "experimental": {
+    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
+    "referralAPI": "https://testing.orionprotocol.io/referral-api",
     "networks": {
       "97": {
-        "api": "https://dn-dev.orionprotocol.io/bsc-testnet"
+        "api": "https://dn-dev.orionprotocol.io/bsc-testnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       },
       "3": {
-        "api": "https://dn-dev.orionprotocol.io/eth-ropsten"
+        "api": "https://dn-dev.orionprotocol.io/eth-ropsten",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       }
     }
   }

@@ -63,6 +63,10 @@ type CfdHistoryQuery = {
 class OrionBlockchain {
   private readonly apiUrl: string;
 
+  get api() {
+    return this.apiUrl;
+  }
+
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
 

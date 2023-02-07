@@ -54,10 +54,11 @@ npm i @orionprotocol/sdk
 
 ```js
 // Node.js
-import { OrionUnit } from "@orionprotocol/sdk";
+import { OrionUnit, Orion } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm, polygon, okc available
+const orion = new Orion("production");
+const orionUnit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
 const wallet = new Wallet("0x...", orionUnit.provider);
 // OrionUnit is chain-in-environment abstraction
 ```
@@ -73,7 +74,8 @@ const startApp = async (provider: BaseProvider) => {
   const web3Provider = new providers.Web3Provider(provider);
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
-  const orionUnit = new OrionUnit("eth", "production"); // ready to go
+  const orion = new Orion("production");
+  const orionUnit = orion.getUnit("eth"); // ready to go
 };
 
 detectEthereumProvider().then((provider) => {

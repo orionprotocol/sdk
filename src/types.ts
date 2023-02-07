@@ -3,20 +3,24 @@ import exchanges from './constants/exchanges';
 import subOrderStatuses from './constants/subOrderStatuses';
 import positionStatuses from './constants/positionStatuses';
 
+export type DeepPartial<T> = T extends object ? {
+  [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+
 export type AssetPairUpdate = {
-    minQty: number,
-    pricePrecision: number,
+  minQty: number,
+  pricePrecision: number,
 }
 export type SubOrder = {
-    pair: string,
-    exchange: string,
-    id: number,
-    amount: number,
-    settledAmount: number,
-    price: number,
-    status: typeof subOrderStatuses[number],
-    side: 'BUY' | 'SELL',
-    subOrdQty: number
+  pair: string,
+  exchange: string,
+  id: number,
+  amount: number,
+  settledAmount: number,
+  price: number,
+  status: typeof subOrderStatuses[number],
+  side: 'BUY' | 'SELL',
+  subOrdQty: number
 }
 
 export type Balance = {

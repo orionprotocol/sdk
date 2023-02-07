@@ -68,10 +68,10 @@ type SwapInfoSubscription = {
 type AddressUpdateUpdate = {
   kind: 'update',
   balances: Partial<
-      Record<
-        string,
-        Balance
-      >
+    Record<
+      string,
+      Balance
+    >
   >,
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
@@ -79,10 +79,10 @@ type AddressUpdateUpdate = {
 type AddressUpdateInitial = {
   kind: 'initial',
   balances: Partial<
-      Record<
-        string,
-        Balance
-      >
+    Record<
+      string,
+      Balance
+    >
   >,
   orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
 }
@@ -124,7 +124,24 @@ const exclusiveSubscriptions = [
   SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE,
 ] as const;
 
-type WsMessage = string | ArrayBufferLike | Blob | ArrayBufferView;
+type BufferLike =
+  | string
+  | Buffer
+  | DataView
+  | number
+  | ArrayBufferView
+  | Uint8Array
+  | ArrayBuffer
+  | SharedArrayBuffer
+  | ReadonlyArray<any>
+  | ReadonlyArray<number>
+  | { valueOf(): ArrayBuffer }
+  | { valueOf(): SharedArrayBuffer }
+  | { valueOf(): Uint8Array }
+  | { valueOf(): ReadonlyArray<number> }
+  | { valueOf(): string }
+  | { [Symbol.toPrimitive](hint: string): string };
+
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 class OrionAggregatorWS {
@@ -148,14 +165,23 @@ class OrionAggregatorWS {
 
   private readonly wsUrl: string;
 
-  constructor(wsUrl: string, logger?: (msg: string) => void, onInit?: () => void, onError?: (err: string) => void) {
+  get api() {
+    return this.wsUrl;
+  }
+
+  constructor(
+    wsUrl: string,
+    logger?: (msg: string) => void,
+    onInit?: () => void,
+    onError?: (err: string) => void
+  ) {
     this.wsUrl = wsUrl;
     this.logger = logger;
     this.onInit = onInit;
     this.onError = onError;
   }
 
-  private sendRaw(data: WsMessage) {
+  private sendRaw(data: BufferLike) {
     if (this.ws?.readyState === 1) {
       this.ws.send(data);
     } else if (this.ws?.readyState === 0) {
@@ -268,7 +294,7 @@ class OrionAggregatorWS {
     delete this.ws;
   }
 
-  init(isReconnect = false) {
+  private init(isReconnect = false) {
     this.isClosedIntentionally = false;
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onerror = (err) => {
