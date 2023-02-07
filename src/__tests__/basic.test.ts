@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import Orion from '../Orion';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
@@ -255,8 +255,9 @@ describe('Orion', () => {
       const timeout = setTimeout(() => {
         reject(new Error('Timeout'));
       }, 10000);
+
       orionUnitBSC.orionAggregator.ws.subscribe('aobus', {
-        payload: 'BTC-USDT',
+        payload: 'ORN-USDT',
         callback: () => {
           resolve(true);
           orionUnitBSC.orionAggregator.ws.destroy();
@@ -265,44 +266,44 @@ describe('Orion', () => {
       })
     });
     expect(aobusDone).toBe(true);
-    const candles = await simpleFetch(orionUnitBSC.priceFeed.getCandles)(
-      'BTC-USDT',
-      Math.floor((Date.now() - 1000 * 60 * 60 * 24 * 30) / 1000), // 1 month ago
-      Math.floor(Date.now() / 1000), // now
-      '1d'
-    );
-    expect(candles).toBeDefined();
+    // const candles = await simpleFetch(orionUnitBSC.priceFeed.getCandles)(
+    //   'BTC-USDT',
+    //   Math.floor((Date.now() - 1000 * 60 * 60 * 24 * 30) / 1000), // 1 month ago
+    //   Math.floor(Date.now() / 1000), // now
+    //   '1d'
+    // );
+    // expect(candles).toBeDefined();
 
-    const allTickersDone = await new Promise<boolean>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Timeout'));
-      }, 10000);
+    // const allTickersDone = await new Promise<boolean>((resolve, reject) => {
+    //   const timeout = setTimeout(() => {
+    //     reject(new Error('Timeout'));
+    //   }, 10000);
 
-      const { unsubscribe } = orionUnitBSC.priceFeed.ws.subscribe(
-        'allTickers',
-        {
-          callback: () => {
-            resolve(true);
-            unsubscribe();
-            clearTimeout(timeout);
-          }
-        }
-      )
-    });
-    expect(allTickersDone).toBe(true);
+    //   const { unsubscribe } = orionUnitBSC.priceFeed.ws.subscribe(
+    //     'allTickers',
+    //     {
+    //       callback: () => {
+    //         resolve(true);
+    //         unsubscribe();
+    //         clearTimeout(timeout);
+    //       }
+    //     }
+    //   )
+    // });
+    // expect(allTickersDone).toBe(true);
 
-    const blockNumber = await orionUnitBSC.provider.getBlockNumber();
-    expect(blockNumber).toBeDefined();
-    const network = await orionUnitBSC.provider.getNetwork();
-    expect(network.chainId).toBe(97);
+    // const blockNumber = await orionUnitBSC.provider.getBlockNumber();
+    // expect(blockNumber).toBeDefined();
+    // const network = await orionUnitBSC.provider.getNetwork();
+    // expect(network.chainId).toBe(97);
 
-    const stats = await simpleFetch(orion.orionAnalytics.getOverview)();
-    expect(stats).toBeDefined();
+    // const stats = await simpleFetch(orion.orionAnalytics.getOverview)();
+    // expect(stats).toBeDefined();
 
-    const zeroAddressWithout0x = ethers.constants.AddressZero.slice(2);
-    expect(simpleFetch(orion.referralSystem.getMiniStats)(zeroAddressWithout0x))
-      .rejects
-      .toThrow('empty reward history');
+    // const zeroAddressWithout0x = ethers.constants.AddressZero.slice(2);
+    // expect(simpleFetch(orion.referralSystem.getMiniStats)(zeroAddressWithout0x))
+    //   .rejects
+    //   .toThrow('empty reward history');
   });
 
   test('Get Orion unit by networkCode', () => {

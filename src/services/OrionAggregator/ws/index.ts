@@ -193,7 +193,9 @@ class OrionAggregatorWS {
 
   private send(data: unknown) {
     if (this.ws?.readyState === 1) {
-      this.ws.send(JSON.stringify(data));
+      const jsonData = JSON.stringify(data);
+      this.ws.send(jsonData);
+      this.logger?.(`Sent: ${jsonData}`);
     } else {
       setTimeout(() => {
         this.send(data);
