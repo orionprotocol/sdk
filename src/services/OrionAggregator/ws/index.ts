@@ -133,7 +133,7 @@ type BufferLike =
   | Uint8Array
   | ArrayBuffer
   | SharedArrayBuffer
-  | ReadonlyArray<any>
+  | ReadonlyArray<unknown>
   | ReadonlyArray<number>
   | { valueOf(): ArrayBuffer }
   | { valueOf(): SharedArrayBuffer }
@@ -141,7 +141,6 @@ type BufferLike =
   | { valueOf(): ReadonlyArray<number> }
   | { valueOf(): string }
   | { [Symbol.toPrimitive](hint: string): string };
-
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 class OrionAggregatorWS {
@@ -483,7 +482,7 @@ class OrionAggregatorWS {
           });
         }
           break;
-        case MessageType.CFD_ADDRESS_UPDATE: {
+        case MessageType.CFD_ADDRESS_UPDATE:
           switch (json.k) { // message kind
             case 'i': { // initial
               const fullOrders = json.o
@@ -522,7 +521,6 @@ class OrionAggregatorWS {
             default:
               break;
           }
-        }
           break;
         case MessageType.ADDRESS_UPDATE: {
           const balances = json.b

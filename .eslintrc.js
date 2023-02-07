@@ -6,15 +6,12 @@ module.exports = {
     node: true,
   },
   extends: [
-    'airbnb-base',
+    'standard',
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:import/typescript'
-  ],
-  include: [
-    'jest.config.ts'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -29,6 +26,10 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "comma-dangle": 0,
+    "semi": 0,
+    "space-before-function-paren": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
     "no-param-reassign": [
       "error",
       {
@@ -58,6 +59,9 @@ module.exports = {
       1,
       140,
       2,
+      {
+        ignoreComments: true,
+      }
     ],
     'import/extensions': [
       'error',

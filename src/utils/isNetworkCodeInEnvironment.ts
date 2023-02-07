@@ -9,6 +9,6 @@ export default function isNetworkCodeInEnvironment(networkCode: string, env: str
   if (envNetworks === undefined) throw new Error('Env networks is undefined (isNetworkCodeInEnvironment)');
 
   return Object.values(chains)
-    .some((chain) => chain.code.toLowerCase() === networkCode.toLowerCase()
-        && chain.chainId in envNetworks);
+    .some((chain) => chain.code.toLowerCase() === networkCode.toLowerCase() &&
+        chain.chainId in envNetworks);
 }

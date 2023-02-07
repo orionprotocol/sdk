@@ -117,9 +117,13 @@ export default class Orion {
     if (isValidChainId(networkCodeOrChainId)) {
       unit = this.units[networkCodeOrChainId];
     } else {
-      unit = this.unitsArray.find((unit) => unit.networkCode === networkCodeOrChainId);
+      unit = this.unitsArray.find((u) => u.networkCode === networkCodeOrChainId);
     }
-    if (!unit) throw new Error(`Invalid network code: ${networkCodeOrChainId}. Available network codes: ${this.unitsArray.map((unit) => unit.networkCode).join(', ')}`);
+    if (!unit) {
+      throw new Error(
+      `Invalid network code: ${networkCodeOrChainId}. ` +
+        `Available network codes: ${this.unitsArray.map((u) => u.networkCode).join(', ')}`);
+    }
     return unit;
   }
 
