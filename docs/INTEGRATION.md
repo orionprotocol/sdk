@@ -4,7 +4,7 @@ Let's consider integration of Orion Protocol with your UI.
 
 ## 1. Initialization
 
-Orion Protocol's SDK operate with OrionUnit — chain-in-environment abstraction. "Ethereum-in-production", "bsc-in-production", "fantom-in-testing", etc.
+Orion Protocol's SDK operates with OrionUnit — chain-in-environment abstraction. "Ethereum-in-production", "bsc-in-production", "fantom-in-testing", etc.
 
 ```ts
 import { OrionUnit } from "@orionprotocol/sdk";
@@ -13,10 +13,10 @@ const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm available
 
 ## 2. Signer accessing
 
-When your UI connected to wallet (through Metamask or Wallet Connect foe example), you should get access to signer.
+When your UI is connected to wallet (through Metamask or Wallet Connect for example), you should get access to signer.
 Signer is API's entity that allows to sign transactions.
 
-Currently for SDK required Ethers.js using. Possibly in future we will add common signer interface.
+Currently the SDK requires using Ethers.js. Possibly in future we will add common signer interface.
 
 For example, you can access signer through Metamask:
 
@@ -50,7 +50,7 @@ const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
 // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN', ...]
 ```
 
-That's all. You can easy get tradable assets this way:
+That's all. You can easily get tradable assets this way:
 
 ```ts
 const tradableAssets = pairs.reduce((acc, pair) => {
@@ -68,7 +68,7 @@ const sortedTradableAssets = uniqueTradableAssets.sort((a, b) => {
 
 ## 4. Getting fee assets info
 
-Orion Protocol charge you only with available fee assets. You can get fee assets list:
+Orion Protocol charges you only with available fee assets. You can get fee assets list:
 
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
@@ -90,8 +90,8 @@ const feeAssets = await simpleFetch(orionUnit.orionBlockchain.getTokensFee)();
 
 You can swap one asset for another in two ways:
 
-1. You can specify how much funds you want spend (exact spend)
-2. You can specify how much funds you want receive (exact receive)
+1. You can specify how much funds you want to spend (exact spend)
+2. You can specify how much funds you want to receive (exact receive)
 
 Each time when user change form inputs, you should get swap info:
 
@@ -105,7 +105,7 @@ const {
   assetIn: "ORN", // What user selected as input asset
   assetOut: "USDT", // What user selected as output asset
   feeAsset: "ORN", // What user selected as fee asset (that we got from previous step)
-  amount: 23.89045345, // How much user want to spend (because we specified "exactSpend" in "type" param)
+  amount: 23.89045345, // How much user wants to spend (because we specified "exactSpend" in "type" param)
   options: {
     instantSettlement: true, // Set true to ensure that funds can be instantly transferred to wallet (otherwise, there is a possibility of receiving funds to the balance of the exchange contract)
     poolOnly: false, // Please read note below
@@ -118,7 +118,7 @@ When you call `getSwapInfo` method, internally SDK make request to service, that
 When you got "pool" that means that you need just call method on exchange contract to make swap (DEX only swap execution).
 When you got "aggregator" that means that you need to send order to aggregator and wait for execution (aggregator can execute order on CEX'es and DEX'es)
 
-Orion Protocol requires method to transfer your funds from you. When you swap tokens (not ETH in Ethereum, not FTM in Fantom, not BNB in Binance Smart Chain), we using approve to reach this goal. But approve is not always possible. For example, if you want to swap BNB for ORN, you can't approve BNB because BNB is **not token**. BNB is native currency of Binance Smart Chain. So, in case when native currency is asset in AND route is "aggregator", you **should [deposit](../README.md#deposit)** funds (native cryptocurrency) to the exchange contract.
+Orion Protocol requires method to transfer your funds from you. When you swap tokens (not ETH in Ethereum, not FTM in Fantom, not BNB in Binance Smart Chain), we use approve to reach this goal. But approve is not always possible. For example, if you want to swap BNB for ORN, you can't approve BNB because BNB is **not token**. BNB is native currency of Binance Smart Chain. So, in case when native currency is asset in AND route is "aggregator", you **should [deposit](../README.md#deposit)** funds (native cryptocurrency) to the exchange contract.
 
 If you don't want to deposit funds to the exchange contract, you can set "poolOnly" option to true.
 

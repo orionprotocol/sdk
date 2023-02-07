@@ -177,7 +177,7 @@ const amount = 23.5346563;
 const roundedAmount = new BigNumber(amount).decimalPlaces(
   qtyPrecision,
   BigNumber.ROUND_FLOOR
-); // You can use you own Math lib
+); // You can use your own Math lib
 
 orionUnit.exchange
   .swapMarket({
@@ -270,7 +270,7 @@ const feeAssets = await simpleFetch(orionUnit.orionBlockchain.getTokensFee)();
 import { simpleFetch } from "@orionprotocol/sdk";
 
 const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
-  // Use 'exactSpend' when 'amount' is how much you want spend. Use 'exactReceive' otherwise
+  // Use 'exactSpend' when 'amount' is how much you want to spend. Use 'exactReceive' otherwise
   "exactSpend", // type
   "ORN", // asset in
   "USDT", // asset out
@@ -353,7 +353,7 @@ if (!orderIsOk) throw new Error("Order invalid");
 
 const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
   signedOrder,
-  false // True if you want place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with the another "internal" order(s).
+  false // True if you want to place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with other "internal" order(s).
 );
 ```
 
