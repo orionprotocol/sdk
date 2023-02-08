@@ -1,9 +1,9 @@
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config';
-import OrionUnit, { VerboseOrionUnitConfig } from '../OrionUnit';
+import OrionUnit from '../OrionUnit';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
-import { DeepPartial, SupportedChainId } from '../types';
+import { DeepPartial, SupportedChainId, VerboseOrionUnitConfig } from '../types';
 import { isValidChainId } from '../utils';
 
 type EnvConfig = {
