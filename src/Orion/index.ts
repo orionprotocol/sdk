@@ -33,6 +33,12 @@ export default class Orion {
 
   constructor(config: EnvConfig);
 
+  // TODO: get tradable assets (aggregated)
+
+  // TODO: get tradable pairs (aggregated)
+
+  // TODO: bridge
+
   constructor(
     envOrConfig: string | EnvConfig,
     overrides?: DeepPartial<EnvConfig>
