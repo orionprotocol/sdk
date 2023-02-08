@@ -1,5 +1,11 @@
 const httpToWS = (url: string) => {
-  const parsedUrl = new URL(url);
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch (e) {
+    console.error(`httpToWS: Invalid URL ${url}`);
+    throw e;
+  }
   if (parsedUrl.protocol === 'https:') {
     parsedUrl.protocol = 'wss:';
   } else if (parsedUrl.protocol === 'http:') {
