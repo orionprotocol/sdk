@@ -20,12 +20,15 @@ type EnvConfig = {
 // type KnownEnv = 'testing' | 'staging' | 'production';
 
 export default class Orion {
+  public readonly env?: string;
+
   public readonly units: Partial<Record<SupportedChainId, OrionUnit>>;
 
   public readonly orionAnalytics: OrionAnalytics;
 
   public readonly referralSystem: ReferralSystem;
 
+  constructor();
   constructor(
     env: string,
     overrides?: DeepPartial<EnvConfig>
@@ -40,13 +43,14 @@ export default class Orion {
   // TODO: bridge
 
   constructor(
-    envOrConfig: string | EnvConfig,
+    envOrConfig: string | EnvConfig = 'production',
     overrides?: DeepPartial<EnvConfig>
   ) {
     let config: EnvConfig;
     if (typeof envOrConfig === 'string') {
       const envConfig = envs[envOrConfig];
       if (!envConfig) throw new Error(`Invalid environment: ${envOrConfig}. Available environments: ${Object.keys(envs).join(', ')}`);
+      this.env = envOrConfig;
       config = {
         analyticsAPI: envConfig.analyticsAPI,
         referralAPI: envConfig.referralAPI,

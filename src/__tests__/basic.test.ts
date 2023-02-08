@@ -95,7 +95,8 @@ describe('Orion', () => {
   });
 
   test('Init Orion production', () => {
-    const orion = new Orion('production');
+    const orion = new Orion();
+    expect(orion.env).toBe('production');
     expect(orion.orionAnalytics).toBeInstanceOf(OrionAnalytics);
     expect(orion.referralSystem).toBeInstanceOf(ReferralSystem);
     expect(orion.unitsArray.length).toBe(5); // eth, bsc, polygon, fantom, okc

@@ -7,8 +7,10 @@ Let's consider integration of Orion Protocol with your UI.
 Orion Protocol's SDK operate with OrionUnit — chain-in-environment abstraction. "Ethereum-in-production", "bsc-in-production", "fantom-in-testing", etc.
 
 ```ts
-import { OrionUnit } from "@orionprotocol/sdk";
-const orionUnit = new OrionUnit("bsc", "production"); // eth, bsc, ftm available
+import { Orion } from "@orionprotocol/sdk";
+const orion = new Orion();
+const bscOrionUnit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
+const ethOrionUnit = orion.getUnit("eth");
 ```
 
 ## 2. Signer accessing

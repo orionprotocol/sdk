@@ -57,7 +57,7 @@ npm i @orionprotocol/sdk
 import { OrionUnit, Orion } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
-const orion = new Orion("production");
+const orion = new Orion();
 const orionUnit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
 const wallet = new Wallet("0x...", orionUnit.provider);
 // OrionUnit is chain-in-environment abstraction
@@ -74,7 +74,7 @@ const startApp = async (provider: BaseProvider) => {
   const web3Provider = new providers.Web3Provider(provider);
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
-  const orion = new Orion("production");
+  const orion = new Orion();
   const orionUnit = orion.getUnit("eth"); // ready to go
 };
 
