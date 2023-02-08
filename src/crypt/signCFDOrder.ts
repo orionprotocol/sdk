@@ -7,9 +7,9 @@ import { INTERNAL_ORION_PRECISION } from '../constants';
 import { CFDOrder, SignedCFDOrder, SupportedChainId } from '../types';
 import normalizeNumber from '../utils/normalizeNumber';
 import getDomainData from './getDomainData';
-import signCFDOrderPersonal from "./signCFDOrderPersonal";
-import hashCFDOrder from "./hashCFDOrder";
-import CFD_ORDER_TYPES from "../constants/cfdOrderTypes";
+import signCFDOrderPersonal from './signCFDOrderPersonal';
+import hashCFDOrder from './hashCFDOrder';
+import CFD_ORDER_TYPES from '../constants/cfdOrderTypes';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 

@@ -4,7 +4,7 @@ import clone from 'just-clone';
 import { ERC20__factory } from '@orionprotocol/contracts';
 import { utils } from '.';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
-import {
+import type {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
 } from './types';
 import { denormalizeNumber } from './utils';
@@ -82,9 +82,9 @@ export default class BalanceGuard {
     return requirements
       .reduce<AggregatedBalanceRequirement[]>((prev, curr) => {
         const aggregatedBalanceRequirement = prev.find(
-          (item) => item.asset.address === curr.asset.address
-            && arrayEquals(item.sources, curr.sources)
-            && item.spenderAddress === curr.spenderAddress,
+          (item) => item.asset.address === curr.asset.address &&
+            arrayEquals(item.sources, curr.sources) &&
+            item.spenderAddress === curr.spenderAddress,
         );
 
         if (aggregatedBalanceRequirement) {
@@ -163,9 +163,9 @@ export default class BalanceGuard {
 
   async check(fixAutofixable?: boolean) {
     this.logger?.(`Balance requirements: ${this.requirements
-      .map((requirement) => `${requirement.amount} ${requirement.asset.name} `
-        + `for '${requirement.reason}' `
-        + `from [${requirement.sources.join(' + ')}]`)
+      .map((requirement) => `${requirement.amount} ${requirement.asset.name} ` +
+        `for '${requirement.reason}' ` +
+        `from [${requirement.sources.join(' + ')}]`)
       .join(', ')}`);
 
     const remainingBalances = clone(this.balances);
@@ -206,9 +206,9 @@ export default class BalanceGuard {
         balanceIssues.push({
           asset,
           sources: ['exchange'],
-          message: `Not enough ${asset.name} on exchange balance. `
-            + `Needed: ${itemsAmountSum.toString()}, available: ${exchangeBalance?.toString()}. `
-            + `You need to deposit at least ${lackAmount.toString()} ${asset.name} into exchange contract`,
+          message: `Not enough ${asset.name} on exchange balance. ` +
+            `Needed: ${itemsAmountSum.toString()}, available: ${(exchangeBalance ?? '[UNDEFINED]')?.toString()}. ` +
+            `You need to deposit at least ${lackAmount.toString()} ${asset.name} into exchange contract`,
         });
       }
     });
@@ -260,10 +260,10 @@ export default class BalanceGuard {
             const exchangeBalance = this.balances?.[asset.name]?.exchange;
             const available = exchangeBalance?.plus(approvedWalletBalance);
 
-            const issueMessage = `Not enough ${asset.name} on exchange + wallet balance. `
-                + `Needed: ${itemsAmountSum.toString()}, available: ${available?.toString()} `
-              + `(exchange: ${exchangeBalance?.toString()}, available (approved): ${approvedWalletBalance.toString()}).`
-              + ` ${approveIsHelpful
+            const issueMessage = `Not enough ${asset.name} on exchange + wallet balance. ` +
+                `Needed: ${itemsAmountSum.toString()}, available: ${(available ?? '[UNDEFINED]')?.toString()} ` +
+              `(exchange: ${(exchangeBalance ?? '[UNKNOWN]')?.toString()}, available (approved): ${approvedWalletBalance.toString()}).` +
+              ` ${approveIsHelpful
                 ? `You need approve at least ${lackAmount.toString()} ${asset.name}`
                 : 'Approve is not helpful'}`;
             if (approveIsHelpful) {
@@ -290,11 +290,13 @@ export default class BalanceGuard {
                 asset,
                 sources: ['exchange', 'wallet'],
                 fixes: [
-                  ...resetRequired ? [{
-                    type: 'byApprove' as const,
-                    targetAmount: 0,
-                    spenderAddress,
-                  }] : [],
+                  ...resetRequired
+                    ? [{
+                        type: 'byApprove' as const,
+                        targetAmount: 0,
+                        spenderAddress,
+                      }]
+                    : [],
                   {
                     type: 'byApprove',
                     targetAmount: targetApprove,
@@ -351,8 +353,8 @@ export default class BalanceGuard {
           const approveIsHelpful = approveAvailable.gte(lackAmount);
           const targetApprove = approvedWalletBalance.plus(lackAmount);
 
-          const issueMessage = `Not enough ${asset.name} on wallet balance. `
-            + `Needed: ${itemsAmountSum.toString()}, available (approved): ${approvedWalletBalance.toString()}. ${approveIsHelpful
+          const issueMessage = `Not enough ${asset.name} on wallet balance. ` +
+            `Needed: ${itemsAmountSum.toString()}, available (approved): ${approvedWalletBalance.toString()}. ${approveIsHelpful
               ? `You need approve at least ${lackAmount.toString()} ${asset.name}`
               : 'Approve is not helpful'}`;
           if (approveIsHelpful) {
@@ -379,11 +381,13 @@ export default class BalanceGuard {
               asset,
               sources: ['wallet'],
               fixes: [
-                ...resetRequired ? [{
-                  type: 'byApprove' as const,
-                  targetAmount: 0,
-                  spenderAddress,
-                }] : [],
+                ...resetRequired
+                  ? [{
+                      type: 'byApprove' as const,
+                      targetAmount: 0,
+                      spenderAddress,
+                    }]
+                  : [],
                 {
                   type: 'byApprove',
                   targetAmount: targetApprove,
@@ -418,8 +422,8 @@ export default class BalanceGuard {
         balanceIssues.push({
           asset,
           sources: ['wallet'],
-          message: `Not enough ${asset.name} on wallet balance. `
-            + `You need to deposit at least ${lackAmount.toString()} ${asset.name} into wallet contract`,
+          message: `Not enough ${asset.name} on wallet balance. ` +
+            `You need to deposit at least ${lackAmount.toString()} ${asset.name} into wallet contract`,
         });
       }
     });
@@ -428,7 +432,10 @@ export default class BalanceGuard {
       const unfixed = await this.fixAllAutofixableBalanceIssues(balanceIssues);
       if (unfixed.length > 0) throw new Error(`Balance issues: ${unfixed.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
     } else if (balanceIssues.length > 0) {
-      throw new Error(`Balance issues (address ${walletAddress}): ${balanceIssues.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
+      throw new Error(
+        `Balance issues (address ${walletAddress}): ` +
+          `${balanceIssues.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`
+      );
     }
   }
 }

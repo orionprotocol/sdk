@@ -170,11 +170,11 @@ export default async function swapMarket({
     options?.logger?.('Swap is through pool (because "poolOnly" option is true)');
     route = 'pool';
   } else if (
-    swapExchanges !== undefined
-    && poolExchangesList.length > 0
-    && swapExchanges.length === 1
-    && firstSwapExchange
-    && poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
+    swapExchanges !== undefined &&
+    poolExchangesList.length > 0 &&
+    swapExchanges.length === 1 &&
+    firstSwapExchange &&
+    poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
   ) {
     options?.logger?.(`Swap is through pool [via ${firstSwapExchange}] (detected by "exchanges" field)`);
     route = 'pool';

@@ -1,13 +1,14 @@
 {
+    // "extends": "@tsconfig/strictest/tsconfig.json",
     "files": [
         "./src/index.ts"
     ],
     "include": [
-        "./src/**/*.ts"
+        "./src/**/*.ts",
     ],
     "exclude": [
         "node_modules",
-        "**/__tests__/*",
+        // "**/__tests__/*",
         "lib"
     ],
     "compilerOptions": {

@@ -117,7 +117,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
         return err({
           type: 'clientErrorWithResponsePayload' as const,
           url,
-          message: `Client error: ${response.status} ${response.statusText}`,
+          message: `Client error: ${response.status} ${response.statusText}. Server error: ${JSON.stringify(serverError.data)}`,
           status: response.status,
           payload: serverError.data,
         });
@@ -125,7 +125,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
       return err({
         type: 'clientErrorPayloadParseError' as const,
         url,
-        message: 'Can\'t recognize error message',
+        message: 'Can\'t recognize error message. Response: ' + text,
         status: response.status,
         text,
         error: serverError.error,
@@ -134,7 +134,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
     return err({
       type: 'clientError' as const,
       url,
-      message: `Error: ${response.status} ${response.statusText}`,
+      message: `Error: ${response.status} ${response.statusText}. Response: ${text}`,
       status: response.status,
       text,
     });

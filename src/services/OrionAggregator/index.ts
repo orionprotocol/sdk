@@ -9,22 +9,36 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import {Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder} from '../../types';
+import { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
 } from './schemas/aggregatedOrderbookSchema';
 import networkCodes from '../../constants/networkCodes';
 import toUpperCase from '../../utils/toUpperCase';
+import httpToWS from '../../utils/httpToWS';
 
 class OrionAggregator {
   private readonly apiUrl: string;
 
   readonly ws: OrionAggregatorWS;
 
-  constructor(apiUrl: string, apiWsUrl: string) {
-    this.apiUrl = apiUrl;
-    this.ws = new OrionAggregatorWS(apiWsUrl);
+  get api() {
+    return this.apiUrl;
+  }
+
+  constructor(
+    httpAPIUrl: string,
+    wsAPIUrl: string,
+  ) {
+    // const oaUrl = new URL(apiUrl);
+    // const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
+    // const orionAggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/'
+    //   ? ''
+    //   : oaUrl.pathname)}/v1`;
+
+    this.apiUrl = httpAPIUrl;
+    this.ws = new OrionAggregatorWS(httpToWS(wsAPIUrl));
 
     this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
     this.getPairConfig = this.getPairConfig.bind(this);

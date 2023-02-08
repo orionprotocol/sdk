@@ -85,11 +85,11 @@ export default async function getSwapInfo({
   if (options?.poolOnly) {
     route = 'pool';
   } else if (
-    swapExchanges !== undefined
-    && poolExchangesList.length > 0
-    && swapExchanges.length === 1
-    && firstSwapExchange
-    && poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
+    swapExchanges !== undefined &&
+    poolExchangesList.length > 0 &&
+    swapExchanges.length === 1 &&
+    firstSwapExchange &&
+    poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
   ) {
     route = 'pool';
   } else {
