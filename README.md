@@ -1,6 +1,7 @@
 # Orion Protocol SDK
 
 [![npm version](https://img.shields.io/npm/v/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
+![npm bundle size (version)](https://img.shields.io/bundlephobia/minzip/@orionprotocol/sdk)
 [![Downloads](https://img.shields.io/npm/dm/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 
 Do you want to integrate the Orion protocol into your application? See [integration guide](./docs/INTEGRATION.md)
