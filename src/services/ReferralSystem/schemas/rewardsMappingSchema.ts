@@ -16,8 +16,10 @@ const rewardsMappingSchema = z.array(
     timestamp_ms: z.number(),
     block_height: z.number(),
     tx_hash: z.string(),
-    price_feed_meta_info: z.record(z.string(), z.record(z.string(), z.number())),
-  }),
+    price_feed_meta_info: z
+      .record(z.string(), z.record(z.string(), z.number()))
+      .nullable(),
+  })
 );
 
 export default rewardsMappingSchema;
