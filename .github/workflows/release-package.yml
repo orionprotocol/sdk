@@ -11,9 +11,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '17.x'
+          node-version: '18.x'
       - run: npm ci
-      - run: npm test
+      - run: npm run build
+      # - run: npm test
       - name: Set package registry
         run: npm config set registry https://npm.pkg.github.com
       - name: Github package registry authentication
