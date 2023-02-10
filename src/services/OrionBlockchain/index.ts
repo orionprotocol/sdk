@@ -40,7 +40,7 @@ type AtomicSwapHistoryBaseQuery = {
   receiver?: string,
   used?: 0 | 1,
   page?: number,
-  sourceNetworkCode?: 'ftm' | 'bsc' | 'eth' | 'polygon' | 'okc',
+  sourceNetworkCode?: typeof networkCodes[number],
 }
 
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {

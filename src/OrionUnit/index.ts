@@ -6,6 +6,7 @@ import type { SupportedChainId, VerboseOrionUnitConfig } from '../types';
 import Exchange from './Exchange';
 import FarmingManager from './FarmingManager';
 import { chains } from '../config';
+import { networkCodes } from '../constants';
 
 // type KnownConfig = {
 //   env: string;
@@ -17,7 +18,7 @@ import { chains } from '../config';
 export default class OrionUnit {
   // public readonly env?: string;
 
-  public readonly networkCode: string;
+  public readonly networkCode: typeof networkCodes[number];
 
   public readonly chainId: SupportedChainId;
 

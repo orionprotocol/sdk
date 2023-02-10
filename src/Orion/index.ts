@@ -1,5 +1,6 @@
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config';
+import { networkCodes } from '../constants';
 import OrionUnit from '../OrionUnit';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
@@ -17,7 +18,7 @@ type EnvConfig = {
   >;
 }
 
-// type KnownEnv = 'testing' | 'staging' | 'production';
+type KnownEnv = 'testing' | 'staging' | 'production';
 
 export default class Orion {
   public readonly env?: string;
@@ -30,7 +31,7 @@ export default class Orion {
 
   constructor();
   constructor(
-    env: string,
+    env: KnownEnv,
     overrides?: DeepPartial<EnvConfig>
   );
 
@@ -43,7 +44,7 @@ export default class Orion {
   // TODO: bridge
 
   constructor(
-    envOrConfig: string | EnvConfig = 'production',
+    envOrConfig: KnownEnv | EnvConfig = 'production',
     overrides?: DeepPartial<EnvConfig>
   ) {
     let config: EnvConfig;
@@ -120,7 +121,7 @@ export default class Orion {
 
   getUnit(chainId: SupportedChainId): OrionUnit;
 
-  getUnit(networkCode: string): OrionUnit;
+  getUnit(networkCode: typeof networkCodes[number]): OrionUnit;
 
   getUnit(networkCodeOrChainId: string): OrionUnit {
     let unit: OrionUnit | undefined;
