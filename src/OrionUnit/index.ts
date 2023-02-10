@@ -34,10 +34,13 @@ export default class OrionUnit {
 
   public readonly farmingManager: FarmingManager;
 
+  public readonly config: VerboseOrionUnitConfig;
+
   // constructor(config: KnownConfig);
   // constructor(config: VerboseConfig);
 
   constructor(config: VerboseOrionUnitConfig) {
+    this.config = config;
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
 
