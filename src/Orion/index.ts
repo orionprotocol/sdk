@@ -63,7 +63,7 @@ export default class Orion {
             env: envOrConfig,
             chainId,
             api: networkConfig.api,
-            nodeJsonRpc: chainConfig.rpc,
+            nodeJsonRpc: networkConfig?.rpc ?? chainConfig.rpc,
             services: {
               orionBlockchain: {
                 http: networkConfig.api + networkConfig.services.blockchain.http,
