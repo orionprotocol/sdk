@@ -14,7 +14,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-      - run: HUSKY=0 npm ci
+      - run: npm ci
+      - run: npm build
       - run: npm test
       - name: Set package registry
         run: npm config set registry https://npm.pkg.github.com

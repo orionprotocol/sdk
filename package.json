@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.17.5-rc.3",
+  "version": "0.17.5-rc.4",
   "description": "Orion Protocol SDK",
   "main": "./lib/esm/index.js",
   "module": "./lib/esm/index.js",
@@ -11,6 +11,7 @@
     "clean": "rimraf lib/*",
     "watch-ts": "tsc -w --skipLibCheck",
     "watch-js": "nodemon lib/esm/index.js",
+    "prepare": "is-ci || husky install",
     "prebuild": "tsc",
     "build": "webpack",
     "coverage": "jest --coverage",
