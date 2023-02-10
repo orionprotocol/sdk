@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: '18.x'
       - run: npm ci
-      - run: npm build
+      - run: npm run build
       - run: npm test
       - name: Set package registry
         run: npm config set registry https://npm.pkg.github.com
