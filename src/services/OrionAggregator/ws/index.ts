@@ -428,7 +428,7 @@ class OrionAggregatorWS {
         }
           break;
         case MessageType.FUTURES_TRADE_INFO_UPDATE:
-          this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[json.S]?.callback({
+          this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[json.id]?.callback({
             futuresTradeRequestId: json.id,
             sender: json.S,
             instrument: json.i,
