@@ -1,24 +1,23 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { utils } from '../..';
 import { NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
-import { OrionAggregator } from '../../services/OrionAggregator';
-import { OrionBlockchain } from '../../services/OrionBlockchain';
+import { type OrionAggregator } from '../../services/OrionAggregator';
+import { type OrionBlockchain } from '../../services/OrionBlockchain';
 
 import simpleFetch from '../../simpleFetch';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
+import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrency } from '../../utils';
 
 export type GetSwapInfoParams = {
-  type: 'exactSpend' | 'exactReceive',
-  assetIn: string,
-  assetOut: string,
-  amount: BigNumber.Value,
-  feeAsset: string,
-  orionBlockchain: OrionBlockchain,
+  type: 'exactSpend' | 'exactReceive'
+  assetIn: string
+  assetOut: string
+  amount: BigNumber.Value
+  feeAsset: string
+  orionBlockchain: OrionBlockchain
   orionAggregator: OrionAggregator
   options?: {
-    instantSettlement?: boolean,
-    poolOnly?: boolean,
+    instantSettlement?: boolean
+    poolOnly?: boolean
   }
 }
 
@@ -38,8 +37,8 @@ export default async function getSwapInfo({
   if (feeAsset === '') throw new Error('Fee asset can not be empty');
 
   const amountBN = new BigNumber(amount);
-  if (amountBN.isNaN()) throw new Error(`Amount '${amount.toString()}' is not a number`);
-  if (amountBN.lte(0)) throw new Error(`Amount '${amount.toString()}' should be greater than 0`);
+  if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
+  if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
   const {
     assetToAddress,
@@ -53,17 +52,21 @@ export default async function getSwapInfo({
   const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
 
   const assetInAddress = assetToAddress[assetIn];
-  if (!assetInAddress) throw new Error(`Asset '${assetIn}' not found`);
+  if (assetInAddress === undefined) throw new Error(`Asset '${assetIn}' not found`);
   const feeAssetAddress = assetToAddress[feeAsset];
-  if (!feeAssetAddress) throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
+  if (feeAssetAddress === undefined) {
+    throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
+  }
 
   const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(
     type,
     assetIn,
     assetOut,
-    amount.toString(),
+    amountBN.toString(),
     options?.instantSettlement,
-    options?.poolOnly ? 'pools' : undefined,
+    options?.poolOnly !== undefined && options.poolOnly
+      ? 'pools'
+      : undefined,
   );
 
   const { exchanges: swapExchanges } = swapInfo;
@@ -82,13 +85,12 @@ export default async function getSwapInfo({
   // if (swapInfo.orderInfo === null) throw new Error(swapInfo.executionInfo);
 
   let route: 'pool' | 'aggregator';
-  if (options?.poolOnly) {
+  if (options?.poolOnly !== undefined && options.poolOnly) {
     route = 'pool';
   } else if (
-    swapExchanges !== undefined &&
     poolExchangesList.length > 0 &&
     swapExchanges.length === 1 &&
-    firstSwapExchange &&
+    firstSwapExchange !== undefined &&
     poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
   ) {
     route = 'pool';
@@ -98,7 +100,7 @@ export default async function getSwapInfo({
 
   if (route === 'pool') {
     const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
     return {
       route,
@@ -112,26 +114,26 @@ export default async function getSwapInfo({
     };
   }
 
-  if (swapInfo.orderInfo) {
+  if (swapInfo.orderInfo !== null) {
     const [baseAssetName] = swapInfo.orderInfo.assetPair.split('-');
     if (baseAssetName === undefined) throw new Error('Base asset name is undefined');
     const baseAssetAddress = assetToAddress[baseAssetName];
-    if (!baseAssetAddress) throw new Error(`No asset address for ${baseAssetName}`);
+    if (baseAssetAddress === undefined) throw new Error(`No asset address for ${baseAssetName}`);
 
     // Fee calculation
-    const baseAssetPriceInOrn = pricesInOrn?.[baseAssetAddress];
-    if (!baseAssetPriceInOrn) throw new Error(`Base asset price ${baseAssetName} in ORN not found`);
+    const baseAssetPriceInOrn = pricesInOrn[baseAssetAddress];
+    if (baseAssetPriceInOrn === undefined) throw new Error(`Base asset price ${baseAssetName} in ORN not found`);
     const baseCurrencyPriceInOrn = pricesInOrn[ethers.constants.AddressZero];
-    if (!baseCurrencyPriceInOrn) throw new Error('Base currency price in ORN not found');
+    if (baseCurrencyPriceInOrn === undefined) throw new Error('Base currency price in ORN not found');
     const feeAssetPriceInOrn = pricesInOrn[feeAssetAddress];
-    if (!feeAssetPriceInOrn) throw new Error(`Fee asset price ${feeAsset} in ORN not found`);
-    const feePercent = feeAssets?.[feeAsset];
-    if (!feePercent) throw new Error(`Fee asset ${feeAsset} not available`);
+    if (feeAssetPriceInOrn === undefined) throw new Error(`Fee asset price ${feeAsset} in ORN not found`);
+    const feePercent = feeAssets[feeAsset];
+    if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
     const {
       orionFeeInFeeAsset,
       networkFeeInFeeAsset,
-    } = utils.calculateFeeInFeeAsset(
+    } = calculateFeeInFeeAsset(
       swapInfo.orderInfo.amount,
       feeAssetPriceInOrn,
       baseAssetPriceInOrn,

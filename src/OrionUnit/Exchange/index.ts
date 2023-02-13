@@ -1,13 +1,13 @@
-import OrionUnit from '..';
-import deposit, { DepositParams } from './deposit';
-import getSwapInfo, { GetSwapInfoParams } from './getSwapInfo';
-import swapMarket, { SwapMarketParams } from './swapMarket';
-import withdraw, { WithdrawParams } from './withdraw';
+import type OrionUnit from '..';
+import deposit, { type DepositParams } from './deposit';
+import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo';
+import swapMarket, { type SwapMarketParams } from './swapMarket';
+import withdraw, { type WithdrawParams } from './withdraw';
 
-type PureSwapMarketParams= Omit<SwapMarketParams, 'orionUnit'>
+type PureSwapMarketParams = Omit<SwapMarketParams, 'orionUnit'>
 type PureDepositParams = Omit<DepositParams, 'orionUnit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'orionUnit'>
-type PureGetSwapMarketInfoParams= Omit<GetSwapInfoParams, 'orionBlockchain' | 'orionAggregator'>
+type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'orionBlockchain' | 'orionAggregator'>
 
 export default class Exchange {
   private readonly orionUnit: OrionUnit;

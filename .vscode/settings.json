@@ -11,5 +11,6 @@
         "./README.md": [
             "# Orion Protocol SDK"
         ]
-    }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

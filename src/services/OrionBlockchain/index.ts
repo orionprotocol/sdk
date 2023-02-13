@@ -3,63 +3,63 @@ import fetchWithValidation from '../../fetchWithValidation';
 import {
   IDOSchema, atomicHistorySchema,
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
-  addPoolSchema, adminPoolsListSchema, adminPoolSchema,
+  type addPoolSchema, adminPoolsListSchema, adminPoolSchema,
   atomicSummarySchema,
   poolsLpAndStakedSchema,
   userVotesSchema,
   userEarnedSchema,
-  PairStatusEnum,
+  type PairStatusEnum,
   pairStatusSchema,
   cfdContractsSchema,
   cfdHistorySchema,
 } from './schemas';
-import redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
+import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
-import { networkCodes } from '../../constants';
+import { type networkCodes } from '../../constants';
 
-interface IAdminAuthHeaders {
-  auth: string;
+type IAdminAuthHeaders = {
+  auth: string
   [key: string]: string
 }
 
-export interface IEditPool {
-  tokenAIcon?: string;
-  tokenBIcon?: string;
-  symbol?: string;
-  status: PairStatusEnum;
-  minQty?: number;
-  tokenASymbol?: string;
-  tokenBSymbol?: string;
-  tokensReversed?: boolean;
+export type IEditPool = {
+  tokenAIcon?: string
+  tokenBIcon?: string
+  symbol?: string
+  status: PairStatusEnum
+  minQty?: number
+  tokenASymbol?: string
+  tokenBSymbol?: string
+  tokensReversed?: boolean
 }
 
 type AtomicSwapHistoryBaseQuery = {
   limit?: number
-  sender?: string,
-  receiver?: string,
-  used?: 0 | 1,
-  page?: number,
-  sourceNetworkCode?: typeof networkCodes[number],
-}
+  sender?: string
+  receiver?: string
+  used?: 0 | 1
+  page?: number
+  sourceNetworkCode?: typeof networkCodes[number]
+} & Partial<Record<string, string | number>>
 
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
-  type?: 'source',
-  expiredLock?: 0 | 1,
-  state?: 'LOCKED' | 'CLAIMED' |'REFUNDED',
+  type?: 'source'
+  expiredLock?: 0 | 1
+  state?: 'LOCKED' | 'CLAIMED' | 'REFUNDED'
 
 }
 type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
-  type?: 'target',
-  expiredRedeem?: 0 | 1,
-  state?: 'REDEEMED' | 'BEFORE-REDEEM',
+  type?: 'target'
+  expiredRedeem?: 0 | 1
+  state?: 'REDEEMED' | 'BEFORE-REDEEM'
 }
 
 type CfdHistoryQuery = {
-  instrument?: string,
-  page?: number,
-  limit?: number,
-}
+  instrument?: string
+  page?: number
+  limit?: number
+} & Partial<Record<string, string | number>>
 class OrionBlockchain {
   private readonly apiUrl: string;
 
@@ -110,12 +110,12 @@ class OrionBlockchain {
     return `${this.apiUrl}/`;
   }
 
-  private getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: typeof networkCodes[number]) => {
+  private readonly getSummaryRedeem = (brokerAddress: string, unshifted?: 1 | 0, sourceNetworkCode?: typeof networkCodes[number]) => {
     const url = new URL(`${this.apiUrl}/api/atomic/summary-redeem/${brokerAddress}`);
-    if (unshifted) {
+    if (unshifted !== undefined && unshifted === 1) {
       url.searchParams.append('unshifted', unshifted.toString());
     }
-    if (sourceNetworkCode) {
+    if (sourceNetworkCode !== undefined) {
       url.searchParams.append('sourceNetworkCode', sourceNetworkCode);
     }
     return fetchWithValidation(
@@ -124,12 +124,12 @@ class OrionBlockchain {
     );
   };
 
-  private getSummaryClaim = (brokerAddress: string) => fetchWithValidation(
+  private readonly getSummaryClaim = (brokerAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/summary-claim/${brokerAddress}`,
     atomicSummarySchema,
   );
 
-  private getQueueLength = () => fetchWithValidation(
+  private readonly getQueueLength = () => fetchWithValidation(
     `${this.apiUrl}/api/queueLength`,
     z.number().int(),
   );
@@ -357,7 +357,10 @@ class OrionBlockchain {
     const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
-      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+      .forEach(([key, value]) => {
+        if (value === undefined) throw new Error('Value must be defined');
+        url.searchParams.append(key, value.toString());
+      });
 
     return fetchWithValidation(url.toString(), atomicHistorySchema);
   };
@@ -366,9 +369,12 @@ class OrionBlockchain {
     const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
-      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+      .forEach(([key, value]) => {
+        if (value === undefined) throw new Error('Value must be defined');
+        url.searchParams.append(key, value.toString());
+      });
 
-    if (!query.type) url.searchParams.append('type', 'source');
+    if (query.type !== undefined) url.searchParams.append('type', 'source');
 
     return fetchWithValidation(url.toString(), sourceAtomicHistorySchema);
   };
@@ -377,9 +383,12 @@ class OrionBlockchain {
     const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
     Object.entries(query)
-      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+      .forEach(([key, value]) => {
+        if (value === undefined) throw new Error('Value must be defined');
+        url.searchParams.append(key, value.toString());
+      });
 
-    if (!query.type) url.searchParams.append('type', 'target');
+    if (query.type !== undefined) url.searchParams.append('type', 'target');
 
     return fetchWithValidation(url.toString(), targetAtomicHistorySchema);
   };
@@ -406,7 +415,10 @@ class OrionBlockchain {
     const url = new URL(`${this.apiUrl}/api/cfd/deposit-withdraw/${address}`);
 
     Object.entries(query)
-      .forEach(([key, value]) => url.searchParams.append(key, value.toString()));
+      .forEach(([key, value]) => {
+        if (value === undefined) throw new Error('Value must be defined');
+        url.searchParams.append(key, value.toString());
+      });
 
     return fetchWithValidation(url.toString(), cfdHistorySchema);
   };

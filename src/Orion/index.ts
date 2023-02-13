@@ -1,21 +1,21 @@
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config';
-import { networkCodes } from '../constants';
+import { type networkCodes } from '../constants';
 import OrionUnit from '../OrionUnit';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
-import { DeepPartial, SupportedChainId, VerboseOrionUnitConfig } from '../types';
+import { type DeepPartial, type SupportedChainId, type VerboseOrionUnitConfig } from '../types';
 import { isValidChainId } from '../utils';
 
 type EnvConfig = {
-  analyticsAPI: string;
-  referralAPI: string;
+  analyticsAPI: string
+  referralAPI: string
   networks: Partial<
     Record<
       SupportedChainId,
       VerboseOrionUnitConfig
     >
-  >;
+  >
 }
 
 type KnownEnv = 'testing' | 'staging' | 'production';
@@ -28,14 +28,6 @@ export default class Orion {
   public readonly orionAnalytics: OrionAnalytics;
 
   public readonly referralSystem: ReferralSystem;
-
-  constructor();
-  constructor(
-    env: KnownEnv,
-    overrides?: DeepPartial<EnvConfig>
-  );
-
-  constructor(config: EnvConfig);
 
   // TODO: get tradable assets (aggregated)
 
@@ -50,7 +42,9 @@ export default class Orion {
     let config: EnvConfig;
     if (typeof envOrConfig === 'string') {
       const envConfig = envs[envOrConfig];
-      if (!envConfig) throw new Error(`Invalid environment: ${envOrConfig}. Available environments: ${Object.keys(envs).join(', ')}`);
+      if (!envConfig) {
+        throw new Error(`Invalid environment: ${envOrConfig}. Available environments: ${Object.keys(envs).join(', ')}`);
+      }
       this.env = envOrConfig;
       config = {
         analyticsAPI: envConfig.analyticsAPI,
@@ -58,13 +52,15 @@ export default class Orion {
         networks: Object.entries(envConfig.networks).map(([chainId, networkConfig]) => {
           if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
           const chainConfig = chains[chainId];
-          if (!chainConfig) throw new Error(`Chain config not found: ${chainId}. Available chains: ${Object.keys(chains).join(', ')}`);
+          if (!chainConfig) {
+            throw new Error(`Chain config not found: ${chainId}. Available chains: ${Object.keys(chains).join(', ')}`);
+          }
 
           return {
             env: envOrConfig,
             chainId,
             api: networkConfig.api,
-            nodeJsonRpc: networkConfig?.rpc ?? chainConfig.rpc,
+            nodeJsonRpc: networkConfig.rpc ?? chainConfig.rpc,
             services: {
               orionBlockchain: {
                 http: networkConfig.api + networkConfig.services.blockchain.http,
@@ -86,6 +82,7 @@ export default class Orion {
       };
 
       if (overrides) {
+        // Recursive merge of config and overrides. Ignore undefined values.
         config = merge(config, overrides);
       }
     } else {
@@ -99,7 +96,7 @@ export default class Orion {
       .reduce<Partial<Record<SupportedChainId, OrionUnit>>>((acc, [chainId, networkConfig]) => {
         if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
         const chainConfig = chains[chainId];
-        if (!chainConfig) throw new Error(`Invalid chainId: ${chainId}`);
+        if (!chainConfig) throw new Error(`Chain config not found: ${chainId}`);
 
         const orionUnit = new OrionUnit({
           // env: networkConfig.env,
@@ -119,11 +116,7 @@ export default class Orion {
     return Object.entries(this.units).map(([, unit]) => unit);
   }
 
-  getUnit(chainId: SupportedChainId): OrionUnit;
-
-  getUnit(networkCode: typeof networkCodes[number]): OrionUnit;
-
-  getUnit(networkCodeOrChainId: string): OrionUnit {
+  getUnit(networkCodeOrChainId: typeof networkCodes[number] | SupportedChainId): OrionUnit {
     let unit: OrionUnit | undefined;
     if (isValidChainId(networkCodeOrChainId)) {
       unit = this.units[networkCodeOrChainId];
@@ -132,7 +125,7 @@ export default class Orion {
     }
     if (!unit) {
       throw new Error(
-      `Invalid network code: ${networkCodeOrChainId}. ` +
+        `Invalid network code: ${networkCodeOrChainId}. ` +
         `Available network codes: ${this.unitsArray.map((u) => u.networkCode).join(', ')}`);
     }
     return unit;

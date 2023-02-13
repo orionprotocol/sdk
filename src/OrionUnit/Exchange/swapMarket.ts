@@ -1,47 +1,47 @@
-/* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import getAvailableSources from '../../utils/getAvailableFundsSources';
-import OrionUnit from '..';
-import { crypt, utils } from '../..';
+import type OrionUnit from '..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
+import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils';
+import { signOrder } from '../../crypt';
 
 export type SwapMarketParams = {
-  type: 'exactSpend' | 'exactReceive',
-  assetIn: string,
-  assetOut: string,
-  amount: BigNumber.Value,
-  feeAsset: string,
-  slippagePercent: BigNumber.Value,
-  signer: ethers.Signer,
-  orionUnit: OrionUnit,
+  type: 'exactSpend' | 'exactReceive'
+  assetIn: string
+  assetOut: string
+  amount: BigNumber.Value
+  feeAsset: string
+  slippagePercent: BigNumber.Value
+  signer: ethers.Signer
+  orionUnit: OrionUnit
   options?: {
-    poolOnly?: boolean,
-    instantSettlement?: boolean,
-    logger?: (message: string) => void,
-    autoApprove?: boolean,
+    poolOnly?: boolean
+    instantSettlement?: boolean
+    logger?: (message: string) => void
+    autoApprove?: boolean
     developer?: {
-      route?: 'aggregator' | 'pool',
+      route?: 'aggregator' | 'pool'
     }
   }
 }
 
 type AggregatorOrder = {
   through: 'aggregator'
-  id: string,
+  id: string
 }
 
 type PoolSwap = {
   through: 'orion_pool'
-  txHash: string,
+  txHash: string
 }
 
-type Swap = AggregatorOrder | PoolSwap;
+export type Swap = AggregatorOrder | PoolSwap;
 
 export default async function swapMarket({
   type,
@@ -54,7 +54,7 @@ export default async function swapMarket({
   orionUnit,
   options,
 }: SwapMarketParams): Promise<Swap> {
-  if (options?.developer) options?.logger?.('YOU SPECIFIED A DEVELOPER OPTIONS. BE CAREFUL!');
+  if (options?.developer) options.logger?.('YOU SPECIFIED A DEVELOPER OPTIONS. BE CAREFUL!');
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
   if (assetOut === '') throw new Error('AssetOut can not be empty');
@@ -62,11 +62,11 @@ export default async function swapMarket({
   if (slippagePercent === '') throw new Error('Slippage percent can not be empty');
 
   const amountBN = new BigNumber(amount);
-  if (amountBN.isNaN()) throw new Error(`Amount '${amount.toString()}' is not a number`);
-  if (amountBN.lte(0)) throw new Error(`Amount '${amount.toString()}' should be greater than 0`);
+  if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
+  if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
   const slippagePercentBN = new BigNumber(slippagePercent);
-  if (slippagePercentBN.isNaN()) throw new Error(`Slippage percent '${slippagePercent.toString()}' is not a number`);
+  if (slippagePercentBN.isNaN()) throw new Error(`Slippage percent '${slippagePercentBN.toString()}' is not a number`);
   if (slippagePercentBN.lte(0)) throw new Error('Slippage percent should be greater than 0');
   if (slippagePercentBN.gte(50)) throw new Error('Slippage percent should be less than 50');
 
@@ -93,9 +93,11 @@ export default async function swapMarket({
   const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
 
   const assetInAddress = assetToAddress[assetIn];
-  if (!assetInAddress) throw new Error(`Asset '${assetIn}' not found`);
+  if (assetInAddress === undefined) throw new Error(`Asset '${assetIn}' not found`);
   const feeAssetAddress = assetToAddress[feeAsset];
-  if (!feeAssetAddress) throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
+  if (feeAssetAddress === undefined) {
+    throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
+  }
 
   const balances = await getBalances(
     {
@@ -124,16 +126,18 @@ export default async function swapMarket({
     type,
     assetIn,
     assetOut,
-    amount.toString(),
+    amountBN.toString(),
     options?.instantSettlement,
-    options?.poolOnly ? 'pools' : undefined,
+    options?.poolOnly !== undefined && options.poolOnly
+      ? 'pools'
+      : undefined,
   );
 
   const { exchanges: swapExchanges } = swapInfo;
 
   const [firstSwapExchange] = swapExchanges;
 
-  if (swapExchanges) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
+  if (swapExchanges.length > 0) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
 
   if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
     throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
@@ -150,14 +154,16 @@ export default async function swapMarket({
   if (quoteAssetName === undefined) throw new Error('Quote asset name is undefined');
 
   const pairConfig = await simpleFetch(orionAggregator.getPairConfig)(`${baseAssetName}-${quoteAssetName}`);
-  if (!pairConfig) throw new Error(`Pair config ${baseAssetName}-${quoteAssetName} not found`);
-
   const qtyPrecisionBN = new BigNumber(pairConfig.qtyPrecision);
   const qtyDecimalPlaces = amountBN.dp();
 
   if (qtyDecimalPlaces === null) throw new Error('Qty decimal places is null. Likely amount is -Infinity, +Infinity or NaN');
 
-  if (qtyPrecisionBN.lt(qtyDecimalPlaces)) throw new Error(`Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`);
+  if (qtyPrecisionBN.lt(qtyDecimalPlaces)) {
+    throw new Error(
+      `Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`
+    );
+  }
 
   let route: 'aggregator' | 'pool';
 
@@ -165,15 +171,14 @@ export default async function swapMarket({
 
   if (options?.developer?.route !== undefined) {
     route = options.developer.route;
-    options?.logger?.(`Swap is through ${route} (because route forced to ${route})`);
-  } else if (options?.poolOnly) {
-    options?.logger?.('Swap is through pool (because "poolOnly" option is true)');
+    options.logger?.(`Swap is through ${route} (because route forced to ${route})`);
+  } else if (options?.poolOnly !== undefined && options.poolOnly) {
+    options.logger?.('Swap is through pool (because "poolOnly" option is true)');
     route = 'pool';
   } else if (
-    swapExchanges !== undefined &&
     poolExchangesList.length > 0 &&
     swapExchanges.length === 1 &&
-    firstSwapExchange &&
+    firstSwapExchange !== undefined &&
     poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
   ) {
     options?.logger?.(`Swap is through pool [via ${firstSwapExchange}] (detected by "exchanges" field)`);
@@ -184,14 +189,14 @@ export default async function swapMarket({
 
   if (route === 'pool') {
     let factoryAddress: string | undefined;
-    if (factories && firstSwapExchange) {
-      factoryAddress = factories?.[firstSwapExchange];
-      if (factoryAddress) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
+    if (factories && firstSwapExchange !== undefined) {
+      factoryAddress = factories[firstSwapExchange];
+      if (factoryAddress !== undefined) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
     }
 
     const pathAddresses = swapInfo.path.map((name) => {
-      const assetAddress = assetToAddress?.[name];
-      if (!assetAddress) throw new Error(`No asset address for ${name}`);
+      const assetAddress = assetToAddress[name];
+      if (assetAddress === undefined) throw new Error(`No asset address for ${name}`);
       return assetAddress;
     });
 
@@ -216,12 +221,12 @@ export default async function swapMarket({
     });
 
     const amountReceive = swapInfo.type === 'exactReceive' ? swapInfo.amountOut : amountOutWithSlippage;
-    const amountSpendBlockchainParam = utils.normalizeNumber(
+    const amountSpendBlockchainParam = normalizeNumber(
       amountSpend,
       INTERNAL_ORION_PRECISION,
       BigNumber.ROUND_CEIL,
     );
-    const amountReceiveBlockchainParam = utils.normalizeNumber(
+    const amountReceiveBlockchainParam = normalizeNumber(
       amountReceive,
       INTERNAL_ORION_PRECISION,
       BigNumber.ROUND_FLOOR,
@@ -229,7 +234,9 @@ export default async function swapMarket({
     const unsignedSwapThroughOrionPoolTx = await exchangeContract.populateTransaction.swapThroughOrionPool(
       amountSpendBlockchainParam,
       amountReceiveBlockchainParam,
-      factoryAddress ? [factoryAddress, ...pathAddresses] : pathAddresses,
+      factoryAddress !== undefined
+        ? [factoryAddress, ...pathAddresses]
+        : pathAddresses,
       type === 'exactSpend',
     );
 
@@ -241,11 +248,11 @@ export default async function swapMarket({
 
     let value = new BigNumber(0);
     const denormalizedAssetInExchangeBalance = balances[assetIn]?.exchange;
-    if (!denormalizedAssetInExchangeBalance) throw new Error(`Asset '${assetIn}' exchange balance is not found`);
+    if (denormalizedAssetInExchangeBalance === undefined) throw new Error(`Asset '${assetIn}' exchange balance is not found`);
     if (assetIn === nativeCryptocurrency && amountSpendBN.gt(denormalizedAssetInExchangeBalance)) {
       value = amountSpendBN.minus(denormalizedAssetInExchangeBalance);
     }
-    unsignedSwapThroughOrionPoolTx.value = utils.normalizeNumber(
+    unsignedSwapThroughOrionPoolTx.value = normalizeNumber(
       value.dp(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL),
       NATIVE_CURRENCY_PRECISION,
       BigNumber.ROUND_CEIL,
@@ -253,7 +260,7 @@ export default async function swapMarket({
     unsignedSwapThroughOrionPoolTx.gasLimit = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
 
     const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
     balanceGuard.registerRequirement({
       reason: 'Network fee',
@@ -305,9 +312,9 @@ export default async function swapMarket({
       .toString();
 
   const baseAssetAddress = assetToAddress[baseAssetName];
-  if (!baseAssetAddress) throw new Error(`No asset address for ${baseAssetName}`);
+  if (baseAssetAddress === undefined) throw new Error(`No asset address for ${baseAssetName}`);
   const quoteAssetAddress = assetToAddress[quoteAssetName];
-  if (!quoteAssetAddress) throw new Error(`No asset address for ${quoteAssetName}`);
+  if (quoteAssetAddress === undefined) throw new Error(`No asset address for ${quoteAssetName}`);
 
   const safePriceWithAppliedPrecision = new BigNumber(safePriceWithDeviation)
     .decimalPlaces(
@@ -331,16 +338,16 @@ export default async function swapMarket({
   });
 
   // Fee calculation
-  const baseAssetPriceInOrn = pricesInOrn?.[baseAssetAddress];
-  if (!baseAssetPriceInOrn) throw new Error(`Base asset price ${baseAssetName} in ORN not found`);
+  const baseAssetPriceInOrn = pricesInOrn[baseAssetAddress];
+  if (baseAssetPriceInOrn === undefined) throw new Error(`Base asset price ${baseAssetName} in ORN not found`);
   const baseCurrencyPriceInOrn = pricesInOrn[ethers.constants.AddressZero];
-  if (!baseCurrencyPriceInOrn) throw new Error('Base currency price in ORN not found');
+  if (baseCurrencyPriceInOrn === undefined) throw new Error('Base currency price in ORN not found');
   const feeAssetPriceInOrn = pricesInOrn[feeAssetAddress];
-  if (!feeAssetPriceInOrn) throw new Error(`Fee asset price ${feeAsset} in ORN not found`);
-  const feePercent = feeAssets?.[feeAsset];
-  if (!feePercent) throw new Error(`Fee asset ${feeAsset} not available`);
+  if (feeAssetPriceInOrn === undefined) throw new Error(`Fee asset price ${feeAsset} in ORN not found`);
+  const feePercent = feeAssets[feeAsset];
+  if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
-  const { orionFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = utils.calculateFeeInFeeAsset(
+  const { orionFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = calculateFeeInFeeAsset(
     swapInfo.orderInfo.amount,
     feeAssetPriceInOrn,
     baseAssetPriceInOrn,
@@ -380,7 +387,7 @@ export default async function swapMarket({
 
   await balanceGuard.check(options?.autoApprove);
 
-  const signedOrder = await crypt.signOrder(
+  const signedOrder = await signOrder(
     baseAssetAddress,
     quoteAssetAddress,
     swapInfo.orderInfo.side,

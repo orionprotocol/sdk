@@ -14,4 +14,4 @@ const untypedItems = Object.keys(items); // => Array<string>
 @category Type guard
 */
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-export const objectKeys = Object.keys as <Type extends object>(value: Type) => ObjectKeys<Type>[];
+export const objectKeys = Object.keys as <Type extends object>(value: Type) => Array<ObjectKeys<Type>>;

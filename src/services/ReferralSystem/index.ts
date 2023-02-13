@@ -6,21 +6,21 @@ import globalAnalyticsSchema from './schemas/globalAnalyticsSchema';
 import linkSchema from './schemas/linkSchema';
 
 type CreateLinkPayloadType = {
-  referer: string;
-  link_option: number;
-};
+  referer: string
+  link_option: number
+}
 
 type SubscribePayloadType = {
-  ref_target: string;
-  referral: string;
+  ref_target: string
+  referral: string
 }
 
 type SignatureType = {
-  signature: string;
-};
+  signature: string
+}
 
 class ReferralSystem {
-  private apiUrl: string;
+  private readonly apiUrl: string;
 
   get api() {
     return this.apiUrl;

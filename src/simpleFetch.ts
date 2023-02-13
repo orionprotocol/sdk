@@ -1,4 +1,4 @@
-import { Schema, z } from 'zod';
+import { type Schema, type z } from 'zod';
 import fetchWithValidation from './fetchWithValidation';
 
 // https://stackoverflow.com/a/64919133

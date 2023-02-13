@@ -1,7 +1,7 @@
 import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import OrionUnit from '..';
+import type OrionUnit from '..';
 import BalanceGuard from '../../BalanceGuard';
 import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants';
 import simpleFetch from '../../simpleFetch';
@@ -12,14 +12,14 @@ import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 const ADD_LIQUIDITY_SLIPPAGE = 0.05;
 
 export type AddLiquidityParams = {
-  poolName: string,
-  amountAsset: string,
-  amount: BigNumber.Value,
+  poolName: string
+  amountAsset: string
+  amount: BigNumber.Value
   signer: ethers.Signer
 }
 
 export type RemoveAllLiquidityParams = {
-  poolName: string,
+  poolName: string
   signer: ethers.Signer
 }
 
@@ -57,14 +57,14 @@ export default class FarmingManager {
       .connect(exchangeContractAddress, this.orionUnit.provider);
 
     const assetAAddress = assetToAddress[assetA];
-    if (!assetAAddress) throw new Error(`Asset '${assetA}' not found`);
+    if (assetAAddress === undefined) throw new Error(`Asset '${assetA}' not found`);
     const assetBAddress = assetToAddress[assetB];
-    if (!assetBAddress) throw new Error(`Asset '${assetB}' not found`);
+    if (assetBAddress === undefined) throw new Error(`Asset '${assetB}' not found`);
 
     const assetADecimals = assetToDecimals[assetA];
-    if (!assetADecimals) throw new Error(`Decimals for asset '${assetA}' not found`);
+    if (assetADecimals === undefined) throw new Error(`Decimals for asset '${assetA}' not found`);
     const assetBDecimals = assetToDecimals[assetB];
-    if (!assetBDecimals) throw new Error(`Decimals for asset '${assetB}' not found`);
+    if (assetBDecimals === undefined) throw new Error(`Decimals for asset '${assetB}' not found`);
 
     const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
     const balances = await getBalances(
@@ -145,7 +145,7 @@ export default class FarmingManager {
       sources: ['exchange', 'wallet'],
     });
 
-    const unsignedTx = await exchangeContract?.populateTransaction.withdrawToPool(
+    const unsignedTx = await exchangeContract.populateTransaction.withdrawToPool(
       assetBIsNativeCurrency ? assetBAddress : assetAAddress,
       assetBIsNativeCurrency ? assetAAddress : assetBAddress,
       assetBIsNativeCurrency
@@ -231,14 +231,14 @@ export default class FarmingManager {
     } = await simpleFetch(this.orionUnit.orionBlockchain.getInfo)();
 
     const assetAAddress = assetToAddress[assetA];
-    if (!assetAAddress) throw new Error(`Asset '${assetA}' not found`);
+    if (assetAAddress === undefined) throw new Error(`Asset '${assetA}' not found`);
     const assetBAddress = assetToAddress[assetB];
-    if (!assetBAddress) throw new Error(`Asset '${assetB}' not found`);
+    if (assetBAddress === undefined) throw new Error(`Asset '${assetB}' not found`);
 
     const assetADecimals = assetToDecimals[assetA];
-    if (!assetADecimals) throw new Error(`Decimals for asset '${assetA}' not found`);
+    if (assetADecimals === undefined) throw new Error(`Decimals for asset '${assetA}' not found`);
     const assetBDecimals = assetToDecimals[assetB];
-    if (!assetBDecimals) throw new Error(`Decimals for asset '${assetB}' not found`);
+    if (assetBDecimals === undefined) throw new Error(`Decimals for asset '${assetB}' not found`);
 
     const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];

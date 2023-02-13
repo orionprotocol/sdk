@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { arrayify, joinSignature, splitSignature } from 'ethers/lib/utils';
-import { CancelOrderRequest } from '../types';
+import { type CancelOrderRequest } from '../types';
 
 const signCancelOrderPersonal = async (
   cancelOrderRequest: CancelOrderRequest,

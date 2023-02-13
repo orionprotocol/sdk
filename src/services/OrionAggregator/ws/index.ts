@@ -10,12 +10,12 @@ import {
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 import {
-  SwapInfoBase, AssetPairUpdate, OrderbookItem, Balance,
-  Exchange, CFDBalance, SwapInfo, FuturesTradeInfo,
+  type SwapInfoBase, type AssetPairUpdate, type OrderbookItem,
+  type Balance, type Exchange, type CFDBalance, type FuturesTradeInfo, type SwapInfo,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
-import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
+import { type fullOrderSchema, type orderUpdateSchema } from './schemas/addressUpdateSchema';
 import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
 import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema';
 // import errorSchema from './schemas/errorSchema';
@@ -25,108 +25,108 @@ const UNSUBSCRIBE = 'u';
 // https://github.com/orionprotocol/orion-aggregator/tree/feature/OP-1752-symmetric-swap#swap-info-subscribe
 type SwapSubscriptionRequest = {
   // d: string, // swap request UUID, set by client side
-  i: string, // asset in
-  o: string, // asset out
+  i: string // asset in
+  o: string // asset out
   a: number // amount IN/OUT
-  es?: Exchange[] | 'cex' | 'pools', // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
-  e?: boolean; // is amount IN? Value `false` means a = amount OUT, `true` if omitted
-  is?: boolean; // instant settlement
+  es?: Exchange[] | 'cex' | 'pools' // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
+  e?: boolean // is amount IN? Value `false` means a = amount OUT, `true` if omitted
+  is?: boolean // instant settlement
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
-  callback: (balances: Partial<Record<string, number>>) => void,
+  callback: (balances: Partial<Record<string, number>>) => void
 }
 
 type PairsConfigSubscription = {
   callback: ({ kind, data }: {
-    kind: 'initial' | 'update',
-    data: Partial<Record<string, AssetPairUpdate>>,
-  }) => void,
+    kind: 'initial' | 'update'
+    data: Partial<Record<string, AssetPairUpdate>>
+  }) => void
 }
 
 type PairConfigSubscription = {
-  payload: string,
+  payload: string
   callback: ({ kind, data }: {
-    kind: 'initial' | 'update',
-    data: AssetPairUpdate,
-  }) => void,
+    kind: 'initial' | 'update'
+    data: AssetPairUpdate
+  }) => void
 }
 
 type AggregatedOrderbookSubscription = {
-  payload: string,
+  payload: string
   callback: (
     asks: OrderbookItem[],
     bids: OrderbookItem[],
     pair: string
-  ) => void,
+  ) => void
 }
 
 type SwapInfoSubscription = {
-  payload: SwapSubscriptionRequest,
-  callback: (swapInfo: SwapInfo) => void,
+  payload: SwapSubscriptionRequest
+  callback: (swapInfo: SwapInfo) => void
 }
 
 type FuturesTradeInfoSubscription = {
   payload: {
-    s: string,
-    i: string,
-    a: number,
-    p?: number,
-  },
-  callback: (futuresTradeInfo: FuturesTradeInfo) => void,
+    s: string
+    i: string
+    a: number
+    p?: number
+  }
+  callback: (futuresTradeInfo: FuturesTradeInfo) => void
 }
 
 type AddressUpdateUpdate = {
-  kind: 'update',
+  kind: 'update'
   balances: Partial<
-    Record<
-      string,
-      Balance
-    >
-  >,
+  Record<
+  string,
+  Balance
+  >
+  >
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
 type AddressUpdateInitial = {
-  kind: 'initial',
+  kind: 'initial'
   balances: Partial<
-    Record<
-      string,
-      Balance
-    >
-  >,
-  orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
+  Record<
+  string,
+  Balance
+  >
+  >
+  orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
 }
 
 type CfdAddressUpdateUpdate = {
-  kind: 'update',
-  balances?: CFDBalance[],
+  kind: 'update'
+  balances?: CFDBalance[]
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
 type CfdAddressUpdateInitial = {
-  kind: 'initial',
-  balances: CFDBalance[],
-  orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
+  kind: 'initial'
+  balances: CFDBalance[]
+  orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
 }
 
 type AddressUpdateSubscription = {
-  payload: string,
-  callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void,
+  payload: string
+  callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
 }
 
 type CfdAddressUpdateSubscription = {
-  payload: string,
-  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void,
+  payload: string
+  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void
 }
 
 type Subscription = {
-  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription,
-  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription,
-  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription,
-  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription,
-  [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
-  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
+  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription
+  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription
+  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription
+  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription
+  [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription
+  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
   [SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]: FuturesTradeInfoSubscription
 }
@@ -145,14 +145,14 @@ type BufferLike =
   | Uint8Array
   | ArrayBuffer
   | SharedArrayBuffer
-  | ReadonlyArray<unknown>
-  | ReadonlyArray<number>
-  | { valueOf(): ArrayBuffer }
-  | { valueOf(): SharedArrayBuffer }
-  | { valueOf(): Uint8Array }
-  | { valueOf(): ReadonlyArray<number> }
-  | { valueOf(): string }
-  | { [Symbol.toPrimitive](hint: string): string };
+  | readonly unknown[]
+  | readonly number[]
+  | { valueOf: () => ArrayBuffer }
+  | { valueOf: () => SharedArrayBuffer }
+  | { valueOf: () => Uint8Array }
+  | { valueOf: () => readonly number[] }
+  | { valueOf: () => string }
+  | { [Symbol.toPrimitive]: (hint: string) => string };
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 class OrionAggregatorWS {
@@ -339,8 +339,9 @@ class OrionAggregatorWS {
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
-      this.logger?.(`OrionAggregatorWS: received message: ${e.data.toString()}`);
-      const rawJson: unknown = JSON.parse(data.toString());
+      if (typeof data !== 'string') throw new Error('OrionAggregatorWS: received non-string message');
+      this.logger?.(`OrionAggregatorWS: received message: ${data}`);
+      const rawJson: unknown = JSON.parse(data);
 
       const messageSchema = z.union([
         initMessageSchema,
@@ -385,7 +386,7 @@ class OrionAggregatorWS {
             path: json.ps,
             exchanges: json.e,
             poolOptimal: json.po,
-            ...json.oi && {
+            ...(json.oi) && {
               orderInfo: {
                 pair: json.oi.p,
                 side: json.oi.s,
@@ -511,8 +512,8 @@ class OrionAggregatorWS {
         case MessageType.CFD_ADDRESS_UPDATE:
           switch (json.k) { // message kind
             case 'i': { // initial
-              const fullOrders = json.o
-                ? json.o.reduce<z.infer<typeof fullOrderSchema>[]>((prev, o) => {
+              const fullOrders = (json.o)
+                ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
                   return prev;
@@ -524,7 +525,7 @@ class OrionAggregatorWS {
               ]?.[json.id]?.callback({
                 kind: 'initial',
                 orders: fullOrders,
-                balances: json.b ?? [],
+                balances: json.b,
               });
             }
               break;
@@ -549,7 +550,7 @@ class OrionAggregatorWS {
           }
           break;
         case MessageType.ADDRESS_UPDATE: {
-          const balances = json.b
+          const balances = (json.b)
             ? Object.entries(json.b)
               .reduce<Partial<Record<string, Balance>>>((prev, [asset, assetBalances]) => {
                 if (!assetBalances) return prev;
@@ -565,7 +566,7 @@ class OrionAggregatorWS {
           switch (json.k) { // message kind
             case 'i': { // initial
               const fullOrders = json.o
-                ? json.o.reduce<z.infer<typeof fullOrderSchema>[]>((prev, o) => {
+                ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
                   return prev;

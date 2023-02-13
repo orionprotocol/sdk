@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
+import { type ethers } from 'ethers';
 
 /**
  * Converts normalized blockchain ("machine-readable") number to denormalized ("human-readable") number.
@@ -9,6 +9,6 @@ import { ethers } from 'ethers';
  */
 export default function denormalizeNumber(input: ethers.BigNumber, decimals: BigNumber.Value) {
   const decimalsBN = new BigNumber(decimals);
-  if (!decimalsBN.isInteger()) throw new Error(`Decimals '${decimals.toString()}' is not an integer`);
+  if (!decimalsBN.isInteger()) throw new Error(`Decimals '${decimalsBN.toString()}' is not an integer`);
   return new BigNumber(input.toString()).div(new BigNumber(10).pow(decimalsBN));
 }

@@ -6,12 +6,12 @@ import { tickerInfoSchema, candleSchema } from './schemas';
 import priceSchema from './schemas/priceSchema';
 
 type TickerInfo = {
-  pairName: string;
-  lastPrice: string;
-  openPrice: string;
-  highPrice: string;
-  lowPrice: string;
-  volume24h: string;
+  pairName: string
+  lastPrice: string
+  openPrice: string
+  highPrice: string
+  lowPrice: string
+  volume24h: string
 }
 
 const allTickersSchema = z.unknown().array()
@@ -57,11 +57,11 @@ export type Subscription<
   Schema = z.infer<typeof subscriptions[T]['schema']>
 > = typeof subscriptions[T] extends { payload: true }
   ? {
-  callback: (data: Schema) => void,
-  payload: string,
-} : {
-   callback: (data: Schema) => void,
-}
+    callback: (data: Schema) => void
+    payload: string
+  } : {
+    callback: (data: Schema) => void
+  }
 
 export default class PriceFeedSubscription<T extends SubscriptionType = SubscriptionType> {
   public readonly id: string;
@@ -104,16 +104,23 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     this.isClosedIntentionally = false;
 
     const { payload, url, type } = this;
-    this.ws = new WebSocket(`${url}/${type}${payload ? `/${payload.toString()}` : ''}`);
+    this.ws = new WebSocket(`${url}/${type}${payload !== undefined ? `/${payload.toString()}` : ''}`);
 
     this.ws.onmessage = (e) => {
-      if (e.data === 'pong') return;
-      const json: unknown = JSON.parse(e.data.toString());
+      const { data } = e;
+
+      // const isBufferArray = Array.isArray(data);
+      // const isArrayBuffer = data instanceof ArrayBuffer;
+      const isBuffer = Buffer.isBuffer(data);
+      if (!isBuffer) throw new Error('Not a buffer');
+      const dataString = data.toString();
+      if (dataString === 'pong') return;
+      const json: unknown = JSON.parse(dataString);
       const subscription = subscriptions[type];
       const parseResult = subscription.schema.safeParse(json);
-      if (parseResult.success === false) {
+      if (!parseResult.success) {
         const errorsMessage = parseResult.error.errors.map((error) => `[${error.path.join('.')}] ${error.message}`).join(', ');
-        throw new Error(`Can't recognize PriceFeed "${type}" subscription message "${e.data.toString()}": ${errorsMessage}`);
+        throw new Error(`Can't recognize PriceFeed "${type}" subscription message "${dataString}": ${errorsMessage}`);
       }
       this.callback(parseResult.data);
     };

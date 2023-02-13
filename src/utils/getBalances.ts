@@ -1,7 +1,7 @@
-import { Exchange } from '@orionprotocol/contracts';
-import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
-import { OrionAggregator } from '../services/OrionAggregator';
+import { type Exchange } from '@orionprotocol/contracts';
+import type BigNumber from 'bignumber.js';
+import { type ethers } from 'ethers';
+import { type OrionAggregator } from '../services/OrionAggregator';
 import getBalance from './getBalance';
 
 export default async (
@@ -14,7 +14,7 @@ export default async (
   const balances = await Promise.all(
     Object.entries(balancesRequired)
       .map(async ([asset, assetAddress]) => {
-        if (!assetAddress) throw new Error(`Asset address of ${asset} not found`);
+        if (assetAddress === undefined) throw new Error(`Asset address of ${asset} not found`);
         const balance = await getBalance(
           orionAggregator,
           asset,
@@ -31,8 +31,8 @@ export default async (
   );
 
   return balances.reduce<Partial<Record<string, {
-      exchange: BigNumber,
-      wallet: BigNumber,
+    exchange: BigNumber
+    wallet: BigNumber
   }>>>((prev, curr) => ({
     ...prev,
     [curr.asset]: curr.amount,

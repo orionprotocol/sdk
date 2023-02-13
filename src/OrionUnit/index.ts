@@ -6,7 +6,7 @@ import type { SupportedChainId, VerboseOrionUnitConfig } from '../types';
 import Exchange from './Exchange';
 import FarmingManager from './FarmingManager';
 import { chains } from '../config';
-import { networkCodes } from '../constants';
+import { type networkCodes } from '../constants';
 
 // type KnownConfig = {
 //   env: string;

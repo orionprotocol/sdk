@@ -1,4 +1,4 @@
-import { Schema, z } from 'zod';
+import { type Schema, type z } from 'zod';
 import fetch from 'isomorphic-unfetch';
 
 import {
@@ -26,7 +26,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
   // payload
 
   const fetchResult = await fromPromise(fetch(url, {
-    ...options || {},
+    ...options ?? {},
     headers: {
       'Cache-Control': 'no-store, max-age=0',
       ...(options ? options.headers : {}),

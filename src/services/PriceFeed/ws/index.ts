@@ -1,4 +1,4 @@
-import PriceFeedSubscription, { SubscriptionType, Subscription } from './PriceFeedSubscription';
+import PriceFeedSubscription, { type SubscriptionType, type Subscription } from './PriceFeedSubscription';
 
 export * as schemas from './schemas';
 export class PriceFeedWS {
@@ -11,7 +11,7 @@ export class PriceFeedWS {
     >;
   }> = {};
 
-  private url: string;
+  private readonly url: string;
 
   constructor(url: string) {
     this.url = url;
@@ -36,7 +36,7 @@ export class PriceFeedWS {
     return {
       type: sub.type,
       id: sub.id,
-      unsubscribe: () => this.unsubscribe(sub.type, sub.id),
+      unsubscribe: () => { this.unsubscribe(sub.type, sub.id); },
     };
   }
 

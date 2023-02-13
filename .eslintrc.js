@@ -6,11 +6,13 @@ module.exports = {
     node: true,
   },
   extends: [
-    'standard',
+    'standard-with-typescript',
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/strict',
+    'plugin:import/recommended',
     'plugin:import/typescript'
   ],
   parser: '@typescript-eslint/parser',
@@ -26,6 +28,39 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "@typescript-eslint/strict-boolean-expressions": [
+          "error",
+          {
+              "allowNullableObject": true,
+              "allowString": false,
+              "allowNumber": false,
+              "allowNullableBoolean": false,
+              "allowNullableString": false,
+              "allowNullableNumber": false,
+              "allowAny": false,
+              "allowNullableEnum": false
+          }
+      ],
+    "eqeqeq": "error",
+    "@typescript-eslint/consistent-type-definitions": [
+      "warn",
+      "type"
+    ],
+    "@typescript-eslint/indent": [
+        "error",
+        2,
+        {
+            "SwitchCase": 1,
+            "ignoredNodes": [
+                "TSTypeParameterInstantiation"
+            ]
+        }
+    ],
+    "@typescript-eslint/promise-function-async": 0,
+    "import/no-cycle": "error",
+    "@typescript-eslint/space-before-function-paren": 0,
+    "@typescript-eslint/comma-dangle": 0,
+    "@typescript-eslint/semi": 0,
     "comma-dangle": 0,
     "semi": 0,
     "space-before-function-paren": 0,
@@ -61,6 +96,8 @@ module.exports = {
       2,
       {
         ignoreComments: true,
+        ignoreUrls: true,
+        ignoreTemplateLiterals: true,
       }
     ],
     'import/extensions': [

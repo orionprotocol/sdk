@@ -1,10 +1,9 @@
-/* eslint-disable no-underscore-dangle */
-import { TypedDataSigner } from '@ethersproject/abstract-signer';
+import { type TypedDataSigner } from '@ethersproject/abstract-signer';
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
+import { type ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils';
 import { INTERNAL_ORION_PRECISION } from '../constants';
-import { CFDOrder, SignedCFDOrder, SupportedChainId } from '../types';
+import { type CFDOrder, type SignedCFDOrder, type SupportedChainId } from '../types';
 import normalizeNumber from '../utils/normalizeNumber';
 import getDomainData from './getDomainData';
 import signCFDOrderPersonal from './signCFDOrderPersonal';
@@ -69,7 +68,7 @@ export const signCFDOrder = async (
   // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
   const fixedSignature = joinSignature(splitSignature(signature));
 
-  if (!fixedSignature) throw new Error("Can't sign order");
+  // if (!fixedSignature) throw new Error("Can't sign order");
 
   const signedOrder: SignedCFDOrder = {
     ...order,
