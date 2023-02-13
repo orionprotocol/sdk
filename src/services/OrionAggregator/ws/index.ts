@@ -71,7 +71,7 @@ type FuturesTradeInfoSubscription = {
     S: string,
     i: string,
     a: number,
-    p: boolean,
+    p?: number,
   },
   callback: (futuresTradeInfo: FuturesTradeInfo) => void,
 }
