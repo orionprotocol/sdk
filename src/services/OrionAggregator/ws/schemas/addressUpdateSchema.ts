@@ -33,7 +33,6 @@ export const orderUpdateSchema = z.object({
   A: z.number(), // settled amount
   S: z.enum(orderStatuses), // status
   l: z.boolean().optional(), // is liquidation order
-  cl: z.boolean().optional(), // is closing
   t: z.number(), // update time
   c: subOrderSchema.array(),
 })
@@ -46,7 +45,6 @@ export const orderUpdateSchema = z.object({
     settledAmount: o.A,
     status: o.S,
     liquidated: o.l,
-    closing: o.cl,
     subOrders: o.c.map((so) => ({
       pair: so.P,
       exchange: so.e,
@@ -71,7 +69,6 @@ export const fullOrderSchema = z.object({
   F: z.string(), // fee asset
   f: z.number(), // fee
   l: z.boolean().optional(), // is liquidation order
-  cl: z.boolean().optional(), // is closing
   o: z.boolean(), // internal only
   S: z.enum(orderStatuses), // status
   T: z.number(), // creation time / unix timestamp
@@ -87,7 +84,6 @@ export const fullOrderSchema = z.object({
   feeAsset: o.F,
   fee: o.f,
   liquidated: o.l,
-  closing: o.cl,
   status: o.S,
   date: o.T,
   clientOrdId: o.O,
