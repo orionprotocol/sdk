@@ -8,7 +8,7 @@ import { type OrionBlockchain } from '../../services/OrionBlockchain';
 import simpleFetch from '../../simpleFetch';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 
-export interface GetSwapInfoParams {
+export type GetSwapInfoParams = {
   type: 'exactSpend' | 'exactReceive'
   assetIn: string
   assetOut: string
@@ -115,7 +115,7 @@ export default async function getSwapInfo({
     };
   }
 
-  if (swapInfo.orderInfo != null) {
+  if (swapInfo.orderInfo !== null) {
     const [baseAssetName] = swapInfo.orderInfo.assetPair.split('-');
     if (baseAssetName === undefined) throw new Error('Base asset name is undefined');
     const baseAssetAddress = assetToAddress[baseAssetName];

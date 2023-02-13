@@ -22,7 +22,7 @@ import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
 const UNSUBSCRIBE = 'u';
 
 // https://github.com/orionprotocol/orion-aggregator/tree/feature/OP-1752-symmetric-swap#swap-info-subscribe
-interface SwapSubscriptionRequest {
+type SwapSubscriptionRequest = {
   // d: string, // swap request UUID, set by client side
   i: string // asset in
   o: string // asset out
@@ -32,18 +32,18 @@ interface SwapSubscriptionRequest {
   is?: boolean // instant settlement
 }
 
-interface BrokerTradableAtomicSwapBalanceSubscription {
+type BrokerTradableAtomicSwapBalanceSubscription = {
   callback: (balances: Partial<Record<string, number>>) => void
 }
 
-interface PairsConfigSubscription {
+type PairsConfigSubscription = {
   callback: ({ kind, data }: {
     kind: 'initial' | 'update'
     data: Partial<Record<string, AssetPairUpdate>>
   }) => void
 }
 
-interface PairConfigSubscription {
+type PairConfigSubscription = {
   payload: string
   callback: ({ kind, data }: {
     kind: 'initial' | 'update'
@@ -51,7 +51,7 @@ interface PairConfigSubscription {
   }) => void
 }
 
-interface AggregatedOrderbookSubscription {
+type AggregatedOrderbookSubscription = {
   payload: string
   callback: (
     asks: OrderbookItem[],
@@ -60,12 +60,12 @@ interface AggregatedOrderbookSubscription {
   ) => void
 }
 
-interface SwapInfoSubscription {
+type SwapInfoSubscription = {
   payload: SwapSubscriptionRequest
   callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void
 }
 
-interface AddressUpdateUpdate {
+type AddressUpdateUpdate = {
   kind: 'update'
   balances: Partial<
   Record<
@@ -76,7 +76,7 @@ interface AddressUpdateUpdate {
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
-interface AddressUpdateInitial {
+type AddressUpdateInitial = {
   kind: 'initial'
   balances: Partial<
   Record<
@@ -87,29 +87,29 @@ interface AddressUpdateInitial {
   orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
 }
 
-interface CfdAddressUpdateUpdate {
+type CfdAddressUpdateUpdate = {
   kind: 'update'
   balances?: CFDBalance[]
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
-interface CfdAddressUpdateInitial {
+type CfdAddressUpdateInitial = {
   kind: 'initial'
   balances: CFDBalance[]
   orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
 }
 
-interface AddressUpdateSubscription {
+type AddressUpdateSubscription = {
   payload: string
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
 }
 
-interface CfdAddressUpdateSubscription {
+type CfdAddressUpdateSubscription = {
   payload: string
   callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void
 }
 
-interface Subscription {
+type Subscription = {
   [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription
   [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription
   [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription
@@ -206,10 +206,10 @@ class OrionAggregatorWS {
     type: T,
     subscription: Subscription[T],
   ) {
-    if (this.ws == null) this.init();
+    if (this.ws === undefined) this.init();
     const isExclusive = exclusiveSubscriptions.some((t) => t === type);
     const subs = this.subscriptions[type];
-    if (isExclusive && (subs != null) && Object.keys(subs).length > 0) {
+    if (isExclusive && (subs !== undefined) && Object.keys(subs).length > 0) {
       throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
     }
 
@@ -252,18 +252,18 @@ class OrionAggregatorWS {
 
     if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       const auSubscriptions = this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
-      if (auSubscriptions != null) {
+      if (auSubscriptions) {
         const targetAuSub = Object.entries(auSubscriptions).find(([, value]) => value?.payload === subscription);
-        if (targetAuSub != null) {
+        if (targetAuSub) {
           const [key] = targetAuSub;
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
       }
 
       const aufSubscriptions = this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE];
-      if (aufSubscriptions != null) {
+      if (aufSubscriptions) {
         const targetAufSub = Object.entries(aufSubscriptions).find(([, value]) => value?.payload === subscription);
-        if (targetAufSub != null) {
+        if (targetAufSub) {
           const [key] = targetAufSub;
           delete this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
@@ -275,9 +275,9 @@ class OrionAggregatorWS {
       // !!! swap info subscription is uuid that contains hyphen
     } else if (subscription.includes('-') && subscription.split('-').length === 2) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
-      if (aobSubscriptions != null) {
+      if (aobSubscriptions) {
         const targetAobSub = Object.entries(aobSubscriptions).find(([, value]) => value?.payload === subscription);
-        if (targetAobSub != null) {
+        if (targetAobSub) {
           const [key] = targetAobSub;
           delete this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]?.[key];
         }
@@ -314,10 +314,10 @@ class OrionAggregatorWS {
           .filter(isSubType)
           .forEach((subType) => {
             const subscriptions = subscriptionsToReconnect[subType];
-            if (subscriptions != null) {
+            if (subscriptions) {
               Object.keys(subscriptions).forEach((subKey) => {
                 const sub = subscriptions[subKey];
-                if (sub != null) this.subscribe(subType, sub);
+                if (sub) this.subscribe(subType, sub);
               });
             }
           });
@@ -372,7 +372,7 @@ class OrionAggregatorWS {
             path: json.ps,
             exchanges: json.e,
             poolOptimal: json.po,
-            ...(json.oi != null) && {
+            ...(json.oi) && {
               orderInfo: {
                 pair: json.oi.p,
                 side: json.oi.s,
@@ -486,7 +486,7 @@ class OrionAggregatorWS {
         case MessageType.CFD_ADDRESS_UPDATE:
           switch (json.k) { // message kind
             case 'i': { // initial
-              const fullOrders = (json.o != null)
+              const fullOrders = (json.o)
                 ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
@@ -505,7 +505,7 @@ class OrionAggregatorWS {
               break;
             case 'u': { // update
               let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
-              if (json.o != null) {
+              if (json.o) {
                 const firstOrder = json.o[0];
                 orderUpdate = firstOrder;
               }
@@ -524,22 +524,22 @@ class OrionAggregatorWS {
           }
           break;
         case MessageType.ADDRESS_UPDATE: {
-          const balances = (json.b != null)
+          const balances = (json.b)
             ? Object.entries(json.b)
               .reduce<Partial<Record<string, Balance>>>((prev, [asset, assetBalances]) => {
-              if (assetBalances == null) return prev;
-              const [tradable, reserved, contract, wallet, allowance] = assetBalances;
+                if (assetBalances === undefined) return prev;
+                const [tradable, reserved, contract, wallet, allowance] = assetBalances;
 
-              prev[asset] = {
-                tradable, reserved, contract, wallet, allowance,
-              };
+                prev[asset] = {
+                  tradable, reserved, contract, wallet, allowance,
+                };
 
-              return prev;
-            }, {})
+                return prev;
+              }, {})
             : {};
           switch (json.k) { // message kind
             case 'i': { // initial
-              const fullOrders = (json.o != null)
+              const fullOrders = (json.o !== undefined)
                 ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
@@ -558,7 +558,7 @@ class OrionAggregatorWS {
               break;
             case 'u': { // update
               let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
-              if (json.o != null) {
+              if (json.o) {
                 const firstOrder = json.o[0];
                 orderUpdate = firstOrder;
               }

@@ -11,7 +11,7 @@ import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 
-export interface SwapMarketParams {
+export type SwapMarketParams = {
   type: 'exactSpend' | 'exactReceive'
   assetIn: string
   assetOut: string
@@ -31,12 +31,12 @@ export interface SwapMarketParams {
   }
 }
 
-interface AggregatorOrder {
+type AggregatorOrder = {
   through: 'aggregator'
   id: string
 }
 
-interface PoolSwap {
+type PoolSwap = {
   through: 'orion_pool'
   txHash: string
 }
@@ -54,7 +54,7 @@ export default async function swapMarket({
   orionUnit,
   options,
 }: SwapMarketParams): Promise<Swap> {
-  if ((options?.developer) != null) options.logger?.('YOU SPECIFIED A DEVELOPER OPTIONS. BE CAREFUL!');
+  if (options?.developer) options.logger?.('YOU SPECIFIED A DEVELOPER OPTIONS. BE CAREFUL!');
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
   if (assetOut === '') throw new Error('AssetOut can not be empty');
@@ -183,7 +183,7 @@ export default async function swapMarket({
 
   if (route === 'pool') {
     let factoryAddress: string | undefined;
-    if ((factories != null) && firstSwapExchange !== undefined) {
+    if (factories && firstSwapExchange !== undefined) {
       factoryAddress = factories[firstSwapExchange];
       if (factoryAddress !== undefined) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
     }
@@ -242,7 +242,7 @@ export default async function swapMarket({
 
     let value = new BigNumber(0);
     const denormalizedAssetInExchangeBalance = balances[assetIn]?.exchange;
-    if (denormalizedAssetInExchangeBalance == null) throw new Error(`Asset '${assetIn}' exchange balance is not found`);
+    if (denormalizedAssetInExchangeBalance === undefined) throw new Error(`Asset '${assetIn}' exchange balance is not found`);
     if (assetIn === nativeCryptocurrency && amountSpendBN.gt(denormalizedAssetInExchangeBalance)) {
       value = amountSpendBN.minus(denormalizedAssetInExchangeBalance);
     }

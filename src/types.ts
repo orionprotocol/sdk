@@ -7,11 +7,11 @@ export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
 } : T;
 
-export interface AssetPairUpdate {
+export type AssetPairUpdate = {
   minQty: number
   pricePrecision: number
 }
-export interface SubOrder {
+export type SubOrder = {
   pair: string
   exchange: string
   id: number
@@ -23,7 +23,7 @@ export interface SubOrder {
   subOrdQty: number
 }
 
-export interface Balance {
+export type Balance = {
   tradable: string
   reserved: string
   contract: string
@@ -33,7 +33,7 @@ export interface Balance {
 
 export type PositionStatus = typeof positionStatuses[number];
 
-export interface CFDBalance {
+export type CFDBalance = {
   instrument: string
   balance: string
   profitLoss: string
@@ -53,7 +53,7 @@ export interface CFDBalance {
   status: PositionStatus
 }
 
-export interface Order {
+export type Order = {
   senderAddress: string // address
   matcherAddress: string // address
   baseAsset: string // address
@@ -68,7 +68,7 @@ export interface Order {
   isPersonalSign: boolean // bool
 }
 
-export interface CFDOrder {
+export type CFDOrder = {
   senderAddress: string // address
   matcherAddress: string // address
   instrumentAddress: string // address
@@ -81,30 +81,30 @@ export interface CFDOrder {
   isPersonalSign: boolean // bool
 }
 
-export interface SignedCFDOrder extends CFDOrder {
+export type SignedCFDOrder = {
   id: string // hash of Order (it's not part of order structure in smart-contract)
   signature: string // bytes
-}
+} & CFDOrder
 
-export interface SignedOrder extends Order {
+export type SignedOrder = {
   id: string // hash of Order (it's not part of order structure in smart-contract)
   signature: string // bytes
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
-}
+} & Order
 
-export interface CancelOrderRequest {
+export type CancelOrderRequest = {
   id: number | string
   senderAddress: string
   isPersonalSign: boolean
 }
 
-export interface SignedCancelOrderRequest extends CancelOrderRequest {
+export type SignedCancelOrderRequest = {
   id: number | string
   senderAddress: string
   signature: string
-}
+} & CancelOrderRequest
 
-export interface Pair {
+export type Pair = {
   name: string
   baseCurrency: string
   quoteCurrency: string
@@ -136,11 +136,11 @@ export enum SupportedChainId {
 const balanceTypes = ['exchange', 'wallet'] as const;
 
 export type Source = typeof balanceTypes[number];
-export interface Asset {
+export type Asset = {
   name: string
   address: string
 }
-export interface BalanceRequirement {
+export type BalanceRequirement = {
   readonly reason: string
   readonly asset: Asset
   readonly amount: string
@@ -148,20 +148,20 @@ export interface BalanceRequirement {
   readonly spenderAddress?: string
 }
 
-export interface AggregatedBalanceRequirement {
+export type AggregatedBalanceRequirement = {
   readonly asset: Asset
   readonly sources: Source[]
   readonly spenderAddress?: string
   items: Partial<Record<string, string>>
 }
 
-export interface ApproveFix {
+export type ApproveFix = {
   readonly type: 'byApprove'
   readonly targetAmount: BigNumber.Value
   readonly spenderAddress: string
 }
 
-export interface DepositFix {
+export type DepositFix = {
   readonly type: 'byDeposit'
   readonly amount: BigNumber.Value
   readonly asset: string
@@ -169,7 +169,7 @@ export interface DepositFix {
 
 type Fix = ApproveFix | DepositFix;
 
-export interface BalanceIssue {
+export type BalanceIssue = {
   readonly asset: Asset
   readonly message: string
   readonly sources: Source[]
@@ -178,7 +178,7 @@ export interface BalanceIssue {
 
 export type Exchange = typeof exchanges[number];
 
-export interface OrderbookItem {
+export type OrderbookItem = {
   price: string
   amount: string
   exchanges: Exchange[]
@@ -188,7 +188,7 @@ export interface OrderbookItem {
   }>
 }
 
-export interface SwapInfoAlternative {
+export type SwapInfoAlternative = {
   exchanges: Exchange[]
   path: string[]
   marketAmountOut?: number
@@ -198,7 +198,7 @@ export interface SwapInfoAlternative {
   availableAmountOut?: number
 }
 
-export interface SwapInfoBase {
+export type SwapInfoBase = {
   swapRequestId: string
   assetIn: string
   assetOut: string
@@ -243,7 +243,7 @@ export enum HistoryTransactionStatus {
   CANCELLED = 'Cancelled',
 }
 
-export interface VerboseOrionUnitConfig {
+export type VerboseOrionUnitConfig = {
   // env?: string;
   // api: string;
   chainId: SupportedChainId

@@ -1,7 +1,7 @@
 import type OrionUnit from '..';
 import deposit, { type DepositParams } from './deposit';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo';
-import swapMarket, { type Swap, type SwapMarketParams } from './swapMarket';
+import swapMarket, { type SwapMarketParams } from './swapMarket';
 import withdraw, { type WithdrawParams } from './withdraw';
 
 type PureSwapMarketParams = Omit<SwapMarketParams, 'orionUnit'>
@@ -16,7 +16,7 @@ export default class Exchange {
     this.orionUnit = orionUnit;
   }
 
-  public swapMarket(params: PureSwapMarketParams): Promise<Swap> {
+  public swapMarket(params: PureSwapMarketParams) {
     return swapMarket({
       ...params,
       orionUnit: this.orionUnit,

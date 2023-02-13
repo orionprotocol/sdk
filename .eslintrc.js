@@ -28,6 +28,24 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "@typescript-eslint/strict-boolean-expressions": [
+          "error",
+          {
+              "allowNullableObject": true,
+              "allowString": false,
+              "allowNumber": false,
+              "allowNullableBoolean": false,
+              "allowNullableString": false,
+              "allowNullableNumber": false,
+              "allowAny": false,
+              "allowNullableEnum": false
+          }
+      ],
+    "eqeqeq": "error",
+    "@typescript-eslint/consistent-type-definitions": [
+      "warn",
+      "type"
+    ],
     "@typescript-eslint/indent": [
         "error",
         2,

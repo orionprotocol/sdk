@@ -13,7 +13,7 @@ import { normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 
-export interface DepositParams {
+export type DepositParams = {
   asset: string
   amount: BigNumber.Value
   signer: ethers.Signer

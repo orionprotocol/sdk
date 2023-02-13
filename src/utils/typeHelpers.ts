@@ -1,4 +1,4 @@
-interface WithReason {
+type WithReason = {
   reason: string
 }
 
@@ -6,7 +6,7 @@ type WithCodeError = Error & {
   code: number | string
 }
 
-interface WithMessage {
+type WithMessage = {
   message: string
 }
 
@@ -14,7 +14,7 @@ type WithDataError = Error & {
   data: Record<string, unknown>
 }
 
-interface WithError {
+type WithError = {
   error: Record<string | number | symbol, unknown>
 }
 

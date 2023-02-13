@@ -7,7 +7,7 @@ import { ReferralSystem } from '../services/ReferralSystem';
 import { type DeepPartial, type SupportedChainId, type VerboseOrionUnitConfig } from '../types';
 import { isValidChainId } from '../utils';
 
-interface EnvConfig {
+type EnvConfig = {
   analyticsAPI: string
   referralAPI: string
   networks: Partial<
@@ -96,7 +96,7 @@ export default class Orion {
       .reduce<Partial<Record<SupportedChainId, OrionUnit>>>((acc, [chainId, networkConfig]) => {
         if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
         const chainConfig = chains[chainId];
-        if (chainConfig == null) throw new Error(`Invalid chainId: ${chainId}`);
+        if (chainConfig === undefined) throw new Error(`Invalid chainId: ${chainId}`);
 
         const orionUnit = new OrionUnit({
           // env: networkConfig.env,
@@ -123,7 +123,7 @@ export default class Orion {
     } else {
       unit = this.unitsArray.find((u) => u.networkCode === networkCodeOrChainId);
     }
-    if (unit == null) {
+    if (unit === undefined) {
       throw new Error(
         `Invalid network code: ${networkCodeOrChainId}. ` +
         `Available network codes: ${this.unitsArray.map((u) => u.networkCode).join(', ')}`);

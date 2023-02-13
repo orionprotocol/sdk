@@ -5,7 +5,7 @@ import priceFeedSubscriptions from './priceFeedSubscriptions';
 import { tickerInfoSchema, candleSchema } from './schemas';
 import priceSchema from './schemas/priceSchema';
 
-interface TickerInfo {
+type TickerInfo = {
   pairName: string
   lastPrice: string
   openPrice: string
@@ -121,7 +121,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     };
 
     this.ws.onclose = () => {
-      if (this.heartbeatInterval != null) clearInterval(this.heartbeatInterval);
+      if (this.heartbeatInterval !== undefined) clearInterval(this.heartbeatInterval);
       if (!this.isClosedIntentionally) this.init();
     };
 

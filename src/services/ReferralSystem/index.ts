@@ -5,17 +5,17 @@ import distinctAnalyticsSchema from './schemas/distinctAnalyticsSchema';
 import globalAnalyticsSchema from './schemas/globalAnalyticsSchema';
 import linkSchema from './schemas/linkSchema';
 
-interface CreateLinkPayloadType {
+type CreateLinkPayloadType = {
   referer: string
   link_option: number
 }
 
-interface SubscribePayloadType {
+type SubscribePayloadType = {
   ref_target: string
   referral: string
 }
 
-interface SignatureType {
+type SignatureType = {
   signature: string
 }
 

@@ -18,12 +18,12 @@ import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/
 import { makePartial } from '../../utils';
 import { type networkCodes } from '../../constants';
 
-interface IAdminAuthHeaders {
+type IAdminAuthHeaders = {
   auth: string
   [key: string]: string
 }
 
-export interface IEditPool {
+export type IEditPool = {
   tokenAIcon?: string
   tokenBIcon?: string
   symbol?: string
@@ -34,14 +34,14 @@ export interface IEditPool {
   tokensReversed?: boolean
 }
 
-interface AtomicSwapHistoryBaseQuery extends Partial<Record<string, string | number>> {
+type AtomicSwapHistoryBaseQuery = {
   limit?: number
   sender?: string
   receiver?: string
   used?: 0 | 1
   page?: number
   sourceNetworkCode?: typeof networkCodes[number]
-}
+} & Partial<Record<string, string | number>>
 
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
   type?: 'source'
@@ -55,11 +55,11 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
   state?: 'REDEEMED' | 'BEFORE-REDEEM'
 }
 
-interface CfdHistoryQuery extends Partial<Record<string, string | number>> {
+type CfdHistoryQuery = {
   instrument?: string
   page?: number
   limit?: number
-}
+} & Partial<Record<string, string | number>>
 class OrionBlockchain {
   private readonly apiUrl: string;
 
