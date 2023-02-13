@@ -16,8 +16,6 @@ const cfdBalanceSchema = z
     mu: z.string(),
     fmu: z.string(),
     awb: z.string(),
-    mli: z.string(),
-    msi: z.string(),
     l: z.string(),
     s: z.enum(positionStatuses),
   })
@@ -35,8 +33,6 @@ const cfdBalanceSchema = z
     marginUSD: obj.mu,
     freeMarginUSD: obj.fmu,
     availableWithdrawBalance: obj.awb,
-    maxAvailableLong: obj.mli,
-    maxAvailableShort: obj.msi,
     leverage: obj.l,
     status: obj.s,
   }));

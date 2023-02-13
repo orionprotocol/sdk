@@ -47,8 +47,6 @@ export type CFDBalance = {
   marginUSD: string,
   freeMarginUSD: string,
   availableWithdrawBalance: string,
-  maxAvailableLong: string,
-  maxAvailableShort: string,
   leverage: string,
   status: PositionStatus,
 }
@@ -235,6 +233,17 @@ export type SwapInfoByAmountOut = SwapInfoBase & {
 }
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
+
+export type FuturesTradeInfo = {
+  futuresTradeRequestId: string,
+  sender: string,
+  instrument: string,
+  buyPrice: number,
+  sellPrice: number,
+  buyPower: number,
+  sellPower: number,
+  minAmount: number,
+}
 
 export enum HistoryTransactionStatus {
   PENDING = 'Pending',
