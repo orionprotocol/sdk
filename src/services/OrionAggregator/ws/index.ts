@@ -68,7 +68,7 @@ type SwapInfoSubscription = {
 
 type FuturesTradeInfoSubscription = {
   payload: {
-    S: string,
+    s: string,
     i: string,
     a: number,
     p?: number,
