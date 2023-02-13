@@ -14,7 +14,7 @@ export default function normalizeNumber(
   roundingMode: BigNumber.RoundingMode,
 ) {
   const decimalsBN = new BigNumber(decimals);
-  if (!decimalsBN.isInteger()) throw new Error(`Decimals '${decimals.toString()}' is not an integer`);
+  if (!decimalsBN.isInteger()) throw new Error(`Decimals '${decimalsBN.toString()}' is not an integer`);
   const inputBN = new BigNumber(input);
   return ethers.BigNumber.from(
     inputBN

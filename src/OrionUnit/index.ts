@@ -6,7 +6,7 @@ import type { SupportedChainId, VerboseOrionUnitConfig } from '../types';
 import Exchange from './Exchange';
 import FarmingManager from './FarmingManager';
 import { chains } from '../config';
-import { networkCodes } from '../constants';
+import { type networkCodes } from '../constants';
 
 // type KnownConfig = {
 //   env: string;
@@ -42,7 +42,7 @@ export default class OrionUnit {
   constructor(config: VerboseOrionUnitConfig) {
     this.config = config;
     const chainInfo = chains[config.chainId];
-    if (!chainInfo) throw new Error('Chain info is required');
+    if (chainInfo === undefined) throw new Error('Chain info is required');
 
     // if ('env' in config)
     // this.env = config.env;

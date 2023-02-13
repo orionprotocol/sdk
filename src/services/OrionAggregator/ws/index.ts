@@ -10,112 +10,112 @@ import {
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 import {
-  SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  AssetPairUpdate, OrderbookItem, Balance, Exchange, CFDBalance,
+  type SwapInfoByAmountIn, type SwapInfoByAmountOut, type SwapInfoBase,
+  type AssetPairUpdate, type OrderbookItem, type Balance, type Exchange, type CFDBalance,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
-import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
+import { type fullOrderSchema, type orderUpdateSchema } from './schemas/addressUpdateSchema';
 import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
 
 // https://github.com/orionprotocol/orion-aggregator/tree/feature/OP-1752-symmetric-swap#swap-info-subscribe
-type SwapSubscriptionRequest = {
+interface SwapSubscriptionRequest {
   // d: string, // swap request UUID, set by client side
-  i: string, // asset in
-  o: string, // asset out
+  i: string // asset in
+  o: string // asset out
   a: number // amount IN/OUT
-  es?: Exchange[] | 'cex' | 'pools', // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
-  e?: boolean; // is amount IN? Value `false` means a = amount OUT, `true` if omitted
-  is?: boolean; // instant settlement
+  es?: Exchange[] | 'cex' | 'pools' // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
+  e?: boolean // is amount IN? Value `false` means a = amount OUT, `true` if omitted
+  is?: boolean // instant settlement
 }
 
-type BrokerTradableAtomicSwapBalanceSubscription = {
-  callback: (balances: Partial<Record<string, number>>) => void,
+interface BrokerTradableAtomicSwapBalanceSubscription {
+  callback: (balances: Partial<Record<string, number>>) => void
 }
 
-type PairsConfigSubscription = {
+interface PairsConfigSubscription {
   callback: ({ kind, data }: {
-    kind: 'initial' | 'update',
-    data: Partial<Record<string, AssetPairUpdate>>,
-  }) => void,
+    kind: 'initial' | 'update'
+    data: Partial<Record<string, AssetPairUpdate>>
+  }) => void
 }
 
-type PairConfigSubscription = {
-  payload: string,
+interface PairConfigSubscription {
+  payload: string
   callback: ({ kind, data }: {
-    kind: 'initial' | 'update',
-    data: AssetPairUpdate,
-  }) => void,
+    kind: 'initial' | 'update'
+    data: AssetPairUpdate
+  }) => void
 }
 
-type AggregatedOrderbookSubscription = {
-  payload: string,
+interface AggregatedOrderbookSubscription {
+  payload: string
   callback: (
     asks: OrderbookItem[],
     bids: OrderbookItem[],
     pair: string
-  ) => void,
+  ) => void
 }
 
-type SwapInfoSubscription = {
-  payload: SwapSubscriptionRequest,
-  callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void,
+interface SwapInfoSubscription {
+  payload: SwapSubscriptionRequest
+  callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void
 }
 
-type AddressUpdateUpdate = {
-  kind: 'update',
+interface AddressUpdateUpdate {
+  kind: 'update'
   balances: Partial<
-    Record<
-      string,
-      Balance
-    >
-  >,
+  Record<
+  string,
+  Balance
+  >
+  >
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
-type AddressUpdateInitial = {
-  kind: 'initial',
+interface AddressUpdateInitial {
+  kind: 'initial'
   balances: Partial<
-    Record<
-      string,
-      Balance
-    >
-  >,
-  orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
+  Record<
+  string,
+  Balance
+  >
+  >
+  orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
 }
 
-type CfdAddressUpdateUpdate = {
-  kind: 'update',
-  balances?: CFDBalance[],
+interface CfdAddressUpdateUpdate {
+  kind: 'update'
+  balances?: CFDBalance[]
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
 }
 
-type CfdAddressUpdateInitial = {
-  kind: 'initial',
-  balances: CFDBalance[],
-  orders?: z.infer<typeof fullOrderSchema>[] // The field is not defined if the user has no orders
+interface CfdAddressUpdateInitial {
+  kind: 'initial'
+  balances: CFDBalance[]
+  orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
 }
 
-type AddressUpdateSubscription = {
-  payload: string,
-  callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void,
+interface AddressUpdateSubscription {
+  payload: string
+  callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
 }
 
-type CfdAddressUpdateSubscription = {
-  payload: string,
-  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void,
+interface CfdAddressUpdateSubscription {
+  payload: string
+  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void
 }
 
-type Subscription = {
-  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription,
-  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription,
-  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription,
-  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription,
-  [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
-  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
+interface Subscription {
+  [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription
+  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription
+  [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription
+  [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription
+  [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription
+  [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
 }
 
@@ -133,14 +133,14 @@ type BufferLike =
   | Uint8Array
   | ArrayBuffer
   | SharedArrayBuffer
-  | ReadonlyArray<unknown>
-  | ReadonlyArray<number>
-  | { valueOf(): ArrayBuffer }
-  | { valueOf(): SharedArrayBuffer }
-  | { valueOf(): Uint8Array }
-  | { valueOf(): ReadonlyArray<number> }
-  | { valueOf(): string }
-  | { [Symbol.toPrimitive](hint: string): string };
+  | readonly unknown[]
+  | readonly number[]
+  | { valueOf: () => ArrayBuffer }
+  | { valueOf: () => SharedArrayBuffer }
+  | { valueOf: () => Uint8Array }
+  | { valueOf: () => readonly number[] }
+  | { valueOf: () => string }
+  | { [Symbol.toPrimitive]: (hint: string) => string };
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 class OrionAggregatorWS {
@@ -206,10 +206,10 @@ class OrionAggregatorWS {
     type: T,
     subscription: Subscription[T],
   ) {
-    if (!this.ws) this.init();
+    if (this.ws == null) this.init();
     const isExclusive = exclusiveSubscriptions.some((t) => t === type);
     const subs = this.subscriptions[type];
-    if (isExclusive && subs && Object.keys(subs).length > 0) {
+    if (isExclusive && (subs != null) && Object.keys(subs).length > 0) {
       throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
     }
 
@@ -252,18 +252,18 @@ class OrionAggregatorWS {
 
     if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       const auSubscriptions = this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
-      if (auSubscriptions) {
+      if (auSubscriptions != null) {
         const targetAuSub = Object.entries(auSubscriptions).find(([, value]) => value?.payload === subscription);
-        if (targetAuSub) {
+        if (targetAuSub != null) {
           const [key] = targetAuSub;
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
       }
 
       const aufSubscriptions = this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE];
-      if (aufSubscriptions) {
+      if (aufSubscriptions != null) {
         const targetAufSub = Object.entries(aufSubscriptions).find(([, value]) => value?.payload === subscription);
-        if (targetAufSub) {
+        if (targetAufSub != null) {
           const [key] = targetAufSub;
           delete this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
@@ -275,9 +275,9 @@ class OrionAggregatorWS {
       // !!! swap info subscription is uuid that contains hyphen
     } else if (subscription.includes('-') && subscription.split('-').length === 2) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
-      if (aobSubscriptions) {
+      if (aobSubscriptions != null) {
         const targetAobSub = Object.entries(aobSubscriptions).find(([, value]) => value?.payload === subscription);
-        if (targetAobSub) {
+        if (targetAobSub != null) {
           const [key] = targetAobSub;
           delete this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]?.[key];
         }
@@ -314,10 +314,10 @@ class OrionAggregatorWS {
           .filter(isSubType)
           .forEach((subType) => {
             const subscriptions = subscriptionsToReconnect[subType];
-            if (subscriptions) {
+            if (subscriptions != null) {
               Object.keys(subscriptions).forEach((subKey) => {
                 const sub = subscriptions[subKey];
-                if (sub) this.subscribe(subType, sub);
+                if (sub != null) this.subscribe(subType, sub);
               });
             }
           });
@@ -326,8 +326,9 @@ class OrionAggregatorWS {
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
-      this.logger?.(`OrionAggregatorWS: received message: ${e.data.toString()}`);
-      const rawJson: unknown = JSON.parse(data.toString());
+      if (typeof data !== 'string') return;
+      this.logger?.(`OrionAggregatorWS: received message: ${data}`);
+      const rawJson: unknown = JSON.parse(data);
 
       const messageSchema = z.union([
         initMessageSchema,
@@ -371,7 +372,7 @@ class OrionAggregatorWS {
             path: json.ps,
             exchanges: json.e,
             poolOptimal: json.po,
-            ...json.oi && {
+            ...(json.oi != null) && {
               orderInfo: {
                 pair: json.oi.p,
                 side: json.oi.s,
@@ -485,8 +486,8 @@ class OrionAggregatorWS {
         case MessageType.CFD_ADDRESS_UPDATE:
           switch (json.k) { // message kind
             case 'i': { // initial
-              const fullOrders = json.o
-                ? json.o.reduce<z.infer<typeof fullOrderSchema>[]>((prev, o) => {
+              const fullOrders = (json.o != null)
+                ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
                   return prev;
@@ -498,13 +499,13 @@ class OrionAggregatorWS {
               ]?.[json.id]?.callback({
                 kind: 'initial',
                 orders: fullOrders,
-                balances: json.b ?? [],
+                balances: json.b,
               });
             }
               break;
             case 'u': { // update
               let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
-              if (json.o) {
+              if (json.o != null) {
                 const firstOrder = json.o[0];
                 orderUpdate = firstOrder;
               }
@@ -523,23 +524,23 @@ class OrionAggregatorWS {
           }
           break;
         case MessageType.ADDRESS_UPDATE: {
-          const balances = json.b
+          const balances = (json.b != null)
             ? Object.entries(json.b)
               .reduce<Partial<Record<string, Balance>>>((prev, [asset, assetBalances]) => {
-                if (!assetBalances) return prev;
-                const [tradable, reserved, contract, wallet, allowance] = assetBalances;
+              if (assetBalances == null) return prev;
+              const [tradable, reserved, contract, wallet, allowance] = assetBalances;
 
-                prev[asset] = {
-                  tradable, reserved, contract, wallet, allowance,
-                };
+              prev[asset] = {
+                tradable, reserved, contract, wallet, allowance,
+              };
 
-                return prev;
-              }, {})
+              return prev;
+            }, {})
             : {};
           switch (json.k) { // message kind
             case 'i': { // initial
-              const fullOrders = json.o
-                ? json.o.reduce<z.infer<typeof fullOrderSchema>[]>((prev, o) => {
+              const fullOrders = (json.o != null)
+                ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
                   return prev;
@@ -557,7 +558,7 @@ class OrionAggregatorWS {
               break;
             case 'u': { // update
               let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
-              if (json.o) {
+              if (json.o != null) {
                 const firstOrder = json.o[0];
                 orderUpdate = firstOrder;
               }

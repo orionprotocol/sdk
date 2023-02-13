@@ -1,10 +1,10 @@
-import { ERC20__factory, Exchange } from '@orionprotocol/contracts';
+import { ERC20__factory, type Exchange } from '@orionprotocol/contracts';
 
-import BigNumber from 'bignumber.js';
+import type BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { utils } from '..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../constants';
-import { OrionAggregator } from '../services/OrionAggregator';
+import { type OrionAggregator } from '../services/OrionAggregator';
 
 export default async function getBalance(
   orionAggregator: OrionAggregator,

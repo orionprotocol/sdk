@@ -6,11 +6,13 @@ module.exports = {
     node: true,
   },
   extends: [
-    'standard',
+    'standard-with-typescript',
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/strict',
+    'plugin:import/recommended',
     'plugin:import/typescript'
   ],
   parser: '@typescript-eslint/parser',
@@ -26,6 +28,21 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    "@typescript-eslint/indent": [
+        "error",
+        2,
+        {
+            "SwitchCase": 1,
+            "ignoredNodes": [
+                "TSTypeParameterInstantiation"
+            ]
+        }
+    ],
+    "@typescript-eslint/promise-function-async": 0,
+    "import/no-cycle": "error",
+    "@typescript-eslint/space-before-function-paren": 0,
+    "@typescript-eslint/comma-dangle": 0,
+    "@typescript-eslint/semi": 0,
     "comma-dangle": 0,
     "semi": 0,
     "space-before-function-paren": 0,

@@ -1,21 +1,21 @@
-type WithReason = {
-  reason: string;
+interface WithReason {
+  reason: string
 }
 
 type WithCodeError = Error & {
-  code: number | string;
+  code: number | string
 }
 
-type WithMessage = {
-  message: string;
+interface WithMessage {
+  message: string
 }
 
 type WithDataError = Error & {
-  data: Record<string, unknown>;
+  data: Record<string, unknown>
 }
 
-type WithError ={
-  error: Record<string | number | symbol, unknown>;
+interface WithError {
+  error: Record<string | number | symbol, unknown>
 }
 
 export const makePartial = <Key extends string | number | symbol, Value>(value: Record<Key, Value>): Partial<Record<Key, Value>> => value;

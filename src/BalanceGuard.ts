@@ -12,13 +12,13 @@ import arrayEquals from './utils/arrayEquals';
 
 export default class BalanceGuard {
   private readonly balances: Partial<
-    Record<
-      string,
-      Record<
-        'exchange' | 'wallet',
-        BigNumber>
-    >
-    >;
+  Record<
+  string,
+  Record<
+  'exchange' | 'wallet',
+  BigNumber>
+  >
+  >;
 
   public readonly requirements: BalanceRequirement[] = [];
 
@@ -51,7 +51,7 @@ export default class BalanceGuard {
   // Used for case feeAsset === assetOut
   setExtraBalance(assetName: string, amount: BigNumber.Value, source: Source) {
     const assetBalance = this.balances[assetName];
-    if (!assetBalance) throw Error(`Can't set extra balance. Asset ${assetName} not found`);
+    if (assetBalance == null) throw Error(`Can't set extra balance. Asset ${assetName} not found`);
     assetBalance[source] = assetBalance[source].plus(amount);
   }
 
@@ -87,7 +87,7 @@ export default class BalanceGuard {
             item.spenderAddress === curr.spenderAddress,
         );
 
-        if (aggregatedBalanceRequirement) {
+        if (aggregatedBalanceRequirement != null) {
           aggregatedBalanceRequirement.items = {
             ...aggregatedBalanceRequirement.items,
             [curr.reason]: curr.amount,
@@ -109,7 +109,7 @@ export default class BalanceGuard {
       }, []);
   }
 
-  private fixAllAutofixableBalanceIssues = async (
+  private readonly fixAllAutofixableBalanceIssues = async (
     balanceIssues: BalanceIssue[],
   ) => {
     const fixBalanceIssue = async (issue: BalanceIssue) => {
@@ -146,8 +146,8 @@ export default class BalanceGuard {
       };
       await issue.fixes?.reduce(async (promise, item) => {
         await promise;
-        if (item.type === 'byApprove') return approve(item);
-        return promise;
+        if (item.type === 'byApprove') { await approve(item); return; }
+        await promise;
       }, Promise.resolve());
     };
 
@@ -155,7 +155,7 @@ export default class BalanceGuard {
 
     await autofixableBalanceIssues.reduce(async (promise, item) => {
       await promise;
-      return fixBalanceIssue(item);
+      await fixBalanceIssue(item);
     }, Promise.resolve());
 
     return balanceIssues.filter((item) => !autofixableBalanceIssues.includes(item));
@@ -194,20 +194,20 @@ export default class BalanceGuard {
 
     exchangeOnlyAggregatedRequirements.forEach(({ asset, items }) => {
       const remainingBalance = remainingBalances[asset.name];
-      if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
+      if (remainingBalance == null) throw new Error(`No ${asset.name} balance`);
       const itemsAmountSum = Object.values(items)
-        .reduce<BigNumber>((p, c) => (c ? p.plus(c) : p), new BigNumber(0));
+        .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
       remainingBalance.exchange = remainingBalance.exchange.minus(itemsAmountSum);
       if (remainingBalance.exchange.lt(0)) {
         const lackAmount = remainingBalance.exchange.abs();
-        const exchangeBalance = this.balances?.[asset.name]?.exchange;
+        const exchangeBalance = this.balances[asset.name]?.exchange;
 
         balanceIssues.push({
           asset,
           sources: ['exchange'],
           message: `Not enough ${asset.name} on exchange balance. ` +
-            `Needed: ${itemsAmountSum.toString()}, available: ${(exchangeBalance ?? '[UNDEFINED]')?.toString()}. ` +
+            `Needed: ${itemsAmountSum.toString()}, available: ${(exchangeBalance ?? '[UNDEFINED]').toString()}. ` +
             `You need to deposit at least ${lackAmount.toString()} ${asset.name} into exchange contract`,
         });
       }
@@ -221,9 +221,9 @@ export default class BalanceGuard {
     await Promise.all(exchangePlusWalletAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
         const remainingBalance = remainingBalances[asset.name];
-        if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
+        if (remainingBalance == null) throw new Error(`No ${asset.name} balance`);
         const itemsAmountSum = Object.values(items)
-          .reduce<BigNumber>((p, c) => (c ? p.plus(c) : p), new BigNumber(0));
+          .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
         remainingBalance.exchange = remainingBalance.exchange.minus(itemsAmountSum);
         if (remainingBalance.exchange.lt(0)) {
@@ -233,7 +233,7 @@ export default class BalanceGuard {
           if (asset.address === ethers.constants.AddressZero) {
             denormalizedAllowance = remainingBalance.wallet;
           } else {
-            if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
+            if (spenderAddress === undefined) throw new Error(`Spender address is required for ${asset.name}`);
             const tokenContract = ERC20__factory.connect(asset.address, this.provider);
             const tokenDecimals = await tokenContract.decimals();
             const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
@@ -257,17 +257,17 @@ export default class BalanceGuard {
             const approveIsHelpful = approveAvailable.gte(lackAmount);
             const targetApprove = approvedWalletBalance.plus(lackAmount);
 
-            const exchangeBalance = this.balances?.[asset.name]?.exchange;
+            const exchangeBalance = this.balances[asset.name]?.exchange;
             const available = exchangeBalance?.plus(approvedWalletBalance);
 
             const issueMessage = `Not enough ${asset.name} on exchange + wallet balance. ` +
-                `Needed: ${itemsAmountSum.toString()}, available: ${(available ?? '[UNDEFINED]')?.toString()} ` +
-              `(exchange: ${(exchangeBalance ?? '[UNKNOWN]')?.toString()}, available (approved): ${approvedWalletBalance.toString()}).` +
+                `Needed: ${itemsAmountSum.toString()}, available: ${(available ?? '[UNDEFINED]').toString()} ` +
+              `(exchange: ${(exchangeBalance ?? '[UNKNOWN]').toString()}, available (approved): ${approvedWalletBalance.toString()}).` +
               ` ${approveIsHelpful
                 ? `You need approve at least ${lackAmount.toString()} ${asset.name}`
                 : 'Approve is not helpful'}`;
             if (approveIsHelpful) {
-              if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
+              if (spenderAddress === undefined) throw new Error(`Spender address is required for ${asset.name}`);
               const resetRequired = await this.checkResetRequired(
                 asset.address,
                 spenderAddress,
@@ -292,10 +292,10 @@ export default class BalanceGuard {
                 fixes: [
                   ...resetRequired
                     ? [{
-                        type: 'byApprove' as const,
-                        targetAmount: 0,
-                        spenderAddress,
-                      }]
+                      type: 'byApprove' as const,
+                      targetAmount: 0,
+                      spenderAddress,
+                    }]
                     : [],
                   {
                     type: 'byApprove',
@@ -322,15 +322,15 @@ export default class BalanceGuard {
     await Promise.all(walletTokensAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
         const remainingBalance = remainingBalances[asset.name];
-        if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
+        if (remainingBalance == null) throw new Error(`No ${asset.name} balance`);
         const itemsAmountSum = Object.values(items)
-          .reduce<BigNumber>((p, c) => (c ? p.plus(c) : p), new BigNumber(0));
+          .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
         let denormalizedAllowance: BigNumber;
         if (asset.address === ethers.constants.AddressZero) {
           denormalizedAllowance = remainingBalance.wallet;
         } else {
-          if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
+          if (spenderAddress === undefined) throw new Error(`Spender address is required for ${asset.name}`);
           const tokenContract = ERC20__factory.connect(asset.address, this.provider);
           const tokenDecimals = await tokenContract.decimals();
           const tokenAllowance = await tokenContract.allowance(walletAddress, spenderAddress);
@@ -358,7 +358,7 @@ export default class BalanceGuard {
               ? `You need approve at least ${lackAmount.toString()} ${asset.name}`
               : 'Approve is not helpful'}`;
           if (approveIsHelpful) {
-            if (!spenderAddress) throw new Error(`Spender address is required for ${asset.name}`);
+            if (spenderAddress === undefined) throw new Error(`Spender address is required for ${asset.name}`);
             const resetRequired = await this.checkResetRequired(
               asset.address,
               spenderAddress,
@@ -383,10 +383,10 @@ export default class BalanceGuard {
               fixes: [
                 ...resetRequired
                   ? [{
-                      type: 'byApprove' as const,
-                      targetAmount: 0,
-                      spenderAddress,
-                    }]
+                    type: 'byApprove' as const,
+                    targetAmount: 0,
+                    spenderAddress,
+                  }]
                   : [],
                 {
                   type: 'byApprove',
@@ -411,10 +411,10 @@ export default class BalanceGuard {
 
     walletNativeAggregatedRequirements.forEach(({ asset, items }) => {
       const remainingBalance = remainingBalances[asset.name];
-      if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
+      if (remainingBalance == null) throw new Error(`No ${asset.name} balance`);
 
       const itemsAmountSum = Object.values({ ...items, ...requiredApproves.items })
-        .reduce<BigNumber>((p, c) => (c ? p.plus(c) : p), new BigNumber(0));
+        .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
       remainingBalance.wallet = remainingBalance.wallet.minus(itemsAmountSum);
       if (remainingBalance.wallet.lt(0)) {
@@ -428,7 +428,7 @@ export default class BalanceGuard {
       }
     });
 
-    if (fixAutofixable) {
+    if (fixAutofixable !== undefined && fixAutofixable) {
       const unfixed = await this.fixAllAutofixableBalanceIssues(balanceIssues);
       if (unfixed.length > 0) throw new Error(`Balance issues: ${unfixed.map((issue, i) => `${i + 1}. ${issue.message}`).join('\n')}`);
     } else if (balanceIssues.length > 0) {

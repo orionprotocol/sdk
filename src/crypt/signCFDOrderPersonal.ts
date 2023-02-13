@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { CFDOrder } from '../types';
+import { type CFDOrder } from '../types';
 
 const { arrayify, joinSignature, splitSignature } = ethers.utils;
 

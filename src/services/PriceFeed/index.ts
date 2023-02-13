@@ -1,11 +1,11 @@
 import fetchWithValidation from '../../fetchWithValidation';
-import { Exchange } from '../../types';
+import { type Exchange } from '../../types';
 import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas';
 import candlesSchema from './schemas/candlesSchema';
 import { PriceFeedWS } from './ws';
 
 class PriceFeed {
-  private apiUrl: string;
+  private readonly apiUrl: string;
 
   readonly ws: PriceFeedWS;
 

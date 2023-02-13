@@ -1,119 +1,119 @@
-import BigNumber from 'bignumber.js';
-import exchanges from './constants/exchanges';
-import subOrderStatuses from './constants/subOrderStatuses';
-import positionStatuses from './constants/positionStatuses';
+import type BigNumber from 'bignumber.js';
+import type exchanges from './constants/exchanges';
+import type subOrderStatuses from './constants/subOrderStatuses';
+import type positionStatuses from './constants/positionStatuses';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
 } : T;
 
-export type AssetPairUpdate = {
-  minQty: number,
-  pricePrecision: number,
+export interface AssetPairUpdate {
+  minQty: number
+  pricePrecision: number
 }
-export type SubOrder = {
-  pair: string,
-  exchange: string,
-  id: number,
-  amount: number,
-  settledAmount: number,
-  price: number,
-  status: typeof subOrderStatuses[number],
-  side: 'BUY' | 'SELL',
+export interface SubOrder {
+  pair: string
+  exchange: string
+  id: number
+  amount: number
+  settledAmount: number
+  price: number
+  status: typeof subOrderStatuses[number]
+  side: 'BUY' | 'SELL'
   subOrdQty: number
 }
 
-export type Balance = {
-  tradable: string,
-  reserved: string,
-  contract: string,
-  wallet: string,
-  allowance: string,
+export interface Balance {
+  tradable: string
+  reserved: string
+  contract: string
+  wallet: string
+  allowance: string
 }
 
 export type PositionStatus = typeof positionStatuses[number];
 
-export type CFDBalance = {
-  instrument: string,
-  balance: string,
-  profitLoss: string,
-  fundingRate: string,
-  equity: string,
-  position: string,
-  currentPrice: string,
-  positionPrice: string,
-  reserves: string,
-  margin: string,
-  marginUSD: string,
-  freeMarginUSD: string,
-  availableWithdrawBalance: string,
-  maxAvailableLong: string,
-  maxAvailableShort: string,
-  leverage: string,
-  status: PositionStatus,
+export interface CFDBalance {
+  instrument: string
+  balance: string
+  profitLoss: string
+  fundingRate: string
+  equity: string
+  position: string
+  currentPrice: string
+  positionPrice: string
+  reserves: string
+  margin: string
+  marginUSD: string
+  freeMarginUSD: string
+  availableWithdrawBalance: string
+  maxAvailableLong: string
+  maxAvailableShort: string
+  leverage: string
+  status: PositionStatus
 }
 
 export interface Order {
-  senderAddress: string; // address
-  matcherAddress: string; // address
-  baseAsset: string; // address
-  quoteAsset: string; // address
-  matcherFeeAsset: string; // address
-  amount: number; // uint64
-  price: number; // uint64
-  matcherFee: number; // uint64
-  nonce: number; // uint64
-  expiration: number; // uint64
-  buySide: number; // uint8, 1=buy, 0=sell
-  isPersonalSign: boolean; // bool
+  senderAddress: string // address
+  matcherAddress: string // address
+  baseAsset: string // address
+  quoteAsset: string // address
+  matcherFeeAsset: string // address
+  amount: number // uint64
+  price: number // uint64
+  matcherFee: number // uint64
+  nonce: number // uint64
+  expiration: number // uint64
+  buySide: 0 | 1 // uint8, 1=buy, 0=sell
+  isPersonalSign: boolean // bool
 }
 
 export interface CFDOrder {
-  senderAddress: string; // address
-  matcherAddress: string; // address
-  instrumentAddress: string; // address
-  amount: number; // uint64
-  price: number; // uint64
-  matcherFee: number; // uint64
-  nonce: number; // uint64
-  expiration: number; // uint64
-  buySide: number; // uint8, 1=buy, 0=sell
-  isPersonalSign: boolean; // bool
+  senderAddress: string // address
+  matcherAddress: string // address
+  instrumentAddress: string // address
+  amount: number // uint64
+  price: number // uint64
+  matcherFee: number // uint64
+  nonce: number // uint64
+  expiration: number // uint64
+  buySide: 0 | 1 // uint8, 1=buy, 0=sell
+  isPersonalSign: boolean // bool
 }
 
 export interface SignedCFDOrder extends CFDOrder {
-  id: string; // hash of Order (it's not part of order structure in smart-contract)
-  signature: string; // bytes
+  id: string // hash of Order (it's not part of order structure in smart-contract)
+  signature: string // bytes
 }
 
 export interface SignedOrder extends Order {
-  id: string; // hash of Order (it's not part of order structure in smart-contract)
-  signature: string; // bytes
-  needWithdraw?: boolean; // bool (not supported yet by smart-contract)
+  id: string // hash of Order (it's not part of order structure in smart-contract)
+  signature: string // bytes
+  needWithdraw?: boolean // bool (not supported yet by smart-contract)
 }
 
 export interface CancelOrderRequest {
-  id: number | string;
-  senderAddress: string;
-  isPersonalSign: boolean;
+  id: number | string
+  senderAddress: string
+  isPersonalSign: boolean
 }
 
 export interface SignedCancelOrderRequest extends CancelOrderRequest {
-  id: number | string;
-  senderAddress: string;
-  signature: string;
+  id: number | string
+  senderAddress: string
+  signature: string
 }
 
 export interface Pair {
-  name: string;
-  baseCurrency: string;
-  quoteCurrency: string;
-  lastPrice: string;
-  openPrice: string;
-  change24h: string;
-  high: string;
-  low: string;
-  vol24h: string;
+  name: string
+  baseCurrency: string
+  quoteCurrency: string
+  lastPrice: string
+  openPrice: string
+  change24h: string
+  high: string
+  low: string
+  vol24h: string
 }
 
 export enum SupportedChainId {
@@ -136,102 +136,102 @@ export enum SupportedChainId {
 const balanceTypes = ['exchange', 'wallet'] as const;
 
 export type Source = typeof balanceTypes[number];
-export type Asset = {
-  name: string;
-  address: string;
+export interface Asset {
+  name: string
+  address: string
 }
-export type BalanceRequirement = {
-  readonly reason: string,
-  readonly asset: Asset,
-  readonly amount: string,
-  readonly sources: Source[],
-  readonly spenderAddress?: string;
-}
-
-export type AggregatedBalanceRequirement = {
-  readonly asset: Asset,
-  readonly sources: Source[],
-  readonly spenderAddress?: string;
-  items: Partial<Record<string, string>>,
+export interface BalanceRequirement {
+  readonly reason: string
+  readonly asset: Asset
+  readonly amount: string
+  readonly sources: Source[]
+  readonly spenderAddress?: string
 }
 
-export type ApproveFix = {
-  readonly type: 'byApprove',
-  readonly targetAmount: BigNumber.Value,
+export interface AggregatedBalanceRequirement {
+  readonly asset: Asset
+  readonly sources: Source[]
+  readonly spenderAddress?: string
+  items: Partial<Record<string, string>>
+}
+
+export interface ApproveFix {
+  readonly type: 'byApprove'
+  readonly targetAmount: BigNumber.Value
   readonly spenderAddress: string
 }
 
-export type DepositFix = {
-  readonly type: 'byDeposit',
-  readonly amount: BigNumber.Value,
+export interface DepositFix {
+  readonly type: 'byDeposit'
+  readonly amount: BigNumber.Value
   readonly asset: string
 }
 
 type Fix = ApproveFix | DepositFix;
 
-export type BalanceIssue = {
-  readonly asset: Asset,
-  readonly message: string;
-  readonly sources: Source[],
-  readonly fixes?: Fix[],
+export interface BalanceIssue {
+  readonly asset: Asset
+  readonly message: string
+  readonly sources: Source[]
+  readonly fixes?: Fix[]
 }
 
 export type Exchange = typeof exchanges[number];
 
-export type OrderbookItem = {
-  price: string,
-  amount: string,
-  exchanges: Exchange[],
-  vob: {
-    side: 'BUY' | 'SELL',
+export interface OrderbookItem {
+  price: string
+  amount: string
+  exchanges: Exchange[]
+  vob: Array<{
+    side: 'BUY' | 'SELL'
     pairName: string
-  }[]
+  }>
 }
 
-export type SwapInfoAlternative = {
-  exchanges: Exchange[],
-  path: string[],
-  marketAmountOut?: number,
-  marketAmountIn?: number,
-  marketPrice: number,
-  availableAmountIn?: number,
-  availableAmountOut?: number,
+export interface SwapInfoAlternative {
+  exchanges: Exchange[]
+  path: string[]
+  marketAmountOut?: number
+  marketAmountIn?: number
+  marketPrice: number
+  availableAmountIn?: number
+  availableAmountOut?: number
 }
 
-export type SwapInfoBase = {
-  swapRequestId: string,
-  assetIn: string,
-  assetOut: string,
-  amountIn: number,
-  amountOut: number,
-  minAmountIn: number,
-  minAmountOut: number,
+export interface SwapInfoBase {
+  swapRequestId: string
+  assetIn: string
+  assetOut: string
+  amountIn: number
+  amountOut: number
+  minAmountIn: number
+  minAmountOut: number
 
-  path: string[],
-  exchanges?: Exchange[],
-  poolOptimal: boolean,
+  path: string[]
+  exchanges?: Exchange[]
+  poolOptimal: boolean
 
-  price?: number,
-  marketPrice?: number,
+  price?: number
+  marketPrice?: number
   orderInfo?: {
-    pair: string,
-    side: 'BUY' | 'SELL',
-    amount: number,
-    safePrice: number,
-  },
-  alternatives: SwapInfoAlternative[],
+    pair: string
+    side: 'BUY' | 'SELL'
+    amount: number
+    safePrice: number
+  }
+  alternatives: SwapInfoAlternative[]
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
-  kind: 'exactSpend',
-  availableAmountIn?: number,
-  marketAmountOut?: number,
+  kind: 'exactSpend'
+  availableAmountIn?: number
+  marketAmountOut?: number
 }
 
 export type SwapInfoByAmountOut = SwapInfoBase & {
-  kind: 'exactReceive',
-  marketAmountIn?: number,
-  availableAmountOut?: number,
+  kind: 'exactReceive'
+  marketAmountIn?: number
+  availableAmountOut?: number
 }
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
@@ -243,33 +243,33 @@ export enum HistoryTransactionStatus {
   CANCELLED = 'Cancelled',
 }
 
-export type VerboseOrionUnitConfig = {
+export interface VerboseOrionUnitConfig {
   // env?: string;
   // api: string;
-  chainId: SupportedChainId;
-  nodeJsonRpc: string;
+  chainId: SupportedChainId
+  nodeJsonRpc: string
   services: {
     orionBlockchain: {
-      http: string;
+      http: string
       // For example:
       // http://localhost:3001/,
       // http://10.123.34.23:3001/,
       // https://blockchain.orionprotocol.io/
-    },
+    }
     orionAggregator: {
-      http: string;
-      ws: string;
+      http: string
+      ws: string
       // For example:
       // http://localhost:3002/,
       // http://10.34.23.5:3002/,
       // shttps://aggregator.orionprotocol.io/
-    },
+    }
     priceFeed: {
-      api: string;
+      api: string
       // For example:
       // http://localhost:3003/,
       // http://10.23.5.11:3003/,
       // https://price-feed.orionprotocol.io/
-    },
+    }
   }
-};
+}

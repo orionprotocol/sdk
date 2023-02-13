@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { Source } from '../types';
+import { type Source } from '../types';
 
 export default function getAvailableFundsSources(
   expenseType: 'amount' | 'network_fee' | 'orion_fee',

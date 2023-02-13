@@ -5,22 +5,22 @@ import distinctAnalyticsSchema from './schemas/distinctAnalyticsSchema';
 import globalAnalyticsSchema from './schemas/globalAnalyticsSchema';
 import linkSchema from './schemas/linkSchema';
 
-type CreateLinkPayloadType = {
-  referer: string;
-  link_option: number;
-};
-
-type SubscribePayloadType = {
-  ref_target: string;
-  referral: string;
+interface CreateLinkPayloadType {
+  referer: string
+  link_option: number
 }
 
-type SignatureType = {
-  signature: string;
-};
+interface SubscribePayloadType {
+  ref_target: string
+  referral: string
+}
+
+interface SignatureType {
+  signature: string
+}
 
 class ReferralSystem {
-  private apiUrl: string;
+  private readonly apiUrl: string;
 
   get api() {
     return this.apiUrl;

@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
-import OrionUnit from '..';
+import type OrionUnit from '..';
 import { utils } from '../..';
 import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION,
@@ -13,11 +13,11 @@ import { normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 
-export type DepositParams = {
-  asset: string,
-  amount: BigNumber.Value,
-  signer: ethers.Signer,
-  orionUnit: OrionUnit,
+export interface DepositParams {
+  asset: string
+  amount: BigNumber.Value
+  signer: ethers.Signer
+  orionUnit: OrionUnit
 }
 
 export default async function deposit({
@@ -29,8 +29,8 @@ export default async function deposit({
   if (asset === '') throw new Error('Asset can not be empty');
 
   const amountBN = new BigNumber(amount);
-  if (amountBN.isNaN()) throw new Error(`Amount '${amount.toString()}' is not a number`);
-  if (amountBN.lte(0)) throw new Error(`Amount '${amount.toString()}' should be greater than 0`);
+  if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
+  if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
   const walletAddress = await signer.getAddress();
 
@@ -48,7 +48,7 @@ export default async function deposit({
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
 
   const assetAddress = assetToAddress[asset];
-  if (!assetAddress) throw new Error(`Asset '${asset}' not found`);
+  if (assetAddress === undefined) throw new Error(`Asset '${asset}' not found`);
 
   const balances = await getBalances(
     {
@@ -121,7 +121,7 @@ export default async function deposit({
   const txResponse = await provider.sendTransaction(signedTx);
   console.log(`Deposit tx sent: ${txResponse.hash}. Waiting for confirmation...`);
   const txReceipt = await txResponse.wait();
-  if (txReceipt.status) {
+  if (txReceipt.status !== undefined) {
     console.log('Deposit tx confirmed');
   } else {
     console.log('Deposit tx failed');

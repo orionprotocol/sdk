@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { CFDOrder } from '../types';
+import { type CFDOrder } from '../types';
 
 const hashCFDOrder = (order: CFDOrder) => ethers.utils.solidityKeccak256(
   [
@@ -24,7 +24,7 @@ const hashCFDOrder = (order: CFDOrder) => ethers.utils.solidityKeccak256(
     order.matcherFee,
     order.nonce,
     order.expiration,
-    order.buySide ? '0x01' : '0x00',
+    order.buySide === 1 ? '0x01' : '0x00',
   ],
 );
 

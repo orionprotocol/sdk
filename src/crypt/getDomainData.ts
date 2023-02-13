@@ -1,4 +1,4 @@
-import { SupportedChainId } from '../types';
+import { type SupportedChainId } from '../types';
 import eip712DomainData from '../config/eip712DomainData.json';
 import eip712DomainSchema from '../config/schemas/eip712DomainSchema';
 

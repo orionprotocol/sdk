@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
-import OrionUnit from '..';
+import type OrionUnit from '..';
 import { utils } from '../..';
 import {
   INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, WITHDRAW_GAS_LIMIT,
@@ -13,11 +13,11 @@ import { normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 
-export type WithdrawParams = {
-  asset: string,
-  amount: BigNumber.Value,
-  signer: ethers.Signer,
-  orionUnit: OrionUnit,
+export interface WithdrawParams {
+  asset: string
+  amount: BigNumber.Value
+  signer: ethers.Signer
+  orionUnit: OrionUnit
 }
 
 export default async function withdraw({
@@ -29,8 +29,8 @@ export default async function withdraw({
   if (asset === '') throw new Error('Asset can not be empty');
 
   const amountBN = new BigNumber(amount);
-  if (amountBN.isNaN()) throw new Error(`Amount '${amount.toString()}' is not a number`);
-  if (amountBN.lte(0)) throw new Error(`Amount '${amount.toString()}' should be greater than 0`);
+  if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
+  if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
   const walletAddress = await signer.getAddress();
 
@@ -47,7 +47,7 @@ export default async function withdraw({
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
 
   const assetAddress = assetToAddress[asset];
-  if (!assetAddress) throw new Error(`Asset '${asset}' not found`);
+  if (assetAddress === undefined) throw new Error(`Asset '${asset}' not found`);
 
   const balances = await getBalances(
     {
@@ -76,7 +76,7 @@ export default async function withdraw({
       name: asset,
       address: assetAddress,
     },
-    amount: amount.toString(),
+    amount: amountBN.toString(),
     sources: ['exchange'],
   });
 
@@ -112,7 +112,7 @@ export default async function withdraw({
   const txResponse = await provider.sendTransaction(signedTx);
   console.log(`Withdraw tx sent: ${txResponse.hash}. Waiting for confirmation...`);
   const txReceipt = await txResponse.wait();
-  if (txReceipt.status) {
+  if (txReceipt.status !== undefined) {
     console.log('Withdraw tx confirmed');
   } else {
     console.log('Withdraw tx failed');

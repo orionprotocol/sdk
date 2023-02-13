@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import type BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import fetchWithValidation from '../../fetchWithValidation';
 import swapInfoSchema from './schemas/swapInfoSchema';
@@ -9,12 +9,12 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types';
+import { type Exchange, type SignedCancelOrderRequest, type SignedCFDOrder, type SignedOrder } from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
 } from './schemas/aggregatedOrderbookSchema';
-import networkCodes from '../../constants/networkCodes';
+import type networkCodes from '../../constants/networkCodes';
 import toUpperCase from '../../utils/toUpperCase';
 import httpToWS from '../../utils/httpToWS';
 
@@ -146,7 +146,7 @@ class OrionAggregator {
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      ...partnerId && { 'X-Partner-Id': partnerId },
+      ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
     };
 
     return fetchWithValidation(
@@ -232,7 +232,7 @@ class OrionAggregator {
     } else {
       url.searchParams.append('amountOut', amount);
     }
-    if (exchanges) {
+    if (exchanges !== undefined) {
       if (Array.isArray(exchanges)) {
         exchanges.forEach((exchange) => {
           url.searchParams.append('exchanges', exchange);
@@ -241,7 +241,7 @@ class OrionAggregator {
         url.searchParams.append('exchanges', exchanges);
       }
     }
-    if (instantSettlement) {
+    if (instantSettlement !== undefined && instantSettlement) {
       url.searchParams.append('instantSettlement', 'true');
     }
 

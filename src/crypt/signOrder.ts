@@ -1,11 +1,11 @@
 /* eslint-disable no-underscore-dangle */
-import { TypedDataSigner } from '@ethersproject/abstract-signer';
+import { type TypedDataSigner } from '@ethersproject/abstract-signer';
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
+import { type ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils';
 import { INTERNAL_ORION_PRECISION } from '../constants';
 import ORDER_TYPES from '../constants/orderTypes';
-import { Order, SignedOrder, SupportedChainId } from '../types';
+import { type Order, type SignedOrder, type SupportedChainId } from '../types';
 import normalizeNumber from '../utils/normalizeNumber';
 import getDomainData from './getDomainData';
 import hashOrder from './hashOrder';

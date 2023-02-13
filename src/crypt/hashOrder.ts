@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { Order } from '../types';
+import { type Order } from '../types';
 
 const hashOrder = (order: Order) => ethers.utils.solidityKeccak256(
   [
@@ -28,7 +28,7 @@ const hashOrder = (order: Order) => ethers.utils.solidityKeccak256(
     order.matcherFee,
     order.nonce,
     order.expiration,
-    order.buySide ? '0x01' : '0x00',
+    order.buySide === 1 ? '0x01' : '0x00',
   ],
 );
 

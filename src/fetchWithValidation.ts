@@ -1,4 +1,4 @@
-import { Schema, z } from 'zod';
+import { type Schema, type z } from 'zod';
 import fetch from 'isomorphic-unfetch';
 
 import {
@@ -26,10 +26,10 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
   // payload
 
   const fetchResult = await fromPromise(fetch(url, {
-    ...options || {},
+    ...options ?? {},
     headers: {
       'Cache-Control': 'no-store, max-age=0',
-      ...(options ? options.headers : {}),
+      ...(options !== undefined ? options.headers : {}),
     },
   }), (e) => {
     if (e instanceof Error) {
@@ -111,7 +111,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
   const json: unknown = jsonResult.value;
 
   if (response.status >= 400) { // Client error
-    if (errorSchema) {
+    if (errorSchema !== undefined) {
       const serverError = errorSchema.safeParse(json);
       if (serverError.success) {
         return err({

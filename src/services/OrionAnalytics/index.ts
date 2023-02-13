@@ -2,7 +2,7 @@ import fetchWithValidation from '../../fetchWithValidation';
 import overviewSchema from './schemas/overviewSchema';
 
 export default class OrionAnalytics {
-  private apiUrl: string;
+  private readonly apiUrl: string;
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;

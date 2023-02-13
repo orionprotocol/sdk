@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
-import { TypedDataSigner } from '@ethersproject/abstract-signer';
-import { ethers } from 'ethers';
+import { type TypedDataSigner } from '@ethersproject/abstract-signer';
+import { type ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils';
 import CANCEL_ORDER_TYPES from '../constants/cancelOrderTypes';
-import { CancelOrderRequest, SignedCancelOrderRequest, SupportedChainId } from '../types';
+import { type CancelOrderRequest, type SignedCancelOrderRequest, type SupportedChainId } from '../types';
 import getDomainData from './getDomainData';
 import signCancelOrderPersonal from './signCancelOrderPersonal';
 
