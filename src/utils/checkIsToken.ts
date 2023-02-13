@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { ERC20__factory } from '@orionprotocol/contracts';
 import { ethers } from 'ethers';
 import invariant from 'tiny-invariant';

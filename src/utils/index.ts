@@ -12,6 +12,7 @@ export { default as parseExchangeTradeTransaction } from './parseExchangeTradeTr
 export { default as toUpperCase } from './toUpperCase';
 export { default as toLowerCase } from './toLowerCase';
 export { default as isUppercasedNetworkCode } from './isUppercasedNetworkCode';
+export { default as getNativeCryptocurrency } from './getNativeCryptocurrency';
 
 // export { default as HttpError } from './httpError';
 

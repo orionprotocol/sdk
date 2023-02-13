@@ -1,12 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { utils } from '../..';
 import { NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import { type OrionAggregator } from '../../services/OrionAggregator';
 import { type OrionBlockchain } from '../../services/OrionBlockchain';
 
 import simpleFetch from '../../simpleFetch';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
+import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrency } from '../../utils';
 
 export type GetSwapInfoParams = {
   type: 'exactSpend' | 'exactReceive'
@@ -101,7 +100,7 @@ export default async function getSwapInfo({
 
   if (route === 'pool') {
     const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
     return {
       route,
@@ -134,7 +133,7 @@ export default async function getSwapInfo({
     const {
       orionFeeInFeeAsset,
       networkFeeInFeeAsset,
-    } = utils.calculateFeeInFeeAsset(
+    } = calculateFeeInFeeAsset(
       swapInfo.orderInfo.amount,
       feeAssetPriceInOrn,
       baseAssetPriceInOrn,

@@ -1,15 +1,13 @@
-/* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import type OrionUnit from '..';
-import { utils } from '../..';
 import {
   INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, WITHDRAW_GAS_LIMIT,
 } from '../../constants';
-import { normalizeNumber } from '../../utils';
+import { denormalizeNumber, normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 
@@ -87,7 +85,7 @@ export default async function withdraw({
   unsignedTx.gasLimit = ethers.BigNumber.from(WITHDRAW_GAS_LIMIT);
 
   const transactionCost = ethers.BigNumber.from(unsignedTx.gasLimit).mul(gasPriceWei);
-  const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+  const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
   balanceGuard.registerRequirement({
     reason: 'Network fee',

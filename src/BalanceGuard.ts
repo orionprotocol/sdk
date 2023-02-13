@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import clone from 'just-clone';
 import { ERC20__factory } from '@orionprotocol/contracts';
-import { utils } from '.';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
 import type {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
@@ -276,8 +275,10 @@ export default class BalanceGuard {
               const approveTransactionCost = ethers.BigNumber
                 .from(APPROVE_ERC20_GAS_LIMIT)
                 .mul(gasPriceWei);
-              const denormalizedApproveTransactionCost = utils
-                .denormalizeNumber(approveTransactionCost, NATIVE_CURRENCY_PRECISION);
+              const denormalizedApproveTransactionCost = denormalizeNumber(
+                approveTransactionCost,
+                NATIVE_CURRENCY_PRECISION
+              );
 
               requiredApproves.items = {
                 ...requiredApproves.items,
@@ -367,8 +368,10 @@ export default class BalanceGuard {
             const approveTransactionCost = ethers.BigNumber
               .from(APPROVE_ERC20_GAS_LIMIT)
               .mul(gasPriceWei);
-            const denormalizedApproveTransactionCost = utils
-              .denormalizeNumber(approveTransactionCost, NATIVE_CURRENCY_PRECISION);
+            const denormalizedApproveTransactionCost = denormalizeNumber(
+              approveTransactionCost,
+              NATIVE_CURRENCY_PRECISION
+            );
 
             requiredApproves.items = {
               ...requiredApproves.items,

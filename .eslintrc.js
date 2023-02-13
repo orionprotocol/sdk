@@ -96,6 +96,8 @@ module.exports = {
       2,
       {
         ignoreComments: true,
+        ignoreUrls: true,
+        ignoreTemplateLiterals: true,
       }
     ],
     'import/extensions': [

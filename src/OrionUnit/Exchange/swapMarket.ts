@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
@@ -6,10 +5,11 @@ import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import getAvailableSources from '../../utils/getAvailableFundsSources';
 import type OrionUnit from '..';
-import { crypt, utils } from '../..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
+import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils';
+import { signOrder } from '../../crypt';
 
 export type SwapMarketParams = {
   type: 'exactSpend' | 'exactReceive'
@@ -62,11 +62,11 @@ export default async function swapMarket({
   if (slippagePercent === '') throw new Error('Slippage percent can not be empty');
 
   const amountBN = new BigNumber(amount);
-  if (amountBN.isNaN()) throw new Error(`Amount '${amount.toString()}' is not a number`);
-  if (amountBN.lte(0)) throw new Error(`Amount '${amount.toString()}' should be greater than 0`);
+  if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
+  if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
   const slippagePercentBN = new BigNumber(slippagePercent);
-  if (slippagePercentBN.isNaN()) throw new Error(`Slippage percent '${slippagePercent.toString()}' is not a number`);
+  if (slippagePercentBN.isNaN()) throw new Error(`Slippage percent '${slippagePercentBN.toString()}' is not a number`);
   if (slippagePercentBN.lte(0)) throw new Error('Slippage percent should be greater than 0');
   if (slippagePercentBN.gte(50)) throw new Error('Slippage percent should be less than 50');
 
@@ -95,7 +95,9 @@ export default async function swapMarket({
   const assetInAddress = assetToAddress[assetIn];
   if (assetInAddress === undefined) throw new Error(`Asset '${assetIn}' not found`);
   const feeAssetAddress = assetToAddress[feeAsset];
-  if (feeAssetAddress === undefined) throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
+  if (feeAssetAddress === undefined) {
+    throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
+  }
 
   const balances = await getBalances(
     {
@@ -157,7 +159,11 @@ export default async function swapMarket({
 
   if (qtyDecimalPlaces === null) throw new Error('Qty decimal places is null. Likely amount is -Infinity, +Infinity or NaN');
 
-  if (qtyPrecisionBN.lt(qtyDecimalPlaces)) throw new Error(`Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`);
+  if (qtyPrecisionBN.lt(qtyDecimalPlaces)) {
+    throw new Error(
+      `Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`
+    );
+  }
 
   let route: 'aggregator' | 'pool';
 
@@ -215,12 +221,12 @@ export default async function swapMarket({
     });
 
     const amountReceive = swapInfo.type === 'exactReceive' ? swapInfo.amountOut : amountOutWithSlippage;
-    const amountSpendBlockchainParam = utils.normalizeNumber(
+    const amountSpendBlockchainParam = normalizeNumber(
       amountSpend,
       INTERNAL_ORION_PRECISION,
       BigNumber.ROUND_CEIL,
     );
-    const amountReceiveBlockchainParam = utils.normalizeNumber(
+    const amountReceiveBlockchainParam = normalizeNumber(
       amountReceive,
       INTERNAL_ORION_PRECISION,
       BigNumber.ROUND_FLOOR,
@@ -246,7 +252,7 @@ export default async function swapMarket({
     if (assetIn === nativeCryptocurrency && amountSpendBN.gt(denormalizedAssetInExchangeBalance)) {
       value = amountSpendBN.minus(denormalizedAssetInExchangeBalance);
     }
-    unsignedSwapThroughOrionPoolTx.value = utils.normalizeNumber(
+    unsignedSwapThroughOrionPoolTx.value = normalizeNumber(
       value.dp(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL),
       NATIVE_CURRENCY_PRECISION,
       BigNumber.ROUND_CEIL,
@@ -254,7 +260,7 @@ export default async function swapMarket({
     unsignedSwapThroughOrionPoolTx.gasLimit = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
 
     const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
     balanceGuard.registerRequirement({
       reason: 'Network fee',
@@ -341,7 +347,7 @@ export default async function swapMarket({
   const feePercent = feeAssets[feeAsset];
   if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
-  const { orionFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = utils.calculateFeeInFeeAsset(
+  const { orionFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = calculateFeeInFeeAsset(
     swapInfo.orderInfo.amount,
     feeAssetPriceInOrn,
     baseAssetPriceInOrn,
@@ -381,7 +387,7 @@ export default async function swapMarket({
 
   await balanceGuard.check(options?.autoApprove);
 
-  const signedOrder = await crypt.signOrder(
+  const signedOrder = await signOrder(
     baseAssetAddress,
     quoteAssetAddress,
     swapInfo.orderInfo.side,

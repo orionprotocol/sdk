@@ -165,7 +165,7 @@ describe('Orion', () => {
       }
     });
 
-    const orionUnit = orion.unitsArray[0];
+    const [orionUnit] = orion.unitsArray;
     if (!orionUnit) {
       throw new Error('Orion unit is not defined');
     }
@@ -177,6 +177,9 @@ describe('Orion', () => {
     expect(orionUnit.chainId).toBe(SupportedChainId.MAINNET);
     // expect(orionUnit.env).toBeUndefined();
     // expect(orion.units[0]?.orionAggregator.api).toBe('http://localhost:3001');
+    if (server1.port === undefined) {
+      throw new Error('Server 1 port is not defined');
+    }
     expect(orionUnit.orionAggregator.ws.api).toBe(`ws://localhost:${server1.port}/v1`);
     expect(orionUnit.orionBlockchain.api).toBe(orionBlockchainAPI);
     expect(orionUnit.priceFeed.api).toBe(orionPriceFeedAPI + '/price-feed');

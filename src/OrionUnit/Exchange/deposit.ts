@@ -1,15 +1,13 @@
-/* eslint-disable max-len */
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
 import getBalances from '../../utils/getBalances';
 import BalanceGuard from '../../BalanceGuard';
 import type OrionUnit from '..';
-import { utils } from '../..';
 import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION,
 } from '../../constants';
-import { normalizeNumber } from '../../utils';
+import { denormalizeNumber, normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 
@@ -77,7 +75,7 @@ export default async function deposit({
       name: asset,
       address: assetAddress,
     },
-    amount: amount.toString(),
+    amount: amountBN.toString(),
     spenderAddress: exchangeContractAddress,
     sources: ['wallet'],
   });
@@ -96,7 +94,7 @@ export default async function deposit({
   }
 
   const transactionCost = ethers.BigNumber.from(unsignedTx.gasLimit).mul(gasPriceWei);
-  const denormalizedTransactionCost = utils.denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+  const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
   balanceGuard.registerRequirement({
     reason: 'Network fee',

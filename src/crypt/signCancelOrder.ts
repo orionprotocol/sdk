@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import { type TypedDataSigner } from '@ethersproject/abstract-signer';
 import { type ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils';
@@ -37,7 +36,7 @@ const signCancelOrder = async (
   // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
   const fixedSignature = joinSignature(splitSignature(signature));
 
-  if (!fixedSignature) throw new Error("Can't sign order cancel");
+  // if (!fixedSignature) throw new Error("Can't sign order cancel");
 
   const signedCancelOrderReqeust: SignedCancelOrderRequest = {
     ...cancelOrderRequest,
