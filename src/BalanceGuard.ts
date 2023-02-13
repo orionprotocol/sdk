@@ -11,12 +11,13 @@ import arrayEquals from './utils/arrayEquals';
 
 export default class BalanceGuard {
   private readonly balances: Partial<
-  Record<
-  string,
-  Record<
-  'exchange' | 'wallet',
-  BigNumber>
-  >
+    Record<
+      string,
+        Record<
+          'exchange' | 'wallet',
+          BigNumber
+        >
+    >
   >;
 
   public readonly requirements: BalanceRequirement[] = [];
@@ -50,7 +51,7 @@ export default class BalanceGuard {
   // Used for case feeAsset === assetOut
   setExtraBalance(assetName: string, amount: BigNumber.Value, source: Source) {
     const assetBalance = this.balances[assetName];
-    if (assetBalance === undefined) throw Error(`Can't set extra balance. Asset ${assetName} not found`);
+    if (!assetBalance) throw Error(`Can't set extra balance. Asset ${assetName} not found`);
     assetBalance[source] = assetBalance[source].plus(amount);
   }
 
@@ -86,7 +87,7 @@ export default class BalanceGuard {
             item.spenderAddress === curr.spenderAddress,
         );
 
-        if (aggregatedBalanceRequirement !== undefined) {
+        if (aggregatedBalanceRequirement) {
           aggregatedBalanceRequirement.items = {
             ...aggregatedBalanceRequirement.items,
             [curr.reason]: curr.amount,
@@ -193,7 +194,7 @@ export default class BalanceGuard {
 
     exchangeOnlyAggregatedRequirements.forEach(({ asset, items }) => {
       const remainingBalance = remainingBalances[asset.name];
-      if (remainingBalance === undefined) throw new Error(`No ${asset.name} balance`);
+      if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
       const itemsAmountSum = Object.values(items)
         .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
@@ -220,7 +221,7 @@ export default class BalanceGuard {
     await Promise.all(exchangePlusWalletAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
         const remainingBalance = remainingBalances[asset.name];
-        if (remainingBalance === undefined) throw new Error(`No ${asset.name} balance`);
+        if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
         const itemsAmountSum = Object.values(items)
           .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
@@ -323,7 +324,7 @@ export default class BalanceGuard {
     await Promise.all(walletTokensAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
         const remainingBalance = remainingBalances[asset.name];
-        if (remainingBalance === undefined) throw new Error(`No ${asset.name} balance`);
+        if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
         const itemsAmountSum = Object.values(items)
           .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
@@ -414,7 +415,7 @@ export default class BalanceGuard {
 
     walletNativeAggregatedRequirements.forEach(({ asset, items }) => {
       const remainingBalance = remainingBalances[asset.name];
-      if (remainingBalance === undefined) throw new Error(`No ${asset.name} balance`);
+      if (!remainingBalance) throw new Error(`No ${asset.name} balance`);
 
       const itemsAmountSum = Object.values({ ...items, ...requiredApproves.items })
         .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));

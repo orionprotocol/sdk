@@ -90,7 +90,7 @@ export default class FarmingManager {
 
     const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];
-    if (pool === undefined) throw new Error(`Pool ${poolName} not found`);
+    if (!pool) throw new Error(`Pool ${poolName} not found`);
 
     const pairContract = IUniswapV2Pair__factory
       .connect(pool.lpTokenAddress, this.orionUnit.provider);
@@ -183,7 +183,7 @@ export default class FarmingManager {
 
     if (assetAIsNativeCurrency || assetBIsNativeCurrency) {
       const contractBalance = balances[nativeCryptocurrency]?.exchange;
-      if (contractBalance === undefined) throw new Error(`No balance for '${nativeCryptocurrency}'`);
+      if (!contractBalance) throw new Error(`No balance for '${nativeCryptocurrency}'`);
       const nativeAssetAmount = assetBIsNativeCurrency ? assetBAmount : assetAAmount;
 
       if (nativeAssetAmount.gt(contractBalance)) {
@@ -242,7 +242,7 @@ export default class FarmingManager {
 
     const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];
-    if (pool === undefined) throw new Error(`Pool ${poolName} not found`);
+    if (!pool) throw new Error(`Pool ${poolName} not found`);
 
     const walletAddress = await signer.getAddress();
 

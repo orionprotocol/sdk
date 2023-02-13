@@ -42,7 +42,7 @@ export default class OrionUnit {
   constructor(config: VerboseOrionUnitConfig) {
     this.config = config;
     const chainInfo = chains[config.chainId];
-    if (chainInfo === undefined) throw new Error('Chain info is required');
+    if (!chainInfo) throw new Error('Chain info is required');
 
     // if ('env' in config)
     // this.env = config.env;

@@ -29,7 +29,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
     ...options ?? {},
     headers: {
       'Cache-Control': 'no-store, max-age=0',
-      ...(options !== undefined ? options.headers : {}),
+      ...(options ? options.headers : {}),
     },
   }), (e) => {
     if (e instanceof Error) {
@@ -111,7 +111,7 @@ export default async function fetchWithValidation<DataOut, DataIn, ErrorOut, Err
   const json: unknown = jsonResult.value;
 
   if (response.status >= 400) { // Client error
-    if (errorSchema !== undefined) {
+    if (errorSchema) {
       const serverError = errorSchema.safeParse(json);
       if (serverError.success) {
         return err({

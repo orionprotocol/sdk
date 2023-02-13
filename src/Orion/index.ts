@@ -42,7 +42,7 @@ export default class Orion {
     let config: EnvConfig;
     if (typeof envOrConfig === 'string') {
       const envConfig = envs[envOrConfig];
-      if (envConfig === undefined) {
+      if (!envConfig) {
         throw new Error(`Invalid environment: ${envOrConfig}. Available environments: ${Object.keys(envs).join(', ')}`);
       }
       this.env = envOrConfig;
@@ -52,7 +52,7 @@ export default class Orion {
         networks: Object.entries(envConfig.networks).map(([chainId, networkConfig]) => {
           if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
           const chainConfig = chains[chainId];
-          if (chainConfig === undefined) {
+          if (!chainConfig) {
             throw new Error(`Chain config not found: ${chainId}. Available chains: ${Object.keys(chains).join(', ')}`);
           }
 
@@ -81,7 +81,7 @@ export default class Orion {
           }, {}),
       };
 
-      if (overrides !== undefined) {
+      if (overrides) {
         // Recursive merge of config and overrides. Ignore undefined values.
         config = merge(config, overrides);
       }
@@ -96,7 +96,7 @@ export default class Orion {
       .reduce<Partial<Record<SupportedChainId, OrionUnit>>>((acc, [chainId, networkConfig]) => {
         if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
         const chainConfig = chains[chainId];
-        if (chainConfig === undefined) throw new Error(`Invalid chainId: ${chainId}`);
+        if (!chainConfig) throw new Error(`Chain config not found: ${chainId}`);
 
         const orionUnit = new OrionUnit({
           // env: networkConfig.env,
@@ -123,7 +123,7 @@ export default class Orion {
     } else {
       unit = this.unitsArray.find((u) => u.networkCode === networkCodeOrChainId);
     }
-    if (unit === undefined) {
+    if (!unit) {
       throw new Error(
         `Invalid network code: ${networkCodeOrChainId}. ` +
         `Available network codes: ${this.unitsArray.map((u) => u.networkCode).join(', ')}`);

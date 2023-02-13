@@ -121,7 +121,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     };
 
     this.ws.onclose = () => {
-      if (this.heartbeatInterval !== undefined) clearInterval(this.heartbeatInterval);
+      if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
       if (!this.isClosedIntentionally) this.init();
     };
 

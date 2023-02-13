@@ -206,10 +206,10 @@ class OrionAggregatorWS {
     type: T,
     subscription: Subscription[T],
   ) {
-    if (this.ws === undefined) this.init();
+    if (!this.ws) this.init();
     const isExclusive = exclusiveSubscriptions.some((t) => t === type);
     const subs = this.subscriptions[type];
-    if (isExclusive && (subs !== undefined) && Object.keys(subs).length > 0) {
+    if (isExclusive && subs && Object.keys(subs).length > 0) {
       throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
     }
 
@@ -527,7 +527,7 @@ class OrionAggregatorWS {
           const balances = (json.b)
             ? Object.entries(json.b)
               .reduce<Partial<Record<string, Balance>>>((prev, [asset, assetBalances]) => {
-                if (assetBalances === undefined) return prev;
+                if (!assetBalances) return prev;
                 const [tradable, reserved, contract, wallet, allowance] = assetBalances;
 
                 prev[asset] = {
@@ -539,7 +539,7 @@ class OrionAggregatorWS {
             : {};
           switch (json.k) { // message kind
             case 'i': { // initial
-              const fullOrders = (json.o !== undefined)
+              const fullOrders = json.o
                 ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
                   prev.push(o);
 
