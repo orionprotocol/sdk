@@ -10,8 +10,8 @@ import {
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 import {
-  SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  AssetPairUpdate, OrderbookItem, Balance, Exchange, CFDBalance, SwapInfo, FuturesTradeInfo,
+  SwapInfoBase, AssetPairUpdate, OrderbookItem, Balance,
+  Exchange, CFDBalance, SwapInfo, FuturesTradeInfo,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
