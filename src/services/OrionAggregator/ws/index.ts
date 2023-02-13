@@ -10,13 +10,14 @@ import {
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
 import {
-  SwapInfoByAmountIn, SwapInfoByAmountOut, SwapInfoBase,
-  AssetPairUpdate, OrderbookItem, Balance, Exchange, CFDBalance,
+  SwapInfoBase, AssetPairUpdate, OrderbookItem, Balance,
+  Exchange, CFDBalance, SwapInfo, FuturesTradeInfo,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
 import { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
+import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -62,7 +63,17 @@ type AggregatedOrderbookSubscription = {
 
 type SwapInfoSubscription = {
   payload: SwapSubscriptionRequest,
-  callback: (swapInfo: SwapInfoByAmountIn | SwapInfoByAmountOut) => void,
+  callback: (swapInfo: SwapInfo) => void,
+}
+
+type FuturesTradeInfoSubscription = {
+  payload: {
+    s: string,
+    i: string,
+    a: number,
+    p?: number,
+  },
+  callback: (futuresTradeInfo: FuturesTradeInfo) => void,
 }
 
 type AddressUpdateUpdate = {
@@ -117,6 +128,7 @@ type Subscription = {
   [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription,
   [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription,
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
+  [SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]: FuturesTradeInfoSubscription
 }
 
 const exclusiveSubscriptions = [
@@ -272,6 +284,7 @@ class OrionAggregatorWS {
       // is swap info subscription (contains hyphen)
       delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[subscription];
       delete this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[subscription];
+      delete this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[subscription];
       // !!! swap info subscription is uuid that contains hyphen
     } else if (subscription.includes('-') && subscription.split('-').length === 2) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
@@ -339,6 +352,7 @@ class OrionAggregatorWS {
         brokerMessageSchema,
         orderBookSchema,
         swapInfoSchema,
+        futuresTradeInfoSchema,
         errorSchema,
         unsubscriptionDoneSchema,
       ]);
@@ -412,6 +426,18 @@ class OrionAggregatorWS {
               break;
           }
         }
+          break;
+        case MessageType.FUTURES_TRADE_INFO_UPDATE:
+          this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[json.id]?.callback({
+            futuresTradeRequestId: json.id,
+            sender: json.S,
+            instrument: json.i,
+            buyPrice: json.bp,
+            sellPrice: json.sp,
+            buyPower: json.bpw,
+            sellPower: json.spw,
+            minAmount: json.ma,
+          });
           break;
         case MessageType.INITIALIZATION:
           this.onInit?.();
