@@ -8,14 +8,23 @@ import express from 'express';
 import WebSocket from 'ws';
 import http from 'http';
 import httpToWS from '../utils/httpToWS';
+import {
+  createHttpTerminator,
+} from 'http-terminator';
+
+jest.setTimeout(10000);
 
 const createServer = (externalHost: string) => {
   const app = express();
   const server = http.createServer(app);
+
+  const httpTerminator = createHttpTerminator({ server });
   const wss = new WebSocket.Server({ server });
 
   let externalWs: WebSocket | null = null;
+
   wss.on('connection', (ws, req) => {
+    if (req.url === undefined) throw new Error('req.url is undefined');
     const targetUrl = httpToWS(`${externalHost}${req.url}`);
     externalWs = new WebSocket(targetUrl);
 
@@ -32,33 +41,40 @@ const createServer = (externalHost: string) => {
 
   app.get(
     '*',
-    async (req, res) => {
-      const routeFromURL = req.url;
-      try {
-        const targetUrl = `${externalHost}${routeFromURL}`;
-        const response = await fetch(targetUrl);
-        const text = await response.text();
-        res.send(text);
-      } catch (error) {
-        res.status(500).send({
-          error: 'Failed to retrieve data from external resource'
-        });
-      }
+    (req, res) => {
+      (async () => {
+        const routeFromURL = req.url;
+        try {
+          const targetUrl = `${externalHost}${routeFromURL}`;
+          const response = await fetch(targetUrl);
+          const text = await response.text();
+          res.send(text);
+        } catch (error) {
+          res.status(500).send({
+            error: 'Failed to retrieve data from external resource'
+          });
+        }
+      })().catch(console.error)
     });
 
   server.listen(0);
+
   const address = server.address();
 
   if (typeof address === 'string') {
     throw new Error(`Server address is a string: ${address}`);
   }
+  const closeWS = () => new Promise((resolve) => {
+    wss.close(resolve);
+  });
 
   return {
     port: address?.port,
-    close: () => new Promise((resolve) => {
+    terminate: async () => {
       externalWs?.close();
-      server.close(resolve);
-    }),
+      await closeWS();
+      await httpTerminator.terminate();
+    }
   }
 }
 
@@ -137,6 +153,10 @@ describe('Orion', () => {
     const server1 = createServer('https://trade.orionprotocol.io');
     const server2 = createServer('https://trade.orionprotocol.io');
 
+    if (server0.port === undefined || server1.port === undefined || server2.port === undefined) {
+      throw new Error('Server port is undefined');
+    }
+
     const orionBlockchainAPI = `http://localhost:${server0.port}`;
     const orionAggregatorAPI = `http://localhost:${server1.port}`;
     const orionPriceFeedAPI = `http://localhost:${server2.port}`;
@@ -177,9 +197,6 @@ describe('Orion', () => {
     expect(orionUnit.chainId).toBe(SupportedChainId.MAINNET);
     // expect(orionUnit.env).toBeUndefined();
     // expect(orion.units[0]?.orionAggregator.api).toBe('http://localhost:3001');
-    if (server1.port === undefined) {
-      throw new Error('Server 1 port is not defined');
-    }
     expect(orionUnit.orionAggregator.ws.api).toBe(`ws://localhost:${server1.port}/v1`);
     expect(orionUnit.orionBlockchain.api).toBe(orionBlockchainAPI);
     expect(orionUnit.priceFeed.api).toBe(orionPriceFeedAPI + '/price-feed');
@@ -200,10 +217,6 @@ describe('Orion', () => {
     expect(priceData).toBeDefined();
 
     const allTickersDone = await new Promise<boolean>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Timeout'));
-      }, 10000);
-
       const { unsubscribe } = orionUnit.priceFeed.ws.subscribe(
         'allTickers',
         {
@@ -214,12 +227,16 @@ describe('Orion', () => {
           }
         }
       )
+      const timeout = setTimeout(() => {
+        unsubscribe();
+        reject(new Error(`Timeout: ${orionUnit.priceFeed.wsUrl}`));
+      }, 10000);
     });
     expect(allTickersDone).toBe(true);
 
-    await server0.close();
-    await server1.close();
-    await server2.close();
+    await server0.terminate();
+    await server1.terminate();
+    await server2.terminate();
   });
 
   test('Init Orion testing with overrides', () => {

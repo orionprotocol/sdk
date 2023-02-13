@@ -326,7 +326,7 @@ class OrionAggregatorWS {
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
-      if (typeof data !== 'string') return;
+      if (typeof data !== 'string') throw new Error('OrionAggregatorWS: received non-string message');
       this.logger?.(`OrionAggregatorWS: received message: ${data}`);
       const rawJson: unknown = JSON.parse(data);
 

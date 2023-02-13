@@ -108,14 +108,19 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
 
     this.ws.onmessage = (e) => {
       const { data } = e;
-      if (typeof data !== 'string') return;
-      if (data === 'pong') return;
-      const json: unknown = JSON.parse(data);
+
+      // const isBufferArray = Array.isArray(data);
+      // const isArrayBuffer = data instanceof ArrayBuffer;
+      const isBuffer = Buffer.isBuffer(data);
+      if (!isBuffer) throw new Error('Not a buffer');
+      const dataString = data.toString();
+      if (dataString === 'pong') return;
+      const json: unknown = JSON.parse(dataString);
       const subscription = subscriptions[type];
       const parseResult = subscription.schema.safeParse(json);
       if (!parseResult.success) {
         const errorsMessage = parseResult.error.errors.map((error) => `[${error.path.join('.')}] ${error.message}`).join(', ');
-        throw new Error(`Can't recognize PriceFeed "${type}" subscription message "${data}": ${errorsMessage}`);
+        throw new Error(`Can't recognize PriceFeed "${type}" subscription message "${dataString}": ${errorsMessage}`);
       }
       this.callback(parseResult.data);
     };
