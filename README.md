@@ -1,4 +1,15 @@
-# Orion Protocol SDK
+<!-- Insert logo -->
+
+<div style="text-align:center">
+    <img 
+        src="./logo.svg"
+        width="200"
+        height="200"
+        alt="Orion Protocol SDK logo"
+     />
+    <h1>Orion Protocol SDK</h1>
+    <p>Use CEX and DEX liquidity without KYC.</p>
+</div>
 
 [![npm version](https://img.shields.io/npm/v/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 ![npm bundle size (version)](https://img.shields.io/bundlephobia/minzip/@orionprotocol/sdk)
@@ -15,6 +26,8 @@ Through this connection, developers using the SDK can perform a wide range of ac
 
 Orion’s SDK is free to use and does not require an API key or registration. Refer to integration examples for more detailed information.
 
+- [Overview](#overview)
+- [API Key](#api-key)
 - [Install](#install)
 - [Usage](#usage)
 - [Initialization](#initialization)
@@ -26,9 +39,11 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
   - [Add liquidity](#add-liquidity)
   - [Remove all liquidity](#remove-all-liquidity)
 - [Low level methods](#low-level-methods)
+  - [Get aggregated orderbook](#get-aggregated-orderbook)
   - [Get historical price](#get-historical-price)
   - [Get tradable pairs](#get-tradable-pairs)
-  - [Get swap info](#get-swap-info)
+  - [Get fee assets](#get-fee-assets)
+  - [Get swap info](#get-swap-info-1)
   - [Place order in Orion Aggregator](#place-order-in-orion-aggregator)
   - [Orion Aggregator WebSocket](#orion-aggregator-websocket)
   - [Swap Info](#swap-info)
