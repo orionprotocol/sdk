@@ -3,8 +3,7 @@
 <div align="center">
     <img 
         src="./logo.svg"
-        width="200"
-        height="200"
+        width="300"
         alt="Orion Protocol SDK logo"
      />
     <h1>Orion Protocol SDK</h1>
