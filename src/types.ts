@@ -238,8 +238,8 @@ export type FuturesTradeInfo = {
   futuresTradeRequestId: string
   sender: string
   instrument: string
-  buyPrice: number
-  sellPrice: number
+  buyPrice: number | null
+  sellPrice: number | null
   buyPower: number
   sellPower: number
   minAmount: number
