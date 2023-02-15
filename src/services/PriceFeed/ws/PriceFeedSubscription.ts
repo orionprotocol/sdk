@@ -109,11 +109,19 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     this.ws.onmessage = (e) => {
       const { data } = e;
 
-      // const isBufferArray = Array.isArray(data);
-      // const isArrayBuffer = data instanceof ArrayBuffer;
-      const isBuffer = Buffer.isBuffer(data);
-      if (!isBuffer) throw new Error('Not a buffer');
-      const dataString = data.toString();
+      // Convert data to string
+
+      let dataString: string;
+      if (typeof data === 'string') {
+        dataString = data;
+      } else if (Buffer.isBuffer(data)) {
+        dataString = data.toString();
+      } else if (Array.isArray(data)) {
+        dataString = Buffer.concat(data).toString();
+      } else { // ArrayBuffer
+        dataString = Buffer.from(data).toString();
+      }
+
       if (dataString === 'pong') return;
       const json: unknown = JSON.parse(dataString);
       const subscription = subscriptions[type];
