@@ -31,8 +31,8 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 - [Usage](#usage)
 - [Initialization](#initialization)
 - [High level methods](#high-level-methods)
-- [Get assets](#get-assets)
-- [Get pairs](#get-pairs)
+  - [Get assets](#get-assets)
+  - [Get pairs](#get-pairs)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
   - [Get swap info](#get-swap-info)
@@ -106,7 +106,7 @@ detectEthereumProvider().then((provider) => {
 
 ## High level methods
 
-## Get assets
+### Get assets
 
 ```ts
 const assets = await orion.getAssets(); // Optional: tradableOnly: boolean (default: true)
@@ -127,7 +127,7 @@ const assets = await orion.getAssets(); // Optional: tradableOnly: boolean (defa
 // }
 ```
 
-## Get pairs
+### Get pairs
 
 ```ts
 const pairs = await orion.getPairs("spot"); // 'spot' | 'futures'
