@@ -4,7 +4,8 @@ import { type networkCodes } from '../constants';
 import OrionUnit from '../OrionUnit';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
-import { type DeepPartial, type SupportedChainId, type VerboseOrionUnitConfig } from '../types';
+import simpleFetch from '../simpleFetch';
+import { type SupportedChainId, type DeepPartial, type VerboseOrionUnitConfig } from '../types';
 import { isValidChainId } from '../utils';
 
 type EnvConfig = {
@@ -17,6 +18,16 @@ type EnvConfig = {
     >
   >
 }
+type AggregatedAssets = Partial<
+  Record<
+    string,
+    Partial<
+      Record<SupportedChainId, {
+        address: string
+      }>
+    >
+  >
+  >;
 
 type KnownEnv = 'testing' | 'staging' | 'production';
 
@@ -133,5 +144,75 @@ export default class Orion {
 
   getSiblingsOf(chainId: SupportedChainId) {
     return this.unitsArray.filter((unit) => unit.chainId !== chainId);
+  }
+
+  async getAssets(tradableOnly = true) {
+    const aggregatedAssets: AggregatedAssets = {};
+
+    await Promise.all(this.unitsArray.map(async (unit) => {
+      const { assetToAddress } = await simpleFetch(unit.orionBlockchain.getInfo)();
+      Object.entries(assetToAddress).forEach(([asset, address]) => {
+        if (address === undefined) throw new Error(`Address is undefined for asset: ${asset}`);
+        aggregatedAssets[asset] = {
+          ...aggregatedAssets[asset],
+          [unit.chainId]: {
+            address,
+          },
+        }
+      });
+    }));
+
+    if (tradableOnly) {
+      const tradableAggregatedAssets: AggregatedAssets = {};
+      const aggregatedPairs = await this.getPairs('spot');
+      Object.entries(aggregatedPairs).forEach(([pair, chainIds]) => {
+        const [baseAsset, quoteAsset] = pair.split('-');
+        if (chainIds === undefined) throw new Error(`ChainIds is undefined for pair: ${pair}`);
+        if (baseAsset === undefined || quoteAsset === undefined) throw new Error(`Invalid pair: ${pair}`);
+
+        const aggregatedBaseAsset = aggregatedAssets[baseAsset];
+        if (aggregatedBaseAsset === undefined) {
+          const networks = chainIds.map((chainId) => chains[chainId]?.label).join(', ');
+          console.error(
+            `Asset found in Aggregator, but not in Orion Blockchain (base): ${baseAsset} (${pair}).` +
+            ` Networks: ${networks}`
+          );
+        } else {
+          tradableAggregatedAssets[baseAsset] = aggregatedBaseAsset;
+        }
+        const aggregatedQuoteAsset = aggregatedAssets[quoteAsset];
+        if (aggregatedQuoteAsset === undefined) {
+          const networks = chainIds.map((chainId) => chains[chainId]?.label).join(', ');
+          console.error(
+            `Asset found in Aggregator, but not in OrionBlockchain (quote): ${quoteAsset} (${pair}).` +
+            ` Networks: ${networks}`
+          );
+        } else {
+          tradableAggregatedAssets[quoteAsset] = aggregatedQuoteAsset;
+        }
+      });
+    }
+    return aggregatedAssets;
+  }
+
+  async getPairs(...params: Parameters<OrionUnit['orionAggregator']['getPairsList']>) {
+    const result: Partial<
+      Record<
+        string,
+        SupportedChainId[]
+      >
+    > = {};
+
+    await Promise.all(this.unitsArray.map(async (unit) => {
+      const pairs = await simpleFetch(unit.orionAggregator.getPairsList)(...params);
+      pairs.forEach((pair) => {
+        result[pair] = [
+          ...(result[pair] ?? []),
+          unit.chainId,
+        ];
+      });
+    }));
+
+    return result;
   }
 }

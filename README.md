@@ -31,6 +31,8 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 - [Usage](#usage)
 - [Initialization](#initialization)
 - [High level methods](#high-level-methods)
+- [Get assets](#get-assets)
+- [Get pairs](#get-pairs)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
   - [Get swap info](#get-swap-info)
@@ -103,6 +105,39 @@ detectEthereumProvider().then((provider) => {
 ```
 
 ## High level methods
+
+## Get assets
+
+```ts
+const assets = await orion.getAssets(); // Optional: tradableOnly: boolean (default: true)
+
+// Response example:
+// {
+//   ORN: {
+//     '1': { address: '0x0258f474786ddfd37abce6df6bbb1dd5dfc4434a' },
+//     '56': { address: '0xe4ca1f75eca6214393fce1c1b316c237664eaa8e' },
+//     '66': { address: '0xd2cdcb6bdee6f78de7988a6a60d13f6ef0b576d9' },
+//     '137': { address: '0xd2cdcb6bdee6f78de7988a6a60d13f6ef0b576d9' },
+//     '250': { address: '0xd2cdcb6bdee6f78de7988a6a60d13f6ef0b576d9' }
+//   },
+//   BNB: {
+//     '56': { address: '0x0000000000000000000000000000000000000000' },
+//     '250': { address: '0xd67de0e0a0fd7b15dc8348bb9be742f3c5850454' }
+//   },
+// }
+```
+
+## Get pairs
+
+```ts
+const pairs = await orion.getPairs("spot"); // 'spot' | 'futures'
+
+// Response example:
+// {
+//   'ORN-USDT': [ '250', '66', '1', '56', '137' ],
+//   'USDT-USDC': [ '250', '66', '1', '56', '137' ],
+// }
+```
 
 ### Withdraw
 
