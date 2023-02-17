@@ -63,7 +63,7 @@ describe('Spot trading', () => {
       bscUnit.provider
     );
 
-    const result = await bscUnit.exchange.swapMarket({
+    const resultExactSpend = await bscUnit.exchange.swapMarket({
       assetIn: 'USDT',
       assetOut: 'BNB',
       amount: 40,
@@ -75,29 +75,32 @@ describe('Spot trading', () => {
       //   logger: console.log
       // }
     })
-    await result.wait();
-  });
+    await resultExactSpend.wait();
 
-  test('Sell. Complex', async () => {
-    const orion = new Orion('testing');
-    const bscUnit = orion.getUnit('bsc');
-    const wallet = new ethers.Wallet(
-      privateKey,
-      bscUnit.provider
-    );
-
-    const result = await bscUnit.exchange.swapMarket({
+    const resultExactReceive = await bscUnit.exchange.swapMarket({
       assetIn: 'BNB',
-      assetOut: 'ETH',
-      amount: 0.01,
+      assetOut: 'BTC',
+      amount: resultExactSpend.amountOut.toPrecision(3),
+      type: 'exactSpend',
+      signer: wallet,
+      feeAsset: 'USDT',
+      slippagePercent: 1,
+      options: {
+        logger: console.log
+      }
+    });
+    await resultExactReceive.wait();
+
+    // Return back to USDT
+    const returnBackUsdt = await bscUnit.exchange.swapMarket({
+      amount: 40,
+      assetIn: 'BTC',
+      assetOut: 'USDT',
       type: 'exactReceive',
       signer: wallet,
       feeAsset: 'USDT',
       slippagePercent: 1,
-      // options: {
-      //   logger: console.log
-      // }
     });
-    await result.wait();
+    await returnBackUsdt.wait();
   });
 });

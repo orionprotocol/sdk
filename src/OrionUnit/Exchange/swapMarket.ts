@@ -23,6 +23,7 @@ export type SwapMarketParams = {
   signer: ethers.Signer
   orionUnit: OrionUnit
   options?: {
+    // rounding?: 'up' | 'down' TODO
     poolOnly?: boolean
     instantSettlement?: boolean
     logger?: (message: string) => void
@@ -34,12 +35,14 @@ export type SwapMarketParams = {
 }
 
 type AggregatorOrder = {
+  amountOut: number
   through: 'aggregator'
   id: string
   wait: () => Promise<z.infer<typeof orderSchema>>
 }
 
 type PoolSwap = {
+  amountOut: number
   through: 'orion_pool'
   txHash: string
   wait: (confirmations?: number | undefined) => Promise<ethers.providers.TransactionReceipt>
@@ -165,7 +168,7 @@ export default async function swapMarket({
 
   if (qtyPrecisionBN.lt(qtyDecimalPlaces)) {
     throw new Error(
-      `Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}`
+      `Actual amount decimal places (${qtyDecimalPlaces}) is greater than max allowed decimal places (${qtyPrecisionBN.toString()}) on pair ${baseAssetName}-${quoteAssetName}.`
     );
   }
 
@@ -297,6 +300,7 @@ export default async function swapMarket({
     const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughOrionPoolTx);
     options?.logger?.(`Transaction sent. Tx hash: ${swapThroughOrionPoolTxResponse.hash}`);
     return {
+      amountOut: swapInfo.amountOut,
       wait: swapThroughOrionPoolTxResponse.wait,
       through: 'orion_pool',
       txHash: swapThroughOrionPoolTxResponse.hash,
@@ -413,6 +417,7 @@ export default async function swapMarket({
   options?.logger?.(`Order placed. Order id: ${orderId}`);
 
   return {
+    amountOut: swapInfo.amountOut,
     wait: () => new Promise<z.infer<typeof orderSchema>>((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Timeout'))
