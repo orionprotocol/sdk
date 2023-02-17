@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { type Order } from '../types';
+import type { Order } from '../types';
 
 const { arrayify, joinSignature, splitSignature } = ethers.utils;
 

@@ -1,5 +1,5 @@
 import fetchWithValidation from '../../fetchWithValidation';
-import { type Exchange } from '../../types';
+import type { Exchange } from '../../types';
 import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas';
 import candlesSchema from './schemas/candlesSchema';
 import { PriceFeedWS } from './ws';

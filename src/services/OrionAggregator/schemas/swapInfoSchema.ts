@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { exchanges } from '../../../constants';
 
+const orderInfoSchema = z.object({
+  assetPair: z.string(),
+  side: z.enum(['BUY', 'SELL']),
+  amount: z.number(),
+  safePrice: z.number(),
+}).nullable();
+
 const swapInfoBase = z.object({
   id: z.string(),
   amountIn: z.number(),
@@ -10,12 +17,7 @@ const swapInfoBase = z.object({
   path: z.array(z.string()),
   // isThroughPoolOptimal: z.boolean(), // deprecated
   executionInfo: z.string(),
-  orderInfo: z.object({
-    assetPair: z.string(),
-    side: z.enum(['BUY', 'SELL']),
-    amount: z.number(),
-    safePrice: z.number(),
-  }).nullable(),
+  orderInfo: orderInfoSchema,
   exchanges: z.array(z.enum(exchanges)),
   price: z.number().nullable(), // spending asset price
   minAmountOut: z.number(),
@@ -29,11 +31,13 @@ const swapInfoBase = z.object({
         action: z.string(),
       }).array(),
     }),
-    marketAmountOut: z.number().optional(),
-    marketAmountIn: z.number().optional(),
+    marketAmountOut: z.number().nullable(),
+    marketAmountIn: z.number().nullable(),
     marketPrice: z.number(),
-    availableAmountIn: z.number().optional(),
-    availableAmountOut: z.number().optional(),
+    availableAmountIn: z.number().nullable(),
+    availableAmountOut: z.number().nullable(),
+    orderInfo: orderInfoSchema,
+    isThroughPoolOrCurve: z.boolean(),
   }).array(),
 });
 

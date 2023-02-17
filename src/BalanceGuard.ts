@@ -28,7 +28,7 @@ export default class BalanceGuard {
 
   private readonly signer: ethers.Signer;
 
-  private readonly logger?: (message: string) => void;
+  private readonly logger?: ((message: string) => void) | undefined
 
   constructor(
     balances: Partial<Record<string, Record<'exchange' | 'wallet', BigNumber>>>,

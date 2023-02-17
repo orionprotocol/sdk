@@ -3,6 +3,15 @@ import exchanges from '../../../../constants/exchanges';
 import MessageType from '../MessageType';
 import baseMessageSchema from './baseMessageSchema';
 
+const alternativeSchema = z.object({ // execution alternatives
+  e: z.enum(exchanges).array(), // exchanges
+  ps: z.string().array(), // path
+  mo: z.number().optional(), // market amount out
+  mi: z.number().optional(), // market amount in
+  mp: z.number(), // market price
+  aa: z.number().optional(), // available amount in
+  aao: z.number().optional(), // available amount out
+});
 const swapInfoSchemaBase = baseMessageSchema.extend({
   T: z.literal(MessageType.SWAP_INFO),
   S: z.string(), // swap request id
@@ -23,15 +32,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     a: z.number(), // amount
     sp: z.number(), // safe price (with safe deviation but without slippage)
   }).optional(),
-  as: z.object({ // execution alternatives
-    e: z.enum(exchanges).array(), // exchanges
-    ps: z.string().array(), // path
-    mo: z.number().optional(), // market amount out
-    mi: z.number().optional(), // market amount in
-    mp: z.number(), // market price
-    aa: z.number().optional(), // available amount in
-    aao: z.number().optional(), // available amount out
-  }).array(),
+  as: alternativeSchema.array(),
 });
 
 const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({

@@ -2,16 +2,16 @@ import { ethers } from 'ethers';
 import { OrionAggregator } from '../services/OrionAggregator';
 import { OrionBlockchain } from '../services/OrionBlockchain';
 import { PriceFeed } from '../services/PriceFeed';
-import type { SupportedChainId, VerboseOrionUnitConfig } from '../types';
+import type { KnownEnv, SupportedChainId, VerboseOrionUnitConfig } from '../types';
 import Exchange from './Exchange';
 import FarmingManager from './FarmingManager';
-import { chains } from '../config';
-import { type networkCodes } from '../constants';
+import { chains, envs } from '../config';
+import type { networkCodes } from '../constants';
 
-// type KnownConfig = {
-//   env: string;
-//   chainId: SupportedChainId;
-// }
+type KnownConfig = {
+  env: KnownEnv
+  chainId: SupportedChainId
+}
 
 // type OrionUnitConfig = KnownConfig | VerboseOrionUnitConfig;
 
@@ -39,8 +39,36 @@ export default class OrionUnit {
   // constructor(config: KnownConfig);
   // constructor(config: VerboseConfig);
 
-  constructor(config: VerboseOrionUnitConfig) {
-    this.config = config;
+  constructor(config: KnownConfig | VerboseOrionUnitConfig) {
+    if ('env' in config) {
+      const staticConfig = envs[config.env];
+      if (!staticConfig) throw new Error(`Invalid environment: ${config.env}. Available environments: ${Object.keys(envs).join(', ')}`);
+
+      const chainConfig = chains[config.chainId];
+      if (!chainConfig) throw new Error(`Invalid chainId: ${config.chainId}. Available chainIds: ${Object.keys(chains).join(', ')}`);
+
+      const networkConfig = staticConfig.networks[config.chainId];
+      if (!networkConfig) throw new Error(`Invalid chainId: ${config.chainId}. Available chainIds: ${Object.keys(staticConfig.networks).join(', ')}`);
+
+      this.config = {
+        chainId: config.chainId,
+        nodeJsonRpc: networkConfig.rpc ?? chainConfig.rpc,
+        services: {
+          orionBlockchain: {
+            http: networkConfig.api + networkConfig.services.blockchain.http,
+          },
+          orionAggregator: {
+            http: networkConfig.api + networkConfig.services.aggregator.http,
+            ws: networkConfig.api + networkConfig.services.aggregator.ws,
+          },
+          priceFeed: {
+            api: networkConfig.api + networkConfig.services.priceFeed.all,
+          },
+        },
+      }
+    } else {
+      this.config = config;
+    }
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
 
@@ -48,14 +76,14 @@ export default class OrionUnit {
     // this.env = config.env;
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
-    this.provider = new ethers.providers.StaticJsonRpcProvider(config.nodeJsonRpc);
+    this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc);
 
-    this.orionBlockchain = new OrionBlockchain(config.services.orionBlockchain.http);
+    this.orionBlockchain = new OrionBlockchain(this.config.services.orionBlockchain.http);
     this.orionAggregator = new OrionAggregator(
-      config.services.orionAggregator.http,
-      config.services.orionAggregator.ws,
+      this.config.services.orionAggregator.http,
+      this.config.services.orionAggregator.ws,
     );
-    this.priceFeed = new PriceFeed(config.services.priceFeed.api);
+    this.priceFeed = new PriceFeed(this.config.services.priceFeed.api);
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
   }

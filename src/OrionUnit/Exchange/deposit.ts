@@ -116,12 +116,19 @@ export default async function deposit({
   unsignedTx.nonce = nonce;
 
   const signedTx = await signer.signTransaction(unsignedTx);
-  const txResponse = await provider.sendTransaction(signedTx);
-  console.log(`Deposit tx sent: ${txResponse.hash}. Waiting for confirmation...`);
-  const txReceipt = await txResponse.wait();
-  if (txReceipt.status !== undefined) {
-    console.log('Deposit tx confirmed');
-  } else {
-    console.log('Deposit tx failed');
+  try {
+    const txResponse = await provider.sendTransaction(signedTx);
+    console.log(`Deposit tx sent: ${txResponse.hash}. Waiting for confirmation...`);
+    const txReceipt = await txResponse.wait();
+    if (txReceipt.status !== undefined) {
+      console.log('Deposit tx confirmed');
+    } else {
+      console.log('Deposit tx failed');
+    }
+  } catch (e) {
+    if (!(e instanceof Error)) throw new Error('e is not an Error');
+    console.error(`Deposit tx failed: ${e.message}`, {
+      unsignedTx,
+    });
   }
 }

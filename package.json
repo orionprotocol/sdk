@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.17.11",
+  "version": "0.17.12",
   "description": "Orion Protocol SDK",
   "main": "./lib/esm/index.js",
   "module": "./lib/esm/index.js",
@@ -19,7 +19,7 @@
     "lint:eslint:fix": "eslint ./src --ext .ts,.js,.tsx,.jsx --fix",
     "postpublish": "npm run publish-npm",
     "publish-npm": "npm publish --access public --ignore-scripts --@orionprotocol:registry='https://registry.npmjs.org'",
-    "test": "jest",
+    "test": "dotenv jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
   },
@@ -70,6 +70,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "@babel/runtime": "^7.20.13",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@lukeed/csprng": "^1.0.1",

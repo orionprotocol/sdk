@@ -16,7 +16,7 @@ import {
 import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
-import { type networkCodes } from '../../constants';
+import type { networkCodes } from '../../constants';
 
 type IAdminAuthHeaders = {
   auth: string

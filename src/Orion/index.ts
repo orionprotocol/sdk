@@ -1,11 +1,11 @@
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config';
-import { type networkCodes } from '../constants';
+import type { networkCodes } from '../constants';
 import OrionUnit from '../OrionUnit';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
 import simpleFetch from '../simpleFetch';
-import { type SupportedChainId, type DeepPartial, type VerboseOrionUnitConfig } from '../types';
+import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types';
 import { isValidChainId } from '../utils';
 
 type EnvConfig = {
@@ -28,8 +28,6 @@ type AggregatedAssets = Partial<
     >
   >
   >;
-
-type KnownEnv = 'testing' | 'staging' | 'production';
 
 export default class Orion {
   public readonly env?: string;

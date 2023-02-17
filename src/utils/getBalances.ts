@@ -1,7 +1,7 @@
-import { type Exchange } from '@orionprotocol/contracts';
+import type { Exchange } from '@orionprotocol/contracts';
 import type BigNumber from 'bignumber.js';
-import { type ethers } from 'ethers';
-import { type OrionAggregator } from '../services/OrionAggregator';
+import type { ethers } from 'ethers';
+import type { OrionAggregator } from '../services/OrionAggregator';
 import getBalance from './getBalance';
 
 export default async (

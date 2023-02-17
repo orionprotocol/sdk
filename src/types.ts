@@ -143,13 +143,13 @@ export type BalanceRequirement = {
   readonly asset: Asset
   readonly amount: string
   readonly sources: Source[]
-  readonly spenderAddress?: string
+  readonly spenderAddress?: string | undefined
 }
 
 export type AggregatedBalanceRequirement = {
   readonly asset: Asset
   readonly sources: Source[]
-  readonly spenderAddress?: string
+  readonly spenderAddress?: string | undefined
   items: Partial<Record<string, string>>
 }
 
@@ -189,11 +189,11 @@ export type OrderbookItem = {
 export type SwapInfoAlternative = {
   exchanges: Exchange[]
   path: string[]
-  marketAmountOut?: number
-  marketAmountIn?: number
+  marketAmountOut?: number | undefined
+  marketAmountIn?: number | undefined
   marketPrice: number
-  availableAmountIn?: number
-  availableAmountOut?: number
+  availableAmountIn?: number | undefined
+  availableAmountOut?: number | undefined
 }
 
 export type SwapInfoBase = {
@@ -206,30 +206,30 @@ export type SwapInfoBase = {
   minAmountOut: number
 
   path: string[]
-  exchanges?: Exchange[]
+  exchanges?: Exchange[] | undefined
   poolOptimal: boolean
 
-  price?: number
-  marketPrice?: number
+  price?: number | undefined
+  marketPrice?: number | undefined
   orderInfo?: {
     pair: string
     side: 'BUY' | 'SELL'
     amount: number
     safePrice: number
-  }
+  } | undefined
   alternatives: SwapInfoAlternative[]
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
   kind: 'exactSpend'
-  availableAmountIn?: number
-  marketAmountOut?: number
+  availableAmountIn?: number | undefined
+  marketAmountOut?: number | undefined
 }
 
 export type SwapInfoByAmountOut = SwapInfoBase & {
   kind: 'exactReceive'
-  marketAmountIn?: number
-  availableAmountOut?: number
+  marketAmountIn?: number | undefined
+  availableAmountOut?: number | undefined
 }
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
@@ -282,3 +282,5 @@ export type VerboseOrionUnitConfig = {
     }
   }
 }
+
+export type KnownEnv = 'testing' | 'staging' | 'production';

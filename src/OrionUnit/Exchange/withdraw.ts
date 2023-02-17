@@ -109,10 +109,17 @@ export default async function withdraw({
   const signedTx = await signer.signTransaction(unsignedTx);
   const txResponse = await provider.sendTransaction(signedTx);
   console.log(`Withdraw tx sent: ${txResponse.hash}. Waiting for confirmation...`);
-  const txReceipt = await txResponse.wait();
-  if (txReceipt.status !== undefined) {
-    console.log('Withdraw tx confirmed');
-  } else {
-    console.log('Withdraw tx failed');
+  try {
+    const txReceipt = await txResponse.wait();
+    if (txReceipt.status !== undefined) {
+      console.log('Withdraw tx confirmed');
+    } else {
+      console.log('Withdraw tx failed');
+    }
+  } catch (e) {
+    if (!(e instanceof Error)) throw new Error('e is not an Error');
+    console.error(`Deposit tx failed: ${e.message}`, {
+      unsignedTx,
+    });
   }
 }

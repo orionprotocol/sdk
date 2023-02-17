@@ -1,4 +1,3 @@
-// import { ethers } from 'ethers';
 import Orion from '../Orion';
 import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';

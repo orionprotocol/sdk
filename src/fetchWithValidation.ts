@@ -1,4 +1,4 @@
-import { type Schema, type z } from 'zod';
+import type { Schema, z } from 'zod';
 import fetch from 'isomorphic-unfetch';
 
 import {

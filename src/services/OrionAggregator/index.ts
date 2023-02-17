@@ -9,7 +9,7 @@ import errorSchema from './schemas/errorSchema';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
 import { OrionAggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import { type Exchange, type SignedCancelOrderRequest, type SignedCFDOrder, type SignedOrder } from '../../types';
+import type { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types';
 import { pairConfigSchema } from './schemas';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
@@ -17,6 +17,8 @@ import {
 import type networkCodes from '../../constants/networkCodes';
 import toUpperCase from '../../utils/toUpperCase';
 import httpToWS from '../../utils/httpToWS';
+import { ethers } from 'ethers';
+import orderSchema from './schemas/orderSchema';
 
 class OrionAggregator {
   private readonly apiUrl: string;
@@ -55,6 +57,27 @@ class OrionAggregator {
     this.getAggregatedOrderbook = this.getAggregatedOrderbook.bind(this);
     this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
     this.getPoolReserves = this.getPoolReserves.bind(this);
+    this.getVersion = this.getVersion.bind(this);
+  }
+
+  getOrder = (orderId: string, owner?: string) => {
+    if (!ethers.utils.isHexString(orderId)) {
+      throw new Error(`Invalid order id: ${orderId}. Must be a hex string`);
+    }
+    const url = new URL(`${this.apiUrl}/api/v1/order`);
+    url.searchParams.append('orderId', orderId);
+    if (owner !== undefined) {
+      if (!ethers.utils.isAddress(owner)) {
+        throw new Error(`Invalid owner address: ${owner}`);
+      }
+      url.searchParams.append('owner', owner);
+    }
+    return fetchWithValidation(
+      url.toString(),
+      orderSchema,
+      undefined,
+      errorSchema,
+    );
   }
 
   getPairsList = (market: 'spot' | 'futures') => {
@@ -123,6 +146,17 @@ class OrionAggregator {
       errorSchema,
     );
   };
+
+  getVersion = () => fetchWithValidation(
+    `${this.apiUrl}/api/v1/version`,
+    z.object({
+      serviceName: z.string(),
+      version: z.string(),
+      apiVersion: z.string(),
+    }),
+    undefined,
+    errorSchema,
+  );
 
   getPairConfig = (assetPair: string) => fetchWithValidation(
     `${this.apiUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,

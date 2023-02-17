@@ -9,13 +9,13 @@ import {
   assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
 } from './schemas';
 import UnsubscriptionType from './UnsubscriptionType';
-import {
-  type SwapInfoBase, type AssetPairUpdate, type OrderbookItem,
-  type Balance, type Exchange, type CFDBalance, type FuturesTradeInfo, type SwapInfo,
+import type {
+  SwapInfoBase, AssetPairUpdate, OrderbookItem,
+  Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
-import { type fullOrderSchema, type orderUpdateSchema } from './schemas/addressUpdateSchema';
+import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
 import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema';
 // import errorSchema from './schemas/errorSchema';
@@ -79,35 +79,35 @@ type FuturesTradeInfoSubscription = {
 type AddressUpdateUpdate = {
   kind: 'update'
   balances: Partial<
-  Record<
-  string,
-  Balance
+    Record<
+      string,
+      Balance
+    >
   >
-  >
-  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
+  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined
 }
 
 type AddressUpdateInitial = {
   kind: 'initial'
   balances: Partial<
-  Record<
-  string,
-  Balance
+    Record<
+      string,
+      Balance
+    >
   >
-  >
-  orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
+  orders?: Array<z.infer<typeof fullOrderSchema>> | undefined // The field is not defined if the user has no orders
 }
 
 type CfdAddressUpdateUpdate = {
   kind: 'update'
-  balances?: CFDBalance[]
-  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema>
+  balances?: CFDBalance[] | undefined
+  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined
 }
 
 type CfdAddressUpdateInitial = {
   kind: 'initial'
   balances: CFDBalance[]
-  orders?: Array<z.infer<typeof fullOrderSchema>> // The field is not defined if the user has no orders
+  orders?: Array<z.infer<typeof fullOrderSchema>> | undefined // The field is not defined if the user has no orders
 }
 
 type AddressUpdateSubscription = {
@@ -156,7 +156,7 @@ type BufferLike =
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 class OrionAggregatorWS {
-  private ws: WebSocket | undefined;
+  private ws?: WebSocket | undefined;
 
   // is used to make sure we do not need to renew ws subscription
   // we can not be sure that onclose event will recieve our code when we do `ws.close(4000)`
@@ -168,11 +168,11 @@ class OrionAggregatorWS {
     [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
   }> = {};
 
-  public onInit?: () => void;
+  public onInit: (() => void) | undefined
 
-  public onError?: (err: string) => void;
+  public onError: ((err: string) => void) | undefined
 
-  public logger?: (message: string) => void;
+  public logger: ((message: string) => void) | undefined
 
   private readonly wsUrl: string;
 
@@ -229,15 +229,15 @@ class OrionAggregatorWS {
       ? ((subscription as any).payload as string) // TODO: Refactor!!!
       : uuidv4();
     const subRequest: Partial<Record<string, unknown>> = {};
-    subRequest.T = type;
-    subRequest.id = id;
+    subRequest['T'] = type;
+    subRequest['id'] = id;
 
     // TODO Refactor this
     if ('payload' in subscription) {
       if (typeof subscription.payload === 'string') {
-        subRequest.S = subscription.payload;
+        subRequest['S'] = subscription.payload;
       } else {
-        subRequest.S = {
+        subRequest['S'] = {
           d: id,
           ...subscription.payload,
         };
@@ -296,9 +296,9 @@ class OrionAggregatorWS {
         }
       }
     } else if (subscription === UnsubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_UNSUBSCRIBE) {
-      delete this.subscriptions[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]?.default;
+      delete this.subscriptions[SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]?.['default'];
     } else if (subscription === UnsubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_UNSUBSCRIBE) {
-      delete this.subscriptions[SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]?.default;
+      delete this.subscriptions[SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]?.['default'];
     }
   }
 
@@ -503,7 +503,7 @@ class OrionAggregatorWS {
 
           this.subscriptions[
             SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE
-          ]?.default?.callback({
+          ]?.['default']?.callback({
             kind: json.k === 'i' ? 'initial' : 'update',
             data: priceUpdates,
           });
@@ -612,7 +612,7 @@ class OrionAggregatorWS {
 
           this.subscriptions[
             SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE
-          ]?.default?.callback(brokerBalances);
+          ]?.['default']?.callback(brokerBalances);
         }
           break;
         default:

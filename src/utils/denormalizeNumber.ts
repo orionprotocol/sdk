@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { type ethers } from 'ethers';
+import type { ethers } from 'ethers';
 
 /**
  * Converts normalized blockchain ("machine-readable") number to denormalized ("human-readable") number.

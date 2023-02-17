@@ -10,6 +10,8 @@ import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
 import simpleFetch from '../../simpleFetch';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils';
 import { signOrder } from '../../crypt';
+import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema';
+import type { z } from 'zod';
 
 export type SwapMarketParams = {
   type: 'exactSpend' | 'exactReceive'
@@ -34,11 +36,13 @@ export type SwapMarketParams = {
 type AggregatorOrder = {
   through: 'aggregator'
   id: string
+  wait: () => Promise<z.infer<typeof orderSchema>>
 }
 
 type PoolSwap = {
   through: 'orion_pool'
   txHash: string
+  wait: (confirmations?: number | undefined) => Promise<ethers.providers.TransactionReceipt>
 }
 
 export type Swap = AggregatorOrder | PoolSwap;
@@ -293,6 +297,7 @@ export default async function swapMarket({
     const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughOrionPoolTx);
     options?.logger?.(`Transaction sent. Tx hash: ${swapThroughOrionPoolTxResponse.hash}`);
     return {
+      wait: swapThroughOrionPoolTxResponse.wait,
       through: 'orion_pool',
       txHash: swapThroughOrionPoolTxResponse.hash,
     };
@@ -408,6 +413,26 @@ export default async function swapMarket({
   options?.logger?.(`Order placed. Order id: ${orderId}`);
 
   return {
+    wait: () => new Promise<z.infer<typeof orderSchema>>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Timeout'))
+      }, 60000);
+      const interval = setInterval(() => {
+        simpleFetch(orionAggregator.getOrder)(orderId).then((data) => {
+          if (data.order.status === 'SETTLED') {
+            options?.logger?.(`Order ${orderId} settled`);
+            clearTimeout(timeout);
+            clearInterval(interval);
+            resolve(data);
+          } else {
+            options?.logger?.(`Order ${orderId} status: ${data.order.status}`);
+          }
+        }).catch((e) => {
+          if (!(e instanceof Error)) throw new Error('Not an error');
+          options?.logger?.(`Error while getting order status: ${e.message}`);
+        });
+      }, 1000);
+    }),
     through: 'aggregator',
     id: orderId,
   };
