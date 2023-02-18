@@ -29,7 +29,7 @@ const blockchainOrderSchema = z.object({
   buySide: z.union([z.literal(1), z.literal(0)]),
   signature: z.string().refine(ethers.utils.isHexString, (value) => ({
     message: `blockchainOrder.signature must be a hex string, got ${value}`,
-  })),
+  })).nullable(),
   isPersonalSign: z.boolean(),
   needWithdraw: z.boolean(),
 });
@@ -41,8 +41,8 @@ const tradeInfoSchema = z.object({
   price: z.number().nonnegative(),
   creationTime: z.number(),
   updateTime: z.number(),
-  matchedBlockchainOrder: blockchainOrderSchema,
-  matchedSubOrderId: z.number().int().nonnegative(),
+  matchedBlockchainOrder: blockchainOrderSchema.optional(),
+  matchedSubOrderId: z.number().int().nonnegative().optional(),
   exchangeTradeInfo: z.boolean(),
   poolTradeInfo: z.boolean(),
 });
@@ -60,6 +60,9 @@ const baseOrderSchema = z.object({
   internalOnly: z.boolean(),
 })
 
+const selfBrokers = exchanges.map((exchange) => `SELF_BROKER_${exchange}` as const);
+type SelfBroker = typeof selfBrokers[number];
+const isSelfBroker = (value: string): value is SelfBroker => selfBrokers.some((broker) => broker === value);
 const subOrderSchema = baseOrderSchema.extend({
   price: z.number(),
   id: z.number(),
@@ -68,9 +71,17 @@ const subOrderSchema = baseOrderSchema.extend({
   })),
   exchange: z.enum(exchanges),
   brokerAddress:
-        z.literal('ORION_BROKER').or(z.string().refine(ethers.utils.isAddress, (value) => ({
-          message: `subOrder.subOrders.[n].brokerAddress must be an address, got ${value}`,
-        }))),
+    // https://github.com/orionprotocol/orion-aggregator/blob/98f543e59b7bbf14d8db0417c6af5cf7575f3956/src/main/java/io/orionprotocol/aggregator/model/Exchange.java#L116
+    z.enum(['ORION_BROKER', 'SELF_BROKER'])
+      .or(z.custom<SelfBroker>((value) => {
+        if (typeof value === 'string' && isSelfBroker(value)) {
+          return true;
+        }
+        return false;
+      }))
+      .or(z.string().refine(ethers.utils.isAddress, (value) => ({
+        message: `subOrder.subOrders.[n].brokerAddress must be an address, got ${value}`,
+      }))),
   tradesInfo: z.record(
     z.string().uuid(),
     tradeInfoSchema
