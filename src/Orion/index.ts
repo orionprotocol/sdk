@@ -6,6 +6,7 @@ import { ReferralSystem } from '../services/ReferralSystem';
 import simpleFetch from '../simpleFetch';
 import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types';
 import { isValidChainId } from '../utils';
+import getBridgeHistory from './getBridgeHistory';
 
 type EnvConfig = {
   analyticsAPI: string
@@ -208,5 +209,9 @@ export default class Orion {
     }));
 
     return result;
+  }
+
+  bridge = {
+    getHistory: (address: string, limit = 1000) => getBridgeHistory(this.unitsArray, address, limit),
   }
 }

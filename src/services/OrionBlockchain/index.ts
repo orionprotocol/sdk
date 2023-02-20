@@ -374,7 +374,7 @@ class OrionBlockchain {
         url.searchParams.append(key, value.toString());
       });
 
-    if (query.type !== undefined) url.searchParams.append('type', 'source');
+    if (query.type === undefined) url.searchParams.append('type', 'source');
 
     return fetchWithValidation(url.toString(), sourceAtomicHistorySchema);
   };
@@ -388,7 +388,7 @@ class OrionBlockchain {
         url.searchParams.append(key, value.toString());
       });
 
-    if (query.type !== undefined) url.searchParams.append('type', 'target');
+    if (query.type === undefined) url.searchParams.append('type', 'target');
 
     return fetchWithValidation(url.toString(), targetAtomicHistorySchema);
   };
