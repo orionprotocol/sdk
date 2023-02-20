@@ -3,6 +3,7 @@ import { SupportedChainId } from '../types';
 export const developmentChains = [
   SupportedChainId.BSC_TESTNET,
   SupportedChainId.ROPSTEN,
+  SupportedChainId.GOERLI,
   SupportedChainId.FANTOM_TESTNET,
   SupportedChainId.POLYGON_TESTNET,
   SupportedChainId.OKC_TESTNET,

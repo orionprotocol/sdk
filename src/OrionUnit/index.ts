@@ -76,7 +76,9 @@ export default class OrionUnit {
     // this.env = config.env;
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
-    this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc);
+    const intNetwork = parseInt(this.chainId, 10);
+    if (Number.isNaN(intNetwork)) throw new Error('Invalid chainId (not a number)' + this.chainId);
+    this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
 
     this.orionBlockchain = new OrionBlockchain(this.config.services.orionBlockchain.http);
     this.orionAggregator = new OrionAggregator(
