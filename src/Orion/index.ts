@@ -2,7 +2,6 @@ import { merge } from 'merge-anything';
 import { chains, envs } from '../config';
 import type { networkCodes } from '../constants';
 import OrionUnit from '../OrionUnit';
-import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
 import simpleFetch from '../simpleFetch';
 import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types';
@@ -33,8 +32,6 @@ export default class Orion {
   public readonly env?: string;
 
   public readonly units: Partial<Record<SupportedChainId, OrionUnit>>;
-
-  public readonly orionAnalytics: OrionAnalytics;
 
   public readonly referralSystem: ReferralSystem;
 
@@ -98,7 +95,6 @@ export default class Orion {
       config = envOrConfig;
     }
 
-    this.orionAnalytics = new OrionAnalytics(config.analyticsAPI);
     this.referralSystem = new ReferralSystem(config.referralAPI);
 
     this.units = Object.entries(config.networks)

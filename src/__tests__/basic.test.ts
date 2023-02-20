@@ -1,5 +1,4 @@
 import Orion from '../Orion';
-import OrionAnalytics from '../services/OrionAnalytics';
 import { ReferralSystem } from '../services/ReferralSystem';
 import simpleFetch from '../simpleFetch';
 import { SupportedChainId } from '../types';
@@ -10,6 +9,7 @@ import httpToWS from '../utils/httpToWS';
 import {
   createHttpTerminator,
 } from 'http-terminator';
+import { ethers } from 'ethers';
 
 jest.setTimeout(10000);
 
@@ -80,7 +80,6 @@ const createServer = (externalHost: string) => {
 describe('Orion', () => {
   test('Init Orion testing', () => {
     const orion = new Orion('testing');
-    expect(orion.orionAnalytics).toBeInstanceOf(OrionAnalytics);
     expect(orion.referralSystem).toBeInstanceOf(ReferralSystem);
     expect(orion.unitsArray.length).toBe(4); // eth, bsc, polygon, fantom
 
@@ -112,7 +111,6 @@ describe('Orion', () => {
   test('Init Orion production', () => {
     const orion = new Orion();
     expect(orion.env).toBe('production');
-    expect(orion.orionAnalytics).toBeInstanceOf(OrionAnalytics);
     expect(orion.referralSystem).toBeInstanceOf(ReferralSystem);
     expect(orion.unitsArray.length).toBe(5); // eth, bsc, polygon, fantom, okc
 
@@ -188,10 +186,8 @@ describe('Orion', () => {
     if (!orionUnit) {
       throw new Error('Orion unit is not defined');
     }
-    expect(orion.orionAnalytics).toBeInstanceOf(OrionAnalytics);
     expect(orion.referralSystem).toBeInstanceOf(ReferralSystem);
     expect(orion.unitsArray.length).toBe(1); // eth
-    expect(orion.orionAnalytics.api).toBe('https://analytics-api.orionprotocol.io');
     expect(orion.referralSystem.api).toBe('https://referral-api.orionprotocol.io');
     expect(orionUnit.chainId).toBe(SupportedChainId.MAINNET);
     // expect(orionUnit.env).toBeUndefined();
@@ -251,7 +247,6 @@ describe('Orion', () => {
 
     const bscOrionUnit = orion.units[SupportedChainId.BSC_TESTNET]
     expect(bscOrionUnit?.provider.connection.url).toBe('https://data-seed-prebsc-1-s1.binance.org:8545/');
-    expect(orion.orionAnalytics.api).toBe('https://asdasd.orionprotocol.io');
     expect(orion.referralSystem.api).toBe('https://zxczxc.orionprotocol.io');
   });
 
@@ -286,44 +281,41 @@ describe('Orion', () => {
       })
     });
     expect(aobusDone).toBe(true);
-    // const candles = await simpleFetch(orionUnitBSC.priceFeed.getCandles)(
-    //   'BTC-USDT',
-    //   Math.floor((Date.now() - 1000 * 60 * 60 * 24 * 30) / 1000), // 1 month ago
-    //   Math.floor(Date.now() / 1000), // now
-    //   '1d'
-    // );
-    // expect(candles).toBeDefined();
+    const candles = await simpleFetch(orionUnitBSC.priceFeed.getCandles)(
+      'BTC-USDT',
+      Math.floor((Date.now() - 1000 * 60 * 60 * 24 * 30) / 1000), // 1 month ago
+      Math.floor(Date.now() / 1000), // now
+      '1d'
+    );
+    expect(candles).toBeDefined();
 
-    // const allTickersDone = await new Promise<boolean>((resolve, reject) => {
-    //   const timeout = setTimeout(() => {
-    //     reject(new Error('Timeout'));
-    //   }, 10000);
+    const allTickersDone = await new Promise<boolean>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Timeout'));
+      }, 10000);
 
-    //   const { unsubscribe } = orionUnitBSC.priceFeed.ws.subscribe(
-    //     'allTickers',
-    //     {
-    //       callback: () => {
-    //         resolve(true);
-    //         unsubscribe();
-    //         clearTimeout(timeout);
-    //       }
-    //     }
-    //   )
-    // });
-    // expect(allTickersDone).toBe(true);
+      const { unsubscribe } = orionUnitBSC.priceFeed.ws.subscribe(
+        'allTickers',
+        {
+          callback: () => {
+            resolve(true);
+            unsubscribe();
+            clearTimeout(timeout);
+          }
+        }
+      )
+    });
+    expect(allTickersDone).toBe(true);
 
-    // const blockNumber = await orionUnitBSC.provider.getBlockNumber();
-    // expect(blockNumber).toBeDefined();
-    // const network = await orionUnitBSC.provider.getNetwork();
-    // expect(network.chainId).toBe(97);
+    const blockNumber = await orionUnitBSC.provider.getBlockNumber();
+    expect(blockNumber).toBeDefined();
+    const network = await orionUnitBSC.provider.getNetwork();
+    expect(network.chainId).toBe(97);
 
-    // const stats = await simpleFetch(orion.orionAnalytics.getOverview)();
-    // expect(stats).toBeDefined();
-
-    // const zeroAddressWithout0x = ethers.constants.AddressZero.slice(2);
-    // expect(simpleFetch(orion.referralSystem.getMiniStats)(zeroAddressWithout0x))
-    //   .rejects
-    //   .toThrow('empty reward history');
+    const zeroAddressWithout0x = ethers.constants.AddressZero.slice(2);
+    expect(simpleFetch(orion.referralSystem.getMiniStats)(zeroAddressWithout0x))
+      .rejects
+      .toThrow('empty reward history');
   });
 
   test('Get Orion unit by networkCode', () => {

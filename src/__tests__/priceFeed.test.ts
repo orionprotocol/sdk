@@ -9,6 +9,7 @@ describe('Price Feed', () => {
         const timeout = setTimeout(() => {
           reject(new Error('Timeout'));
         }, 10000);
+        console.log('Subscribing to ticker: ', ticker, ' on network: ', unit.networkCode);
         const { unsubscribe } = unit.priceFeed.ws.subscribe('ticker', {
           payload: ticker,
           callback: () => {
