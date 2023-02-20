@@ -2,6 +2,7 @@ import type BigNumber from 'bignumber.js';
 import type exchanges from './constants/exchanges';
 import type subOrderStatuses from './constants/subOrderStatuses';
 import type positionStatuses from './constants/positionStatuses';
+import type { knownEnvs } from './config/schemas';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -284,4 +285,4 @@ export type VerboseOrionUnitConfig = {
   }
 }
 
-export type KnownEnv = 'testing' | 'staging' | 'production';
+export type KnownEnv = typeof knownEnvs[number];

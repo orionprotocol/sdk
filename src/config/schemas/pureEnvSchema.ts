@@ -28,7 +28,9 @@ export const pureEnvPayloadSchema = z.object({
   ),
 });
 
+export const knownEnvs = ['production', 'staging', 'testing'] as const;
+
 export const pureEnvSchema = z.record(
-  z.enum(['production', 'staging', 'testing']).or(z.string()),
+  z.enum(knownEnvs).or(z.string()),
   pureEnvPayloadSchema,
 );
