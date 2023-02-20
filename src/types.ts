@@ -117,6 +117,7 @@ export type Pair = {
 export enum SupportedChainId {
   MAINNET = '1',
   ROPSTEN = '3',
+  GOERLI = '5',
   FANTOM_OPERA = '250',
   POLYGON = '137',
   OKC = '66',

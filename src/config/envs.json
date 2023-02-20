@@ -117,6 +117,21 @@
         },
         "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
       },
+      "5": {
+        "api": "https://testing.orionprotocol.io/eth-goerli",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
+      },
       "4002": {
         "api": "https://testing.orionprotocol.io/ftm-testnet",
         "services": {

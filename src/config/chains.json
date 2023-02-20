@@ -35,6 +35,15 @@
     "rpc": "https://testing.orionprotocol.io/eth-ropsten/rpc",
     "baseCurrencyName": "ETH"
   },
+  "5": {
+    "chainId": "5",
+    "explorer": "https://goerli.etherscan.io/",
+    "label": "Goerli",
+    "shortName": "ETH-Goerli",
+    "code": "eth",
+    "rpc": "https://testing.orionprotocol.io/eth-goerli/rpc",
+    "baseCurrencyName": "ETH"
+  },
   "4002": {
     "chainId": "4002",
     "explorer": "https://testnet.ftmscan.com/",
