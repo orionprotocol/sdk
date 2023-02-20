@@ -39,14 +39,14 @@ class PriceFeed {
     return fetchWithValidation(url.toString(), candlesSchema);
   };
 
-  getStatisticsOverview(exchange: Exchange | 'ALL' = 'ALL') {
+  getStatisticsOverview = (exchange: Exchange | 'ALL' = 'ALL') => {
     const url = new URL(`${this.statisticsUrl}/overview`);
     url.searchParams.append('exchange', exchange);
 
     return fetchWithValidation(url.toString(), statisticsOverviewSchema);
   }
 
-  getTopPairStatistics(exchange: Exchange | 'ALL' = 'ALL') {
+  getTopPairStatistics = (exchange: Exchange | 'ALL' = 'ALL') => {
     const url = new URL(`${this.statisticsUrl}/top-pairs`);
     url.searchParams.append('exchange', exchange);
 
