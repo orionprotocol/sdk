@@ -33,6 +33,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 - [High level methods](#high-level-methods)
   - [Get assets](#get-assets)
   - [Get pairs](#get-pairs)
+  - [Get Orion Bridge history](#get-orion-bridge-history)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
   - [Get swap info](#get-swap-info)
@@ -137,6 +138,14 @@ const pairs = await orion.getPairs("spot"); // 'spot' | 'futures'
 //   'ORN-USDT': [ '250', '66', '1', '56', '137' ],
 //   'USDT-USDC': [ '250', '66', '1', '56', '137' ],
 // }
+```
+
+### Get Orion Bridge history
+
+```ts
+const bridgeHistory = await orion.bridge.getHistory(
+  "0x0000000000000000000000000000000000000000"
+);
 ```
 
 ### Withdraw
