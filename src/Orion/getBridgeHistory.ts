@@ -3,6 +3,7 @@ import type OrionUnit from '../OrionUnit';
 import simpleFetch from '../simpleFetch';
 import type { SupportedChainId } from '../types';
 import { isValidChainId } from '../utils';
+import ObjectID from 'bson-objectid';
 
 const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 1000) => {
   if (!ethers.utils.isAddress(address)) throw new Error(`Invalid address: ${address}`);
@@ -113,8 +114,40 @@ const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 100
       }
     }, {});
 
+    type TargetItem = NonNullable<typeof data[number]['targetNetworkHistory'][string]>;
+    type SourceItem = NonNullable<typeof data[number]['sourceNetworkHistory'][string]>;
+    type AggItem = NonNullable<typeof data[number]['orionAggregatorHistoryAtomicSwaps'][string]>;
+
+    type AggregatedItem = {
+      creationDate: Date
+      sourceChainId: SupportedChainId
+      targetChainId: SupportedChainId
+      used: boolean
+      claimed: boolean
+      isAggApplied: boolean
+      asset: string
+      sender: string
+      secretHash: string
+      receiver: string | undefined
+      secret: string | undefined
+      timestamp: TargetItem['timestamp'] & SourceItem['timestamp']
+      expiration: TargetItem['expiration'] & SourceItem['expiration']
+      transactions: TargetItem['transactions'] & SourceItem['transactions']
+      lockOrder: AggItem['lockOrder'] | undefined
+      redeemOrder: AggItem['redeemOrder'] | undefined
+      amountToReceive: SourceItem['amountToReceive']
+      amountToSpend: SourceItem['amountToSpend']
+      status: {
+        source: SourceItem['state']
+        target: TargetItem['state'] | undefined
+        aggregator: AggItem['status'] | undefined
+      }
+    }
+
     // Aggregate data
-    const aggregatedData = Object.entries(unitedSourceItems).map(([secretHash, item]) => {
+    const aggregatedData = Object.entries(unitedSourceItems).reduce<
+        Partial<Record<string, AggregatedItem>>
+    >((acc, [secretHash, item]) => {
       if (item === undefined) throw new Error(`Item is undefined for secretHash: ${secretHash}`);
 
       const targetItem = unitedTargetItems[secretHash];
@@ -131,7 +164,10 @@ const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 100
       if (!isValidChainId(targetChainIdFromSource)) {
         throw new Error(`Invalid targetChainId: ${targetChainIdFromSource}`);
       }
-      return {
+
+      const creationDate = ObjectID(item._id).getTimestamp();
+      const dataItem = {
+        creationDate,
         sourceChainId: item.sourceChainId,
         targetChainId: targetItem?.targetChainId ?? targetChainIdFromSource,
         // Shared data
@@ -167,8 +203,9 @@ const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 100
         lockOrder: aggItem?.lockOrder,
         redeemOrder: aggItem?.redeemOrder,
       }
-    });
-
+      acc[secretHash] = dataItem;
+      return acc;
+    }, {});
     return aggregatedData;
 }
 
