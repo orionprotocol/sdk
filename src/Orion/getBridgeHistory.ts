@@ -114,9 +114,9 @@ const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 100
       }
     }, {});
 
-    type TargetItem = NonNullable<typeof data[number]['targetNetworkHistory'][string]>;
-    type SourceItem = NonNullable<typeof data[number]['sourceNetworkHistory'][string]>;
-    type AggItem = NonNullable<typeof data[number]['orionAggregatorHistoryAtomicSwaps'][string]>;
+    type TargetItem = NonNullable<TargetItems[string]>;
+    type SourceItem = NonNullable<SourceItems[string]>;
+    type AggItem = NonNullable<AggItems[string]>;
 
     type AggregatedItem = {
       creationDate: Date
