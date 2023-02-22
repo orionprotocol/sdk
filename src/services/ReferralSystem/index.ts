@@ -85,15 +85,20 @@ class ReferralSystem {
     }),
   );
 
-  getRewardsMapping = (referralAddress: string) => fetchWithValidation(
-    `${this.apiUrl}/referer/view/rewards-mapping`,
-    rewardsMappingSchema,
-    {
-      headers: {
-        referral: referralAddress,
+  getRewardsMapping = (
+    referralAddress: string,
+    page = 1,
+    positionsPerPage = 10
+  ) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/view/rewards-mapping?n_per_page=${positionsPerPage}&page=${page}`,
+      rewardsMappingSchema,
+      {
+        headers: {
+          referral: referralAddress,
+        },
       },
-    },
-  );
+    );
 
   createReferralLink = (payload: CreateLinkPayloadType, signature: SignatureType) => fetchWithValidation(
     `${this.apiUrl}/referer/create`,
