@@ -19,6 +19,7 @@ import toUpperCase from '../../utils/toUpperCase';
 import httpToWS from '../../utils/httpToWS';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema';
+import { exchanges } from '../../constants';
 
 class OrionAggregator {
   private readonly apiUrl: string;
@@ -101,6 +102,11 @@ class OrionAggregator {
       errorSchema,
     );
   };
+
+  getAvailableExchanges = () => fetchWithValidation(
+    `${this.apiUrl}/api/v1/exchange/list`,
+    z.enum(exchanges).array(),
+  );
 
   getExchangeOrderbook = (
     pair: string,
