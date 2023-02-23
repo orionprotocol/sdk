@@ -1,10 +1,13 @@
 import type OrionUnit from '..';
 import deposit, { type DepositParams } from './deposit';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo';
+import type { SwapLimitParams } from './swapLimit';
+import swapLimit from './swapLimit';
 import swapMarket, { type SwapMarketParams } from './swapMarket';
 import withdraw, { type WithdrawParams } from './withdraw';
 
 type PureSwapMarketParams = Omit<SwapMarketParams, 'orionUnit'>
+type PureSwapLimitParams = Omit<SwapLimitParams, 'orionUnit'>
 type PureDepositParams = Omit<DepositParams, 'orionUnit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'orionUnit'>
 type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'orionBlockchain' | 'orionAggregator'>
@@ -14,6 +17,13 @@ export default class Exchange {
 
   constructor(orionUnit: OrionUnit) {
     this.orionUnit = orionUnit;
+  }
+
+  public swapLimit(params: PureSwapLimitParams) {
+    return swapLimit({
+      ...params,
+      orionUnit: this.orionUnit,
+    });
   }
 
   public swapMarket(params: PureSwapMarketParams) {

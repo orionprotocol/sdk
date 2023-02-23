@@ -101,22 +101,6 @@
         },
         "liquidityMigratorAddress": "0x01b10dds12478C88A5E18e2707E729906bC25CfF6"
       },
-      "3": {
-        "api": "https://testing.orionprotocol.io/eth-ropsten",
-        "services": {
-          "aggregator": {
-            "http": "/backend",
-            "ws": "/v1"
-          },
-          "blockchain": {
-            "http": ""
-          },
-          "priceFeed": {
-            "all": "/price-feed"
-          }
-        },
-        "liquidityMigratorAddress": "0x36969a25622AE31bA9946e0c8151f0dc08b3A1c8"
-      },
       "5": {
         "api": "https://testing.orionprotocol.io/eth-goerli",
         "services": {
