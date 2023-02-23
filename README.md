@@ -34,6 +34,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
   - [Get assets](#get-assets)
   - [Get pairs](#get-pairs)
   - [Get Orion Bridge history](#get-orion-bridge-history)
+  - [Bridge swap](#bridge-swap)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
   - [Get swap info](#get-swap-info)
@@ -146,6 +147,26 @@ const pairs = await orion.getPairs("spot"); // 'spot' | 'futures'
 ```ts
 const bridgeHistory = await orion.bridge.getHistory(
   "0x0000000000000000000000000000000000000000"
+);
+```
+
+### Bridge swap
+
+```ts
+const orion = new Orion("production");
+const wallet = new Wallet(privateKey);
+
+orion.bridge.swap(
+  "ORN", // Asset name
+  0.12345678, // Amount
+  SupportedChainId.FANTOM_OPERA,
+  SupportedChainId.BSC,
+  wallet,
+  {
+    autoApprove: true,
+    logger: console.log,
+    withdrawToWallet: true, // Enable withdraw to wallet
+  }
 );
 ```
 

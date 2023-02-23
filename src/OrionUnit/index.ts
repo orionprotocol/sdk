@@ -79,6 +79,7 @@ export default class OrionUnit {
     const intNetwork = parseInt(this.chainId, 10);
     if (Number.isNaN(intNetwork)) throw new Error('Invalid chainId (not a number)' + this.chainId);
     this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
+    this.provider.pollingInterval = 1000;
 
     this.orionBlockchain = new OrionBlockchain(this.config.services.orionBlockchain.http);
     this.orionAggregator = new OrionAggregator(

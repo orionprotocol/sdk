@@ -1,11 +1,11 @@
 import { ethers } from 'ethers';
-import type OrionUnit from '../OrionUnit';
-import simpleFetch from '../simpleFetch';
-import type { SupportedChainId } from '../types';
-import { isValidChainId } from '../utils';
+import type OrionUnit from '../../OrionUnit';
+import simpleFetch from '../../simpleFetch';
+import type { SupportedChainId } from '../../types';
+import { isValidChainId } from '../../utils';
 import ObjectID from 'bson-objectid';
 
-const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 1000) => {
+const getHistory = async (units: OrionUnit[], address: string, limit = 1000) => {
   if (!ethers.utils.isAddress(address)) throw new Error(`Invalid address: ${address}`);
   const data = await Promise.all(units.map(async ({ orionBlockchain, orionAggregator, chainId }) => {
     const sourceNetworkHistory = await simpleFetch(orionBlockchain.getSourceAtomicSwapHistory)({
@@ -209,4 +209,4 @@ const getBridgeHistory = async (units: OrionUnit[], address: string, limit = 100
     return aggregatedData;
 }
 
-export default getBridgeHistory;
+export default getHistory;

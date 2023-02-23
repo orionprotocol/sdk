@@ -1,3 +1,5 @@
+import type BigNumber from 'bignumber.js';
+import type { ethers } from 'ethers';
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config';
 import type { networkCodes } from '../constants';
@@ -6,7 +8,8 @@ import { ReferralSystem } from '../services/ReferralSystem';
 import simpleFetch from '../simpleFetch';
 import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types';
 import { isValidChainId } from '../utils';
-import getBridgeHistory from './getBridgeHistory';
+import swap from './bridge/swap';
+import getHistory from './bridge/getHistory';
 
 type EnvConfig = {
   analyticsAPI: string
@@ -212,6 +215,26 @@ export default class Orion {
   }
 
   bridge = {
-    getHistory: (address: string, limit = 1000) => getBridgeHistory(this.unitsArray, address, limit),
+    getHistory: (address: string, limit = 1000) => getHistory(this.unitsArray, address, limit),
+    swap: (
+      assetName: string,
+      amount: BigNumber.Value,
+      sourceChain: SupportedChainId,
+      targetChain: SupportedChainId,
+      signer: ethers.Signer,
+      options: {
+        autoApprove?: boolean
+        logger?: (message: string) => void
+        withdrawToWallet?: boolean
+      }
+    ) => swap({
+      amount,
+      assetName,
+      sourceChain,
+      targetChain,
+      signer,
+      orion: this,
+      options,
+    })
   }
 }
