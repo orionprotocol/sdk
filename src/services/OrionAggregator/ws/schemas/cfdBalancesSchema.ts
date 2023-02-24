@@ -18,6 +18,11 @@ const cfdBalanceSchema = z
     awb: z.string(),
     l: z.string(),
     s: z.enum(positionStatuses),
+    lfrs: z.string(),
+    lfrd: z.string(),
+    sfrs: z.string(),
+    sfrd: z.string(),
+    sop: z.string().nullable(),
   })
   .transform((obj) => ({
     instrument: obj.i,
@@ -35,6 +40,11 @@ const cfdBalanceSchema = z
     availableWithdrawBalance: obj.awb,
     leverage: obj.l,
     status: obj.s,
+    longFundingRatePerSecond: obj.lfrs,
+    longFundingRatePerDay: obj.lfrd,
+    shortFundingRatePerSecond: obj.sfrs,
+    shortFundingRatePerDay: obj.sfrd,
+    stopOutPrice: obj.sop
   }));
 
 const cfdBalancesSchema = z.array(cfdBalanceSchema);

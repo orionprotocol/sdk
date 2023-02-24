@@ -50,6 +50,11 @@ export type CFDBalance = {
   availableWithdrawBalance: string
   leverage: string
   status: PositionStatus
+  longFundingRatePerSecond: string
+  longFundingRatePerDay: string
+  shortFundingRatePerSecond: string
+  shortFundingRatePerDay: string
+  stopOutPrice: string | null
 }
 
 export type Order = {
