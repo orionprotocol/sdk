@@ -22,7 +22,7 @@ const cfdBalanceSchema = z
     lfrd: z.string(),
     sfrs: z.string(),
     sfrd: z.string(),
-    sop: z.string().nullable(),
+    sop: z.string().optional(),
   })
   .transform((obj) => ({
     instrument: obj.i,
