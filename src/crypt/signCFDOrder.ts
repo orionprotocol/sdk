@@ -25,6 +25,7 @@ export const signCFDOrder = async (
   usePersonalSign: boolean,
   signer: ethers.Signer,
   chainId: SupportedChainId,
+  stopPrice: BigNumber.Value | undefined,
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
@@ -51,6 +52,13 @@ export const signCFDOrder = async (
     nonce,
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
+    stopPrice: stopPrice !== undefined
+      ? normalizeNumber(
+        stopPrice,
+        INTERNAL_ORION_PRECISION,
+        BigNumber.ROUND_FLOOR,
+      ).toNumber()
+      : undefined,
     isPersonalSign: usePersonalSign,
   };
 
