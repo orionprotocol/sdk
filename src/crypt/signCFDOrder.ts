@@ -30,24 +30,6 @@ export const signCFDOrder = async (
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
 
-  // console.log('price', price);
-  // console.log('price to string', price.toString());
-  // console.log('normalizeNumber', normalizeNumber(
-  //   price,
-  //   INTERNAL_ORION_PRECISION,
-  //   BigNumber.ROUND_FLOOR,
-  // ).toNumber());
-  // console.log('stopPrice', stopPrice);
-  // console.log('stopPrice to string', stopPrice?.toString());
-  // console.log('new BigNumber(stopPrice).toNumber()', new BigNumber(stopPrice ?? 0).toNumber());
-  // console.log('normalizeNumber', normalizeNumber(
-  //   stopPrice ?? 0,
-  //   INTERNAL_ORION_PRECISION,
-  //   BigNumber.ROUND_FLOOR,
-  // ).toNumber());
-  // console.log('ethers.BigNumber.from(stopPrice)', ethers.BigNumber.from(stopPrice?.toString()));
-  // console.log('ethers.BigNumber.from(stopPrice).toNumber()', ethers.BigNumber.from(stopPrice?.toString()).toNumber());
-
   const order: CFDOrder = {
     senderAddress,
     matcherAddress,
