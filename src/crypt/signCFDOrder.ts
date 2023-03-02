@@ -1,6 +1,6 @@
 import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import BigNumber from 'bignumber.js';
-import type { ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils';
 import { INTERNAL_ORION_PRECISION } from '../constants';
 import type { CFDOrder, SignedCFDOrder, SupportedChainId } from '../types';
@@ -30,6 +30,24 @@ export const signCFDOrder = async (
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
 
+  console.log('price', price);
+  console.log('price to string', price.toString());
+  console.log('normalizeNumber', normalizeNumber(
+    price,
+    INTERNAL_ORION_PRECISION,
+    BigNumber.ROUND_FLOOR,
+  ).toNumber());
+  console.log('stopPrice', stopPrice);
+  console.log('stopPrice to string', stopPrice?.toString());
+  console.log('new BigNumber(stopPrice).toNumber()', new BigNumber(stopPrice ?? 0).toNumber());
+  console.log('normalizeNumber', normalizeNumber(
+    stopPrice ?? 0,
+    INTERNAL_ORION_PRECISION,
+    BigNumber.ROUND_FLOOR,
+  ).toNumber());
+  console.log('ethers.BigNumber.from(stopPrice)', ethers.BigNumber.from(stopPrice));
+  console.log('ethers.BigNumber.from(stopPrice).toNumber()', ethers.BigNumber.from(stopPrice).toNumber());
+
   const order: CFDOrder = {
     senderAddress,
     matcherAddress,
@@ -53,7 +71,7 @@ export const signCFDOrder = async (
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
     stopPrice: stopPrice !== undefined
-      ? new BigNumber(stopPrice).toNumber()
+      ? ethers.BigNumber.from(stopPrice).toNumber()
       : undefined,
     isPersonalSign: usePersonalSign,
   };
