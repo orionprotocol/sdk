@@ -45,8 +45,8 @@ export const signCFDOrder = async (
     INTERNAL_ORION_PRECISION,
     BigNumber.ROUND_FLOOR,
   ).toNumber());
-  console.log('ethers.BigNumber.from(stopPrice)', ethers.BigNumber.from(stopPrice));
-  console.log('ethers.BigNumber.from(stopPrice).toNumber()', ethers.BigNumber.from(stopPrice).toNumber());
+  console.log('ethers.BigNumber.from(stopPrice)', ethers.BigNumber.from(new BigNumber(stopPrice ?? 0)));
+  console.log('ethers.BigNumber.from(stopPrice).toNumber()', ethers.BigNumber.from(new BigNumber(stopPrice ?? 0)).toNumber());
 
   const order: CFDOrder = {
     senderAddress,
@@ -71,7 +71,7 @@ export const signCFDOrder = async (
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
     stopPrice: stopPrice !== undefined
-      ? ethers.BigNumber.from(stopPrice).toNumber()
+      ? ethers.BigNumber.from(new BigNumber(stopPrice)).toNumber()
       : undefined,
     isPersonalSign: usePersonalSign,
   };
