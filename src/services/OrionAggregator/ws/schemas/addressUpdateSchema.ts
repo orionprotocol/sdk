@@ -33,7 +33,6 @@ export const orderUpdateSchema = z.object({
   A: z.number(), // settled amount
   S: z.enum(orderStatuses), // status
   l: z.boolean().optional(), // is liquidation order
-  L: z.number().optional(), // stop limit price,
   t: z.number(), // update time
   c: subOrderSchema.array(),
 })
@@ -46,7 +45,6 @@ export const orderUpdateSchema = z.object({
     settledAmount: o.A,
     status: o.S,
     liquidated: o.l,
-    stopPrice: o.L,
     subOrders: o.c.map((so) => ({
       pair: so.P,
       exchange: so.e,
