@@ -53,11 +53,7 @@ export const signCFDOrder = async (
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
     stopPrice: stopPrice !== undefined
-      ? normalizeNumber(
-        stopPrice,
-        INTERNAL_ORION_PRECISION,
-        BigNumber.ROUND_FLOOR,
-      ).toNumber()
+      ? new BigNumber(stopPrice).toNumber()
       : undefined,
     isPersonalSign: usePersonalSign,
   };
