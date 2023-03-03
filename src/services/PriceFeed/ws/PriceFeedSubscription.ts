@@ -158,6 +158,5 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
   kill() {
     this.isClosedIntentionally = true;
     this.ws?.close();
-    clearInterval(this.heartbeatInterval);
   }
 }
