@@ -82,6 +82,7 @@ export type CFDOrder = {
   nonce: number // uint64
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
+  stopPrice?: number | undefined // uint64
   isPersonalSign: boolean // bool
 }
 

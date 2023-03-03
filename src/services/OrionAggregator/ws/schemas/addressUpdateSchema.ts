@@ -69,6 +69,7 @@ export const fullOrderSchema = z.object({
   F: z.string(), // fee asset
   f: z.number(), // fee
   l: z.boolean().optional(), // is liquidation order
+  L: z.number().optional(), // stop limit price,
   o: z.boolean(), // internal only
   S: z.enum(orderStatuses), // status
   T: z.number(), // creation time / unix timestamp
@@ -84,6 +85,7 @@ export const fullOrderSchema = z.object({
   feeAsset: o.F,
   fee: o.f,
   liquidated: o.l,
+  stopPrice: o.L,
   status: o.S,
   date: o.T,
   clientOrdId: o.O,
