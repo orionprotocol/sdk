@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
 import type BigNumber from 'bignumber.js';
 import type exchanges from './constants/exchanges';
 import type subOrderStatuses from './constants/subOrderStatuses';
@@ -292,3 +293,12 @@ export type VerboseOrionUnitConfig = {
 }
 
 export type KnownEnv = typeof knownEnvs[number];
+
+export type AnyJSON = string | number | boolean | null | JSONObject | JSONArray;
+
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+interface JSONObject {
+  [x: string]: AnyJSON
+}
+
+interface JSONArray extends Array<AnyJSON> {}

@@ -308,7 +308,7 @@ export default async function swap({
   options?.logger?.('Redeem tx mined.');
   options?.logger?.('Atomic swap completed.');
 
-  if (options?.withdrawToWallet) {
+  if (options?.withdrawToWallet !== undefined && options.withdrawToWallet) {
     options.logger?.('Withdrawing to wallet...');
     const unsignedWithdrawTx = await targetExchangeContract.populateTransaction.withdraw(
       targetChainAssetAddress,

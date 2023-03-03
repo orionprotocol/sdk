@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import priceFeedSubscriptions from './priceFeedSubscriptions';
 import { tickerInfoSchema, candleSchema } from './schemas';
 import priceSchema from './schemas/priceSchema';
+import type { AnyJSON } from '../../../types';
 
 type TickerInfo = {
   pairName: string
@@ -100,6 +101,17 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     this.init();
   }
 
+  private send(jsonObject: AnyJSON) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      const jsonData = JSON.stringify(jsonObject);
+      this.ws.send(jsonData);
+    } else {
+      setTimeout(() => {
+        this.send(jsonObject);
+      }, 50);
+    }
+  }
+
   init() {
     this.isClosedIntentionally = false;
 
@@ -139,12 +151,13 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     };
 
     this.heartbeatInterval = setInterval(() => {
-      this.ws?.send('heartbeat');
+      this.send('heartbeat');
     }, 15000);
   }
 
   kill() {
     this.isClosedIntentionally = true;
     this.ws?.close();
+    clearInterval(this.heartbeatInterval);
   }
 }

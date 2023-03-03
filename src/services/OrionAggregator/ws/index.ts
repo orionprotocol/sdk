@@ -11,7 +11,7 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import type {
   SwapInfoBase, AssetPairUpdate, OrderbookItem,
-  Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo,
+  Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo, AnyJSON,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
@@ -202,14 +202,14 @@ class OrionAggregatorWS {
     }
   }
 
-  private send(data: unknown) {
-    if (this.ws?.readyState === 1) {
-      const jsonData = JSON.stringify(data);
+  private send(jsonObject: AnyJSON) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      const jsonData = JSON.stringify(jsonObject);
       this.ws.send(jsonData);
       this.logger?.(`Sent: ${jsonData}`);
     } else {
       setTimeout(() => {
-        this.send(data);
+        this.send(jsonObject);
       }, 50);
     }
   }
@@ -228,7 +228,7 @@ class OrionAggregatorWS {
     const id = type === 'aobus'
       ? ((subscription as any).payload as string) // TODO: Refactor!!!
       : uuidv4();
-    const subRequest: Partial<Record<string, unknown>> = {};
+    const subRequest: AnyJSON = {};
     subRequest['T'] = type;
     subRequest['id'] = id;
 
@@ -259,7 +259,7 @@ class OrionAggregatorWS {
     this.send({
       T: UNSUBSCRIBE,
       S: subscription,
-      d: details,
+      ...(details !== undefined) && { d: details },
     });
 
     if (subscription.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
