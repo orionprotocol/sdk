@@ -1,4 +1,6 @@
+import { ethers } from 'ethers';
 import { z } from 'zod';
+import getValidArrayItemsSchema from '../../../utils/getValidArrayItems';
 
 const baseAtomicHistorySchema = z.object({
   success: z.boolean(),
@@ -14,9 +16,9 @@ const baseAtomicHistoryItem = z.object({
   _id: z.string(),
   __v: z.number(),
   asset: z.string(),
-  sender: z.string(),
-  secretHash: z.string(),
-  receiver: z.string().optional(),
+  sender: z.string().refine(ethers.utils.isAddress),
+  secretHash: z.string().refine(ethers.utils.isHexString),
+  receiver: z.string().refine(ethers.utils.isAddress).optional(),
   secret: z.string().optional(),
 });
 
@@ -64,7 +66,7 @@ export const targetAtomicHistorySchema = baseAtomicHistorySchema.extend({
 });
 
 const atomicHistorySchema = baseAtomicHistorySchema.extend({
-  data: z.array(
+  data: getValidArrayItemsSchema(
     z.discriminatedUnion('type', [sourceAtomicHistorySchemaItem, targetAtomicHistorySchemaItem]),
   ),
 });

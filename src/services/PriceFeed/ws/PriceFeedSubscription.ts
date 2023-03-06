@@ -85,10 +85,13 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
   // https://stackoverflow.com/questions/19304157/getting-the-reason-why-websockets-closed-with-close-code-1006
   private isClosedIntentionally = false;
 
+  private readonly onOpen: ((event: WebSocket.Event) => void) | undefined;
+
   constructor(
     type: T,
     url: string,
     params: Subscription<T>,
+    onOpen?: (event: WebSocket.Event) => void,
   ) {
     this.id = uuidv4();
     this.url = url;
@@ -97,7 +100,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
       this.payload = params.payload;
     }
     this.callback = params.callback;
-
+    this.onOpen = onOpen;
     this.init();
   }
 
@@ -118,6 +121,9 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     const { payload, url, type } = this;
     this.ws = new WebSocket(`${url}/${type}${payload !== undefined ? `/${payload.toString()}` : ''}`);
 
+    if (this.onOpen !== undefined) {
+      this.ws.onopen = this.onOpen;
+    }
     this.ws.onmessage = (e) => {
       const { data } = e;
 

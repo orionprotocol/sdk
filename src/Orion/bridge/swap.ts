@@ -102,7 +102,7 @@ export default async function swap({
 
   const sourceChainNativeCryptocurrency = getNativeCryptocurrency(sourceAssetToAddress);
   const sourceExchangeContract = Exchange__factory.connect(sourceExchangeContractAddress, sourceProvider);
-  const sourceChainGasPriceWei = await simpleFetch(sourceOrionBlockchain.getGasPriceWei)();
+  // const sourceChainGasPriceWei = await simpleFetch(sourceOrionBlockchain.getGasPriceWei)();
 
   const sourceChainAssetAddress = sourceAssetToAddress[assetName];
   if (sourceChainAssetAddress === undefined) throw new Error(`Asset '${assetName}' not found in source chain`);
@@ -197,8 +197,23 @@ export default async function swap({
     targetChainId: ethers.BigNumber.from(targetChain),
   });
 
+  let sourceChainGasPrice: ethers.BigNumber;
+  const sourceChainFeeData = await sourceChainOrionUnit.provider.getFeeData();
+  if (ethers.BigNumber.isBigNumber(sourceChainFeeData.gasPrice)) { //
+    unsignedLockAtomicTx.gasPrice = sourceChainFeeData.gasPrice;
+    sourceChainGasPrice = sourceChainFeeData.gasPrice;
+  } else if (
+    ethers.BigNumber.isBigNumber(sourceChainFeeData.maxFeePerGas) &&
+    ethers.BigNumber.isBigNumber(sourceChainFeeData.maxPriorityFeePerGas)
+  ) { // EIP-1559
+    unsignedLockAtomicTx.maxFeePerGas = sourceChainFeeData.maxFeePerGas;
+    unsignedLockAtomicTx.maxPriorityFeePerGas = sourceChainFeeData.maxPriorityFeePerGas;
+    sourceChainGasPrice = sourceChainFeeData.maxFeePerGas;
+  } else {
+    throw new Error('Can\'t get gas price');
+  }
+
   unsignedLockAtomicTx.chainId = parseInt(chainId, 10);
-  unsignedLockAtomicTx.gasPrice = ethers.BigNumber.from(sourceChainGasPriceWei);
   unsignedLockAtomicTx.from = walletAddress;
 
   let value = new BigNumber(0);
@@ -214,7 +229,7 @@ export default async function swap({
   );
   unsignedLockAtomicTx.gasLimit = ethers.BigNumber.from(LOCKATOMIC_GAS_LIMIT);
 
-  const transactionCost = ethers.BigNumber.from(LOCKATOMIC_GAS_LIMIT).mul(sourceChainGasPriceWei);
+  const transactionCost = ethers.BigNumber.from(LOCKATOMIC_GAS_LIMIT).mul(sourceChainGasPrice);
   const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
 
   sourceChainBalanceGuard.registerRequirement({
@@ -261,7 +276,7 @@ export default async function swap({
 
   options?.logger?.('Atomic swap placed.');
 
-  const targetChainGasPriceWei = await simpleFetch(targetOrionBlockchain.getGasPriceWei)();
+  // const targetChainGasPriceWei = await simpleFetch(targetOrionBlockchain.getGasPriceWei)();
   const unsignedRedeemAtomicTx = await targetExchangeContract.populateTransaction.redeemAtomic(
     {
       amount: amountBlockchainParam,
@@ -276,13 +291,28 @@ export default async function swap({
     secret
   )
 
+  let targetChainGasPrice: ethers.BigNumber;
+  const targetChainFeeData = await targetChainOrionUnit.provider.getFeeData();
+  if (ethers.BigNumber.isBigNumber(targetChainFeeData.gasPrice)) { //
+    unsignedRedeemAtomicTx.gasPrice = targetChainFeeData.gasPrice;
+    targetChainGasPrice = targetChainFeeData.gasPrice;
+  } else if (
+    ethers.BigNumber.isBigNumber(targetChainFeeData.maxFeePerGas) &&
+      ethers.BigNumber.isBigNumber(targetChainFeeData.maxPriorityFeePerGas)
+  ) { // EIP-1559
+    unsignedRedeemAtomicTx.maxFeePerGas = targetChainFeeData.maxFeePerGas;
+    unsignedRedeemAtomicTx.maxPriorityFeePerGas = targetChainFeeData.maxPriorityFeePerGas;
+    targetChainGasPrice = targetChainFeeData.maxFeePerGas;
+  } else {
+    throw new Error('Can\'t get gas price');
+  }
+
   unsignedRedeemAtomicTx.chainId = parseInt(targetChain, 10);
-  unsignedRedeemAtomicTx.gasPrice = ethers.BigNumber.from(targetChainGasPriceWei);
   unsignedRedeemAtomicTx.from = walletAddress;
   unsignedRedeemAtomicTx.gasLimit = ethers.BigNumber.from(REDEEMATOMIC_GAS_LIMIT);
 
-  const targetTransactionCost = ethers.BigNumber.from(REDEEMATOMIC_GAS_LIMIT).mul(targetChainGasPriceWei);
-  const targetDenormalizedTransactionCost = denormalizeNumber(targetTransactionCost, NATIVE_CURRENCY_PRECISION);
+  const redeemAtomicTransactionCost = ethers.BigNumber.from(REDEEMATOMIC_GAS_LIMIT).mul(targetChainGasPrice);
+  const targetDenormalizedTransactionCost = denormalizeNumber(redeemAtomicTransactionCost, NATIVE_CURRENCY_PRECISION);
 
   targetChainBalanceGuard.registerRequirement({
     reason: 'Network fee',
@@ -314,8 +344,21 @@ export default async function swap({
       targetChainAssetAddress,
       amountBlockchainParam,
     );
+    if (ethers.BigNumber.isBigNumber(targetChainFeeData.gasPrice)) { //
+      unsignedWithdrawTx.gasPrice = targetChainFeeData.gasPrice;
+      targetChainGasPrice = targetChainFeeData.gasPrice;
+    } else if (
+      ethers.BigNumber.isBigNumber(targetChainFeeData.maxFeePerGas) &&
+      ethers.BigNumber.isBigNumber(targetChainFeeData.maxPriorityFeePerGas)
+    ) { // EIP-1559
+      unsignedWithdrawTx.maxFeePerGas = targetChainFeeData.maxFeePerGas;
+      unsignedWithdrawTx.maxPriorityFeePerGas = targetChainFeeData.maxPriorityFeePerGas;
+      targetChainGasPrice = targetChainFeeData.maxFeePerGas;
+    } else {
+      throw new Error('Can\'t get gas price');
+    }
+    unsignedWithdrawTx.chainId = parseInt(targetChain, 10);
     unsignedWithdrawTx.gasLimit = ethers.BigNumber.from(WITHDRAW_GAS_LIMIT);
-    unsignedWithdrawTx.gasPrice = ethers.BigNumber.from(targetChainGasPriceWei);
     unsignedWithdrawTx.from = walletAddress;
     unsignedWithdrawTx.nonce = await targetProvider.getTransactionCount(walletAddress, 'pending');
     const signedTx = await signer.signTransaction(unsignedWithdrawTx);

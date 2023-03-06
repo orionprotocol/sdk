@@ -1,3 +1,4 @@
+import type WebSocket from 'ws';
 import PriceFeedSubscription, { type SubscriptionType, type Subscription } from './PriceFeedSubscription';
 
 export * as schemas from './schemas';
@@ -20,11 +21,13 @@ export class PriceFeedWS {
   subscribe<S extends SubscriptionType>(
     type: S,
     params: Subscription<S>,
+    onOpen?: (event: WebSocket.Event) => void,
   ) {
     const sub = new PriceFeedSubscription(
       type,
       this.url,
       params,
+      onOpen
     );
     this.subscriptions = {
       ...this.subscriptions,
