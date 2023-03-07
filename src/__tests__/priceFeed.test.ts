@@ -16,9 +16,30 @@ describe('Price Feed', () => {
             clearTimeout(timeout);
             unsubscribe()
             resolve(true);
-          }
+          },
         });
       });
     }
+  });
+
+  test('Handle error', async () => {
+    const orion = new Orion('testing');
+    const bscUnit = orion.getUnit('bsc')
+
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Timeout'));
+      }, 10000);
+      const { unsubscribe } = bscUnit.priceFeed.ws.subscribe('ticker', {
+        payload: 'SGERGEWRGWERG',
+        callback: () => null,
+        errorCallback: (error) => {
+          expect(error.message).toContain('Can\'t recognize PriceFeed "ticker" subscription message "{"message":"Wrong pair"}"')
+          clearTimeout(timeout);
+          unsubscribe()
+          resolve(true);
+        }
+      })
+    });
   });
 });
