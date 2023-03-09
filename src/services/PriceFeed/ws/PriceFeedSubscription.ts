@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import priceFeedSubscriptions from './priceFeedSubscriptions';
 import { tickerInfoSchema, candleSchema } from './schemas';
 import priceSchema from './schemas/priceSchema';
-import type { AnyJSON } from '../../../types';
+import type { Json } from '../../../types';
 import allTickersSchema from './schemas/allTickersSchema';
 
 export const subscriptions = {
@@ -83,7 +83,7 @@ export default class PriceFeedSubscription<T extends SubscriptionType = Subscrip
     this.init();
   }
 
-  private send(jsonObject: AnyJSON) {
+  private send(jsonObject: Json) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       const jsonData = JSON.stringify(jsonObject);
       this.ws.send(jsonData);

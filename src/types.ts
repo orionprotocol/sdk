@@ -294,11 +294,4 @@ export type VerboseOrionUnitConfig = {
 
 export type KnownEnv = typeof knownEnvs[number];
 
-export type AnyJSON = string | number | boolean | null | JSONObject | JSONArray;
-
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-interface JSONObject {
-  [x: string]: AnyJSON
-}
-
-interface JSONArray extends Array<AnyJSON> {}
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };

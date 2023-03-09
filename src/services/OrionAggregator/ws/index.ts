@@ -11,7 +11,7 @@ import {
 import UnsubscriptionType from './UnsubscriptionType';
 import type {
   SwapInfoBase, AssetPairUpdate, OrderbookItem,
-  Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo, AnyJSON,
+  Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo, Json,
 } from '../../../types';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema';
@@ -202,7 +202,7 @@ class OrionAggregatorWS {
     }
   }
 
-  private send(jsonObject: AnyJSON) {
+  private send(jsonObject: Json) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       const jsonData = JSON.stringify(jsonObject);
       this.ws.send(jsonData);
@@ -228,7 +228,7 @@ class OrionAggregatorWS {
     const id = type === 'aobus'
       ? ((subscription as any).payload as string) // TODO: Refactor!!!
       : uuidv4();
-    const subRequest: AnyJSON = {};
+    const subRequest: Json = {};
     subRequest['T'] = type;
     subRequest['id'] = id;
 
