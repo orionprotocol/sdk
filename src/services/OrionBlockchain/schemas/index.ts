@@ -14,3 +14,4 @@ export { default as userVotesSchema } from './userVotesSchema';
 export { default as userEarnedSchema } from './userEarnedSchema';
 export { default as cfdContractsSchema } from './cfdContractsSchema';
 export { default as cfdHistorySchema } from './cfdHistorySchema';
+export { default as governanceContractsSchema } from './governanceContractsSchema';
