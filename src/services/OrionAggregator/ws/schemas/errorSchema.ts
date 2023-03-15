@@ -5,7 +5,7 @@ import baseMessageSchema from './baseMessageSchema';
 const errorSchema = baseMessageSchema.extend({
   T: z.literal(MessageType.ERROR),
   c: z.number().int(), // code
-  id: z.string(), // subscription id
+  id: z.string().optional(), // subscription id
   m: z.string(), // error message,
 });
 
