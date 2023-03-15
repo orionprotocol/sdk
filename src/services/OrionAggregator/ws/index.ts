@@ -18,6 +18,7 @@ import assetPairConfigSchema from './schemas/assetPairConfigSchema';
 import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
 import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
 import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema';
+import { objectKeys } from '../../../utils/objectKeys';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -59,6 +60,7 @@ type AggregatedOrderbookSubscription = {
     bids: OrderbookItem[],
     pair: string
   ) => void
+  errorCb?: (message: string) => void
 }
 
 type SwapInfoSubscription = {
@@ -74,6 +76,7 @@ type FuturesTradeInfoSubscription = {
     p?: number
   }
   callback: (futuresTradeInfo: FuturesTradeInfo) => void
+  errorCb?: (message: string) => void
 }
 
 type AddressUpdateUpdate = {
@@ -113,6 +116,7 @@ type CfdAddressUpdateInitial = {
 type AddressUpdateSubscription = {
   payload: string
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
+  errorCb?: (message: string) => void
 }
 
 type CfdAddressUpdateSubscription = {
@@ -362,8 +366,19 @@ class OrionAggregatorWS {
 
       switch (json.T) {
         case MessageType.ERROR: {
-          const { m: errorMessage } = errorSchema.parse(json);
-          this.onError?.(errorMessage);
+          const err = errorSchema.parse(json);
+          // Get subscription error callback
+          // 2. Find subscription by id
+          // 3. Call onError callback
+
+          const subType = objectKeys(this.subscriptions).find((st) => this.subscriptions[st]?.[err.id]);
+          if (subType === undefined) throw new Error('OrionAggregatorWS: cannot find subscription type by id');
+          const sub = this.subscriptions[subType]?.[err.id];
+          if (sub === undefined) throw new Error('OrionAggregatorWS: cannot find subscription by id');
+          if ('errorCb' in sub) {
+            sub.errorCb(err.m);
+          }
+          this.onError?.(err.m);
         }
           break;
         case MessageType.PING_PONG:
