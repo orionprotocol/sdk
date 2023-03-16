@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import positionStatuses from '../../../../constants/positionStatuses';
+import executionTypes from '../../../../constants/cfdExecutionTypes';
 
 const cfdBalanceSchema = z
   .object({
@@ -23,6 +24,8 @@ const cfdBalanceSchema = z
     sfrs: z.string(),
     sfrd: z.string(),
     sop: z.string().optional(),
+    E: z.enum(executionTypes),
+    C: z.string().optional(),
   })
   .transform((obj) => ({
     instrument: obj.i,
@@ -44,7 +47,9 @@ const cfdBalanceSchema = z
     longFundingRatePerDay: obj.lfrd,
     shortFundingRatePerSecond: obj.sfrs,
     shortFundingRatePerDay: obj.sfrd,
-    stopOutPrice: obj.sop
+    stopOutPrice: obj.sop,
+    executionType: obj.E,
+    triggerCondition: obj.C,
   }));
 
 const cfdBalancesSchema = z.array(cfdBalanceSchema);
