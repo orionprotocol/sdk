@@ -58,8 +58,6 @@ export type CFDBalance = {
   shortFundingRatePerSecond: string
   shortFundingRatePerDay: string
   stopOutPrice: string | undefined
-  executionType: ExecutionType
-  triggerCondition: string | undefined
 }
 
 export type Order = {

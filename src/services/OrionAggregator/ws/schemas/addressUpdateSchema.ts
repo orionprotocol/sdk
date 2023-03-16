@@ -5,6 +5,7 @@ import subOrderStatuses from '../../../../constants/subOrderStatuses';
 import MessageType from '../MessageType';
 import balancesSchema from './balancesSchema';
 import baseMessageSchema from './baseMessageSchema';
+import executionTypes from '../../../../constants/cfdExecutionTypes';
 
 const baseAddressUpdate = baseMessageSchema.extend({
   id: z.string(),
@@ -34,6 +35,8 @@ export const orderUpdateSchema = z.object({
   S: z.enum(orderStatuses), // status
   l: z.boolean().optional(), // is liquidation order
   t: z.number(), // update time
+  E: z.enum(executionTypes).optional(), // execution type
+  C: z.string().optional(), // trigger condition
   c: subOrderSchema.array(),
 })
   .transform((val) => ({
@@ -45,6 +48,8 @@ export const orderUpdateSchema = z.object({
     settledAmount: o.A,
     status: o.S,
     liquidated: o.l,
+    executionType: o.E,
+    triggerCondition: o.C,
     subOrders: o.c.map((so) => ({
       pair: so.P,
       exchange: so.e,
@@ -75,6 +80,8 @@ export const fullOrderSchema = z.object({
   T: z.number(), // creation time / unix timestamp
   t: z.number(), // update time
   c: subOrderSchema.array(),
+  E: z.enum(executionTypes).optional(), // execution type
+  C: z.string().optional(), // trigger condition
 }).transform((val) => ({
   ...val,
   k: 'full' as const,
@@ -93,6 +100,8 @@ export const fullOrderSchema = z.object({
   pair: o.P,
   amount: o.a,
   price: o.p,
+  executionType: o.E,
+  triggerCondition: o.C,
   subOrders: o.c.map((so) => ({
     pair: so.P,
     exchange: so.e,
