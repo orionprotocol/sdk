@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import positionStatuses from '../../../../constants/positionStatuses';
-import executionTypes from '../../../../constants/cfdExecutionTypes';
 
 const cfdBalanceSchema = z
   .object({
