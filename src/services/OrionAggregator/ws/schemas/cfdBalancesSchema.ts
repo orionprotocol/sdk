@@ -44,7 +44,7 @@ const cfdBalanceSchema = z
     longFundingRatePerDay: obj.lfrd,
     shortFundingRatePerSecond: obj.sfrs,
     shortFundingRatePerDay: obj.sfrd,
-    stopOutPrice: obj.sop
+    stopOutPrice: obj.sop,
   }));
 
 const cfdBalancesSchema = z.array(cfdBalanceSchema);
