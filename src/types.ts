@@ -4,7 +4,6 @@ import type exchanges from './constants/exchanges';
 import type subOrderStatuses from './constants/subOrderStatuses';
 import type positionStatuses from './constants/positionStatuses';
 import type { knownEnvs } from './config/schemas';
-import type executionTypes from './constants/cfdExecutionTypes';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -35,7 +34,6 @@ export type Balance = {
 }
 
 export type PositionStatus = typeof positionStatuses[number];
-export type ExecutionType = typeof executionTypes[number];
 
 export type CFDBalance = {
   instrument: string

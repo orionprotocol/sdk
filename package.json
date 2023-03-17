@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.17.37-rc.2",
+  "version": "0.17.37",
   "description": "Orion Protocol SDK",
   "main": "./lib/esm/index.js",
   "module": "./lib/esm/index.js",
