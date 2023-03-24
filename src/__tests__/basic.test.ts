@@ -1,6 +1,5 @@
 import Orion from '../Orion';
 import { ReferralSystem } from '../services/ReferralSystem';
-import simpleFetch from '../simpleFetch';
 import { SupportedChainId } from '../types';
 import express from 'express';
 import WebSocket from 'ws';
@@ -10,6 +9,7 @@ import {
   createHttpTerminator,
 } from 'http-terminator';
 import { ethers } from 'ethers';
+import { simpleFetch } from 'simple-typed-fetch';
 
 jest.setTimeout(10000);
 

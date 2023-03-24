@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { simpleFetch } from 'simple-typed-fetch';
 import { NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import type { OrionAggregator } from '../../services/OrionAggregator';
 import type { OrionBlockchain } from '../../services/OrionBlockchain';
 
-import simpleFetch from '../../simpleFetch';
 import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrency } from '../../utils';
 
 export type GetSwapInfoParams = {

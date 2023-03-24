@@ -1,10 +1,10 @@
 import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { simpleFetch } from 'simple-typed-fetch';
 import type OrionUnit from '..';
 import BalanceGuard from '../../BalanceGuard';
 import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants';
-import simpleFetch from '../../simpleFetch';
 import { denormalizeNumber, normalizeNumber } from '../../utils';
 import getBalances from '../../utils/getBalances';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';

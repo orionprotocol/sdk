@@ -1,6 +1,5 @@
 import type BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import fetchWithValidation from '../../fetchWithValidation';
 import swapInfoSchema from './schemas/swapInfoSchema';
 import exchangeInfoSchema from './schemas/exchangeInfoSchema';
 import cancelOrderSchema from './schemas/cancelOrderSchema';
@@ -20,6 +19,7 @@ import httpToWS from '../../utils/httpToWS';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema';
 import { exchanges } from '../../constants';
+import { fetchWithValidation } from 'simple-typed-fetch';
 
 class OrionAggregator {
   private readonly apiUrl: string;

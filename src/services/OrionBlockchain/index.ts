@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import fetchWithValidation from '../../fetchWithValidation';
 import {
   IDOSchema, atomicHistorySchema,
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
@@ -18,6 +17,7 @@ import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
 import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants';
+import { fetchWithValidation } from 'simple-typed-fetch';
 
 type IAdminAuthHeaders = {
   auth: string

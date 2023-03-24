@@ -1,4 +1,4 @@
-import fetchWithValidation from '../../fetchWithValidation';
+import { fetchWithValidation } from 'simple-typed-fetch';
 import {
   errorSchema,
   miniStatsSchema,

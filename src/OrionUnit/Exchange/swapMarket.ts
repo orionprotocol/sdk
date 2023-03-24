@@ -6,12 +6,12 @@ import BalanceGuard from '../../BalanceGuard';
 import getAvailableSources from '../../utils/getAvailableFundsSources';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
-import simpleFetch from '../../simpleFetch';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils';
 import { signOrder } from '../../crypt';
 import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema';
 import type { z } from 'zod';
 import type { SwapLimitParams } from './swapLimit';
+import { simpleFetch } from 'simple-typed-fetch';
 
 export type SwapMarketParams = Omit<SwapLimitParams, 'price'> & {
   slippagePercent: BigNumber.Value

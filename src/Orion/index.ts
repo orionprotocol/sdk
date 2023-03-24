@@ -5,11 +5,11 @@ import { chains, envs } from '../config';
 import type { networkCodes } from '../constants';
 import OrionUnit from '../OrionUnit';
 import { ReferralSystem } from '../services/ReferralSystem';
-import simpleFetch from '../simpleFetch';
 import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types';
 import { isValidChainId } from '../utils';
 import swap from './bridge/swap';
 import getHistory from './bridge/getHistory';
+import { simpleFetch } from 'simple-typed-fetch';
 
 type EnvConfig = {
   analyticsAPI: string

@@ -1,4 +1,4 @@
-import fetchWithValidation from '../../fetchWithValidation';
+import { fetchWithValidation } from 'simple-typed-fetch';
 import type { Exchange } from '../../types';
 import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas';
 import candlesSchema from './schemas/candlesSchema';

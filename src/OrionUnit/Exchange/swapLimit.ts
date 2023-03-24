@@ -7,11 +7,11 @@ import getAvailableSources from '../../utils/getAvailableFundsSources';
 import type OrionUnit from '..';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
-import simpleFetch from '../../simpleFetch';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils';
 import { signOrder } from '../../crypt';
 import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema';
 import type { z } from 'zod';
+import { simpleFetch } from 'simple-typed-fetch';
 
 export type SwapLimitParams = {
   type: 'exactSpend' | 'exactReceive'

@@ -12,12 +12,12 @@ import {
   WITHDRAW_GAS_LIMIT
 } from '../../constants';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
-import simpleFetch from '../../simpleFetch';
 import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from '../../utils';
 import type { SupportedChainId } from '../../types';
 import type Orion from '..';
 import type { z } from 'zod';
 import type { placeAtomicSwapSchema } from '../../services/OrionAggregator/schemas';
+import { simpleFetch } from 'simple-typed-fetch';
 
 type Params = {
   assetName: string

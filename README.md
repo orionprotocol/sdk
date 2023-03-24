@@ -55,7 +55,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
   - [Orderbook stream](#orderbook-stream)
   - [Orion Aggregator WS Stream Unsubscribing](#orion-aggregator-ws-stream-unsubscribing)
 - [Price Feed Websocket Stream](#price-feed-websocket-stream)
-- [About our fetching system](#about-our-fetching-system)
+- [Data fetching](#data-fetching)
 - [Using contracts](#using-contracts)
 - [Utils](#utils)
   - [Parsing trade transactions](#parsing-trade-transactions)
@@ -615,17 +615,7 @@ lastPriceSubscription.unsubscribe();
 orionUnit.priceFeed.ws.unsubscribe("lastPrice", lastPriceSubscription.id);
 ```
 
-## About our fetching system
-
-Data fetching is often a pain. Network issue, fetching library errors, server errors, wrong response data. We want to be able to handle all these errors in a human way and be sure that we get the expected data.
-
-1. We overcome the limitations of exception handling (for example, in the `catch` block, the thrown exception can be anything) with [neverthrow](https://github.com/supermacro/neverthrow).
-2. Predictability (validation) is provided to us by [zod](https://github.com/colinhacks/zod)
-
-We have two options for interacting with our services.
-
-1.  [**Verbose**](./src/fetchWithValidation.ts). Provides a result object that can be successful or not. Provides data to handle fetching error: http code, http status, response body, response status and .etc)
-2.  [**Simple Fetch**](./src/simpleFetch.ts). Is a wrapper over a verbose way. Allows you to "just fetch" (perhaps as you usually do)
+## Data fetching
 
 ```ts
 // Verbose way example

@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 import type OrionUnit from '../../OrionUnit';
-import simpleFetch from '../../simpleFetch';
 import type { SupportedChainId } from '../../types';
 import { isValidChainId } from '../../utils';
 import ObjectID from 'bson-objectid';
+import { simpleFetch } from 'simple-typed-fetch';
 
 const getHistory = async (units: OrionUnit[], address: string, limit = 1000) => {
   if (!ethers.utils.isAddress(address)) throw new Error(`Invalid address: ${address}`);

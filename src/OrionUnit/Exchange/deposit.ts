@@ -9,7 +9,7 @@ import {
 } from '../../constants';
 import { denormalizeNumber, normalizeNumber } from '../../utils';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
-import simpleFetch from '../../simpleFetch';
+import { simpleFetch } from 'simple-typed-fetch';
 
 export type DepositParams = {
   asset: string
