@@ -77,7 +77,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@lukeed/csprng": "^1.0.1",
-    "@orionprotocol/contracts": "0.5.0",
+    "@orionprotocol/contracts": "0.6.0",
     "bignumber.js": "^9.1.1",
     "bson-objectid": "^2.0.4",
     "buffer": "^6.0.3",
