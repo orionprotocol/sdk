@@ -1,7 +1,7 @@
-import BigNumber from 'bignumber.js';
-import { FILL_ORDERS_GAS_LIMIT } from '../constants';
-import calculateNetworkFeeInFeeAsset from './calculateNetworkFeeInFeeAsset';
-import calculateOrionFeeInFeeAsset from './calculateOrionFeeInFeeAsset';
+import { BigNumber } from 'bignumber.js';
+import { FILL_ORDERS_GAS_LIMIT } from '../constants/index.js';
+import calculateNetworkFeeInFeeAsset from './calculateNetworkFeeInFeeAsset.js';
+import calculateOrionFeeInFeeAsset from './calculateOrionFeeInFeeAsset.js';
 
 const calculateFeeInFeeAsset = (
   amount: BigNumber.Value,

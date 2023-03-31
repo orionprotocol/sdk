@@ -1,11 +1,11 @@
 import WebSocket from 'isomorphic-ws';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
-import priceFeedSubscriptions from './priceFeedSubscriptions';
-import { tickerInfoSchema, candleSchema } from './schemas';
-import priceSchema from './schemas/priceSchema';
-import type { Json } from '../../../types';
-import allTickersSchema from './schemas/allTickersSchema';
+import priceFeedSubscriptions from './priceFeedSubscriptions.js';
+import { tickerInfoSchema, candleSchema } from './schemas/index.js';
+import priceSchema from './schemas/priceSchema.js';
+import type { Json } from '../../../types.js';
+import allTickersSchema from './schemas/allTickersSchema.js';
 
 export const subscriptions = {
   [priceFeedSubscriptions.ALL_TICKERS]: {

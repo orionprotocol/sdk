@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { fullOrderSchema, orderUpdateSchema } from './addressUpdateSchema';
-import baseMessageSchema from './baseMessageSchema';
-import MessageType from '../MessageType';
-import cfdBalancesSchema from './cfdBalancesSchema';
+import { fullOrderSchema, orderUpdateSchema } from './addressUpdateSchema.js';
+import baseMessageSchema from './baseMessageSchema.js';
+import MessageType from '../MessageType.js';
+import cfdBalancesSchema from './cfdBalancesSchema.js';
 
 const baseCfdAddressUpdate = baseMessageSchema.extend({
   id: z.string(),

@@ -1,7 +1,7 @@
 import type WebSocket from 'ws';
-import PriceFeedSubscription, { type SubscriptionType, type Subscription } from './PriceFeedSubscription';
+import PriceFeedSubscription, { type SubscriptionType, type Subscription } from './PriceFeedSubscription.js';
 
-export * as schemas from './schemas';
+export * as schemas from './schemas/index.js';
 export class PriceFeedWS {
   private subscriptions: Partial<{
     [K in SubscriptionType]: Partial<

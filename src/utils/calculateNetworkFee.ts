@@ -1,6 +1,6 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { NATIVE_CURRENCY_PRECISION } from '../constants/precisions';
+import { NATIVE_CURRENCY_PRECISION } from '../constants/precisions.js';
 
 export default function calculateNetworkFee(
   gasPriceGwei: BigNumber.Value,

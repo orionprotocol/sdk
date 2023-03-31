@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { makePartial } from '../../../utils';
+import { makePartial } from '../../../utils/index.js';
 
 const internalFeeAssetSchema = z.object({
   type: z.enum(['percent', 'plain']),

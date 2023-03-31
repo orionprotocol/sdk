@@ -1,6 +1,6 @@
 import { Wallet } from 'ethers';
-import Orion from '../Orion';
-import { SupportedChainId } from '../types';
+import Orion from '../Orion/index.js';
+import { SupportedChainId } from '../types.js';
 
 const privateKey = process.env['PRIVATE_KEY']
 if (privateKey === undefined) throw new Error('Private key is required');

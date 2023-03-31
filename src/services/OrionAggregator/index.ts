@@ -1,24 +1,24 @@
-import type BigNumber from 'bignumber.js';
+import type { BigNumber } from 'bignumber.js';
 import { z } from 'zod';
-import swapInfoSchema from './schemas/swapInfoSchema';
-import exchangeInfoSchema from './schemas/exchangeInfoSchema';
-import cancelOrderSchema from './schemas/cancelOrderSchema';
-import orderBenefitsSchema from './schemas/orderBenefitsSchema';
-import errorSchema from './schemas/errorSchema';
-import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema';
-import { OrionAggregatorWS } from './ws';
-import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema';
-import type { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types';
-import { pairConfigSchema } from './schemas';
+import swapInfoSchema from './schemas/swapInfoSchema.js';
+import exchangeInfoSchema from './schemas/exchangeInfoSchema.js';
+import cancelOrderSchema from './schemas/cancelOrderSchema.js';
+import orderBenefitsSchema from './schemas/orderBenefitsSchema.js';
+import errorSchema from './schemas/errorSchema.js';
+import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
+import { OrionAggregatorWS } from './ws/index.js';
+import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
+import type { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types.js';
+import { pairConfigSchema } from './schemas/index.js';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
-} from './schemas/aggregatedOrderbookSchema';
-import type networkCodes from '../../constants/networkCodes';
-import toUpperCase from '../../utils/toUpperCase';
-import httpToWS from '../../utils/httpToWS';
+} from './schemas/aggregatedOrderbookSchema.js';
+import type networkCodes from '../../constants/networkCodes.js';
+import toUpperCase from '../../utils/toUpperCase.js';
+import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
-import orderSchema from './schemas/orderSchema';
-import { exchanges } from '../../constants';
+import orderSchema from './schemas/orderSchema.js';
+import { exchanges } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 
 class OrionAggregator {
@@ -362,6 +362,6 @@ class OrionAggregator {
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema);
   };
 }
-export * as schemas from './schemas';
-export * as ws from './ws';
+export * as schemas from './schemas/index.js';
+export * as ws from './ws/index.js';
 export { OrionAggregator };

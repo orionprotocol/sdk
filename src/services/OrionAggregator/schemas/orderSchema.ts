@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { z } from 'zod';
-import { exchanges, orderStatuses, subOrderStatuses } from '../../../constants';
+import { exchanges, orderStatuses, subOrderStatuses } from '../../../constants/index.js';
 
 const blockchainOrderSchema = z.object({
   id: z.string().refine(ethers.utils.isHexString, (value) => ({

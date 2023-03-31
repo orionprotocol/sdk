@@ -1,24 +1,24 @@
 import { z } from 'zod';
 import WebSocket from 'isomorphic-ws';
 import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
-import MessageType from './MessageType';
-import SubscriptionType from './SubscriptionType';
+import MessageType from './MessageType.js';
+import SubscriptionType from './SubscriptionType.js';
 import {
   pingPongMessageSchema, initMessageSchema,
   errorSchema, brokerMessageSchema, orderBookSchema,
   assetPairsConfigSchema, addressUpdateSchema, swapInfoSchema,
-} from './schemas';
-import UnsubscriptionType from './UnsubscriptionType';
+} from './schemas/index.js';
+import UnsubscriptionType from './UnsubscriptionType.js';
 import type {
   SwapInfoBase, AssetPairUpdate, OrderbookItem,
   Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo, Json,
-} from '../../../types';
-import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema';
-import assetPairConfigSchema from './schemas/assetPairConfigSchema';
-import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema';
-import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema';
-import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema';
-import { objectKeys } from '../../../utils/objectKeys';
+} from '../../../types.js';
+import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema.js';
+import assetPairConfigSchema from './schemas/assetPairConfigSchema.js';
+import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema.js';
+import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema.js';
+import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema.js';
+import { objectKeys } from '../../../utils/objectKeys.js';
 // import errorSchema from './schemas/errorSchema';
 
 const UNSUBSCRIBE = 'u';
@@ -639,7 +639,7 @@ class OrionAggregatorWS {
   }
 }
 
-export * as schemas from './schemas';
+export * as schemas from './schemas/index.js';
 export {
   OrionAggregatorWS,
   SubscriptionType,

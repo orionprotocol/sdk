@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SupportedChainId } from '../../types';
+import { SupportedChainId } from '../../types.js';
 
 export const pureEnvNetworksSchema = z.object({
   api: z.string(),

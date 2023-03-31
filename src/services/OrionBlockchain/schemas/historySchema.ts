@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { HistoryTransactionStatus } from '../../../types';
+import { HistoryTransactionStatus } from '../../../types.js';
 
 const historySchema = z.array(z.object(
   {

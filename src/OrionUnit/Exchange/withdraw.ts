@@ -1,14 +1,14 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
-import getBalances from '../../utils/getBalances';
-import BalanceGuard from '../../BalanceGuard';
-import type OrionUnit from '..';
+import getBalances from '../../utils/getBalances.js';
+import BalanceGuard from '../../BalanceGuard.js';
+import type OrionUnit from '../index.js';
 import {
   INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, WITHDRAW_GAS_LIMIT,
-} from '../../constants';
-import { denormalizeNumber, normalizeNumber } from '../../utils';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
+} from '../../constants/index.js';
+import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
+import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
 export type WithdrawParams = {

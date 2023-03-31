@@ -1,4 +1,4 @@
-import subOrderStatuses from './subOrderStatuses';
+import subOrderStatuses from './subOrderStatuses.js';
 
 // https://github.com/orionprotocol/orion-aggregator/blob/develop/src/main/java/io/orionprotocol/aggregator/model/order/status/OrderStatus.java
 const orderStatuses = [

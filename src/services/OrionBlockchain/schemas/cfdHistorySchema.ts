@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { HistoryTransactionStatus } from '../../../types';
+import { HistoryTransactionStatus } from '../../../types.js';
 
 export enum historyTransactionType {
   WITHDRAW = 'withdrawal',

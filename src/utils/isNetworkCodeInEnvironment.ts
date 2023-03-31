@@ -1,4 +1,4 @@
-import { chains, envs } from '../config';
+import { chains, envs } from '../config/index.js';
 
 export default function isNetworkCodeInEnvironment(networkCode: string, env: string) {
   if (!(env in envs)) {

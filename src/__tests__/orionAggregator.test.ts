@@ -1,4 +1,4 @@
-import Orion from '../Orion';
+import Orion from '../Orion/index.js';
 
 describe('Orion Aggregator', () => {
   test('Handle error aus', async () => {

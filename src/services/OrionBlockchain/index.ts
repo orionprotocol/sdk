@@ -12,11 +12,11 @@ import {
   cfdContractsSchema,
   cfdHistorySchema,
   governanceContractsSchema,
-} from './schemas';
-import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema';
-import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema';
-import { makePartial } from '../../utils';
-import type { networkCodes } from '../../constants';
+} from './schemas/index.js';
+import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema.js';
+import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
+import { makePartial } from '../../utils/index.js';
+import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 
 type IAdminAuthHeaders = {
@@ -431,5 +431,5 @@ class OrionBlockchain {
   );
 }
 
-export * as schemas from './schemas';
+export * as schemas from './schemas/index.js';
 export { OrionBlockchain };

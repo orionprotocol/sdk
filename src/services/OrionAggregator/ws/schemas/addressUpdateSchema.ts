@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { exchanges } from '../../../../constants';
-import orderStatuses from '../../../../constants/orderStatuses';
-import subOrderStatuses from '../../../../constants/subOrderStatuses';
-import MessageType from '../MessageType';
-import balancesSchema from './balancesSchema';
-import baseMessageSchema from './baseMessageSchema';
-import executionTypes from '../../../../constants/cfdExecutionTypes';
+import { exchanges } from '../../../../constants/index.js';
+import orderStatuses from '../../../../constants/orderStatuses.js';
+import subOrderStatuses from '../../../../constants/subOrderStatuses.js';
+import MessageType from '../MessageType.js';
+import balancesSchema from './balancesSchema.js';
+import baseMessageSchema from './baseMessageSchema.js';
+import executionTypes from '../../../../constants/cfdExecutionTypes.js';
 
 const baseAddressUpdate = baseMessageSchema.extend({
   id: z.string(),

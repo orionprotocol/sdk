@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import exchanges from '../../../../constants/exchanges';
-import MessageType from '../MessageType';
-import baseMessageSchema from './baseMessageSchema';
+import exchanges from '../../../../constants/exchanges.js';
+import MessageType from '../MessageType.js';
+import baseMessageSchema from './baseMessageSchema.js';
 
 export const orderBookItemSchema = z.tuple([
   z.string(), // price

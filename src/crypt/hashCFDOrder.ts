@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import type { CFDOrder } from '../types';
+import type { CFDOrder } from '../types.js';
 
 const hashCFDOrder = (order: CFDOrder) => ethers.utils.solidityKeccak256(
   [

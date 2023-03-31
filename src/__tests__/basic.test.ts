@@ -1,10 +1,10 @@
-import Orion from '../Orion';
-import { ReferralSystem } from '../services/ReferralSystem';
-import { SupportedChainId } from '../types';
+import Orion from '../Orion/index.js';
+import { ReferralSystem } from '../services/ReferralSystem/index.js';
+import { SupportedChainId } from '../types.js';
 import express from 'express';
 import WebSocket from 'ws';
 import http from 'http';
-import httpToWS from '../utils/httpToWS';
+import httpToWS from '../utils/httpToWS.js';
 import {
   createHttpTerminator,
 } from 'http-terminator';

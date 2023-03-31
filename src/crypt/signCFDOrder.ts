@@ -1,14 +1,14 @@
 import type { TypedDataSigner } from '@ethersproject/abstract-signer';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
-import { joinSignature, splitSignature } from 'ethers/lib/utils';
-import { INTERNAL_ORION_PRECISION } from '../constants';
-import type { CFDOrder, SignedCFDOrder, SupportedChainId } from '../types';
-import normalizeNumber from '../utils/normalizeNumber';
-import getDomainData from './getDomainData';
-import signCFDOrderPersonal from './signCFDOrderPersonal';
-import hashCFDOrder from './hashCFDOrder';
-import CFD_ORDER_TYPES from '../constants/cfdOrderTypes';
+import { joinSignature, splitSignature } from 'ethers/lib/utils.js';
+import { INTERNAL_ORION_PRECISION } from '../constants/index.js';
+import type { CFDOrder, SignedCFDOrder, SupportedChainId } from '../types.js';
+import normalizeNumber from '../utils/normalizeNumber.js';
+import getDomainData from './getDomainData.js';
+import signCFDOrderPersonal from './signCFDOrderPersonal.js';
+import hashCFDOrder from './hashCFDOrder.js';
+import CFD_ORDER_TYPES from '../constants/cfdOrderTypes.js';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 

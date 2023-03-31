@@ -1,12 +1,12 @@
 import { ethers } from 'ethers';
-import { OrionAggregator } from '../services/OrionAggregator';
-import { OrionBlockchain } from '../services/OrionBlockchain';
-import { PriceFeed } from '../services/PriceFeed';
-import type { KnownEnv, SupportedChainId, VerboseOrionUnitConfig } from '../types';
-import Exchange from './Exchange';
-import FarmingManager from './FarmingManager';
-import { chains, envs } from '../config';
-import type { networkCodes } from '../constants';
+import { OrionAggregator } from '../services/OrionAggregator/index.js';
+import { OrionBlockchain } from '../services/OrionBlockchain/index.js';
+import { PriceFeed } from '../services/PriceFeed/index.js';
+import type { KnownEnv, SupportedChainId, VerboseOrionUnitConfig } from '../types.js';
+import Exchange from './Exchange/index.js';
+import FarmingManager from './FarmingManager/index.js';
+import { chains, envs } from '../config/index.js';
+import type { networkCodes } from '../constants/index.js';
 
 type KnownConfig = {
   env: KnownEnv

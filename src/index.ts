@@ -1,14 +1,14 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { simpleFetch, fetchWithValidation } from 'simple-typed-fetch';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
-export * as config from './config';
-export { default as OrionUnit } from './OrionUnit';
-export { default as Orion } from './Orion';
-export { default as initOrionUnit } from './initOrionUnit';
-export * as utils from './utils';
-export * as services from './services';
-export * as crypt from './crypt';
-export * from './constants';
-export * from './types';
+export * as config from './config/index.js';
+export { default as OrionUnit } from './initOrionUnit.js';
+export { default as Orion } from './Orion/index.js';
+export { default as initOrionUnit } from './initOrionUnit.js';
+export * as utils from './utils/index.js';
+export * as services from './services/index.js';
+export * as crypt from './crypt/index.js';
+export * from './constants/index.js';
+export * from './types.js';
 export { simpleFetch, fetchWithValidation };

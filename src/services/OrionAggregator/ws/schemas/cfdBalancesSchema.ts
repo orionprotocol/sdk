@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import positionStatuses from '../../../../constants/positionStatuses';
+import positionStatuses from '../../../../constants/positionStatuses.js';
 
 const cfdBalanceSchema = z
   .object({

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import tickerInfoSchema from './tickerInfoSchema';
+import tickerInfoSchema from './tickerInfoSchema.js';
 
 type TickerInfo = z.infer<typeof tickerInfoSchema>
 

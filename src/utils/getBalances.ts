@@ -1,8 +1,8 @@
 import type { Exchange } from '@orionprotocol/contracts';
-import type BigNumber from 'bignumber.js';
+import type { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
-import type { OrionAggregator } from '../services/OrionAggregator';
-import getBalance from './getBalance';
+import type { OrionAggregator } from '../services/OrionAggregator/index.js';
+import getBalance from './getBalance.js';
 
 export default async (
   balancesRequired: Partial<Record<string, string>>,

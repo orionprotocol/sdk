@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import Orion from '../Orion';
+import Orion from '../Orion/index.js';
 
 const privateKey = process.env['PRIVATE_KEY']
 if (privateKey === undefined) throw new Error('Private key is required');

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { z } from 'zod';
-import getValidArrayItemsSchema from '../../../utils/getValidArrayItems';
+import getValidArrayItemsSchema from '../../../utils/getValidArrayItems.js';
 
 const baseAtomicHistorySchema = z.object({
   success: z.boolean(),

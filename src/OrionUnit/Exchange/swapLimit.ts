@@ -1,15 +1,15 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
-import getBalances from '../../utils/getBalances';
-import BalanceGuard from '../../BalanceGuard';
-import getAvailableSources from '../../utils/getAvailableFundsSources';
-import type OrionUnit from '..';
-import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
-import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils';
-import { signOrder } from '../../crypt';
-import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema';
+import getBalances from '../../utils/getBalances.js';
+import BalanceGuard from '../../BalanceGuard.js';
+import getAvailableSources from '../../utils/getAvailableFundsSources.js';
+import type OrionUnit from '../index.js';
+import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants/index.js';
+import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
+import { signOrder } from '../../crypt/index.js';
+import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema.js';
 import type { z } from 'zod';
 import { simpleFetch } from 'simple-typed-fetch';
 

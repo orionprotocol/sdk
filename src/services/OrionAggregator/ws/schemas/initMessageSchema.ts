@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import MessageType from '../MessageType';
-import baseMessageSchema from './baseMessageSchema';
+import MessageType from '../MessageType.js';
+import baseMessageSchema from './baseMessageSchema.js';
 
 const initMessageSchema = baseMessageSchema.extend({
   T: z.literal(MessageType.INITIALIZATION),

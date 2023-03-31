@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
-import Orion from '../Orion';
-import swapMarket from '../OrionUnit/Exchange/swapMarket';
+import Orion from '../Orion/index.js';
+import swapMarket from '../OrionUnit/Exchange/swapMarket.js';
 
 const privateKey = process.env['PRIVATE_KEY']
 if (privateKey === undefined) throw new Error('Private key is required');

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { makePartial } from '../../../../utils';
+import { makePartial } from '../../../../utils/index.js';
 
 const balancesSchema = z.record( // changed balances in format
   z.string(), // asset

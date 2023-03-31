@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import MessageType from '../MessageType';
+import MessageType from '../MessageType.js';
 
 const futuresTradeInfoSchema = z.object({
   T: z.literal(MessageType.FUTURES_TRADE_INFO_UPDATE),

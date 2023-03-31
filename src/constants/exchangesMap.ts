@@ -1,4 +1,4 @@
-import type exchanges from './exchanges';
+import type exchanges from './exchanges.js';
 
 const mapping: Record<
     typeof exchanges[number],

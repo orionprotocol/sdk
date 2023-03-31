@@ -1,4 +1,4 @@
-import Orion from '../Orion';
+import Orion from '../Orion/index.js';
 
 describe('Price Feed', () => {
   test('Ticker', async () => {

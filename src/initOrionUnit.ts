@@ -1,4 +1,4 @@
-import OrionUnit from './OrionUnit';
+import OrionUnit from './OrionUnit/index.js';
 
 // backward compatibility
 export default function initOrionUnit(...params: ConstructorParameters<typeof OrionUnit>) {

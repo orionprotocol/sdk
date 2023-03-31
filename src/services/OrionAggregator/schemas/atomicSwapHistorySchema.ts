@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import uppercasedNetworkCodes from '../../../constants/uppercasedNetworkCodes';
-import redeemOrderSchema from './redeemOrderSchema';
+import uppercasedNetworkCodes from '../../../constants/uppercasedNetworkCodes.js';
+import redeemOrderSchema from './redeemOrderSchema.js';
 
 export const atomicSwapHistorySchema = z.array(z.object({
   id: z.string(),

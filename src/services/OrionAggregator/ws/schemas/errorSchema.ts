@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import MessageType from '../MessageType';
-import baseMessageSchema from './baseMessageSchema';
+import MessageType from '../MessageType.js';
+import baseMessageSchema from './baseMessageSchema.js';
 
 const errorSchema = baseMessageSchema.extend({
   T: z.literal(MessageType.ERROR),

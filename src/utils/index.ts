@@ -1,20 +1,20 @@
-export { default as calculateFeeInFeeAsset } from './calculateFeeInFeeAsset';
-export { default as calculateNetworkFee } from './calculateNetworkFee';
-export { default as calculateNetworkFeeInFeeAsset } from './calculateNetworkFeeInFeeAsset';
-export { default as calculateOrionFeeInFeeAsset } from './calculateOrionFeeInFeeAsset';
-export { default as checkIsToken } from './checkIsToken';
-export { default as generateSecret } from './generateSecret';
-export { default as denormalizeNumber } from './denormalizeNumber';
-export { default as normalizeNumber } from './normalizeNumber';
-export { default as isNetworkCodeInEnvironment } from './isNetworkCodeInEnvironment';
-export { default as parseExchangeTradeTransaction } from './parseExchangeTradeTransaction';
-export { default as toUpperCase } from './toUpperCase';
-export { default as toLowerCase } from './toLowerCase';
-export { default as isUppercasedNetworkCode } from './isUppercasedNetworkCode';
-export { default as getNativeCryptocurrency } from './getNativeCryptocurrency';
+export { default as calculateFeeInFeeAsset } from './calculateFeeInFeeAsset.js';
+export { default as calculateNetworkFee } from './calculateNetworkFee.js';
+export { default as calculateNetworkFeeInFeeAsset } from './calculateNetworkFeeInFeeAsset.js';
+export { default as calculateOrionFeeInFeeAsset } from './calculateOrionFeeInFeeAsset.js';
+export { default as checkIsToken } from './checkIsToken.js';
+export { default as generateSecret } from './generateSecret.js';
+export { default as denormalizeNumber } from './denormalizeNumber.js';
+export { default as normalizeNumber } from './normalizeNumber.js';
+export { default as isNetworkCodeInEnvironment } from './isNetworkCodeInEnvironment.js';
+export { default as parseExchangeTradeTransaction } from './parseExchangeTradeTransaction.js';
+export { default as toUpperCase } from './toUpperCase.js';
+export { default as toLowerCase } from './toLowerCase.js';
+export { default as isUppercasedNetworkCode } from './isUppercasedNetworkCode.js';
+export { default as getNativeCryptocurrency } from './getNativeCryptocurrency.js';
 
-export { default as isValidChainId } from './isValidChainId';
-export { default as isKnownEnv } from './isKnownEnv';
+export { default as isValidChainId } from './isValidChainId.js';
+export { default as isKnownEnv } from './isKnownEnv.js';
 // export { default as HttpError } from './httpError';
 
-export * from './typeHelpers';
+export * from './typeHelpers.js';

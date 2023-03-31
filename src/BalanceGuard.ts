@@ -1,13 +1,13 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import clone from 'just-clone';
 import { ERC20__factory } from '@orionprotocol/contracts';
-import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants';
+import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants/index.js';
 import type {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
-} from './types';
-import { denormalizeNumber } from './utils';
-import arrayEquals from './utils/arrayEquals';
+} from './types.js';
+import { denormalizeNumber } from './utils/index.js';
+import arrayEquals from './utils/arrayEquals.js';
 
 export default class BalanceGuard {
   private readonly balances: Partial<

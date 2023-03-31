@@ -1,14 +1,14 @@
 import type { TypedDataSigner } from '@ethersproject/abstract-signer';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
-import { joinSignature, splitSignature } from 'ethers/lib/utils';
-import { INTERNAL_ORION_PRECISION } from '../constants';
-import ORDER_TYPES from '../constants/orderTypes';
-import type { Order, SignedOrder, SupportedChainId } from '../types';
-import normalizeNumber from '../utils/normalizeNumber';
-import getDomainData from './getDomainData';
-import hashOrder from './hashOrder';
-import signOrderPersonal from './signOrderPersonal';
+import { joinSignature, splitSignature } from 'ethers/lib/utils.js';
+import { INTERNAL_ORION_PRECISION } from '../constants/index.js';
+import ORDER_TYPES from '../constants/orderTypes.js';
+import type { Order, SignedOrder, SupportedChainId } from '../types.js';
+import normalizeNumber from '../utils/normalizeNumber.js';
+import getDomainData from './getDomainData.js';
+import hashOrder from './hashOrder.js';
+import signOrderPersonal from './signOrderPersonal.js';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 

@@ -1,8 +1,8 @@
 import { fetchWithValidation } from 'simple-typed-fetch';
-import type { Exchange } from '../../types';
-import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas';
-import candlesSchema from './schemas/candlesSchema';
-import { PriceFeedWS } from './ws';
+import type { Exchange } from '../../types.js';
+import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas/index.js';
+import candlesSchema from './schemas/candlesSchema.js';
+import { PriceFeedWS } from './ws/index.js';
 
 class PriceFeed {
   private readonly apiUrl: string;
@@ -68,6 +68,6 @@ class PriceFeed {
   }
 }
 
-export * as schemas from './schemas';
+export * as schemas from './schemas/index.js';
 
 export { PriceFeed };

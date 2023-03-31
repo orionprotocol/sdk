@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import addressSchema from '../../../addressSchema';
-import { makePartial } from '../../../utils';
+import addressSchema from '../../../addressSchema.js';
+import { makePartial } from '../../../utils/index.js';
 
 const poolsConfigSchema = z.object({
   WETHAddress: addressSchema.optional(),

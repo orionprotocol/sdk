@@ -1,14 +1,14 @@
-import type BigNumber from 'bignumber.js';
+import type  { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
 import { merge } from 'merge-anything';
-import { chains, envs } from '../config';
-import type { networkCodes } from '../constants';
-import OrionUnit from '../OrionUnit';
-import { ReferralSystem } from '../services/ReferralSystem';
-import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types';
-import { isValidChainId } from '../utils';
-import swap from './bridge/swap';
-import getHistory from './bridge/getHistory';
+import { chains, envs } from '../config/index.js';
+import type { networkCodes } from '../constants/index.js';
+import OrionUnit from '../OrionUnit/index.js';
+import { ReferralSystem } from '../services/ReferralSystem/index.js';
+import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types.js';
+import { isValidChainId } from '../utils/index.js';
+import swap from './bridge/swap.js';
+import getHistory from './bridge/getHistory.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
 type EnvConfig = {

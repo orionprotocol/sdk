@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { exchanges } from '../../../constants';
+import { exchanges } from '../../../constants/index.js';
 
 const orderInfoSchema = z.object({
   assetPair: z.string(),

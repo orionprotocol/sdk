@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import pairConfigSchema from './pairConfigSchema';
+import pairConfigSchema from './pairConfigSchema.js';
 
 const exchangeInfoSchema = z.array(pairConfigSchema);
 

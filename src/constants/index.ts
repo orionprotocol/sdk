@@ -1,11 +1,11 @@
-export { default as cancelOrderTypes } from './cancelOrderTypes';
-export { default as orderStatuses } from './orderStatuses';
-export { default as orderTypes } from './orderTypes';
-export { default as subOrderStatuses } from './subOrderStatuses';
-export { default as networkCodes } from './networkCodes';
-export { default as exchanges } from './exchanges';
-export { default as exchangesMap } from './exchangesMap';
+export { default as cancelOrderTypes } from './cancelOrderTypes.js';
+export { default as orderStatuses } from './orderStatuses.js';
+export { default as orderTypes } from './orderTypes.js';
+export { default as subOrderStatuses } from './subOrderStatuses.js';
+export { default as networkCodes } from './networkCodes.js';
+export { default as exchanges } from './exchanges.js';
+export { default as exchangesMap } from './exchangesMap.js';
 
-export * from './chains';
-export * from './precisions';
-export * from './gasLimits';
+export * from './chains.js';
+export * from './precisions.js';
+export * from './gasLimits.js';

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
-import type BigNumber from 'bignumber.js';
-import type exchanges from './constants/exchanges';
-import type subOrderStatuses from './constants/subOrderStatuses';
-import type positionStatuses from './constants/positionStatuses';
-import type { knownEnvs } from './config/schemas';
+import type  { BigNumber } from 'bignumber.js';
+import type exchanges from './constants/exchanges.js';
+import type subOrderStatuses from './constants/subOrderStatuses.js';
+import type positionStatuses from './constants/positionStatuses.js';
+import type { knownEnvs } from './config/schemas/index.js';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;

@@ -30,15 +30,25 @@ module.exports = (env, argv) => {
       globalObject: "this"
     },
     module: {
-      rules: [{ test: /\.t|js$/, use: "babel-loader" }]
+      rules: [{
+        test: /\.t|js$/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            plugins: [
+              "@babel/plugin-syntax-import-assertions",
+            ],
+          }
+        }
+      }]
     },
     resolve: {
-       extensions: ['.ts', '.js'],
-        fallback: {
-            "crypto": require.resolve("crypto-browserify"),
-            "buffer": require.resolve("buffer/"),
-            "stream": require.resolve("stream-browserify"),
-        }
+      extensions: ['.ts', '.js'],
+      fallback: {
+        "crypto": require.resolve("crypto-browserify"),
+        "buffer": require.resolve("buffer/"),
+        "stream": require.resolve("stream-browserify"),
+      }
     }
   };
 };

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { networkCodes } from '../../constants';
-import { SupportedChainId } from '../../types';
+import { networkCodes } from '../../constants/index.js';
+import { SupportedChainId } from '../../types.js';
 
 export const pureChainInfoPayloadSchema = z.object({
   chainId: z.nativeEnum(SupportedChainId),

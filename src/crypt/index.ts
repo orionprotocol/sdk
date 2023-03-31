@@ -1,5 +1,5 @@
-export { default as signCancelOrder } from './signCancelOrder';
-export { default as signCancelOrderPersonal } from './signCancelOrderPersonal';
-export { default as signOrder } from './signOrder';
-export { default as signCFDOrder } from './signCFDOrder';
-export { default as signOrderPersonal } from './signOrderPersonal';
+export { default as signCancelOrder } from './signCancelOrder.js';
+export { default as signCancelOrderPersonal } from './signCancelOrderPersonal.js';
+export { default as signOrder } from './signOrder.js';
+export { default as signCFDOrder } from './signCFDOrder.js';
+export { default as signOrderPersonal } from './signOrderPersonal.js';

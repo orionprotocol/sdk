@@ -1,4 +1,4 @@
-import { SupportedChainId } from '../types';
+import { SupportedChainId } from '../types.js';
 
 export const developmentChains = [
   SupportedChainId.BSC_TESTNET,

@@ -1,10 +1,10 @@
-import type OrionUnit from '..';
-import deposit, { type DepositParams } from './deposit';
-import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo';
-import type { SwapLimitParams } from './swapLimit';
-import swapLimit from './swapLimit';
-import swapMarket, { type SwapMarketParams } from './swapMarket';
-import withdraw, { type WithdrawParams } from './withdraw';
+import type OrionUnit from '../index.js';
+import deposit, { type DepositParams } from './deposit.js';
+import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
+import type { SwapLimitParams } from './swapLimit.js';
+import swapLimit from './swapLimit.js';
+import swapMarket, { type SwapMarketParams } from './swapMarket.js';
+import withdraw, { type WithdrawParams } from './withdraw.js';
 
 type PureSwapMarketParams = Omit<SwapMarketParams, 'orionUnit'>
 type PureSwapLimitParams = Omit<SwapLimitParams, 'orionUnit'>

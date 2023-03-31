@@ -1,22 +1,22 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts';
-import getBalances from '../../utils/getBalances';
-import BalanceGuard from '../../BalanceGuard';
-import getAvailableSources from '../../utils/getAvailableFundsSources';
+import getBalances from '../../utils/getBalances.js';
+import BalanceGuard from '../../BalanceGuard.js';
+import getAvailableSources from '../../utils/getAvailableFundsSources.js';
 import {
   INTERNAL_ORION_PRECISION,
   NATIVE_CURRENCY_PRECISION,
   LOCKATOMIC_GAS_LIMIT,
   REDEEMATOMIC_GAS_LIMIT,
   WITHDRAW_GAS_LIMIT
-} from '../../constants';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency';
-import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from '../../utils';
-import type { SupportedChainId } from '../../types';
-import type Orion from '..';
+} from '../../constants/index.js';
+import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from '../../utils/index.js';
+import type { SupportedChainId } from '../../types.js';
+import type Orion from '../index.js';
 import type { z } from 'zod';
-import type { placeAtomicSwapSchema } from '../../services/OrionAggregator/schemas';
+import type { placeAtomicSwapSchema } from '../../services/OrionAggregator/schemas/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
 type Params = {

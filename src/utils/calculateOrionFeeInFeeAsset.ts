@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 export default function calculateOrionFeeInFeeAsset(
   amount: BigNumber.Value,

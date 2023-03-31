@@ -1,10 +1,10 @@
 import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import type { ethers } from 'ethers';
-import { joinSignature, splitSignature } from 'ethers/lib/utils';
-import CANCEL_ORDER_TYPES from '../constants/cancelOrderTypes';
-import type { CancelOrderRequest, SignedCancelOrderRequest, SupportedChainId } from '../types';
-import getDomainData from './getDomainData';
-import signCancelOrderPersonal from './signCancelOrderPersonal';
+import { joinSignature, splitSignature } from 'ethers/lib/utils.js';
+import CANCEL_ORDER_TYPES from '../constants/cancelOrderTypes.js';
+import type { CancelOrderRequest, SignedCancelOrderRequest, SupportedChainId } from '../types.js';
+import getDomainData from './getDomainData.js';
+import signCancelOrderPersonal from './signCancelOrderPersonal.js';
 
 type SignerWithTypedDataSign = ethers.Signer & TypedDataSigner;
 

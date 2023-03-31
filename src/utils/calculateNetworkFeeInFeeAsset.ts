@@ -1,5 +1,5 @@
-import BigNumber from 'bignumber.js';
-import calculateNetworkFee from './calculateNetworkFee';
+import { BigNumber } from 'bignumber.js';
+import calculateNetworkFee from './calculateNetworkFee.js';
 
 const calculateNetworkFeeInFeeAsset = (
   gasPriceGwei: BigNumber.Value,
