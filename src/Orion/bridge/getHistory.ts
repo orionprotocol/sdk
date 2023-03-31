@@ -2,8 +2,10 @@ import { ethers } from 'ethers';
 import type OrionUnit from '../../OrionUnit/index.js';
 import type { SupportedChainId } from '../../types.js';
 import { isValidChainId } from '../../utils/index.js';
-import { simpleFetch } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
 import bsonObjectId from 'bson-objectid';
+
+const { simpleFetch } = stf;
 
 const ObjectID = bsonObjectId.default
 

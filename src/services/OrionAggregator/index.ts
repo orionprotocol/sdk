@@ -19,7 +19,9 @@ import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
 import { exchanges } from '../../constants/index.js';
-import { fetchWithValidation } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
+
+const { fetchWithValidation } = stf;
 
 class OrionAggregator {
   private readonly apiUrl: string;

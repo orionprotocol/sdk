@@ -1,4 +1,4 @@
-import { fetchWithValidation } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
 import {
   errorSchema,
   miniStatsSchema,
@@ -8,6 +8,8 @@ import {
   rewardsClaimedSchema,
   linkSchema,
 } from './schemas/index.js';
+
+const { fetchWithValidation } = stf;
 
 type CreateLinkPayloadType = {
   referer: string

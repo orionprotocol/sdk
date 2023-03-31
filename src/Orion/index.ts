@@ -1,4 +1,4 @@
-import type  { BigNumber } from 'bignumber.js';
+import type { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config/index.js';
@@ -9,7 +9,9 @@ import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } 
 import { isValidChainId } from '../utils/index.js';
 import swap from './bridge/swap.js';
 import getHistory from './bridge/getHistory.js';
-import { simpleFetch } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
+
+const { simpleFetch } = stf;
 
 type EnvConfig = {
   analyticsAPI: string

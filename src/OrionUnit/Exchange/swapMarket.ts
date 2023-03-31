@@ -11,7 +11,9 @@ import { signOrder } from '../../crypt/index.js';
 import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema.js';
 import type { z } from 'zod';
 import type { SwapLimitParams } from './swapLimit.js';
-import { simpleFetch } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
+
+const { simpleFetch } = stf;
 
 export type SwapMarketParams = Omit<SwapLimitParams, 'price'> & {
   slippagePercent: BigNumber.Value

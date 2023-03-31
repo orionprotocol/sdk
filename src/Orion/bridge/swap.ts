@@ -17,7 +17,9 @@ import type { SupportedChainId } from '../../types.js';
 import type Orion from '../index.js';
 import type { z } from 'zod';
 import type { placeAtomicSwapSchema } from '../../services/OrionAggregator/schemas/index.js';
-import { simpleFetch } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
+
+const { simpleFetch } = stf;
 
 type Params = {
   assetName: string

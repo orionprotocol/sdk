@@ -1,11 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { simpleFetch } from 'simple-typed-fetch';
+import stf from 'simple-typed-fetch';
 import { NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants/index.js';
 import type { OrionAggregator } from '../../services/OrionAggregator/index.js';
 import type { OrionBlockchain } from '../../services/OrionBlockchain/index.js';
 
 import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrency } from '../../utils/index.js';
+
+const { simpleFetch } = stf;
 
 export type GetSwapInfoParams = {
   type: 'exactSpend' | 'exactReceive'
