@@ -17,9 +17,7 @@ import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
 import { makePartial } from '../../utils/index.js';
 import type { networkCodes } from '../../constants/index.js';
-import stf from 'simple-typed-fetch';
-
-const { fetchWithValidation } = stf;
+import { fetchWithValidation } from 'simple-typed-fetch';
 
 type IAdminAuthHeaders = {
   auth: string

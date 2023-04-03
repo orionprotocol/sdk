@@ -9,8 +9,7 @@ import {
   createHttpTerminator,
 } from 'http-terminator';
 import { ethers } from 'ethers';
-import stf from 'simple-typed-fetch';
-const { simpleFetch } = stf;
+import { simpleFetch } from 'simple-typed-fetch';
 jest.setTimeout(10000);
 
 const createServer = (externalHost: string) => {

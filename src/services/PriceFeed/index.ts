@@ -1,10 +1,8 @@
-import stf from 'simple-typed-fetch';
+import { fetchWithValidation } from 'simple-typed-fetch';
 import type { Exchange } from '../../types.js';
 import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas/index.js';
 import candlesSchema from './schemas/candlesSchema.js';
 import { PriceFeedWS } from './ws/index.js';
-
-const { fetchWithValidation } = stf;
 
 class PriceFeed {
   private readonly apiUrl: string;

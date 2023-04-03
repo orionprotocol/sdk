@@ -1,15 +1,13 @@
 import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts';
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import stf from 'simple-typed-fetch';
+import { simpleFetch } from 'simple-typed-fetch';
 import type OrionUnit from '../index.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import getBalances from '../../utils/getBalances.js';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
-
-const { simpleFetch } = stf;
 
 const ADD_LIQUIDITY_SLIPPAGE = 0.05;
 

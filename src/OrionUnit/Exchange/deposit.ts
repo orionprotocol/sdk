@@ -9,9 +9,7 @@ import {
 } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
-import stf from 'simple-typed-fetch';
-
-const { simpleFetch } = stf;
+import { simpleFetch } from 'simple-typed-fetch';
 
 export type DepositParams = {
   asset: string

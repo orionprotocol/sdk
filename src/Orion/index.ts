@@ -9,9 +9,7 @@ import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } 
 import { isValidChainId } from '../utils/index.js';
 import swap from './bridge/swap.js';
 import getHistory from './bridge/getHistory.js';
-import stf from 'simple-typed-fetch';
-
-const { simpleFetch } = stf;
+import { simpleFetch } from 'simple-typed-fetch';
 
 type EnvConfig = {
   analyticsAPI: string
