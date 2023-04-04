@@ -12,6 +12,7 @@ import {
   cfdContractsSchema,
   cfdHistorySchema,
   governanceContractsSchema,
+  governancePoolsSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -106,6 +107,7 @@ class OrionBlockchain {
     this.getCFDContracts = this.getCFDContracts.bind(this);
     this.getCFDHistory = this.getCFDHistory.bind(this);
     this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
+    this.getGovernancePools = this.getGovernancePools.bind(this);
   }
 
   get orionBlockchainWsUrl() {
@@ -428,6 +430,11 @@ class OrionBlockchain {
   getGovernanceContracts = () => fetchWithValidation(
     `${this.apiUrl}/api/governance/info`,
     governanceContractsSchema,
+  );
+
+  getGovernancePools = () => fetchWithValidation(
+    `${this.apiUrl}/api/governance/pools`,
+    governancePoolsSchema,
   );
 }
 
