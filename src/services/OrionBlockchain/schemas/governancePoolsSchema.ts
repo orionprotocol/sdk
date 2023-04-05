@@ -10,7 +10,7 @@ const governancePoolsSchema = z.array(
     lp_address: z.string(),
     farm_address: z.string(),
     pool_tokens: z.tuple([z.string(), z.string()]),
-    pool_rewards: z.tuple([z.string(), z.string()]),
+    pool_rewards: z.array(z.string()),
     liquidity_locked: z.number(),
     base_apy: z.number(),
     max_apy: z.number(),
