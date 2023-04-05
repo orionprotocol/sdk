@@ -373,9 +373,9 @@ class OrionAggregatorWS {
           const { id } = err;
           if (id !== undefined) {
             const subType = objectKeys(this.subscriptions).find((st) => this.subscriptions[st]?.[id]);
-            if (subType === undefined) throw new Error('OrionAggregatorWS: cannot find subscription type by id');
+            if (subType === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription type by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
             const sub = this.subscriptions[subType]?.[id];
-            if (sub === undefined) throw new Error('OrionAggregatorWS: cannot find subscription by id');
+            if (sub === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
             if ('errorCb' in sub) {
               sub.errorCb(err.m);
             }
