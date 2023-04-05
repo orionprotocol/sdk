@@ -159,6 +159,9 @@ type BufferLike =
   | { [Symbol.toPrimitive]: (hint: string) => string };
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
+
+const unknownMessageTypeRegex = /An unknown message type: '(.*)', json: (.*)/;
+const nonExistentMessageRegex = /Could not cancel nonexistent subscription: (.*)/;
 class OrionAggregatorWS {
   private ws?: WebSocket | undefined;
 
@@ -370,14 +373,28 @@ class OrionAggregatorWS {
           // Get subscription error callback
           // 2. Find subscription by id
           // 3. Call onError callback
-          const { id } = err;
+
+          const { id, m } = err;
           if (id !== undefined) {
-            const subType = objectKeys(this.subscriptions).find((st) => this.subscriptions[st]?.[id]);
-            if (subType === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription type by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
-            const sub = this.subscriptions[subType]?.[id];
-            if (sub === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
-            if ('errorCb' in sub) {
-              sub.errorCb(err.m);
+            const nonExistentMessageMatch = m.match(nonExistentMessageRegex);
+            const unknownMessageMatch = m.match(unknownMessageTypeRegex);
+            if (nonExistentMessageMatch !== null) {
+              const [, subscription] = nonExistentMessageMatch;
+              if (subscription === undefined) throw new TypeError('Subscription is undefined. This should not happen.')
+              console.warn(`You tried to unsubscribe from non-existent subscription '${subscription}'. This is probably a bug in the code. Please be sure that you are unsubscribing from the subscription that you are subscribed to.`)
+            } else if (unknownMessageMatch !== null) {
+              const [, subscription, jsonPayload] = unknownMessageMatch;
+              if (subscription === undefined) throw new TypeError('Subscription is undefined. This should not happen.')
+              if (jsonPayload === undefined) throw new TypeError('JSON payload is undefined. This should not happen.')
+              console.warn(`You tried to subscribe to '${subscription}' with unknown payload '${jsonPayload}'. This is probably a bug in the code. Please be sure that you are subscribing to the existing subscription with the correct payload.`)
+            } else {
+              const subType = objectKeys(this.subscriptions).find((st) => this.subscriptions[st]?.[id]);
+              if (subType === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription type by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
+              const sub = this.subscriptions[subType]?.[id];
+              if (sub === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
+              if ('errorCb' in sub) {
+                sub.errorCb(err.m);
+              }
             }
           }
           this.onError?.(err.m);
