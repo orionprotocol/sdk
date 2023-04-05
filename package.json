@@ -1,10 +1,17 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.18.3",
+  "version": "0.18.4",
   "description": "Orion Protocol SDK",
-  "main": "./lib/esm/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./lib/index.cjs",
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
   "engines": {
     "node": ">=18.0.0"
   },
@@ -16,8 +23,7 @@
     "watch-ts": "tsc -w --skipLibCheck",
     "watch-js": "nodemon lib/esm/index.js",
     "prepare": "is-ci || husky install",
-    "prebuild": "tsc",
-    "build": "webpack",
+    "build": "tsup src/index.ts",
     "coverage": "jest --coverage",
     "lint:eslint": "eslint ./src --ext .ts,.js,.tsx,.jsx",
     "lint:eslint:fix": "eslint ./src --ext .ts,.js,.tsx,.jsx --fix",
@@ -70,6 +76,7 @@
     "jest": "^29.5.0",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.2",
+    "tsup": "^6.7.0",
     "typescript": "^5.0.3",
     "webpack": "^5.77.0",
     "webpack-cli": "^5.0.1"
