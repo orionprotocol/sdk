@@ -5,3 +5,4 @@ export { default as miniStatsSchema } from './miniStatsSchema.js';
 export { default as rewardsMappingSchema } from './rewardsMappingSchema.js';
 export { default as rewardsClaimedSchema } from './rewardsClaimedSchema.js';
 export { default as globalAnalyticsSchema } from './globalAnalyticsSchema.js';
+export { default as ratingSchema } from './ratingSchema.js';
