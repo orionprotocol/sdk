@@ -14,6 +14,7 @@ const cfdContractsSchema = z.array(z.object({
   priceIndex: z.number(),
   feePercent: z.number(),
   withdrawMarginLevel: z.number(),
+  delegateContractAddress: z.string(),
 }));
 
 export default cfdContractsSchema;
