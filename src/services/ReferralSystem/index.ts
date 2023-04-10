@@ -7,6 +7,7 @@ import {
   globalAnalyticsSchema,
   rewardsClaimedSchema,
   linkSchema,
+  ratingSchema,
 } from './schemas/index.js';
 
 type CreateLinkPayloadType = {
@@ -150,6 +151,14 @@ class ReferralSystem {
         method: 'POST',
         body: JSON.stringify({ payload, signature }),
       },
+      errorSchema
+    );
+
+  getRating = () =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/ve/rating-table-leaderboard`,
+      ratingSchema,
+      {},
       errorSchema
     );
 }

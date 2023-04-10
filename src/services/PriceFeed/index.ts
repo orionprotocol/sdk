@@ -69,5 +69,5 @@ class PriceFeed {
 }
 
 export * as schemas from './schemas/index.js';
-
+export * as ws from './ws/index.js';
 export { PriceFeed };
