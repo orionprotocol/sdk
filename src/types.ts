@@ -85,6 +85,7 @@ export type CFDOrder = {
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
   stopPrice?: number | undefined // uint64
   isPersonalSign: boolean // bool
+  isFromDelegate?: boolean | undefined // bool
 }
 
 export type SignedCFDOrder = {
