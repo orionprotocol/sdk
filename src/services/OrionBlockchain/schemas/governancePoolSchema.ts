@@ -7,7 +7,7 @@ const governancePoolSchema = z.object({
   lp_supply: z.string(),
   lp_staked: z.string(),
   lp_staked_with_boost: z.string(),
-  lp_price: z.string(),
+  lp_price_in_usd: z.string(),
   reward_per_period: z.number(),
   lock_time_for_max_multiplier: z.string(),
   lock_max_multiplier: z.string(),
