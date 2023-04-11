@@ -26,7 +26,7 @@ export const signCFDOrder = async (
   signer: ethers.Signer,
   chainId: SupportedChainId,
   stopPrice: BigNumber.Value | undefined,
-  isFromDelegate: boolean | undefined,
+  isFromDelegate?: boolean,
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
