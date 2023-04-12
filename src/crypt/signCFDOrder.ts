@@ -26,6 +26,7 @@ export const signCFDOrder = async (
   signer: ethers.Signer,
   chainId: SupportedChainId,
   stopPrice: BigNumber.Value | undefined,
+  isFromDelegate?: boolean,
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
@@ -56,6 +57,7 @@ export const signCFDOrder = async (
       ? new BigNumber(stopPrice).toNumber()
       : undefined,
     isPersonalSign: usePersonalSign,
+    isFromDelegate,
   };
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
