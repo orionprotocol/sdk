@@ -13,18 +13,18 @@ export default async (
 ) => {
   const balances = await Promise.all(
     Object.entries(balancesRequired)
-      .map(async ([asset, assetAddress]) => {
-        if (assetAddress === undefined) throw new Error(`Asset address of ${asset} not found`);
+      .map(async ([assetName, assetAddress]) => {
+        if (assetAddress === undefined) throw new Error(`Asset address of ${assetName} not found`);
         const balance = await getBalance(
           orionAggregator,
-          asset,
+          assetName,
           assetAddress,
           walletAddress,
           exchangeContract,
           provider,
         );
         return {
-          asset,
+          assetName,
           amount: balance,
         };
       }),
@@ -35,6 +35,6 @@ export default async (
     wallet: BigNumber
   }>>>((prev, curr) => ({
     ...prev,
-    [curr.asset]: curr.amount,
+    [curr.assetName]: curr.amount,
   }), {});
 };
