@@ -8,7 +8,7 @@ import {
   DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION,
 } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
 export type DepositParams = {
@@ -40,7 +40,7 @@ export default async function deposit({
     assetToAddress,
   } = await simpleFetch(orionBlockchain.getInfo)();
 
-  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+  const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
 
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();

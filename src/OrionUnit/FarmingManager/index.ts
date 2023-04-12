@@ -7,7 +7,7 @@ import BalanceGuard from '../../BalanceGuard.js';
 import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import getBalances from '../../utils/getBalances.js';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 
 const ADD_LIQUIDITY_SLIPPAGE = 0.05;
 
@@ -66,7 +66,7 @@ export default class FarmingManager {
     const assetBDecimals = assetToDecimals[assetB];
     if (assetBDecimals === undefined) throw new Error(`Decimals for asset '${assetB}' not found`);
 
-    const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+    const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
     const balances = await getBalances(
       {
         [assetA]: assetAAddress,
@@ -248,7 +248,7 @@ export default class FarmingManager {
 
     const exchangeContract = Exchange__factory
       .connect(exchangeContractAddress, this.orionUnit.provider);
-    const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+    const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
     const balances = await getBalances(
       {
         [assetA]: assetAAddress,

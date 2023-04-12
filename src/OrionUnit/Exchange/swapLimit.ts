@@ -6,7 +6,7 @@ import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
 import type OrionUnit from '../index.js';
 import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants/index.js';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import { signOrder } from '../../crypt/index.js';
 import type orderSchema from '../../services/OrionAggregator/schemas/orderSchema.js';
@@ -86,7 +86,7 @@ export default async function swapLimit({
     matcherAddress,
     assetToAddress,
   } = await simpleFetch(orionBlockchain.getInfo)();
-  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+  const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
 
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();

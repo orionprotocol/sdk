@@ -5,7 +5,7 @@ import { NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '..
 import type { OrionAggregator } from '../../services/OrionAggregator/index.js';
 import type { OrionBlockchain } from '../../services/OrionBlockchain/index.js';
 
-import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrency } from '../../utils/index.js';
+import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrencyName } from '../../utils/index.js';
 
 export type GetSwapInfoParams = {
   type: 'exactSpend' | 'exactReceive'
@@ -43,7 +43,7 @@ export default async function getSwapInfo({
   const {
     assetToAddress,
   } = await simpleFetch(orionBlockchain.getInfo)();
-  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+  const nativeCryptocurrencyName = getNativeCryptocurrencyName(assetToAddress);
 
   const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();
   const pricesInOrn = await simpleFetch(orionBlockchain.getPrices)();
@@ -106,7 +106,7 @@ export default async function getSwapInfo({
       route,
       swapInfo,
       fee: {
-        assetName: nativeCryptocurrency,
+        assetName: nativeCryptocurrencyName,
         assetAddress: ethers.constants.AddressZero,
         networkFeeInFeeAsset: denormalizedTransactionCost.toString(),
         protocolFeeInFeeAsset: undefined,

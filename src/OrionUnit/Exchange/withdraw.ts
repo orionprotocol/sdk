@@ -8,7 +8,7 @@ import {
   INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION, WITHDRAW_GAS_LIMIT,
 } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
 export type WithdrawParams = {
@@ -40,7 +40,7 @@ export default async function withdraw({
     assetToAddress,
   } = await simpleFetch(orionBlockchain.getInfo)();
 
-  const nativeCryptocurrency = getNativeCryptocurrency(assetToAddress);
+  const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
 

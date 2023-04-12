@@ -11,7 +11,7 @@ export { default as parseExchangeTradeTransaction } from './parseExchangeTradeTr
 export { default as toUpperCase } from './toUpperCase.js';
 export { default as toLowerCase } from './toLowerCase.js';
 export { default as isUppercasedNetworkCode } from './isUppercasedNetworkCode.js';
-export { default as getNativeCryptocurrency } from './getNativeCryptocurrency.js';
+export { default as getNativeCryptocurrencyName } from './getNativeCryptocurrencyName.js';
 
 export { default as isValidChainId } from './isValidChainId.js';
 export { default as isKnownEnv } from './isKnownEnv.js';

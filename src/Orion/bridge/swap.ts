@@ -11,7 +11,7 @@ import {
   REDEEMATOMIC_GAS_LIMIT,
   WITHDRAW_GAS_LIMIT
 } from '../../constants/index.js';
-import getNativeCryptocurrency from '../../utils/getNativeCryptocurrency.js';
+import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from '../../utils/index.js';
 import type { SupportedChainId } from '../../types.js';
 import type Orion from '../index.js';
@@ -100,7 +100,7 @@ export default async function swap({
     assetToAddress: sourceAssetToAddress,
   } = await simpleFetch(sourceOrionBlockchain.getInfo)();
 
-  const sourceChainNativeCryptocurrency = getNativeCryptocurrency(sourceAssetToAddress);
+  const sourceChainNativeCryptocurrency = getNativeCryptocurrencyName(sourceAssetToAddress);
   const sourceExchangeContract = Exchange__factory.connect(sourceExchangeContractAddress, sourceProvider);
   // const sourceChainGasPriceWei = await simpleFetch(sourceOrionBlockchain.getGasPriceWei)();
 
@@ -114,7 +114,7 @@ export default async function swap({
 
   const targetChainAssetAddress = targetAssetToAddress[assetName];
   if (targetChainAssetAddress === undefined) throw new Error(`Asset '${assetName}' not found in target chain`);
-  const targetChainNativeCryptocurrency = getNativeCryptocurrency(targetAssetToAddress);
+  const targetChainNativeCryptocurrency = getNativeCryptocurrencyName(targetAssetToAddress);
   const targetExchangeContract = Exchange__factory.connect(targetExchangeContractAddress, targetProvider);
 
   const sourceChainBalances = await getBalances(
