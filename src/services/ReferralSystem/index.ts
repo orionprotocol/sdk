@@ -160,11 +160,15 @@ class ReferralSystem {
       errorSchema
     );
 
-  getRating = () =>
+  getRating = (refererAddress: string) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/ve/rating-table-leaderboard`,
       ratingSchema,
-      {},
+      {
+        headers: {
+          'referer-address': refererAddress,
+        },
+      },
       errorSchema
     );
 
