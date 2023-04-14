@@ -15,3 +15,5 @@ export { default as userEarnedSchema } from './userEarnedSchema.js';
 export { default as cfdContractsSchema } from './cfdContractsSchema.js';
 export { default as cfdHistorySchema } from './cfdHistorySchema.js';
 export { default as governanceContractsSchema } from './governanceContractsSchema.js';
+export { default as governancePoolsSchema } from './governancePoolsSchema.js';
+export { default as governancePoolSchema } from './governancePoolSchema.js';
