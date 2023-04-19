@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
-import type  { BigNumber } from 'bignumber.js';
+import type { BigNumber } from 'bignumber.js';
 import type exchanges from './constants/exchanges.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
@@ -248,8 +248,8 @@ export type FuturesTradeInfo = {
   futuresTradeRequestId: string
   sender: string
   instrument: string
-  buyPrice: number | null
-  sellPrice: number | null
+  buyPrice: number | undefined
+  sellPrice: number | undefined
   buyPower: number
   sellPower: number
   minAmount: number
