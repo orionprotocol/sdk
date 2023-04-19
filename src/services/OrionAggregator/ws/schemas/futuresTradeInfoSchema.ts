@@ -6,8 +6,8 @@ const futuresTradeInfoSchema = z.object({
   id: z.string(), // trade info request UUID, set by client side
   S: z.string(), // sender
   i: z.string(), // instrument
-  bp: z.number().nullable(), // buy price
-  sp: z.number().nullable(), // sell price
+  bp: z.number().optional(), // buy price
+  sp: z.number().optional(), // sell price
   bpw: z.number(), // buy power
   spw: z.number(), // sell power
   ma: z.number(), // min amount
