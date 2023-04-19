@@ -8,6 +8,8 @@ import {
   rewardsClaimedSchema,
   linkSchema,
   ratingSchema,
+  claimInfoSchema,
+  aggregatedHistorySchema,
 } from './schemas/index.js';
 
 type CreateLinkPayloadType = {
@@ -48,6 +50,10 @@ class ReferralSystem {
     this.getMiniStats = this.getMiniStats.bind(this);
     this.getRewardsMapping = this.getRewardsMapping.bind(this);
     this.claimRewards = this.claimRewards.bind(this);
+    this.getRating = this.getRating.bind(this);
+    this.getRating = this.getRating.bind(this);
+    this.getClamInfo = this.getClamInfo.bind(this);
+    this.getAggregatedHistory = this.getAggregatedHistory.bind(this);
   }
 
   getLink = (refererAddress: string) =>
@@ -154,11 +160,39 @@ class ReferralSystem {
       errorSchema
     );
 
-  getRating = () =>
+  getRating = (refererAddress: string) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/ve/rating-table-leaderboard`,
       ratingSchema,
-      {},
+      {
+        headers: {
+          'referer-address': refererAddress,
+        },
+      },
+      errorSchema
+    );
+
+  getClamInfo = (refererAddress: string) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/view/claim-info-with-stats`,
+      claimInfoSchema,
+      {
+        headers: {
+          'referer-address': refererAddress,
+        },
+      },
+      errorSchema
+    );
+
+  getAggregatedHistory = (refererAddress: string) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/view/aggregated-history`,
+      aggregatedHistorySchema,
+      {
+        headers: {
+          'referer-address': refererAddress,
+        },
+      },
       errorSchema
     );
 }
