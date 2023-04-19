@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 const governancePoolSchema = z.object({
-  base_apr: z.union([z.null(), z.number()]),
-  max_apr: z.union([z.null(), z.number()]),
+  min_apr: z.string(),
+  max_apr: z.string(),
   tvl: z.string(),
   lp_supply: z.string(),
   lp_staked: z.string(),

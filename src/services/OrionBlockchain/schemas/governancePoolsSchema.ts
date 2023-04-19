@@ -2,12 +2,14 @@ import { z } from 'zod';
 
 const governancePoolsSchema = z.array(
   z.object({
+    slug: z.string(),
     identifier: z.string(),
     chain: z.string(),
     platform: z.string(),
     logo: z.string(),
     pair: z.string(),
     lp_address: z.string(),
+    lp_staked: z.string(),
     lp_staked_with_boost: z.string(),
     lp_total_supply: z.string(),
     lp_price_in_usd: z.string(),
@@ -15,9 +17,9 @@ const governancePoolsSchema = z.array(
     pool_tokens: z.tuple([z.string(), z.string()]),
     pool_rewards: z.array(z.string()),
     tvl: z.string(),
-    base_apr: z.union([z.null(), z.number()]),
-    max_apr: z.union([z.null(), z.number()]),
-    reward_per_period: z.string(),
+    min_apr: z.string(),
+    max_apr: z.string(),
+    reward_per_period: z.array(z.string()),
     weight: z.string(),
     liquidity: z.string(),
   })
