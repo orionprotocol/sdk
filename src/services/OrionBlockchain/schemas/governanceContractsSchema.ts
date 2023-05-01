@@ -6,6 +6,7 @@ const governanceContractsSchema = z.object({
   veORNYieldDistributorV4Address: z.string(),
   orionGaugeORNRewardsDistributorAddress: z.string(),
   time_total: z.string(),
+  absolute_ve_orn_in_voting: z.string(),
   info: z.record(
     z.string(),
     z.object({
