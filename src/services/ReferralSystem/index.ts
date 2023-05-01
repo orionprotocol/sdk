@@ -1,4 +1,4 @@
-import { fetchWithValidation } from 'simple-typed-fetch';
+import {fetchWithValidation} from 'simple-typed-fetch';
 import {
   errorSchema,
   miniStatsSchema,
@@ -11,6 +11,7 @@ import {
   claimInfoSchema,
   aggregatedHistorySchema,
 } from './schemas/index.js';
+import {SupportedChainId} from "../../types.js";
 
 type CreateLinkPayloadType = {
   referer: string
@@ -127,7 +128,7 @@ class ReferralSystem {
           'Content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ payload, signature }),
+        body: JSON.stringify({payload, signature}),
       }
     );
 
@@ -140,7 +141,7 @@ class ReferralSystem {
         'Content-type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({ payload, signature }),
+      body: JSON.stringify({payload, signature}),
     });
 
   subscribeToReferral = (
@@ -155,19 +156,17 @@ class ReferralSystem {
           'Content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ payload, signature }),
+        body: JSON.stringify({payload, signature}),
       },
       errorSchema
     );
 
-  getRating = (refererAddress: string) =>
+  getRating = (refererAddress: string | undefined, chainId: SupportedChainId) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/ve/rating-table-leaderboard`,
+      `${this.apiUrl}/referer/ve/rating-table-leaderboard?chain_id=${chainId}`,
       ratingSchema,
       {
-        headers: {
-          'referer-address': refererAddress,
-        },
+        headers: refererAddress !== undefined ? { 'referer-address': refererAddress } : {},
       },
       errorSchema
     );
@@ -184,9 +183,9 @@ class ReferralSystem {
       errorSchema
     );
 
-  getAggregatedHistory = (refererAddress: string) =>
+  getAggregatedHistory = (refererAddress: string, chainId: SupportedChainId, itemPerPage: number, page: number) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/view/aggregated-history`,
+      `${this.apiUrl}/referer/view/aggregated-history?chain_id=${chainId}&n_per_page=${itemPerPage}&page=${page}`,
       aggregatedHistorySchema,
       {
         headers: {
@@ -198,4 +197,4 @@ class ReferralSystem {
 }
 
 export * as schemas from './schemas/index.js';
-export { ReferralSystem };
+export {ReferralSystem};
