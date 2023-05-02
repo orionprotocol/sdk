@@ -2,11 +2,10 @@ import { z } from 'zod';
 
 const aggregatedHistorySchema = z.object({
   data: z.array(z.object({
-    history_type: z.object({
-      RewardDistribution: z.string()
-    }),
+    history_type: z.string(),
     chain_type: z.string(),
     chain_comp: z.string(),
+    chain_id: z.number(),
     date_unix: z.number(),
     date_time_local: z.string(),
     date_time_utc: z.string(),

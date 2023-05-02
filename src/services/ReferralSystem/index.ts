@@ -65,9 +65,9 @@ class ReferralSystem {
     });
 
   getMyReferral = (myWalletAddress: string) =>
-    fetchWithValidation(`${this.apiUrl}/referral/view/link`, linkSchema, {
+    fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
       headers: {
-        referral: myWalletAddress,
+        'referer-address': myWalletAddress,
       },
     });
 
@@ -166,14 +166,14 @@ class ReferralSystem {
       `${this.apiUrl}/referer/ve/rating-table-leaderboard?chain_id=${chainId}`,
       ratingSchema,
       {
-        headers: refererAddress !== undefined ? { 'referer-address': refererAddress } : {},
+        headers: refererAddress !== undefined ? {'referer-address': refererAddress} : {},
       },
       errorSchema
     );
 
   getClamInfo = (refererAddress: string) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/view/claim-info-with-stats`,
+      `${this.apiUrl}/referer/view/claim-info-with-stats?&suppress_error=1`,
       claimInfoSchema,
       {
         headers: {
@@ -183,9 +183,21 @@ class ReferralSystem {
       errorSchema
     );
 
-  getAggregatedHistory = (refererAddress: string, chainId: SupportedChainId, itemPerPage: number, page: number) =>
-    fetchWithValidation(
-      `${this.apiUrl}/referer/view/aggregated-history?chain_id=${chainId}&n_per_page=${itemPerPage}&page=${page}`,
+  getAggregatedHistory = (refererAddress: string, chainId: SupportedChainId | undefined, itemPerPage: number, page: number) => {
+    const queryParams: Record<string, string | number> = {
+      n_per_page: itemPerPage,
+      page,
+      suppress_error: 1
+    };
+
+    if (chainId !== undefined) {
+      queryParams['chain_id'] = chainId;
+    }
+
+    const queryString = Object.entries(queryParams).map(([k, v]) => `${k}=${v}`).join('&')
+
+    return fetchWithValidation(
+      `${this.apiUrl}/referer/view/aggregated-history?${queryString}`,
       aggregatedHistorySchema,
       {
         headers: {
@@ -194,6 +206,7 @@ class ReferralSystem {
       },
       errorSchema
     );
+  }
 }
 
 export * as schemas from './schemas/index.js';
