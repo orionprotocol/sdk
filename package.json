@@ -82,7 +82,7 @@
     "@babel/runtime": "^7.21.0",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@orionprotocol/contracts": "0.8.0",
+    "@orionprotocol/contracts": "0.11.0",
     "bignumber.js": "^9.1.1",
     "bson-objectid": "^2.0.4",
     "buffer": "^6.0.3",
