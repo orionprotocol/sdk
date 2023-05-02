@@ -65,9 +65,9 @@ class ReferralSystem {
     });
 
   getMyReferral = (myWalletAddress: string) =>
-    fetchWithValidation(`${this.apiUrl}/referer/view/link`, linkSchema, {
+    fetchWithValidation(`${this.apiUrl}/referral/view/link`, linkSchema, {
       headers: {
-        'referer-address': myWalletAddress,
+        referral: myWalletAddress,
       },
     });
 
@@ -183,7 +183,13 @@ class ReferralSystem {
       errorSchema
     );
 
-  getAggregatedHistory = (refererAddress: string, chainId: SupportedChainId | undefined, itemPerPage: number, page: number) => {
+  getAggregatedHistory = (
+    refererAddress: string,
+    chainId: SupportedChainId | undefined,
+    types: string[] | undefined,
+    itemPerPage: number,
+    page: number
+  ) => {
     const queryParams: Record<string, string | number> = {
       n_per_page: itemPerPage,
       page,
@@ -192,6 +198,10 @@ class ReferralSystem {
 
     if (chainId !== undefined) {
       queryParams['chain_id'] = chainId;
+    }
+
+    if (types !== undefined) {
+      queryParams['history_filter'] = encodeURIComponent(types.join(','));
     }
 
     const queryString = Object.entries(queryParams).map(([k, v]) => `${k}=${v}`).join('&')
