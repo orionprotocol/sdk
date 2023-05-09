@@ -1,4 +1,4 @@
-import type { Exchange } from '@orionprotocol/contracts/lib/ethers-v5';
+import type { Exchange } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import type { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
 import type { OrionAggregator } from '../services/OrionAggregator/index.js';
