@@ -127,6 +127,7 @@ export enum SupportedChainId {
   MAINNET = '1',
   ROPSTEN = '3',
   GOERLI = '5',
+  ARBITRUM_GOERLI = '421613',
   FANTOM_OPERA = '250',
   POLYGON = '137',
   OKC = '66',

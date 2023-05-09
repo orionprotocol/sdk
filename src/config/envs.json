@@ -116,6 +116,21 @@
           }
         }
       },
+      "421613": {
+        "api": "https://testing.orionprotocol.io/arbitrum-goerli",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
+      },
       "4002": {
         "api": "https://testing.orionprotocol.io/ftm-testnet",
         "services": {
