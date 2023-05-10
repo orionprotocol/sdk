@@ -1,4 +1,4 @@
-import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts';
+import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { simpleFetch } from 'simple-typed-fetch';

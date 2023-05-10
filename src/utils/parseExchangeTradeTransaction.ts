@@ -1,4 +1,4 @@
-import { Exchange__factory } from '@orionprotocol/contracts';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { ethers } from 'ethers';
 import { z } from 'zod';
 

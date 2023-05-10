@@ -1,1 +1,1 @@
-export default ['ftm', 'bsc', 'eth', 'polygon', 'okc'] as const;
+export default ['ftm', 'bsc', 'eth', 'polygon', 'okc', 'arb'] as const;
