@@ -1,4 +1,4 @@
-import { fetchWithValidation } from 'simple-typed-fetch';
+import {fetchWithValidation} from 'simple-typed-fetch';
 import {
   errorSchema,
   miniStatsSchema,
@@ -11,6 +11,7 @@ import {
   claimInfoSchema,
   aggregatedHistorySchema,
 } from './schemas/index.js';
+import {SupportedChainId} from "../../types.js";
 
 type CreateLinkPayloadType = {
   referer: string
@@ -127,7 +128,7 @@ class ReferralSystem {
           'Content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ payload, signature }),
+        body: JSON.stringify({payload, signature}),
       }
     );
 
@@ -140,7 +141,7 @@ class ReferralSystem {
         'Content-type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({ payload, signature }),
+      body: JSON.stringify({payload, signature}),
     });
 
   subscribeToReferral = (
@@ -155,26 +156,24 @@ class ReferralSystem {
           'Content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ payload, signature }),
+        body: JSON.stringify({payload, signature}),
       },
       errorSchema
     );
 
-  getRating = (refererAddress: string) =>
+  getRating = (refererAddress: string | undefined, chainId: SupportedChainId) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/ve/rating-table-leaderboard`,
+      `${this.apiUrl}/referer/ve/rating-table-leaderboard?chain_id=${chainId}`,
       ratingSchema,
       {
-        headers: {
-          'referer-address': refererAddress,
-        },
+        headers: refererAddress !== undefined ? {'referer-address': refererAddress} : {},
       },
       errorSchema
     );
 
   getClamInfo = (refererAddress: string) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/view/claim-info-with-stats`,
+      `${this.apiUrl}/referer/view/claim-info-with-stats?&suppress_error=1`,
       claimInfoSchema,
       {
         headers: {
@@ -184,9 +183,31 @@ class ReferralSystem {
       errorSchema
     );
 
-  getAggregatedHistory = (refererAddress: string) =>
-    fetchWithValidation(
-      `${this.apiUrl}/referer/view/aggregated-history`,
+  getAggregatedHistory = (
+    refererAddress: string,
+    chainId: SupportedChainId | undefined,
+    types: string[] | undefined,
+    itemPerPage: number,
+    page: number
+  ) => {
+    const queryParams: Record<string, string | number> = {
+      n_per_page: itemPerPage,
+      page,
+      suppress_error: 1
+    };
+
+    if (chainId !== undefined) {
+      queryParams['chain_id'] = chainId;
+    }
+
+    if (types !== undefined) {
+      queryParams['history_filter'] = encodeURIComponent(types.join(','));
+    }
+
+    const queryString = Object.entries(queryParams).map(([k, v]) => `${k}=${v}`).join('&')
+
+    return fetchWithValidation(
+      `${this.apiUrl}/referer/view/aggregated-history?${queryString}`,
       aggregatedHistorySchema,
       {
         headers: {
@@ -195,7 +216,8 @@ class ReferralSystem {
       },
       errorSchema
     );
+  }
 }
 
 export * as schemas from './schemas/index.js';
-export { ReferralSystem };
+export {ReferralSystem};
