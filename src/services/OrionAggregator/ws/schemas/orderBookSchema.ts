@@ -11,7 +11,7 @@ export const orderBookItemSchema = z.tuple([
   ), // exchanges
   z.array(z.tuple([
     z.enum(['SELL', 'BUY']), // side
-    z.string(), // pairname
+    z.string().toUpperCase(), // pairname
   ])),
 ]);
 

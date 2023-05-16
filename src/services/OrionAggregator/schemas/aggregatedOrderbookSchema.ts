@@ -5,7 +5,7 @@ const orderbookElementSchema = z.object({
   price: z.number(),
   amount: z.number(),
   path: z.array(z.object({
-    assetPair: z.string(),
+    assetPair: z.string().toUpperCase(),
     action: z.enum(['BUY', 'SELL']),
   })),
 });

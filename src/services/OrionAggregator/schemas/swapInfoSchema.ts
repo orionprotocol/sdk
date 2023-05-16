@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { exchanges } from '../../../constants/index.js';
 
 const orderInfoSchema = z.object({
-  assetPair: z.string(),
+  assetPair: z.string().toUpperCase(),
   side: z.enum(['BUY', 'SELL']),
   amount: z.number(),
   safePrice: z.number(),
@@ -12,8 +12,8 @@ const swapInfoBase = z.object({
   id: z.string(),
   amountIn: z.number(),
   amountOut: z.number(),
-  assetIn: z.string(),
-  assetOut: z.string(),
+  assetIn: z.string().toUpperCase(),
+  assetOut: z.string().toUpperCase(),
   path: z.array(z.string()),
   // isThroughPoolOptimal: z.boolean(), // deprecated
   executionInfo: z.string(),
@@ -27,7 +27,7 @@ const swapInfoBase = z.object({
     exchanges: z.array(z.enum(exchanges)),
     path: z.object({
       units: z.object({
-        assetPair: z.string(),
+        assetPair: z.string().toUpperCase(),
         action: z.string(),
       }).array(),
     }),

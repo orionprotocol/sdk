@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const redeemOrderSchema = z.object({
-  asset: z.string(),
+  asset: z.string().toUpperCase(),
   amount: z.number(),
   secretHash: z.string(),
   sender: z.string(),
