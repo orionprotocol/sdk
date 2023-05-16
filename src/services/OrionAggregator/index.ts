@@ -87,7 +87,7 @@ class OrionAggregator {
 
     return fetchWithValidation(
       url.toString(),
-      z.array(z.string()),
+      z.array(z.string().toUpperCase()),
     );
   };
 
