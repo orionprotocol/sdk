@@ -129,5 +129,5 @@ If you don't want to deposit funds to the exchange contract, you can set "poolOn
 SDK have multiple ways to make swap:
 
 1. Call `unit.exchange.swapMarket`. This is the simplest way to swap. All inclusive method. [See description](../README.md#make-swap-market)
-2. Call `unit.aggregator.placeOrder`. This is method to place order to **aggregator**. More verbose. [See description](../README.md#place-order-in-orion-aggregator)
+2. Call `unit.aggregator.placeOrder`. This is method to place order to **aggregator**. More verbose. [See description](../README.md#place-order-in-aggregator)
 3. Call method `swapThroughOrionPool` on exchange contract. This is method to swap tokens through **pool**. [See code example](../src/Unit/Exchange/swapMarket.ts)

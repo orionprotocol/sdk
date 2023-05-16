@@ -1,6 +1,6 @@
 import Orion from '../Orion/index.js';
 
-describe('Orion Aggregator', () => {
+describe('Aggregator', () => {
   test('Handle error aus', async () => {
     const orion = new Orion('testing');
     const bscUnit = orion.getUnit('bsc')

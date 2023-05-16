@@ -48,12 +48,12 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
   - [Get tradable pairs](#get-tradable-pairs)
   - [Get fee assets](#get-fee-assets)
   - [Get swap info](#get-swap-info-1)
-  - [Place order in Orion Aggregator](#place-order-in-orion-aggregator)
-  - [Orion Aggregator WebSocket](#orion-aggregator-websocket)
+  - [Place order in Aggregator](#place-order-in-aggregator)
+  - [Aggregator WebSocket](#aggregator-websocket)
   - [Swap Info](#swap-info)
   - [Balances and order history stream](#balances-and-order-history-stream)
   - [Orderbook stream](#orderbook-stream)
-  - [Orion Aggregator WS Stream Unsubscribing](#orion-aggregator-ws-stream-unsubscribing)
+  - [Aggregator WS Stream Unsubscribing](#aggregator-ws-stream-unsubscribing)
 - [Price Feed Websocket Stream](#price-feed-websocket-stream)
 - [Data fetching](#data-fetching)
 - [Using contracts](#using-contracts)
@@ -427,7 +427,7 @@ Swap info response example:
 }
 ```
 
-### Place order in Orion Aggregator
+### Place order in Aggregator
 
 ```ts
 import { simpleFetch, crypt } from "@orionprotocol/sdk";
@@ -477,7 +477,7 @@ const { orderId } = await simpleFetch(unit.aggregator.placeOrder)(
 );
 ```
 
-### Orion Aggregator WebSocket
+### Aggregator WebSocket
 
 Available subscriptions:
 
@@ -571,7 +571,7 @@ unit.aggregator.ws.subscribe("aobus", {
 unit.aggregator.ws.unsubscribe("ORN-USDT");
 ```
 
-### Orion Aggregator WS Stream Unsubscribing
+### Aggregator WS Stream Unsubscribing
 
 ```ts
 // Asset pairs config updates unsubscribe
