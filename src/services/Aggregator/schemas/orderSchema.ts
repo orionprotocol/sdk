@@ -63,12 +63,19 @@ const baseOrderSchema = z.object({
 const selfBrokers = exchanges.map((exchange) => `SELF_BROKER_${exchange}` as const);
 type SelfBroker = typeof selfBrokers[number];
 const isSelfBroker = (value: string): value is SelfBroker => selfBrokers.some((broker) => broker === value);
+
 const selfBrokerSchema = z.custom<SelfBroker>((value) => {
   if (typeof value === 'string' && isSelfBroker(value)) {
     return true;
   }
   return false;
 });
+
+const brokerAddressSchema = z.enum(['ORION_BROKER', 'SELF_BROKER'])
+  .or(selfBrokerSchema)
+  .or(z.string().refine(ethers.utils.isAddress, (value) => ({
+    message: `subOrder.subOrders.[n].brokerAddress must be an address, got ${value}`,
+  })));
 const subOrderSchema = baseOrderSchema.extend({
   price: z.number(),
   id: z.number(),
@@ -76,12 +83,7 @@ const subOrderSchema = baseOrderSchema.extend({
     message: `subOrder.parentOrderId must be a hex string, got ${value}`,
   })),
   exchange: z.enum(exchanges),
-  brokerAddress:
-    z.enum(['ORION_BROKER', 'SELF_BROKER'])
-      .or(selfBrokerSchema)
-      .or(z.string().refine(ethers.utils.isAddress, (value) => ({
-        message: `subOrder.subOrders.[n].brokerAddress must be an address, got ${value}`,
-      }))),
+  brokerAddress: brokerAddressSchema,
   tradesInfo: z.record(
     z.string().uuid(),
     tradeInfoSchema
