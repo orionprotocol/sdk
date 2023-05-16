@@ -409,7 +409,7 @@ export default async function swapLimit({
   });
 
   balanceGuard.registerRequirement({
-    reason: 'Orion fee',
+    reason: 'Service fee',
     asset: {
       name: feeAsset,
       address: feeAssetAddress,

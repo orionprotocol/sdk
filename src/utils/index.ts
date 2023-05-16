@@ -1,7 +1,7 @@
 export { default as calculateFeeInFeeAsset } from './calculateFeeInFeeAsset.js';
 export { default as calculateNetworkFee } from './calculateNetworkFee.js';
 export { default as calculateNetworkFeeInFeeAsset } from './calculateNetworkFeeInFeeAsset.js';
-export { default as calculateOrionFeeInFeeAsset } from './calculateServiceFeeInFeeAsset.js';
+export { default as calculateServiceFeeInFeeAsset } from './calculateServiceFeeInFeeAsset.js';
 export { default as checkIsToken } from './checkIsToken.js';
 export { default as generateSecret } from './generateSecret.js';
 export { default as denormalizeNumber } from './denormalizeNumber.js';
