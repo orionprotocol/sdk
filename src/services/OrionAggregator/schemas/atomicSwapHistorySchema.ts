@@ -7,7 +7,7 @@ export const atomicSwapHistorySchema = z.array(z.object({
   sender: z.string(),
   lockOrder: z.object({
     sender: z.string(),
-    asset: z.string(),
+    asset: z.string().toUpperCase(),
     amount: z.number(),
     expiration: z.number(),
     secretHash: z.string(),

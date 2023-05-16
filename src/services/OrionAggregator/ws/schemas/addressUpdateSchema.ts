@@ -18,7 +18,7 @@ const subOrderSchema = z.object({
   i: z.number(), // id
   I: z.string(), // parent order id
   O: z.string(), // sender (owner)
-  P: z.string(), // asset pair
+  P: z.string().toUpperCase(), // asset pair
   s: z.enum(['BUY', 'SELL']), // side
   a: z.number(), // amount
   A: z.number(), // settled amount
@@ -66,12 +66,12 @@ export const orderUpdateSchema = z.object({
 export const fullOrderSchema = z.object({
   I: z.string(), // id
   O: z.string(), // sender (owner)
-  P: z.string(), // asset pair
+  P: z.string().toUpperCase(), // asset pair
   s: z.enum(['BUY', 'SELL']), // side
   a: z.number(), // amount
   A: z.number(), // settled amount
   p: z.number(), // price
-  F: z.string(), // fee asset
+  F: z.string().toUpperCase(), // fee asset
   f: z.number(), // fee
   l: z.boolean().optional(), // is liquidation order
   L: z.number().optional(), // stop limit price,

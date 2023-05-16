@@ -7,7 +7,7 @@ const assetPairConfigSchema = baseMessageSchema.extend({
   T: z.literal(MessageType.ASSET_PAIR_CONFIG_UPDATE),
   k: z.enum(['i', 'u']),
   u: z.tuple([
-    z.string(), // pairName
+    z.string().toUpperCase(), // pairName
     z.number(), // minQty
     z.number().int(), // pricePrecision
   ]),

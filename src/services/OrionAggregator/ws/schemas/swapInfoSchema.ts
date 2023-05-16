@@ -15,8 +15,8 @@ const alternativeSchema = z.object({ // execution alternatives
 const swapInfoSchemaBase = baseMessageSchema.extend({
   T: z.literal(MessageType.SWAP_INFO),
   S: z.string(), // swap request id
-  ai: z.string(), // asset in,
-  ao: z.string(), // asset out
+  ai: z.string().toUpperCase(), // asset in,
+  ao: z.string().toUpperCase(), // asset out
   a: z.number(), // amount in
   o: z.number(), // amount out
   ma: z.number(), // min amount in
@@ -27,7 +27,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
   p: z.number().optional(), // price
   mp: z.number().optional(), // market price
   oi: z.object({ //  info about order equivalent to this swap
-    p: z.string(), // asset pair
+    p: z.string().toUpperCase(), // asset pair
     s: z.enum(['SELL', 'BUY']), // side
     a: z.number(), // amount
     sp: z.number(), // safe price (with safe deviation but without slippage)

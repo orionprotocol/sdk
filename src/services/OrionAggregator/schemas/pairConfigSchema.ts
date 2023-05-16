@@ -7,7 +7,7 @@ const pairConfigSchema = z.object({
   maxQty: z.number(),
   minPrice: z.number(),
   minQty: z.number(),
-  name: z.string(),
+  name: z.string().toUpperCase(),
   pricePrecision: z.number().int(),
   qtyPrecision: z.number().int(),
   // quoteAssetPrecision: z.number().int(), // Deprecated. DO NOT USE

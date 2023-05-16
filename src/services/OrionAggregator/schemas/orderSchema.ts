@@ -48,7 +48,7 @@ const tradeInfoSchema = z.object({
 });
 
 const baseOrderSchema = z.object({
-  assetPair: z.string(),
+  assetPair: z.string().toUpperCase(),
   side: z.enum(['BUY', 'SELL']),
   amount: z.number().nonnegative(),
   remainingAmount: z.number().nonnegative(),
@@ -99,7 +99,7 @@ const orderSchema = z.object({
       message: `order.id must be a hex string, got ${value}`,
     })),
     fee: z.number().nonnegative(),
-    feeAsset: z.string(),
+    feeAsset: z.string().toUpperCase(),
     creationTime: z.number(),
     blockchainOrder: blockchainOrderSchema,
     subOrders: z.record(subOrderSchema),
