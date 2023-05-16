@@ -5,7 +5,7 @@ import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
 import {
-  INTERNAL_ORION_PRECISION,
+  INTERNAL_PROTOCOL_PRECISION,
   NATIVE_CURRENCY_PRECISION,
   LOCKATOMIC_GAS_LIMIT,
   REDEEMATOMIC_GAS_LIMIT,
@@ -16,7 +16,7 @@ import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from 
 import type { SupportedChainId } from '../../types.js';
 import type Orion from '../index.js';
 import type { z } from 'zod';
-import type { placeAtomicSwapSchema } from '../../services/OrionAggregator/schemas/index.js';
+import type { placeAtomicSwapSchema } from '../../services/Aggregator/schemas/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
 type Params = {
@@ -50,24 +50,24 @@ export default async function swap({
   if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
   if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
-  const sourceChainOrionUnit = orion.getUnit(sourceChain);
-  const targetChainOrionUnit = orion.getUnit(targetChain);
+  const sourceChainUnit = orion.getUnit(sourceChain);
+  const targetChainUnit = orion.getUnit(targetChain);
 
   const {
-    orionBlockchain: sourceOrionBlockchain,
-    orionAggregator: sourceOrionAggregator,
+    blockchainService: sourceBlockchainService,
+    aggregator: sourceAggregator,
     provider: sourceProvider,
     chainId,
-  } = sourceChainOrionUnit;
+  } = sourceChainUnit;
 
   const {
-    orionAggregator: targetOrionAggregator,
-    orionBlockchain: targetOrionBlockchain,
+    aggregator: targetAggregator,
+    blockchainService: targetBlockchainService,
     provider: targetProvider,
-  } = targetChainOrionUnit;
+  } = targetChainUnit;
 
-  const sourceSupportedBridgeAssets = await simpleFetch(sourceOrionBlockchain.getAtomicSwapAssets)();
-  const targetSupportedBridgeAssets = await simpleFetch(targetOrionBlockchain.getAtomicSwapAssets)();
+  const sourceSupportedBridgeAssets = await simpleFetch(sourceBlockchainService.getAtomicSwapAssets)();
+  const targetSupportedBridgeAssets = await simpleFetch(targetBlockchainService.getAtomicSwapAssets)();
 
   const commonSupportedBridgeAssets = sourceSupportedBridgeAssets.filter((asset) => targetSupportedBridgeAssets.includes(asset));
   if (!sourceSupportedBridgeAssets.includes(assetName) || !targetSupportedBridgeAssets.includes(assetName)) {
@@ -78,10 +78,10 @@ export default async function swap({
     const timeout = setTimeout(() => {
       reject(new Error("Can't get brokers balances. Timeout"));
     }, 10000);
-    const id = targetOrionAggregator.ws.subscribe('btasabus', {
+    const id = targetAggregator.ws.subscribe('btasabus', {
       callback: (data) => {
-        targetOrionAggregator.ws.unsubscribe(id);
-        targetOrionAggregator.ws.destroy();
+        targetAggregator.ws.unsubscribe(id);
+        targetAggregator.ws.destroy();
         clearTimeout(timeout);
         resolve(data);
       }
@@ -98,11 +98,11 @@ export default async function swap({
   const {
     exchangeContractAddress: sourceExchangeContractAddress,
     assetToAddress: sourceAssetToAddress,
-  } = await simpleFetch(sourceOrionBlockchain.getInfo)();
+  } = await simpleFetch(sourceBlockchainService.getInfo)();
 
   const sourceChainNativeCryptocurrency = getNativeCryptocurrencyName(sourceAssetToAddress);
   const sourceExchangeContract = Exchange__factory.connect(sourceExchangeContractAddress, sourceProvider);
-  // const sourceChainGasPriceWei = await simpleFetch(sourceOrionBlockchain.getGasPriceWei)();
+  // const sourceChainGasPriceWei = await simpleFetch(sourceBlockchainService.getGasPriceWei)();
 
   const sourceChainAssetAddress = sourceAssetToAddress[assetName];
   if (sourceChainAssetAddress === undefined) throw new Error(`Asset '${assetName}' not found in source chain`);
@@ -110,7 +110,7 @@ export default async function swap({
   const {
     exchangeContractAddress: targetExchangeContractAddress,
     assetToAddress: targetAssetToAddress,
-  } = await simpleFetch(targetOrionBlockchain.getInfo)();
+  } = await simpleFetch(targetBlockchainService.getInfo)();
 
   const targetChainAssetAddress = targetAssetToAddress[assetName];
   if (targetChainAssetAddress === undefined) throw new Error(`Asset '${assetName}' not found in target chain`);
@@ -122,7 +122,7 @@ export default async function swap({
       [assetName]: sourceChainAssetAddress,
       [sourceChainNativeCryptocurrency]: ethers.constants.AddressZero,
     },
-    sourceOrionAggregator,
+    sourceAggregator,
     walletAddress,
     sourceExchangeContract,
     sourceProvider,
@@ -133,7 +133,7 @@ export default async function swap({
       [assetName]: targetChainAssetAddress,
       [targetChainNativeCryptocurrency]: ethers.constants.AddressZero,
     },
-    targetOrionAggregator,
+    targetAggregator,
     walletAddress,
     targetExchangeContract,
     targetProvider,
@@ -169,12 +169,12 @@ export default async function swap({
     },
     amount: amountBN.toString(),
     spenderAddress: sourceExchangeContractAddress,
-    sources: getAvailableSources('amount', sourceChainAssetAddress, 'orion_pool'),
+    sources: getAvailableSources('amount', sourceChainAssetAddress, 'pool'),
   });
 
   const amountBlockchainParam = normalizeNumber(
     amount,
-    INTERNAL_ORION_PRECISION,
+    INTERNAL_PROTOCOL_PRECISION,
     BigNumber.ROUND_FLOOR,
   );
   const secret = generateSecret();
@@ -198,7 +198,7 @@ export default async function swap({
   });
 
   let sourceChainGasPrice: ethers.BigNumber;
-  const sourceChainFeeData = await sourceChainOrionUnit.provider.getFeeData();
+  const sourceChainFeeData = await sourceChainUnit.provider.getFeeData();
   if (ethers.BigNumber.isBigNumber(sourceChainFeeData.gasPrice)) { //
     unsignedLockAtomicTx.gasPrice = sourceChainFeeData.gasPrice;
     sourceChainGasPrice = sourceChainFeeData.gasPrice;
@@ -223,7 +223,7 @@ export default async function swap({
     value = amountBN.minus(denormalizedAssetInExchangeBalance);
   }
   unsignedLockAtomicTx.value = normalizeNumber(
-    value.dp(INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL),
+    value.dp(INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_CEIL),
     NATIVE_CURRENCY_PRECISION,
     BigNumber.ROUND_CEIL,
   );
@@ -249,16 +249,16 @@ export default async function swap({
 
   options?.logger?.('Signing lock tx transaction...');
   const signedTransaction = await signer.signTransaction(unsignedLockAtomicTx);
-  const lockAtomicTxResponse = await sourceChainOrionUnit.provider.sendTransaction(signedTransaction);
+  const lockAtomicTxResponse = await sourceChainUnit.provider.sendTransaction(signedTransaction);
   options?.logger?.(`Lock tx sent. Tx hash: ${lockAtomicTxResponse.hash}. Waiting for tx to be mined...`);
   await lockAtomicTxResponse.wait();
   options?.logger?.('Lock tx mined.');
   options?.logger?.('Placing atomic swap...');
 
   const atomicSwap = await new Promise<z.infer<typeof placeAtomicSwapSchema>>((resolve, reject) => {
-    const placeAtomicSwap = () => simpleFetch(targetOrionAggregator.placeAtomicSwap)(
+    const placeAtomicSwap = () => simpleFetch(targetAggregator.placeAtomicSwap)(
       secretHash,
-      toUpperCase(sourceChainOrionUnit.networkCode)
+      toUpperCase(sourceChainUnit.networkCode)
     ).then((data) => {
       clearInterval(interval);
       clearTimeout(timeout);
@@ -276,7 +276,7 @@ export default async function swap({
 
   options?.logger?.('Atomic swap placed.');
 
-  // const targetChainGasPriceWei = await simpleFetch(targetOrionBlockchain.getGasPriceWei)();
+  // const targetChainGasPriceWei = await simpleFetch(targetBlockchainService.getGasPriceWei)();
   const unsignedRedeemAtomicTx = await targetExchangeContract.populateTransaction.redeemAtomic(
     {
       amount: amountBlockchainParam,
@@ -292,7 +292,7 @@ export default async function swap({
   )
 
   let targetChainGasPrice: ethers.BigNumber;
-  const targetChainFeeData = await targetChainOrionUnit.provider.getFeeData();
+  const targetChainFeeData = await targetChainUnit.provider.getFeeData();
   if (ethers.BigNumber.isBigNumber(targetChainFeeData.gasPrice)) { //
     unsignedRedeemAtomicTx.gasPrice = targetChainFeeData.gasPrice;
     targetChainGasPrice = targetChainFeeData.gasPrice;
@@ -331,7 +331,7 @@ export default async function swap({
   options?.logger?.('Signing redeem tx transaction...');
 
   const targetSignedTransaction = await signer.signTransaction(unsignedRedeemAtomicTx);
-  const targetLockAtomicTxResponse = await targetChainOrionUnit.provider.sendTransaction(targetSignedTransaction);
+  const targetLockAtomicTxResponse = await targetChainUnit.provider.sendTransaction(targetSignedTransaction);
   options?.logger?.(`Redeem tx sent. Tx hash: ${targetLockAtomicTxResponse.hash}. Waiting for tx to be mined...`);
 
   await targetLockAtomicTxResponse.wait();

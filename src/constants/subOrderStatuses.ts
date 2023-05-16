@@ -1,4 +1,3 @@
-// https://github.com/orionprotocol/orion-aggregator/blob/develop/src/main/java/io/orionprotocol/aggregator/model/order/status/SubOrderStatus.java
 const subOrderStatuses = [
   'NEW', // created, wasn't added to IOB or wasn't accepted by the broker
   'ACCEPTED', // added to IOB or accepted by the broker

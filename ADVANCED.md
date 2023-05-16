@@ -9,10 +9,10 @@ const orion = new Orion({
       chainId: SupportedChainId.MAINNET,
       nodeJsonRpc: "https://cloudflare-eth.com/",
       services: {
-        orionBlockchain: {
+        blockchainService: {
           http: "http://localhost:3000",
         },
-        orionAggregator: {
+        aggregator: {
           http: "http://localhost:3001/backend",
           ws: "http://localhost:3001/v1",
         },
@@ -35,18 +35,18 @@ const orion = new Orion("testing", {
 });
 
 // Orion unit init
-const orionUnit = orion.getUnit("bsc");
+const unit = orion.getUnit("bsc");
 // OR
-const orionUnit = orion.getUnit(SupportedChainId.BSC);
+const unit = orion.getUnit(SupportedChainId.BSC);
 // OR
-const orionUnit = new OrionUnit({
+const unit = new Unit({
   chainId: SupportedChainId.BSC,
   nodeJsonRpc: "https://bsc-dataseed.binance.org/",
   services: {
-    orionBlockchain: {
+    blockchainService: {
       http: "https://orion-bsc-api.orionprotocol.io",
     },
-    orionAggregator: {
+    aggregator: {
       http: "https://orion-bsc-api.orionprotocol.io/backend",
       ws: "https://orion-bsc-api.orionprotocol.io/v1",
     },

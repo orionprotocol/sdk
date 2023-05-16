@@ -4,13 +4,13 @@ Let's consider integration of Orion Protocol with your UI.
 
 ## 1. Initialization
 
-Orion Protocol's SDK operates with OrionUnit — chain-in-environment abstraction. "Ethereum-in-production", "bsc-in-production", "fantom-in-testing", etc.
+Orion Protocol's SDK operates with Unit — chain-in-environment abstraction. "Ethereum-in-production", "bsc-in-production", "fantom-in-testing", etc.
 
 ```ts
 import { Orion } from "@orionprotocol/sdk";
 const orion = new Orion();
-const bscOrionUnit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
-const ethOrionUnit = orion.getUnit("eth");
+const bscUnit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
+const ethUnit = orion.getUnit("eth");
 ```
 
 ## 2. Signer accessing
@@ -46,7 +46,7 @@ detectEthereumProvider().then((provider) => {
 
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
-const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
+const pairsList = await simpleFetch(unit.aggregator.getPairsList)();
 
 // Response example
 // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN', ...]
@@ -74,7 +74,7 @@ Orion Protocol charges you only with available fee assets. You can get fee asset
 
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
-const feeAssets = await simpleFetch(orionUnit.orionBlockchain.getTokensFee)();
+const feeAssets = await simpleFetch(unit.blockchainService.getTokensFee)();
 
 // Response example:
 // {
@@ -102,7 +102,7 @@ const {
   swapInfo, // Contains information about swap (e.g. how much you will receive, how much you will spend, price)
   fee, // Contains fee information. You can display it in UI.
   route, // "pool" or "aggregator"
-} = await orionUnit.exchange.getSwapInfo({
+} = await unit.exchange.getSwapInfo({
   type: "exactSpend", // Also "exactReceive" is available
   assetIn: "ORN", // What user selected as input asset
   assetOut: "USDT", // What user selected as output asset
@@ -128,6 +128,6 @@ If you don't want to deposit funds to the exchange contract, you can set "poolOn
 
 SDK have multiple ways to make swap:
 
-1. Call `orionUnit.exchange.swapMarket`. This is the simplest way to swap. All inclusive method. [See description](../README.md#make-swap-market)
-2. Call `orionUnit.orionAggregator.placeOrder`. This is method to place order to **aggregator**. More verbose. [See description](../README.md#place-order-in-orion-aggregator)
-3. Call method `swapThroughOrionPool` on exchange contract. This is method to swap tokens through **pool**. [See code example](../src/OrionUnit/Exchange/swapMarket.ts)
+1. Call `unit.exchange.swapMarket`. This is the simplest way to swap. All inclusive method. [See description](../README.md#make-swap-market)
+2. Call `unit.aggregator.placeOrder`. This is method to place order to **aggregator**. More verbose. [See description](../README.md#place-order-in-orion-aggregator)
+3. Call method `swapThroughOrionPool` on exchange contract. This is method to swap tokens through **pool**. [See code example](../src/Unit/Exchange/swapMarket.ts)

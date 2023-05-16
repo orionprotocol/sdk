@@ -71,7 +71,6 @@ const subOrderSchema = baseOrderSchema.extend({
   })),
   exchange: z.enum(exchanges),
   brokerAddress:
-    // https://github.com/orionprotocol/orion-aggregator/blob/98f543e59b7bbf14d8db0417c6af5cf7575f3956/src/main/java/io/orionprotocol/aggregator/model/Exchange.java#L116
     z.enum(['ORION_BROKER', 'SELF_BROKER'])
       .or(z.custom<SelfBroker>((value) => {
         if (typeof value === 'string' && isSelfBroker(value)) {

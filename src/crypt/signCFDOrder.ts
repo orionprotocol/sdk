@@ -2,7 +2,7 @@ import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils.js';
-import { INTERNAL_ORION_PRECISION } from '../constants/index.js';
+import { INTERNAL_PROTOCOL_PRECISION } from '../constants/index.js';
 import type { CFDOrder, SignedCFDOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
@@ -37,17 +37,17 @@ export const signCFDOrder = async (
     instrumentAddress,
     amount: normalizeNumber(
       amount,
-      INTERNAL_ORION_PRECISION,
+      INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     ).toNumber(),
     price: normalizeNumber(
       price,
-      INTERNAL_ORION_PRECISION,
+      INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     ).toNumber(),
     matcherFee: normalizeNumber(
       matcherFee,
-      INTERNAL_ORION_PRECISION,
+      INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_CEIL, // ROUND_CEIL because we don't want get "not enough fee" error
     ).toNumber(),
     nonce,

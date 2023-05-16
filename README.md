@@ -74,18 +74,18 @@ npm i @orionprotocol/sdk
 
 ```js
 // Node.js
-import { OrionUnit, Orion } from "@orionprotocol/sdk";
+import { Unit, Orion } from "@orionprotocol/sdk";
 import { Wallet } from "ethers";
 
 const orion = new Orion();
-const orionUnit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
-const wallet = new Wallet("0x...", orionUnit.provider);
-// OrionUnit is chain-in-environment abstraction
+const unit = orion.getUnit("bsc"); // eth, bsc, ftm, polygon, okc available
+const wallet = new Wallet("0x...", unit.provider);
+// Unit is chain-in-environment abstraction
 ```
 
 ```ts
 // Metamask
-import { OrionUnit } from "@orionprotocol/sdk";
+import { Unit } from "@orionprotocol/sdk";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { BaseProvider } from "@metamask/providers";
 import { providers } from "ethers";
@@ -95,7 +95,7 @@ const startApp = async (provider: BaseProvider) => {
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
   const orion = new Orion();
-  const orionUnit = orion.getUnit("eth"); // ready to go
+  const unit = orion.getUnit("eth"); // ready to go
 };
 
 detectEthereumProvider().then((provider) => {
@@ -173,7 +173,7 @@ orion.bridge.swap(
 ### Withdraw
 
 ```ts
-orionUnit.exchange.withdraw({
+unit.exchange.withdraw({
   amount: 435.275,
   asset: "USDT",
   signer: wallet, // or signer when UI
@@ -183,7 +183,7 @@ orionUnit.exchange.withdraw({
 ### Deposit
 
 ```ts
-orionUnit.exchange.deposit({
+unit.exchange.deposit({
   amount: 2.5,
   asset: "ORN",
   signer: wallet, // or signer when UI
@@ -193,7 +193,7 @@ orionUnit.exchange.deposit({
 ### Get swap info
 
 ```ts
-const { swapInfo, fee } = await orionUnit.exchange.getSwapInfo({
+const { swapInfo, fee } = await unit.exchange.getSwapInfo({
   type: "exactSpend",
   assetIn: "ORN",
   assetOut: "USDT",
@@ -251,7 +251,7 @@ console.log(fee);
 // Each trading pair has its own quantity precision
 // You need to prepare (round) the quantity according to quantity precision
 
-const pairConfig = await simpleFetch(orionAggregator.getPairConfig)("ORN-USDT");
+const pairConfig = await simpleFetch(aggregator.getPairConfig)("ORN-USDT");
 if (!pairConfig) throw new Error(`Pair config ORN-USDT not found`);
 
 const { qtyPrecision } = pairConfig;
@@ -262,7 +262,7 @@ const roundedAmount = new BigNumber(amount).decimalPlaces(
   BigNumber.ROUND_FLOOR
 ); // You can use your own Math lib
 
-orionUnit.exchange
+unit.exchange
   .swapLimit({
     type: "exactSpend",
     assetIn: "ORN",
@@ -290,7 +290,7 @@ orionUnit.exchange
 // Each trading pair has its own quantity precision
 // You need to prepare (round) the quantity according to quantity precision
 
-const pairConfig = await simpleFetch(orionAggregator.getPairConfig)("ORN-USDT");
+const pairConfig = await simpleFetch(aggregator.getPairConfig)("ORN-USDT");
 if (!pairConfig) throw new Error(`Pair config ORN-USDT not found`);
 
 const { qtyPrecision } = pairConfig;
@@ -301,7 +301,7 @@ const roundedAmount = new BigNumber(amount).decimalPlaces(
   BigNumber.ROUND_FLOOR
 ); // You can use your own Math lib
 
-orionUnit.exchange
+unit.exchange
   .swapMarket({
     type: "exactSpend",
     assetIn: "ORN",
@@ -326,7 +326,7 @@ orionUnit.exchange
 ### Add liquidity
 
 ```ts
-orionUnit.farmingManager.addLiquidity({
+unit.farmingManager.addLiquidity({
   poolName: "ORN-USDT",
   amountAsset: "ORN", // ORN or USDT for this pool
   amount: 23.352345,
@@ -337,7 +337,7 @@ orionUnit.farmingManager.addLiquidity({
 ### Remove all liquidity
 
 ```ts
-orionUnit.farmingManager.removeAllLiquidity({
+unit.farmingManager.removeAllLiquidity({
   poolName: "ORN-USDT",
   signer: wallet, // or signer when UI
 });
@@ -350,9 +350,7 @@ orionUnit.farmingManager.removeAllLiquidity({
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 
-const orderbook = await simpleFetch(
-  orionUnit.orionAggregator.getAggregatedOrderbook
-)(
+const orderbook = await simpleFetch(unit.aggregator.getAggregatedOrderbook)(
   "ORN-USDT",
   20 // Depth
 );
@@ -363,7 +361,7 @@ const orderbook = await simpleFetch(
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 
-const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
+const candles = await simpleFetch(unit.priceFeed.getCandles)(
   "ORN-USDT",
   1650287678, // interval start, unix timestamp
   1650374078, // interval end, unix timestamp
@@ -375,7 +373,7 @@ const candles = await simpleFetch(orionUnit.priceFeed.getCandles)(
 
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
-const pairsList = await simpleFetch(orionUnit.orionAggregator.getPairsList)();
+const pairsList = await simpleFetch(unit.aggregator.getPairsList)();
 console.log(pairsList); // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN']
 ```
 
@@ -383,7 +381,7 @@ console.log(pairsList); // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN']
 
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
-const feeAssets = await simpleFetch(orionUnit.orionBlockchain.getTokensFee)();
+const feeAssets = await simpleFetch(unit.blockchainService.getTokensFee)();
 ```
 
 ### Get swap info
@@ -391,7 +389,7 @@ const feeAssets = await simpleFetch(orionUnit.orionBlockchain.getTokensFee)();
 ```ts
 import { simpleFetch } from "@orionprotocol/sdk";
 
-const swapInfo = await simpleFetch(orionUnit.orionAggregator.getSwapInfo)(
+const swapInfo = await simpleFetch(unit.aggregator.getSwapInfo)(
   // Use 'exactSpend' when 'amount' is how much you want to spend. Use 'exactReceive' otherwise
   "exactSpend", // type
   "ORN", // asset in
@@ -444,10 +442,10 @@ const feeAssetAddress = "0xf223eca06261145b3287a0fefd8cfad371c7eb34";
 const fee = "0.7235"; // Orion Fee + Network Fee in fee asset
 const side = "BUY"; // or 'SELL'
 const isPersonalSign = false; // https://docs.metamask.io/guide/signing-data.html#a-brief-history
-const { chainId } = orionUnit;
+const { chainId } = unit;
 const {
   matcherAddress, // The address that will transfer funds to you during the exchange process
-} = await simpleFetch(orionUnit.orionBlockchain.getInfo)();
+} = await simpleFetch(unit.blockchainService.getInfo)();
 
 const signedOrder = await crypt.signOrder(
   baseAssetAddress,
@@ -466,14 +464,14 @@ const signedOrder = await crypt.signOrder(
 
 const exchangeContract = Exchange__factory.connect(
   exchangeContractAddress,
-  orionUnit.provider
+  unit.provider
 );
 
 const orderIsOk = await exchangeContract.validateOrder(signedOrder);
 
 if (!orderIsOk) throw new Error("Order invalid");
 
-const { orderId } = await simpleFetch(orionUnit.orionAggregator.placeOrder)(
+const { orderId } = await simpleFetch(unit.aggregator.placeOrder)(
   signedOrder,
   false // True if you want to place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with other "internal" order(s).
 );
@@ -495,7 +493,7 @@ BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE = 'btasabus', // Ne
 
 ```ts
 
-const swapRequestId = orionUnit.orionAggregator.ws.subscribe(
+const swapRequestId = unit.aggregator.ws.subscribe(
   "ss", // SWAP_SUBSCRIBE
   {
     payload: {
@@ -519,14 +517,14 @@ const swapRequestId = orionUnit.orionAggregator.ws.subscribe(
   }
 );
 
-orionAggregator.ws.unsubscribe(swapRequestId);
+aggregator.ws.unsubscribe(swapRequestId);
 
 ```
 
 ### Balances and order history stream
 
 ```ts
-orionUnit.orionAggregator.ws.subscribe(
+unit.aggregator.ws.subscribe(
   "aus", // ADDRESS_UPDATES_SUBSCRIBE — orders, balances
   {
     payload: "0x0000000000000000000000000000000000000000", // Some wallet address
@@ -556,15 +554,13 @@ orionUnit.orionAggregator.ws.subscribe(
   }
 );
 
-orionUnit.orionAggregator.ws.unsubscribe(
-  "0x0000000000000000000000000000000000000000"
-);
+unit.aggregator.ws.unsubscribe("0x0000000000000000000000000000000000000000");
 ```
 
 ### Orderbook stream
 
 ```ts
-orionUnit.orionAggregator.ws.subscribe("aobus", {
+unit.aggregator.ws.subscribe("aobus", {
   payload: "ORN-USDT", // Some trading pair
   callback: (asks, bids, pairName) => {
     console.log(`${pairName} orderbook asks`, asks);
@@ -572,47 +568,47 @@ orionUnit.orionAggregator.ws.subscribe("aobus", {
   },
 });
 
-orionUnit.orionAggregator.ws.unsubscribe("ORN-USDT");
+unit.aggregator.ws.unsubscribe("ORN-USDT");
 ```
 
 ### Orion Aggregator WS Stream Unsubscribing
 
 ```ts
 // Asset pairs config updates unsubscribe
-orionUnit.orionAggregator.ws.unsubscribe("apcu");
+unit.aggregator.ws.unsubscribe("apcu");
 
 // Broker tradable atomic swap assets balance unsubscribe
-orionUnit.orionAggregator.ws.unsubscribe("btasabu");
+unit.aggregator.ws.unsubscribe("btasabu");
 ```
 
 ## Price Feed Websocket Stream
 
 ```ts
-const allTickersSubscription = orionUnit.priceFeed.ws.subscribe("allTickers", {
+const allTickersSubscription = unit.priceFeed.ws.subscribe("allTickers", {
   callback: (tickers) => {
     console.log(tickers);
   },
 });
 allTickersSubscription.unsubscribe();
-orionUnit.priceFeed.ws.unsubscribe("allTickers", allTickersSubscription.id); // Also you can unsubscribe like this
+unit.priceFeed.ws.unsubscribe("allTickers", allTickersSubscription.id); // Also you can unsubscribe like this
 
-const tickerSubscription = orionUnit.priceFeed.ws.subscribe("ticker", {
+const tickerSubscription = unit.priceFeed.ws.subscribe("ticker", {
   callback: (ticker) => {
     console.log(tricker);
   },
   payload: "ORN-USDT",
 });
 tickerSubscription.subscription();
-orionUnit.priceFeed.ws.unsubscribe("ticker", tickerSubscription.id);
+unit.priceFeed.ws.unsubscribe("ticker", tickerSubscription.id);
 
-const lastPriceSubscription = orionUnit.priceFeed.ws.subscribe("lastPrice", {
+const lastPriceSubscription = unit.priceFeed.ws.subscribe("lastPrice", {
   callback: ({ pair, price }) => {
     console.log(`Price: ${price}`);
   },
   payload: "ORN-USDT",
 });
 lastPriceSubscription.unsubscribe();
-orionUnit.priceFeed.ws.unsubscribe("lastPrice", lastPriceSubscription.id);
+unit.priceFeed.ws.unsubscribe("lastPrice", lastPriceSubscription.id);
 ```
 
 ## Data fetching
@@ -620,7 +616,7 @@ orionUnit.priceFeed.ws.unsubscribe("lastPrice", lastPriceSubscription.id);
 ```ts
 // Verbose way example
 
-const getCandlesResult = await orionUnit.priceFeed.getCandles(
+const getCandlesResult = await unit.priceFeed.getCandles(
   "ORN-USDT",
   1650287678,
   1650374078,
@@ -653,7 +649,7 @@ if (getCandlesResult.isErr()) {
 // Simple Fetch
 
 const { candles, timeStart, timeEnd } = await simpleFetch(
-  orionUnit.priceFeed.getCandles
+  unit.priceFeed.getCandles
 )("ORN-USDT", 1650287678, 1650374078, "5m");
 
 // Here we can handle response data

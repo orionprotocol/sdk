@@ -9,19 +9,19 @@ describe('Orion Aggregator', () => {
 
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        bscUnit.orionAggregator.ws.unsubscribe(subId);
-        bscUnit.orionAggregator.ws.destroy()
+        bscUnit.aggregator.ws.unsubscribe(subId);
+        bscUnit.aggregator.ws.destroy()
         reject(new Error('Timeout'));
       }, 10000);
-      // bscUnit.orionAggregator.ws.onError = console.error;
+      // bscUnit.aggregator.ws.onError = console.error;
       const payload = 'adsv-sdfb';
-      subId = bscUnit.orionAggregator.ws.subscribe('aus', {
+      subId = bscUnit.aggregator.ws.subscribe('aus', {
         payload,
         callback: () => null,
         errorCb: (message) => {
           expect(message).toContain(`Address '${payload}' is not hexadecimal`);
           clearTimeout(timeout);
-          bscUnit.orionAggregator.ws.destroy()
+          bscUnit.aggregator.ws.destroy()
           resolve(true);
         }
       })
@@ -36,18 +36,18 @@ describe('Orion Aggregator', () => {
 
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        bscUnit.orionAggregator.ws.unsubscribe(subId);
-        bscUnit.orionAggregator.ws.destroy()
+        bscUnit.aggregator.ws.unsubscribe(subId);
+        bscUnit.aggregator.ws.destroy()
         reject(new Error('Timeout'));
       }, 10000);
       const payload = 'BTCUSDF';
-      subId = bscUnit.orionAggregator.ws.subscribe('aobus', {
+      subId = bscUnit.aggregator.ws.subscribe('aobus', {
         payload,
         callback: () => null,
         errorCb: (message) => {
           console.log(message);
           clearTimeout(timeout);
-          bscUnit.orionAggregator.ws.destroy()
+          bscUnit.aggregator.ws.destroy()
           resolve(true);
         }
       })

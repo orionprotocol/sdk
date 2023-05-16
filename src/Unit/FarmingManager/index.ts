@@ -2,9 +2,9 @@ import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory }
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { simpleFetch } from 'simple-typed-fetch';
-import type OrionUnit from '../index.js';
+import type Unit from '../index.js';
 import BalanceGuard from '../../BalanceGuard.js';
-import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants/index.js';
+import { ADD_LIQUIDITY_GAS_LIMIT, INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import getBalances from '../../utils/getBalances.js';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
@@ -24,10 +24,10 @@ export type RemoveAllLiquidityParams = {
 }
 
 export default class FarmingManager {
-  private readonly orionUnit: OrionUnit;
+  private readonly unit: Unit;
 
-  constructor(orionUnit: OrionUnit) {
-    this.orionUnit = orionUnit;
+  constructor(unit: Unit) {
+    this.unit = unit;
   }
 
   public async addLiquidity({
@@ -49,12 +49,12 @@ export default class FarmingManager {
       exchangeContractAddress,
       assetToAddress,
       assetToDecimals,
-    } = await simpleFetch(this.orionUnit.orionBlockchain.getInfo)();
+    } = await simpleFetch(this.unit.blockchainService.getInfo)();
 
     const walletAddress = await signer.getAddress();
 
     const exchangeContract = Exchange__factory
-      .connect(exchangeContractAddress, this.orionUnit.provider);
+      .connect(exchangeContractAddress, this.unit.provider);
 
     const assetAAddress = assetToAddress[assetA];
     if (assetAAddress === undefined) throw new Error(`Asset '${assetA}' not found`);
@@ -73,10 +73,10 @@ export default class FarmingManager {
         [assetB]: assetBAddress,
         [nativeCryptocurrency]: ethers.constants.AddressZero,
       },
-      this.orionUnit.orionAggregator,
+      this.unit.aggregator,
       walletAddress,
       exchangeContract,
-      this.orionUnit.provider,
+      this.unit.provider,
     );
     const balanceGuard = new BalanceGuard(
       balances,
@@ -84,18 +84,18 @@ export default class FarmingManager {
         address: ethers.constants.AddressZero,
         name: nativeCryptocurrency,
       },
-      this.orionUnit.provider,
+      this.unit.provider,
       signer,
     );
 
-    const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
+    const poolsConfig = await simpleFetch(this.unit.blockchainService.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];
     if (!pool) throw new Error(`Pool ${poolName} not found`);
 
     const pairContract = IUniswapV2Pair__factory
-      .connect(pool.lpTokenAddress, this.orionUnit.provider);
+      .connect(pool.lpTokenAddress, this.unit.provider);
     const routerContract = IUniswapV2Router__factory
-      .connect(poolsConfig.routerAddress, this.orionUnit.provider);
+      .connect(poolsConfig.routerAddress, this.unit.provider);
 
     let pairTokensIsInversed = false;
     const token0 = await pairContract.token0();
@@ -149,20 +149,20 @@ export default class FarmingManager {
       assetBIsNativeCurrency ? assetBAddress : assetAAddress,
       assetBIsNativeCurrency ? assetAAddress : assetBAddress,
       assetBIsNativeCurrency
-        ? normalizeNumber(assetBAmount, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetAAmount, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetBAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
+        : normalizeNumber(assetAAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
       assetBIsNativeCurrency
-        ? normalizeNumber(assetAAmount, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetBAmount, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetAAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
+        : normalizeNumber(assetBAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
       assetBIsNativeCurrency
-        ? normalizeNumber(assetBAmountWithSlippage, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetAAmountWithSlippage, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetBAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
+        : normalizeNumber(assetAAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
       assetBIsNativeCurrency
-        ? normalizeNumber(assetAAmountWithSlippage, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetBAmountWithSlippage, INTERNAL_ORION_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetAAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
+        : normalizeNumber(assetBAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
     );
 
-    const gasPrice = await this.orionUnit.provider.getGasPrice();
+    const gasPrice = await this.unit.provider.getGasPrice();
 
     const transactionCost = ethers.BigNumber.from(ADD_LIQUIDITY_GAS_LIMIT).mul(gasPrice);
     const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
@@ -177,9 +177,9 @@ export default class FarmingManager {
       sources: ['wallet'],
     });
 
-    const nonce = await this.orionUnit.provider.getTransactionCount(walletAddress, 'pending');
+    const nonce = await this.unit.provider.getTransactionCount(walletAddress, 'pending');
 
-    const network = await this.orionUnit.provider.getNetwork();
+    const network = await this.unit.provider.getNetwork();
 
     if (assetAIsNativeCurrency || assetBIsNativeCurrency) {
       const contractBalance = balances[nativeCryptocurrency]?.exchange;
@@ -199,13 +199,13 @@ export default class FarmingManager {
     unsignedTx.gasPrice = gasPrice;
     unsignedTx.nonce = nonce;
     unsignedTx.from = walletAddress;
-    const gasLimit = await this.orionUnit.provider.estimateGas(unsignedTx);
+    const gasLimit = await this.unit.provider.estimateGas(unsignedTx);
     unsignedTx.gasLimit = gasLimit;
 
     await balanceGuard.check(true);
 
     const signedTx = await signer.signTransaction(unsignedTx);
-    const txResponse = await this.orionUnit.provider.sendTransaction(signedTx);
+    const txResponse = await this.unit.provider.sendTransaction(signedTx);
     console.log(`Add liquidity tx sent: ${txResponse.hash}. Waiting for confirmation...`);
     const txReceipt = await txResponse.wait();
     if (txReceipt.status === 1) {
@@ -228,7 +228,7 @@ export default class FarmingManager {
       assetToAddress,
       assetToDecimals,
       exchangeContractAddress,
-    } = await simpleFetch(this.orionUnit.orionBlockchain.getInfo)();
+    } = await simpleFetch(this.unit.blockchainService.getInfo)();
 
     const assetAAddress = assetToAddress[assetA];
     if (assetAAddress === undefined) throw new Error(`Asset '${assetA}' not found`);
@@ -240,14 +240,14 @@ export default class FarmingManager {
     const assetBDecimals = assetToDecimals[assetB];
     if (assetBDecimals === undefined) throw new Error(`Decimals for asset '${assetB}' not found`);
 
-    const poolsConfig = await simpleFetch(this.orionUnit.orionBlockchain.getPoolsConfig)();
+    const poolsConfig = await simpleFetch(this.unit.blockchainService.getPoolsConfig)();
     const pool = poolsConfig.pools[poolName];
     if (!pool) throw new Error(`Pool ${poolName} not found`);
 
     const walletAddress = await signer.getAddress();
 
     const exchangeContract = Exchange__factory
-      .connect(exchangeContractAddress, this.orionUnit.provider);
+      .connect(exchangeContractAddress, this.unit.provider);
     const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
     const balances = await getBalances(
       {
@@ -256,10 +256,10 @@ export default class FarmingManager {
         [`${poolName} LP Token`]: pool.lpTokenAddress,
         [nativeCryptocurrency]: ethers.constants.AddressZero,
       },
-      this.orionUnit.orionAggregator,
+      this.unit.aggregator,
       walletAddress,
       exchangeContract,
-      this.orionUnit.provider,
+      this.unit.provider,
     );
 
     const balanceGuard = new BalanceGuard(
@@ -268,17 +268,17 @@ export default class FarmingManager {
         address: ethers.constants.AddressZero,
         name: nativeCryptocurrency,
       },
-      this.orionUnit.provider,
+      this.unit.provider,
       signer,
     );
 
     const pairContract = IUniswapV2Pair__factory
-      .connect(pool.lpTokenAddress, this.orionUnit.provider);
+      .connect(pool.lpTokenAddress, this.unit.provider);
 
     const { _reserve0, _reserve1 } = await pairContract.getReserves();
 
     const routerContract = IUniswapV2Router__factory
-      .connect(poolsConfig.routerAddress, this.orionUnit.provider);
+      .connect(poolsConfig.routerAddress, this.unit.provider);
 
     let pairTokensIsInversed = false;
 
@@ -371,7 +371,7 @@ export default class FarmingManager {
       );
     }
 
-    const gasPrice = await this.orionUnit.provider.getGasPrice();
+    const gasPrice = await this.unit.provider.getGasPrice();
 
     const transactionCost = ethers.BigNumber.from(ADD_LIQUIDITY_GAS_LIMIT).mul(gasPrice);
     const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
@@ -387,18 +387,18 @@ export default class FarmingManager {
     });
 
     await balanceGuard.check(true);
-    const nonce = await this.orionUnit.provider.getTransactionCount(walletAddress, 'pending');
-    const network = await this.orionUnit.provider.getNetwork();
+    const nonce = await this.unit.provider.getTransactionCount(walletAddress, 'pending');
+    const network = await this.unit.provider.getNetwork();
 
     unsignedTx.chainId = network.chainId;
     unsignedTx.gasPrice = gasPrice;
     unsignedTx.nonce = nonce;
     unsignedTx.from = walletAddress;
-    const gasLimit = await this.orionUnit.provider.estimateGas(unsignedTx);
+    const gasLimit = await this.unit.provider.estimateGas(unsignedTx);
     unsignedTx.gasLimit = gasLimit;
 
     const signedTx = await signer.signTransaction(unsignedTx);
-    const txResponse = await this.orionUnit.provider.sendTransaction(signedTx);
+    const txResponse = await this.unit.provider.sendTransaction(signedTx);
     console.log(`Remove all liquidity tx sent: ${txResponse.hash}. Waiting for confirmation...`);
     const txReceipt = await txResponse.wait();
     if (txReceipt.status === 1) {

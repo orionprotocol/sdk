@@ -23,7 +23,6 @@ import { objectKeys } from '../../../utils/objectKeys.js';
 
 const UNSUBSCRIBE = 'u';
 
-// https://github.com/orionprotocol/orion-aggregator/tree/feature/OP-1752-symmetric-swap#swap-info-subscribe
 type SwapSubscriptionRequest = {
   // d: string, // swap request UUID, set by client side
   i: string // asset in
@@ -162,7 +161,7 @@ const isSubType = (subType: string): subType is keyof Subscription => Object.val
 
 const unknownMessageTypeRegex = /An unknown message type: '(.*)', json: (.*)/;
 const nonExistentMessageRegex = /Could not cancel nonexistent subscription: (.*)/;
-class OrionAggregatorWS {
+class AggregatorWS {
   private ws?: WebSocket | undefined;
 
   // is used to make sure we do not need to renew ws subscription
@@ -319,10 +318,10 @@ class OrionAggregatorWS {
     this.isClosedIntentionally = false;
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onerror = (err) => {
-      this.logger?.(`OrionAggregatorWS: ${err.message}`);
+      this.logger?.(`AggregatorWS: ${err.message}`);
     };
     this.ws.onclose = () => {
-      this.logger?.(`OrionAggregatorWS: connection closed ${this.isClosedIntentionally ? 'intentionally' : ''}`);
+      this.logger?.(`AggregatorWS: connection closed ${this.isClosedIntentionally ? 'intentionally' : ''}`);
       if (!this.isClosedIntentionally) this.init(true);
     };
     this.ws.onopen = () => {
@@ -342,12 +341,12 @@ class OrionAggregatorWS {
             }
           });
       }
-      this.logger?.(`OrionAggregatorWS: connection opened${isReconnect ? ' (reconnect)' : ''}`);
+      this.logger?.(`AggregatorWS: connection opened${isReconnect ? ' (reconnect)' : ''}`);
     };
     this.ws.onmessage = (e) => {
       const { data } = e;
-      if (typeof data !== 'string') throw new Error('OrionAggregatorWS: received non-string message');
-      this.logger?.(`OrionAggregatorWS: received message: ${data}`);
+      if (typeof data !== 'string') throw new Error('AggregatorWS: received non-string message');
+      this.logger?.(`AggregatorWS: received message: ${data}`);
       const rawJson: unknown = JSON.parse(data);
 
       const messageSchema = z.union([
@@ -389,9 +388,9 @@ class OrionAggregatorWS {
               console.warn(`You tried to subscribe to '${subscription}' with unknown payload '${jsonPayload}'. This is probably a bug in the code. Please be sure that you are subscribing to the existing subscription with the correct payload.`)
             } else {
               const subType = objectKeys(this.subscriptions).find((st) => this.subscriptions[st]?.[id]);
-              if (subType === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription type by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
+              if (subType === undefined) throw new Error(`AggregatorWS: cannot find subscription type by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
               const sub = this.subscriptions[subType]?.[id];
-              if (sub === undefined) throw new Error(`OrionAggregatorWS: cannot find subscription by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
+              if (sub === undefined) throw new Error(`AggregatorWS: cannot find subscription by id ${id}. Current subscriptions: ${JSON.stringify(this.subscriptions)}`);
               if ('errorCb' in sub) {
                 sub.errorCb(err.m);
               }
@@ -658,7 +657,7 @@ class OrionAggregatorWS {
 
 export * as schemas from './schemas/index.js';
 export {
-  OrionAggregatorWS,
+  AggregatorWS,
   SubscriptionType,
   UnsubscriptionType,
   MessageType,

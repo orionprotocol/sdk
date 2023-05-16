@@ -2,8 +2,8 @@ import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { simpleFetch } from 'simple-typed-fetch';
 import { NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants/index.js';
-import type { OrionAggregator } from '../../services/OrionAggregator/index.js';
-import type { OrionBlockchain } from '../../services/OrionBlockchain/index.js';
+import type { Aggregator } from '../../services/Aggregator/index.js';
+import type { BlockchainService } from '../../services/BlockchainService/index.js';
 
 import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrencyName } from '../../utils/index.js';
 
@@ -13,8 +13,8 @@ export type GetSwapInfoParams = {
   assetOut: string
   amount: BigNumber.Value
   feeAsset: string
-  orionBlockchain: OrionBlockchain
-  orionAggregator: OrionAggregator
+  blockchainService: BlockchainService
+  aggregator: Aggregator
   options?: {
     instantSettlement?: boolean
     poolOnly?: boolean
@@ -27,8 +27,8 @@ export default async function getSwapInfo({
   assetOut,
   amount,
   feeAsset,
-  orionBlockchain,
-  orionAggregator,
+  blockchainService,
+  aggregator,
   options,
 }: GetSwapInfoParams) {
   if (amount === '') throw new Error('Amount can not be empty');
@@ -42,12 +42,12 @@ export default async function getSwapInfo({
 
   const {
     assetToAddress,
-  } = await simpleFetch(orionBlockchain.getInfo)();
+  } = await simpleFetch(blockchainService.getInfo)();
   const nativeCryptocurrencyName = getNativeCryptocurrencyName(assetToAddress);
 
-  const feeAssets = await simpleFetch(orionBlockchain.getTokensFee)();
-  const pricesInOrn = await simpleFetch(orionBlockchain.getPrices)();
-  const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
+  const feeAssets = await simpleFetch(blockchainService.getTokensFee)();
+  const pricesInOrn = await simpleFetch(blockchainService.getPrices)();
+  const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
 
   const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
 
@@ -58,7 +58,7 @@ export default async function getSwapInfo({
     throw new Error(`Fee asset '${feeAsset}' not found. Available assets: ${Object.keys(feeAssets).join(', ')}`);
   }
 
-  const swapInfo = await simpleFetch(orionAggregator.getSwapInfo)(
+  const swapInfo = await simpleFetch(aggregator.getSwapInfo)(
     type,
     assetIn,
     assetOut,
@@ -70,7 +70,7 @@ export default async function getSwapInfo({
   );
 
   const { exchanges: swapExchanges } = swapInfo;
-  const { factories } = await simpleFetch(orionBlockchain.getPoolsConfig)();
+  const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();
   const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
   const [firstSwapExchange] = swapExchanges;
 
@@ -131,7 +131,7 @@ export default async function getSwapInfo({
     if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
     const {
-      orionFeeInFeeAsset,
+      serviceFeeInFeeAsset,
       networkFeeInFeeAsset,
     } = calculateFeeInFeeAsset(
       swapInfo.orderInfo.amount,
@@ -149,7 +149,7 @@ export default async function getSwapInfo({
         assetName: feeAsset,
         assetAddress: feeAssetAddress,
         networkFeeInFeeAsset,
-        protocolFeeInFeeAsset: orionFeeInFeeAsset,
+        protocolFeeInFeeAsset: serviceFeeInFeeAsset,
       },
     };
   }

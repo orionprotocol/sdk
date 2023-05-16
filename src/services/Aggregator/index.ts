@@ -6,7 +6,7 @@ import cancelOrderSchema from './schemas/cancelOrderSchema.js';
 import orderBenefitsSchema from './schemas/orderBenefitsSchema.js';
 import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
-import { OrionAggregatorWS } from './ws/index.js';
+import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
 import type { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types.js';
 import { pairConfigSchema } from './schemas/index.js';
@@ -21,10 +21,10 @@ import orderSchema from './schemas/orderSchema.js';
 import { exchanges } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 
-class OrionAggregator {
+class Aggregator {
   private readonly apiUrl: string;
 
-  readonly ws: OrionAggregatorWS;
+  readonly ws: AggregatorWS;
 
   get api() {
     return this.apiUrl;
@@ -36,12 +36,12 @@ class OrionAggregator {
   ) {
     // const oaUrl = new URL(apiUrl);
     // const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
-    // const orionAggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/'
+    // const aggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/'
     //   ? ''
     //   : oaUrl.pathname)}/v1`;
 
     this.apiUrl = httpAPIUrl;
-    this.ws = new OrionAggregatorWS(httpToWS(wsAPIUrl));
+    this.ws = new AggregatorWS(httpToWS(wsAPIUrl));
 
     this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
     this.getPairConfig = this.getPairConfig.bind(this);
@@ -351,7 +351,7 @@ class OrionAggregator {
   );
 
   /**
-   * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Orion Aggregator
+   * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Aggregator
    * @param sender Sender address
    * @returns Fetch promise
    */
@@ -364,4 +364,4 @@ class OrionAggregator {
 }
 export * as schemas from './schemas/index.js';
 export * as ws from './ws/index.js';
-export { OrionAggregator };
+export { Aggregator };

@@ -2,7 +2,7 @@ import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
 import { joinSignature, splitSignature } from 'ethers/lib/utils.js';
-import { INTERNAL_ORION_PRECISION } from '../constants/index.js';
+import { INTERNAL_PROTOCOL_PRECISION } from '../constants/index.js';
 import ORDER_TYPES from '../constants/orderTypes.js';
 import type { Order, SignedOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
@@ -23,7 +23,7 @@ export const signOrder = async (
   matcherFee: BigNumber.Value,
   senderAddress: string,
   matcherAddress: string,
-  orionFeeAssetAddr: string,
+  serviceFeeAssetAddr: string,
   usePersonalSign: boolean,
   signer: ethers.Signer,
   chainId: SupportedChainId,
@@ -36,20 +36,20 @@ export const signOrder = async (
     matcherAddress,
     baseAsset: baseAssetAddr,
     quoteAsset: quoteAssetAddr,
-    matcherFeeAsset: orionFeeAssetAddr,
+    matcherFeeAsset: serviceFeeAssetAddr,
     amount: normalizeNumber(
       amount,
-      INTERNAL_ORION_PRECISION,
+      INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     ).toNumber(),
     price: normalizeNumber(
       price,
-      INTERNAL_ORION_PRECISION,
+      INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     ).toNumber(),
     matcherFee: normalizeNumber(
       matcherFee,
-      INTERNAL_ORION_PRECISION,
+      INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_CEIL, // ROUND_CEIL because we don't want get "not enough fee" error
     ).toNumber(),
     nonce,

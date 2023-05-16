@@ -1,12 +1,12 @@
 import type { Exchange } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import type { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
-import type { OrionAggregator } from '../services/OrionAggregator/index.js';
+import type { Aggregator } from '../services/Aggregator/index.js';
 import getBalance from './getBalance.js';
 
 export default async (
   balancesRequired: Partial<Record<string, string>>,
-  orionAggregator: OrionAggregator,
+  aggregator: Aggregator,
   walletAddress: string,
   exchangeContract: Exchange,
   provider: ethers.providers.Provider,
@@ -16,7 +16,7 @@ export default async (
       .map(async ([assetName, assetAddress]) => {
         if (assetAddress === undefined) throw new Error(`Asset address of ${assetName} not found`);
         const balance = await getBalance(
-          orionAggregator,
+          aggregator,
           assetName,
           assetAddress,
           walletAddress,

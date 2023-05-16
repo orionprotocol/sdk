@@ -3,9 +3,9 @@ import { ethers } from 'ethers';
 import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
-import type OrionUnit from '../index.js';
+import type Unit from '../index.js';
 import {
-  DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION,
+  DEPOSIT_ERC20_GAS_LIMIT, DEPOSIT_ETH_GAS_LIMIT, INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION,
 } from '../../constants/index.js';
 import { denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
@@ -15,14 +15,14 @@ export type DepositParams = {
   asset: string
   amount: BigNumber.Value
   signer: ethers.Signer
-  orionUnit: OrionUnit
+  unit: Unit
 }
 
 export default async function deposit({
   asset,
   amount,
   signer,
-  orionUnit,
+  unit,
 }: DepositParams) {
   if (asset === '') throw new Error('Asset can not be empty');
 
@@ -33,17 +33,17 @@ export default async function deposit({
   const walletAddress = await signer.getAddress();
 
   const {
-    orionBlockchain, orionAggregator, provider, chainId,
-  } = orionUnit;
+    blockchainService, aggregator, provider, chainId,
+  } = unit;
   const {
     exchangeContractAddress,
     assetToAddress,
-  } = await simpleFetch(orionBlockchain.getInfo)();
+  } = await simpleFetch(blockchainService.getInfo)();
 
   const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
 
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
-  const gasPriceWei = await simpleFetch(orionBlockchain.getGasPriceWei)();
+  const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
 
   const assetAddress = assetToAddress[asset];
   if (assetAddress === undefined) throw new Error(`Asset '${asset}' not found`);
@@ -53,7 +53,7 @@ export default async function deposit({
       [asset]: assetAddress,
       [nativeCryptocurrency]: ethers.constants.AddressZero,
     },
-    orionAggregator,
+    aggregator,
     walletAddress,
     exchangeContract,
     provider,
@@ -88,7 +88,7 @@ export default async function deposit({
   } else {
     unsignedTx = await exchangeContract.populateTransaction.depositAsset(
       assetAddress,
-      normalizeNumber(amount, INTERNAL_ORION_PRECISION, BigNumber.ROUND_CEIL),
+      normalizeNumber(amount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_CEIL),
     );
     unsignedTx.gasLimit = ethers.BigNumber.from(DEPOSIT_ERC20_GAS_LIMIT);
   }

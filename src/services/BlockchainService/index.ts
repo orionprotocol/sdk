@@ -15,7 +15,7 @@ import {
   governancePoolsSchema,
   governancePoolSchema,
 } from './schemas/index.js';
-import type redeemOrderSchema from '../OrionAggregator/schemas/redeemOrderSchema.js';
+import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
 import { makePartial } from '../../utils/index.js';
 import type { networkCodes } from '../../constants/index.js';
@@ -63,7 +63,7 @@ type CfdHistoryQuery = {
   page?: number
   limit?: number
 } & Partial<Record<string, string | number>>
-class OrionBlockchain {
+class BlockchainService {
   private readonly apiUrl: string;
 
   get api() {
@@ -112,7 +112,7 @@ class OrionBlockchain {
     this.getGovernancePool = this.getGovernancePool.bind(this);
   }
 
-  get orionBlockchainWsUrl() {
+  get blockchainServiceWsUrl() {
     return `${this.apiUrl}/`;
   }
 
@@ -356,8 +356,8 @@ class OrionBlockchain {
   );
 
   /**
-   * Sender is user address in source Orion Blockchain instance \
-   * Receiver is user address in target Orion Blockchain instance
+   * Sender is user address in source BlockchainService instance \
+   * Receiver is user address in target BlockchainService instance
    */
   getAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery | AtomicSwapHistoryTargetQuery) => {
     const url = new URL(`${this.apiUrl}/api/atomic/history/`);
@@ -446,4 +446,4 @@ class OrionBlockchain {
 }
 
 export * as schemas from './schemas/index.js';
-export { OrionBlockchain };
+export { BlockchainService };

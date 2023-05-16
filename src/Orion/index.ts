@@ -3,9 +3,9 @@ import type { ethers } from 'ethers';
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config/index.js';
 import type { networkCodes } from '../constants/index.js';
-import OrionUnit from '../OrionUnit/index.js';
+import Unit from '../Unit/index.js';
 import { ReferralSystem } from '../services/ReferralSystem/index.js';
-import type { SupportedChainId, DeepPartial, VerboseOrionUnitConfig, KnownEnv } from '../types.js';
+import type { SupportedChainId, DeepPartial, VerboseUnitConfig, KnownEnv } from '../types.js';
 import { isValidChainId } from '../utils/index.js';
 import swap from './bridge/swap.js';
 import getHistory from './bridge/getHistory.js';
@@ -17,7 +17,7 @@ type EnvConfig = {
   networks: Partial<
     Record<
       SupportedChainId,
-      VerboseOrionUnitConfig
+      VerboseUnitConfig
     >
   >
 }
@@ -35,15 +35,13 @@ type AggregatedAssets = Partial<
 export default class Orion {
   public readonly env?: string;
 
-  public readonly units: Partial<Record<SupportedChainId, OrionUnit>>;
+  public readonly units: Partial<Record<SupportedChainId, Unit>>;
 
   public readonly referralSystem: ReferralSystem;
 
   // TODO: get tradable assets (aggregated)
 
   // TODO: get tradable pairs (aggregated)
-
-  // TODO: bridge
 
   constructor(
     envOrConfig: KnownEnv | EnvConfig = 'production',
@@ -72,10 +70,10 @@ export default class Orion {
             api: networkConfig.api,
             nodeJsonRpc: networkConfig.rpc ?? chainConfig.rpc,
             services: {
-              orionBlockchain: {
+              blockchainService: {
                 http: networkConfig.api + networkConfig.services.blockchain.http,
               },
-              orionAggregator: {
+              aggregator: {
                 http: networkConfig.api + networkConfig.services.aggregator.http,
                 ws: networkConfig.api + networkConfig.services.aggregator.ws,
               },
@@ -85,7 +83,7 @@ export default class Orion {
             },
           };
         })
-          .reduce<Partial<Record<SupportedChainId, VerboseOrionUnitConfig>>>((acc, cur) => {
+          .reduce<Partial<Record<SupportedChainId, VerboseUnitConfig>>>((acc, cur) => {
             acc[cur.chainId] = cur;
             return acc;
           }, {}),
@@ -102,12 +100,12 @@ export default class Orion {
     this.referralSystem = new ReferralSystem(config.referralAPI);
 
     this.units = Object.entries(config.networks)
-      .reduce<Partial<Record<SupportedChainId, OrionUnit>>>((acc, [chainId, networkConfig]) => {
+      .reduce<Partial<Record<SupportedChainId, Unit>>>((acc, [chainId, networkConfig]) => {
         if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
         const chainConfig = chains[chainId];
         if (!chainConfig) throw new Error(`Chain config not found: ${chainId}`);
 
-        const orionUnit = new OrionUnit({
+        const unit = new Unit({
           // env: networkConfig.env,
           chainId,
           // api: networkConfig.api,
@@ -116,7 +114,7 @@ export default class Orion {
         });
         return {
           ...acc,
-          [chainId]: orionUnit,
+          [chainId]: unit,
         }
       }, {});
   }
@@ -125,8 +123,8 @@ export default class Orion {
     return Object.entries(this.units).map(([, unit]) => unit);
   }
 
-  getUnit(networkCodeOrChainId: typeof networkCodes[number] | SupportedChainId): OrionUnit {
-    let unit: OrionUnit | undefined;
+  getUnit(networkCodeOrChainId: typeof networkCodes[number] | SupportedChainId): Unit {
+    let unit: Unit | undefined;
     if (isValidChainId(networkCodeOrChainId)) {
       unit = this.units[networkCodeOrChainId];
     } else {
@@ -148,7 +146,7 @@ export default class Orion {
     const aggregatedAssets: AggregatedAssets = {};
 
     await Promise.all(this.unitsArray.map(async (unit) => {
-      const { assetToAddress } = await simpleFetch(unit.orionBlockchain.getInfo)();
+      const { assetToAddress } = await simpleFetch(unit.blockchainService.getInfo)();
       Object.entries(assetToAddress).forEach(([asset, address]) => {
         if (address === undefined) throw new Error(`Address is undefined for asset: ${asset}`);
         aggregatedAssets[asset] = {
@@ -172,7 +170,7 @@ export default class Orion {
         if (aggregatedBaseAsset === undefined) {
           const networks = chainIds.map((chainId) => chains[chainId]?.label).join(', ');
           console.error(
-            `Asset found in Aggregator, but not in Orion Blockchain (base): ${baseAsset} (${pair}).` +
+            `Asset found in Aggregator, but not in BlockchainService (base): ${baseAsset} (${pair}).` +
             ` Networks: ${networks}`
           );
         } else {
@@ -182,7 +180,7 @@ export default class Orion {
         if (aggregatedQuoteAsset === undefined) {
           const networks = chainIds.map((chainId) => chains[chainId]?.label).join(', ');
           console.error(
-            `Asset found in Aggregator, but not in OrionBlockchain (quote): ${quoteAsset} (${pair}).` +
+            `Asset found in Aggregator, but not in BlockchainService (quote): ${quoteAsset} (${pair}).` +
             ` Networks: ${networks}`
           );
         } else {
@@ -193,7 +191,7 @@ export default class Orion {
     return aggregatedAssets;
   }
 
-  async getPairs(...params: Parameters<OrionUnit['orionAggregator']['getPairsList']>) {
+  async getPairs(...params: Parameters<Unit['aggregator']['getPairsList']>) {
     const result: Partial<
       Record<
         string,
@@ -202,7 +200,7 @@ export default class Orion {
     > = {};
 
     await Promise.all(this.unitsArray.map(async (unit) => {
-      const pairs = await simpleFetch(unit.orionAggregator.getPairsList)(...params);
+      const pairs = await simpleFetch(unit.aggregator.getPairsList)(...params);
       pairs.forEach((pair) => {
         result[pair] = [
           ...(result[pair] ?? []),

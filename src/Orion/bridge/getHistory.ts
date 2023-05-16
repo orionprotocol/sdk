@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import type OrionUnit from '../../OrionUnit/index.js';
+import type Unit from '../../Unit/index.js';
 import type { SupportedChainId } from '../../types.js';
 import { isValidChainId } from '../../utils/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
@@ -7,18 +7,18 @@ import bsonObjectId from 'bson-objectid';
 
 const ObjectID = bsonObjectId.default
 
-const getHistory = async (units: OrionUnit[], address: string, limit = 1000) => {
+const getHistory = async (units: Unit[], address: string, limit = 1000) => {
   if (!ethers.utils.isAddress(address)) throw new Error(`Invalid address: ${address}`);
-  const data = await Promise.all(units.map(async ({ orionBlockchain, orionAggregator, chainId }) => {
-    const sourceNetworkHistory = await simpleFetch(orionBlockchain.getSourceAtomicSwapHistory)({
+  const data = await Promise.all(units.map(async ({ blockchainService, aggregator, chainId }) => {
+    const sourceNetworkHistory = await simpleFetch(blockchainService.getSourceAtomicSwapHistory)({
       limit,
       sender: address,
     });
-    const targetNetworkHistory = await simpleFetch(orionBlockchain.getTargetAtomicSwapHistory)({
+    const targetNetworkHistory = await simpleFetch(blockchainService.getTargetAtomicSwapHistory)({
       limit,
       receiver: address,
     });
-    const orionAggregatorHistoryAtomicSwaps = await simpleFetch(orionAggregator.getHistoryAtomicSwaps)(
+    const aggregatorHistoryAtomicSwaps = await simpleFetch(aggregator.getHistoryAtomicSwaps)(
       address,
       limit
     );
@@ -62,12 +62,12 @@ const getHistory = async (units: OrionUnit[], address: string, limit = 1000) => 
           return acc;
         }, {});
 
-      type OrionAggregatorHistoryAtomicSwapsItem = typeof orionAggregatorHistoryAtomicSwaps[number] & {
+      type AggregatorHistoryAtomicSwapsItem = typeof aggregatorHistoryAtomicSwaps[number] & {
         chainId: SupportedChainId
       }
 
-      const orionAggregatorHistoryAtomicSwapsObj = orionAggregatorHistoryAtomicSwaps.reduce<
-        Partial<Record<string, OrionAggregatorHistoryAtomicSwapsItem>>
+      const aggregatorHistoryAtomicSwapsObj = aggregatorHistoryAtomicSwaps.reduce<
+        Partial<Record<string, AggregatorHistoryAtomicSwapsItem>>
         >((acc, cur) => {
           const { secretHash } = cur.lockOrder;
           const lowercaseSecretHash = secretHash.toLowerCase();
@@ -82,7 +82,7 @@ const getHistory = async (units: OrionUnit[], address: string, limit = 1000) => 
         sourceNetworkHistory: sourceNetworkHistoryObj,
         targetNetworkHistory: targetNetworkHistoryObj,
         network: chainId,
-        orionAggregatorHistoryAtomicSwaps: orionAggregatorHistoryAtomicSwapsObj
+        aggregatorHistoryAtomicSwaps: aggregatorHistoryAtomicSwapsObj
       };
   }));
 
@@ -106,13 +106,13 @@ const getHistory = async (units: OrionUnit[], address: string, limit = 1000) => 
       }
     }, {});
 
-    type AggItems = typeof data[number]['orionAggregatorHistoryAtomicSwaps'];
+    type AggItems = typeof data[number]['aggregatorHistoryAtomicSwaps'];
 
     const unitedAggregatorHistory = data.reduce<AggItems>((acc, cur) => {
-      const { orionAggregatorHistoryAtomicSwaps } = cur;
+      const { aggregatorHistoryAtomicSwaps } = cur;
       return {
         ...acc,
-        ...orionAggregatorHistoryAtomicSwaps,
+        ...aggregatorHistoryAtomicSwaps,
       }
     }, {});
 

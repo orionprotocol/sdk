@@ -263,33 +263,33 @@ export enum HistoryTransactionStatus {
   CANCELLED = 'Cancelled',
 }
 
-export type VerboseOrionUnitConfig = {
+export type VerboseUnitConfig = {
   // env?: string;
   // api: string;
   chainId: SupportedChainId
   nodeJsonRpc: string
   services: {
-    orionBlockchain: {
+    blockchainService: {
       http: string
       // For example:
       // http://localhost:3001/,
       // http://10.123.34.23:3001/,
-      // https://blockchain.orionprotocol.io/
+      // https://blockchain:3001/
     }
-    orionAggregator: {
+    aggregator: {
       http: string
       ws: string
       // For example:
       // http://localhost:3002/,
       // http://10.34.23.5:3002/,
-      // shttps://aggregator.orionprotocol.io/
+      // https://aggregator:3002/
     }
     priceFeed: {
       api: string
       // For example:
       // http://localhost:3003/,
       // http://10.23.5.11:3003/,
-      // https://price-feed.orionprotocol.io/
+      // https://price-feed:3003/
     }
   }
 }

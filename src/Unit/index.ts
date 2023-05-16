@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
-import { OrionAggregator } from '../services/OrionAggregator/index.js';
-import { OrionBlockchain } from '../services/OrionBlockchain/index.js';
+import { Aggregator } from '../services/Aggregator/index.js';
+import { BlockchainService } from '../services/BlockchainService/index.js';
 import { PriceFeed } from '../services/PriceFeed/index.js';
-import type { KnownEnv, SupportedChainId, VerboseOrionUnitConfig } from '../types.js';
+import type { KnownEnv, SupportedChainId, VerboseUnitConfig } from '../types.js';
 import Exchange from './Exchange/index.js';
 import FarmingManager from './FarmingManager/index.js';
 import { chains, envs } from '../config/index.js';
@@ -13,20 +13,16 @@ type KnownConfig = {
   chainId: SupportedChainId
 }
 
-// type OrionUnitConfig = KnownConfig | VerboseOrionUnitConfig;
-
-export default class OrionUnit {
-  // public readonly env?: string;
-
+export default class Unit {
   public readonly networkCode: typeof networkCodes[number];
 
   public readonly chainId: SupportedChainId;
 
   public readonly provider: ethers.providers.StaticJsonRpcProvider;
 
-  public readonly orionBlockchain: OrionBlockchain;
+  public readonly blockchainService: BlockchainService;
 
-  public readonly orionAggregator: OrionAggregator;
+  public readonly aggregator: Aggregator;
 
   public readonly priceFeed: PriceFeed;
 
@@ -34,12 +30,9 @@ export default class OrionUnit {
 
   public readonly farmingManager: FarmingManager;
 
-  public readonly config: VerboseOrionUnitConfig;
+  public readonly config: VerboseUnitConfig;
 
-  // constructor(config: KnownConfig);
-  // constructor(config: VerboseConfig);
-
-  constructor(config: KnownConfig | VerboseOrionUnitConfig) {
+  constructor(config: KnownConfig | VerboseUnitConfig) {
     if ('env' in config) {
       const staticConfig = envs[config.env];
       if (!staticConfig) throw new Error(`Invalid environment: ${config.env}. Available environments: ${Object.keys(envs).join(', ')}`);
@@ -54,10 +47,10 @@ export default class OrionUnit {
         chainId: config.chainId,
         nodeJsonRpc: networkConfig.rpc ?? chainConfig.rpc,
         services: {
-          orionBlockchain: {
+          blockchainService: {
             http: networkConfig.api + networkConfig.services.blockchain.http,
           },
-          orionAggregator: {
+          aggregator: {
             http: networkConfig.api + networkConfig.services.aggregator.http,
             ws: networkConfig.api + networkConfig.services.aggregator.ws,
           },
@@ -72,8 +65,6 @@ export default class OrionUnit {
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
 
-    // if ('env' in config)
-    // this.env = config.env;
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
     const intNetwork = parseInt(this.chainId, 10);
@@ -81,52 +72,13 @@ export default class OrionUnit {
     this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
     this.provider.pollingInterval = 1000;
 
-    this.orionBlockchain = new OrionBlockchain(this.config.services.orionBlockchain.http);
-    this.orionAggregator = new OrionAggregator(
-      this.config.services.orionAggregator.http,
-      this.config.services.orionAggregator.ws,
+    this.blockchainService = new BlockchainService(this.config.services.blockchainService.http);
+    this.aggregator = new Aggregator(
+      this.config.services.aggregator.http,
+      this.config.services.aggregator.ws,
     );
     this.priceFeed = new PriceFeed(this.config.services.priceFeed.api);
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
   }
-
-  // get siblings() {
-  //   if (!this.env) throw new Error('Sibling is not available, because env is not set');
-
-  //   const envInfo = envs[this.env];
-  //   const envNetworks = envInfo?.networks;
-
-  //   if (envNetworks === undefined) throw new Error('Env networks is undefined (siblings)');
-
-  //   const orionUnits: OrionUnit[] = [];
-  //   Object
-  //     .entries(envNetworks)
-  //     .forEach(([chainId, config]) => {
-  //       if (!isValidChainId(chainId)) throw new Error('Invalid chainId');
-  //       if (chainId !== this.chainId) {
-  //         const chainConfig = chains[chainId];
-  //         if (!chainConfig) throw new Error('Chain config is required');
-  //         const orionUnit = new OrionUnit({
-  //           api: config.api,
-  //           chainId,
-  //           nodeJsonRpc: chainConfig.rpc ?? config.rpc,
-  //           services: {
-  //             orionBlockchain: {
-  //               http: config.api + config.services.blockchain.http,
-  //             },
-  //             orionAggregator: {
-  //               http: config.api + config.services.aggregator.http,
-  //               ws: config.api + config.services.aggregator.ws,
-  //             },
-  //             priceFeed: {
-  //               api: config.api + config.services.priceFeed.all,
-  //             },
-  //           },
-  //         });
-  //         orionUnits.push(orionUnit);
-  //       }
-  //     });
-  //   return orionUnits;
-  // }
 }

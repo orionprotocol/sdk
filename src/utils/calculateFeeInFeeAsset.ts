@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { FILL_ORDERS_GAS_LIMIT } from '../constants/index.js';
 import calculateNetworkFeeInFeeAsset from './calculateNetworkFeeInFeeAsset.js';
-import calculateOrionFeeInFeeAsset from './calculateOrionFeeInFeeAsset.js';
+import calculateServiceFeeInFeeAsset from './calculateServiceFeeInFeeAsset.js';
 
 const calculateFeeInFeeAsset = (
   amount: BigNumber.Value,
@@ -11,7 +11,7 @@ const calculateFeeInFeeAsset = (
   gasPriceGwei: BigNumber.Value,
   feePercent: BigNumber.Value,
 ) => {
-  const orionFeeInFeeAsset = calculateOrionFeeInFeeAsset(
+  const serviceFeeInFeeAsset = calculateServiceFeeInFeeAsset(
     amount,
     feeAssetPriceInOrn,
     baseAssetPriceInOrn,
@@ -25,9 +25,9 @@ const calculateFeeInFeeAsset = (
   );
 
   return {
-    orionFeeInFeeAsset,
+    serviceFeeInFeeAsset,
     networkFeeInFeeAsset,
-    totalFeeInFeeAsset: new BigNumber(orionFeeInFeeAsset)
+    totalFeeInFeeAsset: new BigNumber(serviceFeeInFeeAsset)
       .plus(networkFeeInFeeAsset)
       .toString(),
   };

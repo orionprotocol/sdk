@@ -1,4 +1,4 @@
-import type OrionUnit from '../index.js';
+import type Unit from '../index.js';
 import deposit, { type DepositParams } from './deposit.js';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
 import type { SwapLimitParams } from './swapLimit.js';
@@ -6,37 +6,37 @@ import swapLimit from './swapLimit.js';
 import swapMarket, { type SwapMarketParams } from './swapMarket.js';
 import withdraw, { type WithdrawParams } from './withdraw.js';
 
-type PureSwapMarketParams = Omit<SwapMarketParams, 'orionUnit'>
-type PureSwapLimitParams = Omit<SwapLimitParams, 'orionUnit'>
-type PureDepositParams = Omit<DepositParams, 'orionUnit'>
-type PureWithdrawParams = Omit<WithdrawParams, 'orionUnit'>
-type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'orionBlockchain' | 'orionAggregator'>
+type PureSwapMarketParams = Omit<SwapMarketParams, 'unit'>
+type PureSwapLimitParams = Omit<SwapLimitParams, 'unit'>
+type PureDepositParams = Omit<DepositParams, 'unit'>
+type PureWithdrawParams = Omit<WithdrawParams, 'unit'>
+type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'blockchainService' | 'aggregator'>
 
 export default class Exchange {
-  private readonly orionUnit: OrionUnit;
+  private readonly unit: Unit;
 
-  constructor(orionUnit: OrionUnit) {
-    this.orionUnit = orionUnit;
+  constructor(unit: Unit) {
+    this.unit = unit;
   }
 
   public swapLimit(params: PureSwapLimitParams) {
     return swapLimit({
       ...params,
-      orionUnit: this.orionUnit,
+      unit: this.unit,
     });
   }
 
   public swapMarket(params: PureSwapMarketParams) {
     return swapMarket({
       ...params,
-      orionUnit: this.orionUnit,
+      unit: this.unit,
     });
   }
 
   public getSwapInfo(params: PureGetSwapMarketInfoParams) {
     return getSwapInfo({
-      orionAggregator: this.orionUnit.orionAggregator,
-      orionBlockchain: this.orionUnit.orionBlockchain,
+      aggregator: this.unit.aggregator,
+      blockchainService: this.unit.blockchainService,
       ...params,
     });
   }
@@ -44,14 +44,14 @@ export default class Exchange {
   public deposit(params: PureDepositParams) {
     return deposit({
       ...params,
-      orionUnit: this.orionUnit,
+      unit: this.unit,
     });
   }
 
   public withdraw(params: PureWithdrawParams) {
     return withdraw({
       ...params,
-      orionUnit: this.orionUnit,
+      unit: this.unit,
     });
   }
 }

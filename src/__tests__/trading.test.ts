@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import Orion from '../Orion/index.js';
-import swapMarket from '../OrionUnit/Exchange/swapMarket.js';
+import swapMarket from '../Unit/Exchange/swapMarket.js';
 
 const privateKey = process.env['PRIVATE_KEY']
 if (privateKey === undefined) throw new Error('Private key is required');
@@ -23,7 +23,7 @@ describe('Spot trading', () => {
       type: 'exactSpend',
       signer: wallet,
       feeAsset: 'USDT',
-      orionUnit: bscUnit,
+      unit: bscUnit,
       slippagePercent: 1,
       // options: {
       //   logger: console.log

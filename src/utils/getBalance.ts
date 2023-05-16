@@ -2,12 +2,12 @@ import type { Exchange } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import type { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { INTERNAL_ORION_PRECISION, NATIVE_CURRENCY_PRECISION } from '../constants/index.js';
-import type { OrionAggregator } from '../services/OrionAggregator/index.js';
+import { INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION } from '../constants/index.js';
+import type { Aggregator } from '../services/Aggregator/index.js';
 import denormalizeNumber from './denormalizeNumber.js';
 
 export default async function getBalance(
-  orionAggregator: OrionAggregator,
+  aggregator: Aggregator,
   assetName: string,
   assetAddress: string,
   walletAddress: string,
@@ -31,8 +31,8 @@ export default async function getBalance(
     denormalizedAssetInWalletBalance = denormalizeNumber(assetWalletBalance, NATIVE_CURRENCY_PRECISION);
   }
   const assetContractBalance = await exchangeContract.getBalance(assetAddress, walletAddress);
-  const denormalizedAssetInContractBalance = denormalizeNumber(assetContractBalance, INTERNAL_ORION_PRECISION);
-  const denormalizedAssetLockedBalanceResult = await orionAggregator.getLockedBalance(walletAddress, assetName);
+  const denormalizedAssetInContractBalance = denormalizeNumber(assetContractBalance, INTERNAL_PROTOCOL_PRECISION);
+  const denormalizedAssetLockedBalanceResult = await aggregator.getLockedBalance(walletAddress, assetName);
   if (denormalizedAssetLockedBalanceResult.isErr()) {
     throw new Error(denormalizedAssetLockedBalanceResult.error.message);
   }
