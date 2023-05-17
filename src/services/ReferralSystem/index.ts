@@ -133,30 +133,28 @@ class ReferralSystem {
     );
 
   createReferralLink = (
-    payload: CreateLinkPayloadType,
-    signature: SignatureType
+    payload: CreateLinkPayloadType
   ) =>
-    fetchWithValidation(`${this.apiUrl}/referer/create`, linkSchema, {
+    fetchWithValidation(`${this.apiUrl}/referer/create2`, linkSchema, {
       headers: {
         'Content-type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({payload, signature}),
+      body: JSON.stringify(payload),
     });
 
   subscribeToReferral = (
-    payload: SubscribePayloadType,
-    signature: SignatureType
+    payload: SubscribePayloadType
   ) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/subscribe`,
+      `${this.apiUrl}/referer/subscribe2`,
       linkSchema,
       {
         headers: {
           'Content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({payload, signature}),
+        body: JSON.stringify(payload),
       },
       errorSchema
     );
