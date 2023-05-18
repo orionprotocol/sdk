@@ -1,10 +1,11 @@
 import Orion from '../Orion/index.js';
+import { SERVICE_TOKEN } from '../index.js';
 
 describe('Price Feed', () => {
   test('Ticker', async () => {
     const { unitsArray } = new Orion('testing');
     for (const unit of unitsArray) {
-      const ticker = 'ORN-USDT';
+      const ticker = `${SERVICE_TOKEN}-USDT`;
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           reject(new Error('Timeout'));

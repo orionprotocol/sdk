@@ -5,6 +5,7 @@ export default [
   'BINANCE',
   'KUCOIN',
   'ORION', // Internal
+  'INTERNAL_CEX',
 
   // DEXes
   'SPOOKYSWAP',
@@ -12,6 +13,7 @@ export default [
   'UNISWAP',
   'QUICKSWAP',
   'ORION_POOL',
+  'INTERNAL_DEX',
   'CHERRYSWAP',
   'OKXSWAP',
   'CURVE',

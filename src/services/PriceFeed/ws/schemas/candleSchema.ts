@@ -3,7 +3,7 @@ import { z } from 'zod';
 const candleSchema = z
   .tuple([
     z.string(), // interval [FIVE, FIFTEEN, THIRTY, HOUR, HOUR4, DAY, WEEK]
-    z.string(), // pair ["orn-usdt"]
+    z.string(), // pair ["btc-usdt"]
     z.number(), // timeStart [timestamp]
     z.number(), // timeEnd [timestamp]
     z.string(), // close

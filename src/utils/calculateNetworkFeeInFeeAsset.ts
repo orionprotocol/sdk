@@ -4,16 +4,16 @@ import calculateNetworkFee from './calculateNetworkFee.js';
 const calculateNetworkFeeInFeeAsset = (
   gasPriceGwei: BigNumber.Value,
   gasLimit: BigNumber.Value,
-  baseCurrencyPriceInOrn: BigNumber.Value,
-  feeAssetPriceInOrn: BigNumber.Value,
+  baseCurrencyPriceInServiceToken: BigNumber.Value,
+  feeAssetPriceInServiceToken: BigNumber.Value,
 ) => {
   const networkFee = calculateNetworkFee(gasPriceGwei, gasLimit);
 
-  const networkFeeInOrn = new BigNumber(networkFee).multipliedBy(baseCurrencyPriceInOrn);
-  const networkFeeInFeeAsset = networkFeeInOrn
+  const networkFeeInServiceToken = new BigNumber(networkFee).multipliedBy(baseCurrencyPriceInServiceToken);
+  const networkFeeInFeeAsset = networkFeeInServiceToken
     .multipliedBy(
       new BigNumber(1)
-        .div(feeAssetPriceInOrn),
+        .div(feeAssetPriceInServiceToken),
     );
 
   return networkFeeInFeeAsset.toString();

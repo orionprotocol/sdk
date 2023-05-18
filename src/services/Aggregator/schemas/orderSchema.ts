@@ -71,7 +71,11 @@ const selfBrokerSchema = z.custom<SelfBroker>((value) => {
   return false;
 });
 
-const brokerAddressSchema = z.enum(['ORION_BROKER', 'SELF_BROKER'])
+const brokerAddressSchema = z.enum([
+  'INTERNAL_BROKER',
+  'ORION_BROKER',
+  'SELF_BROKER'
+])
   .or(selfBrokerSchema)
   .or(z.string().refine(ethers.utils.isAddress, (value) => ({
     message: `subOrder.subOrders.[n].brokerAddress must be an address, got ${value}`,

@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import Orion from '../Orion/index.js';
 import swapMarket from '../Unit/Exchange/swapMarket.js';
+import { SERVICE_TOKEN } from '../index.js';
 
 const privateKey = process.env['PRIVATE_KEY']
 if (privateKey === undefined) throw new Error('Private key is required');
@@ -17,7 +18,7 @@ describe('Spot trading', () => {
     );
 
     const result = await swapMarket({
-      assetIn: 'ORN',
+      assetIn: SERVICE_TOKEN,
       assetOut: 'USDT',
       amount: 20,
       type: 'exactSpend',
@@ -42,7 +43,7 @@ describe('Spot trading', () => {
 
     const result = await bscUnit.exchange.swapMarket({
       assetIn: 'USDT',
-      assetOut: 'ORN',
+      assetOut: SERVICE_TOKEN,
       amount: 20,
       type: 'exactReceive',
       signer: wallet,

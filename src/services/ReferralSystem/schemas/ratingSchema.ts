@@ -10,8 +10,8 @@ const ratingSchema = z.object({
     personal_info: z.object({
       rank_id: z.number(),
       wallet: z.string(),
-      staked_ve_orn: z.string(),
-      staked_ve_orn_fmt: z.number(),
+      staked_ve_token: z.string(),
+      staked_ve_token_fmt: z.number(),
       weighted_volume: z.string(),
       weighted_volume_fmt: z.number(),
       total_weight: z.string(),
@@ -23,8 +23,8 @@ const ratingSchema = z.object({
   list: z.array(z.object({
     rank_id: z.number(),
     wallet: z.string(),
-    staked_ve_orn: z.string(),
-    staked_ve_orn_fmt: z.number(),
+    staked_ve_token: z.string(),
+    staked_ve_token_fmt: z.number(),
     weighted_volume: z.string(),
     weighted_volume_fmt: z.number(),
     total_weight: z.string(),

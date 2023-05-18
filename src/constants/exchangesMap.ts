@@ -10,6 +10,7 @@ const mapping: Record<
   BINANCE: 'Binance',
   KUCOIN: 'KuCoin',
   ORION: 'Orion', // Internal
+  INTERNAL_CEX: 'Internal',
 
   // DEXes
   SPOOKYSWAP: 'SpookySwap',
@@ -17,6 +18,7 @@ const mapping: Record<
   UNISWAP: 'Uniswap',
   QUICKSWAP: 'QuickSwap',
   ORION_POOL: 'Orion Pool',
+  INTERNAL_DEX: 'Orion Pool',
   CHERRYSWAP: 'CherrySwap',
   OKXSWAP: 'OKXSwap',
   CURVE: 'Curve',

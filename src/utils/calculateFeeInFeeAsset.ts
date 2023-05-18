@@ -5,23 +5,23 @@ import calculateServiceFeeInFeeAsset from './calculateServiceFeeInFeeAsset.js';
 
 const calculateFeeInFeeAsset = (
   amount: BigNumber.Value,
-  feeAssetPriceInOrn: BigNumber.Value,
-  baseAssetPriceInOrn: BigNumber.Value,
-  baseCurrencyPriceInOrn: BigNumber.Value,
+  feeAssetPriceInServiceToken: BigNumber.Value,
+  baseAssetPriceInServiceToken: BigNumber.Value,
+  baseCurrencyPriceInServiceToken: BigNumber.Value,
   gasPriceGwei: BigNumber.Value,
   feePercent: BigNumber.Value,
 ) => {
   const serviceFeeInFeeAsset = calculateServiceFeeInFeeAsset(
     amount,
-    feeAssetPriceInOrn,
-    baseAssetPriceInOrn,
+    feeAssetPriceInServiceToken,
+    baseAssetPriceInServiceToken,
     feePercent,
   );
   const networkFeeInFeeAsset = calculateNetworkFeeInFeeAsset(
     gasPriceGwei,
     FILL_ORDERS_GAS_LIMIT,
-    baseCurrencyPriceInOrn,
-    feeAssetPriceInOrn,
+    baseCurrencyPriceInServiceToken,
+    feeAssetPriceInServiceToken,
   );
 
   return {

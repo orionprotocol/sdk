@@ -10,6 +10,7 @@ import {
 } from 'http-terminator';
 import { ethers } from 'ethers';
 import { simpleFetch } from 'simple-typed-fetch';
+import { SERVICE_TOKEN } from '../index.js';
 jest.setTimeout(10000);
 
 const createServer = (externalHost: string) => {
@@ -271,7 +272,7 @@ describe('Orion', () => {
       }, 10000);
 
       unitBSC.aggregator.ws.subscribe('aobus', {
-        payload: 'ORN-USDT',
+        payload: `${SERVICE_TOKEN}-USDT`,
         callback: () => {
           resolve(true);
           unitBSC.aggregator.ws.destroy();

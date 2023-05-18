@@ -5,7 +5,7 @@ const rewardsMappingSchema = z.object({
     z.object({
       distribution: z.object({
         dist: z.object({
-          orion: z.number(),
+          underlying_token: z.number(),
           referers_list: z.array(z.number()),
         }),
         address_to_reward_mapping: z.record(z.string(), z.number()),

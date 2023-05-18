@@ -1,6 +1,7 @@
 import { Wallet } from 'ethers';
 import Orion from '../Orion/index.js';
 import { SupportedChainId } from '../types.js';
+import { SERVICE_TOKEN } from '../index.js';
 
 const privateKey = process.env['PRIVATE_KEY']
 if (privateKey === undefined) throw new Error('Private key is required');
@@ -13,7 +14,7 @@ describe('Bridge', () => {
     const wallet = new Wallet(privateKey);
 
     await orion.bridge.swap(
-      'ORN',
+      SERVICE_TOKEN,
       0.12345678,
       SupportedChainId.FANTOM_TESTNET,
       SupportedChainId.BSC_TESTNET,
