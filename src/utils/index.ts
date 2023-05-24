@@ -13,6 +13,7 @@ export { default as toLowerCase } from './toLowerCase.js';
 export { default as isUppercasedNetworkCode } from './isUppercasedNetworkCode.js';
 export { default as getNativeCryptocurrencyName } from './getNativeCryptocurrencyName.js';
 
+export { default as laconicParse } from './laconic-parse.js';
 export { default as isValidChainId } from './isValidChainId.js';
 export { default as isKnownEnv } from './isKnownEnv.js';
 // export { default as HttpError } from './httpError';
