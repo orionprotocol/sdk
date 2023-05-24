@@ -51,7 +51,7 @@
     "shortName": "Arbitrum Goerli",
     "code": "arb",
     "rpc": "https://goerli-rollup.arbitrum.io/rpc",
-    "baseCurrencyName": "AGOR"
+    "baseCurrencyName": "ETH"
   },
   "4002": {
     "chainId": "4002",
