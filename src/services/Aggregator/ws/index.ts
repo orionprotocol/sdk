@@ -206,8 +206,6 @@ class AggregatorWS {
     this.logger = logger;
     this.onInit = onInit;
     this.onError = onError;
-
-    console.log(`Created Aggregator WS instance ${this.instanceId}`);
   }
 
   // readonly messageQueue: Message[] = [];
