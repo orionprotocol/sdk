@@ -255,14 +255,10 @@ class AggregatorWS {
         if (typeof subscription.payload === 'string') {
           subRequest['S'] = subscription.payload;
         } else { // SwapInfoSubscriptionPayload | FuturesTradeInfoPayload
-          subRequest['S'] = { ...subscription.payload }
-
-          if (!('s' in subscription.payload)) { // SwapInfoSubscriptionPayload
-            subRequest['S'] = {
-              ...subRequest['S'],
-              d: id,
-            };
-          }
+          subRequest['S'] = {
+            d: id,
+            ...subscription.payload,
+          };
         }
       }
 
