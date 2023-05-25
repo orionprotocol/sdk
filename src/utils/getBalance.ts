@@ -38,7 +38,7 @@ export default async function getBalance(
   }
 
   return {
-    exchange: denormalizedAssetInContractBalance.minus(denormalizedAssetLockedBalanceResult.value[assetName] ?? 0),
+    exchange: denormalizedAssetInContractBalance.minus(denormalizedAssetLockedBalanceResult.value.data[assetName] ?? 0),
     wallet: denormalizedAssetInWalletBalance,
   };
 }
