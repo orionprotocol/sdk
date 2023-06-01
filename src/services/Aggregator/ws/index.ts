@@ -237,6 +237,7 @@ class AggregatorWS {
   subscribe<T extends typeof SubscriptionType[keyof typeof SubscriptionType]>(
     type: T,
     subscription: Subscription[T],
+    prevSubscriptionId?: string
   ) {
     const id = type === 'aobus'
       ? ((subscription as any).payload as string) // TODO: Refactor!!!
@@ -268,10 +269,24 @@ class AggregatorWS {
       this.send(subRequest);
 
       const subKey = isExclusive ? 'default' : id;
-      this.subscriptions[type] = {
-        ...this.subscriptions[type],
-        [subKey]: subscription,
-      };
+
+      if (prevSubscriptionId === undefined) { // Just subscribe
+        this.subscriptions[type] = {
+          ...this.subscriptions[type],
+          [subKey]: subscription,
+        };
+      } else { // Replace subscription. Set new sub id, but save callback
+        const prevSub = this.subscriptions[type]?.[prevSubscriptionId];
+        if (prevSub) {
+          this.subscriptions[type] = {
+            ...this.subscriptions[type],
+            [subKey]: {
+              ...subscription,
+              callback: prevSub.callback,
+            }
+          };
+        }
+      }
     }
 
     // if (!this.ws) {
@@ -378,22 +393,15 @@ class AggregatorWS {
     this.ws.onopen = () => {
       // Re-subscribe to all subscriptions
       if (isReconnect) {
-        // Deep copy of subscriptions
-        const subscriptionsToReconnect = structuredClone(this.subscriptions);
-
-        objectKeys(this.subscriptions).forEach((subType) => {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-          delete this.subscriptions[subType];
-        });
-        Object.keys(subscriptionsToReconnect)
+        Object.keys(this.subscriptions)
           .filter(isSubType)
           .forEach((subType) => {
-            const subscriptions = subscriptionsToReconnect[subType];
+            const subscriptions = this.subscriptions[subType];
             if (subscriptions) {
-              Object.keys(subscriptions).forEach((subKey) => {
-                const sub = subscriptions[subKey];
-                this.logger?.(`AggregatorWS: reconnecting to subscription ${subType} ${subKey}`);
-                if (sub) this.subscribe(subType, sub);
+              Object.keys(subscriptions).forEach((subId) => {
+                const subPayload = subscriptions[subId];
+                this.logger?.(`AggregatorWS: reconnecting to subscription ${subType} ${subId}. Params: ${JSON.stringify(subPayload)}`);
+                if (subPayload) this.subscribe(subType, subPayload, subId);
               });
             }
           });
