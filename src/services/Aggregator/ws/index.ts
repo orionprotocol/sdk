@@ -21,6 +21,7 @@ import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema.js';
 import { objectKeys } from '../../../utils/objectKeys.js';
 // import assertError from '../../../utils/assertError.js';
 // import errorSchema from './schemas/errorSchema';
+import clone from 'just-clone';
 
 const UNSUBSCRIBE = 'u';
 
@@ -262,6 +263,7 @@ class AggregatorWS {
         }
       }
 
+      this.logger?.(`Subscribing to ${type} with id ${id}. Subscription request: ${JSON.stringify(subRequest)}`);
       this.send(subRequest);
 
       const subKey = isExclusive ? 'default' : id;
@@ -375,7 +377,7 @@ class AggregatorWS {
     this.ws.onopen = () => {
       // Re-subscribe to all subscriptions
       if (isReconnect) {
-        const subscriptionsToReconnect = this.subscriptions;
+        const subscriptionsToReconnect = clone(this.subscriptions);
         objectKeys(this.subscriptions).forEach((subType) => {
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete this.subscriptions[subType];
@@ -387,6 +389,7 @@ class AggregatorWS {
             if (subscriptions) {
               Object.keys(subscriptions).forEach((subKey) => {
                 const sub = subscriptions[subKey];
+                this.logger?.(`AggregatorWS: reconnecting to subscription ${subType} ${subKey}`);
                 if (sub) this.subscribe(subType, sub);
               });
             }
