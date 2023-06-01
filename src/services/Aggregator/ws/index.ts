@@ -21,7 +21,6 @@ import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema.js';
 import { objectKeys } from '../../../utils/objectKeys.js';
 // import assertError from '../../../utils/assertError.js';
 // import errorSchema from './schemas/errorSchema';
-import clone from 'just-clone';
 
 const UNSUBSCRIBE = 'u';
 
@@ -170,6 +169,10 @@ const nonExistentMessageRegex = /Could not cancel nonexistent subscription: (.*)
 //   message: Json
 //   resolve: () => void
 // };
+
+type Subscriptions = Partial<{
+  [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
+}>;
 class AggregatorWS {
   private ws?: WebSocket | undefined;
 
@@ -179,9 +182,7 @@ class AggregatorWS {
   // https://stackoverflow.com/questions/19304157/getting-the-reason-why-websockets-closed-with-close-code-1006
   private isClosedIntentionally = false;
 
-  readonly subscriptions: Partial<{
-    [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
-  }> = {};
+  readonly subscriptions: Subscriptions = {};
 
   public onInit: (() => void) | undefined
 
@@ -377,7 +378,9 @@ class AggregatorWS {
     this.ws.onopen = () => {
       // Re-subscribe to all subscriptions
       if (isReconnect) {
-        const subscriptionsToReconnect = clone(this.subscriptions);
+        // Deep copy of subscriptions
+        const subscriptionsToReconnect = structuredClone(this.subscriptions);
+
         objectKeys(this.subscriptions).forEach((subType) => {
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete this.subscriptions[subType];
