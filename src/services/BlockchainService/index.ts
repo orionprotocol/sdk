@@ -14,6 +14,7 @@ import {
   governanceContractsSchema,
   governancePoolsSchema,
   governancePoolSchema,
+  governanceChainsInfoSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -110,6 +111,7 @@ class BlockchainService {
     this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
     this.getGovernancePools = this.getGovernancePools.bind(this);
     this.getGovernancePool = this.getGovernancePool.bind(this);
+    this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
   }
 
   get blockchainServiceWsUrl() {
@@ -442,6 +444,11 @@ class BlockchainService {
   getGovernancePool = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/governance/pools/${address}`,
     governancePoolSchema,
+  );
+
+  getGovernanceChainsInfo = () => fetchWithValidation(
+    `${this.apiUrl}/api/governance/chains-info`,
+    governanceChainsInfoSchema,
   );
 }
 
