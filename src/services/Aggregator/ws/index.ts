@@ -186,6 +186,10 @@ class AggregatorWS {
 
   public onInit: (() => void) | undefined
 
+  public onWSOpen: ((event: WebSocket.Event) => void) | undefined
+
+  public onWSClose: ((event: WebSocket.CloseEvent) => void) | undefined
+
   public onError: ((err: string) => void) | undefined
 
   public logger: ((message: string) => void) | undefined
@@ -200,16 +204,8 @@ class AggregatorWS {
 
   readonly instanceId = uuidv4();
 
-  constructor(
-    wsUrl: string,
-    logger?: (msg: string) => void,
-    onInit?: () => void,
-    onError?: (err: string) => void
-  ) {
+  constructor(wsUrl: string) {
     this.wsUrl = wsUrl;
-    this.logger = logger;
-    this.onInit = onInit;
-    this.onError = onError;
   }
 
   // readonly messageQueue: Message[] = [];
@@ -402,13 +398,16 @@ class AggregatorWS {
     this.isClosedIntentionally = false;
     this.ws = new WebSocket(this.wsUrl);
     this.ws.onerror = (err) => {
+      this.onError?.(`AggregatorWS error: ${err.message}`);
       this.logger?.(`AggregatorWS: ${err.message}`);
     };
-    this.ws.onclose = () => {
+    this.ws.onclose = (event) => {
+      this.onWSClose?.(event);
       this.logger?.(`AggregatorWS: connection closed ${this.isClosedIntentionally ? 'intentionally' : ''}`);
       if (!this.isClosedIntentionally) this.init(true);
     };
-    this.ws.onopen = () => {
+    this.ws.onopen = (e) => {
+      this.onWSOpen?.(e);
       // Re-subscribe to all subscriptions
       if (isReconnect) {
         Object.keys(this.subscriptions)
