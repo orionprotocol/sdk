@@ -245,11 +245,6 @@ class AggregatorWS {
 
     const makeSubscription = () => {
       const isExclusive = exclusiveSubscriptions.some((t) => t === type);
-      const subs = this.subscriptions[type];
-      if (isExclusive && subs && Object.keys(subs).length > 0) {
-        throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
-      }
-
       const subRequest: Json = {};
       subRequest['T'] = type;
       subRequest['id'] = id;
@@ -265,17 +260,20 @@ class AggregatorWS {
         }
       }
 
-      this.logger?.(`Subscribing to ${type} with id ${id}. Subscription request: ${JSON.stringify(subRequest)}`);
-      this.send(subRequest);
-
       const subKey = isExclusive ? 'default' : id;
 
       if (prevSubscriptionId === undefined) { // Just subscribe
+        const subs = this.subscriptions[type];
+        if (isExclusive && subs && Object.keys(subs).length > 0) {
+          throw new Error(`Subscription '${type}' already exists. Please unsubscribe first.`);
+        }
+        this.logger?.(`Subscribing to ${type} with id ${id}. Subscription request: ${JSON.stringify(subRequest)}`);
         this.subscriptions[type] = {
           ...this.subscriptions[type],
           [subKey]: subscription,
         };
       } else { // Replace subscription. Set new sub id, but save callback
+        this.logger?.(`Resubscribing to ${type} with id ${id}. Subscription request: ${JSON.stringify(subRequest)}`);
         const prevSub = this.subscriptions[type]?.[prevSubscriptionId];
         if (prevSub) {
           this.subscriptions[type] = {
@@ -287,6 +285,8 @@ class AggregatorWS {
           };
         }
       }
+
+      this.send(subRequest);
     }
 
     // if (!this.ws) {
