@@ -27,7 +27,6 @@ export const signOrder = async (
   usePersonalSign: boolean,
   signer: ethers.Signer,
   chainId: SupportedChainId,
-  isReversedOrder = false
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
@@ -57,7 +56,6 @@ export const signOrder = async (
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
     isPersonalSign: usePersonalSign,
-    isReversedOrder
   };
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

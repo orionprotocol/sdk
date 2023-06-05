@@ -71,7 +71,6 @@ export type Order = {
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
   isPersonalSign: boolean // bool
-  isReversedOrder?: boolean | undefined // bool
 }
 
 export type CFDOrder = {
