@@ -173,6 +173,9 @@ const nonExistentMessageRegex = /Could not cancel nonexistent subscription: (.*)
 type Subscriptions = Partial<{
   [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
 }>;
+
+const FUTURES_SUFFIX = 'USDF';
+
 class AggregatorWS {
   private ws?: WebSocket | undefined;
 
@@ -331,6 +334,12 @@ class AggregatorWS {
       ...(details !== undefined) && { d: details },
     });
 
+    const isOrderBooksSubscription = (subId: string) => {
+      const isSpotPairName = subId.includes('-') && subId.split('-').length === 2;
+      const isFuturesPairName = subId.endsWith(FUTURES_SUFFIX);
+      return isSpotPairName || isFuturesPairName;
+    }
+
     if (newestSubId.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       const auSubscriptions = this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
       if (auSubscriptions) {
@@ -355,7 +364,7 @@ class AggregatorWS {
       delete this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[newestSubId];
       delete this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[newestSubId];
       // !!! swap info subscription is uuid that contains hyphen
-    } else if (newestSubId.includes('-') && newestSubId.split('-').length === 2) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
+    } else if (isOrderBooksSubscription(newestSubId)) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
       if (aobSubscriptions) {
         const targetAobSub = Object.entries(aobSubscriptions).find(([, value]) => value?.payload === newestSubId);
