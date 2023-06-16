@@ -12,6 +12,7 @@ import {
   aggregatedHistorySchema,
 } from './schemas/index.js';
 import {SupportedChainId} from "../../types.js";
+import getContractsAddressesSchema from './schemas/getContractsAddressesSchema.js';
 
 type CreateLinkPayloadType = {
   referer: string
@@ -53,7 +54,8 @@ class ReferralSystem {
     this.claimRewards = this.claimRewards.bind(this);
     this.getRating = this.getRating.bind(this);
     this.getRating = this.getRating.bind(this);
-    this.getClamInfo = this.getClamInfo.bind(this);
+    this.getContractsAddresses = this.getContractsAddresses.bind(this);
+    this.getClaimInfo = this.getClaimInfo.bind(this);
     this.getAggregatedHistory = this.getAggregatedHistory.bind(this);
   }
 
@@ -169,7 +171,15 @@ class ReferralSystem {
       errorSchema
     );
 
-  getClamInfo = (refererAddress: string) =>
+  getContractsAddresses = () =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/view/contracts`,
+      getContractsAddressesSchema,
+      undefined,
+      errorSchema
+    );
+
+  getClaimInfo = (refererAddress: string) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/view/claim-info-with-stats?&suppress_error=1`,
       claimInfoSchema,
