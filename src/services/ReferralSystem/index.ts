@@ -12,7 +12,7 @@ import {
   aggregatedHistorySchema,
 } from './schemas/index.js';
 import {SupportedChainId} from "../../types.js";
-import getContractsAddressesSchema from './schemas/getContractsAddressesSchema.js';
+import contractsAddressesSchema from './schemas/contractsAddressesSchema.js';
 
 type CreateLinkPayloadType = {
   referer: string
@@ -174,7 +174,7 @@ class ReferralSystem {
   getContractsAddresses = () =>
     fetchWithValidation(
       `${this.apiUrl}/referer/view/contracts`,
-      getContractsAddressesSchema,
+      contractsAddressesSchema,
       undefined,
       errorSchema
     );
