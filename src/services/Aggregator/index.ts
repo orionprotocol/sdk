@@ -181,11 +181,15 @@ class Aggregator {
   placeOrder = (
     signedOrder: SignedOrder,
     isCreateInternalOrder: boolean,
+    isReversedOrder?: boolean,
     partnerId?: string,
   ) => {
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      ...(isReversedOrder !== undefined) && {
+        'X-Reverse-Order': isReversedOrder ? 'true' : 'false',
+      },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
     };
 
