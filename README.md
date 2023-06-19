@@ -49,6 +49,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
   - [Get fee assets](#get-fee-assets)
   - [Get swap info](#get-swap-info-1)
   - [Place order in Aggregator](#place-order-in-aggregator)
+  - [Cancel order in Aggregator](#cancel-order-in-aggregator)
   - [Aggregator WebSocket](#aggregator-websocket)
   - [Swap Info](#swap-info)
   - [Balances and order history stream](#balances-and-order-history-stream)
@@ -248,6 +249,8 @@ console.log(fee);
 ### Make swap limit
 
 ```ts
+import { simpleFetch } from "simple-typed-fetch";
+
 // Each trading pair has its own quantity precision
 // You need to prepare (round) the quantity according to quantity precision
 
@@ -287,6 +290,8 @@ unit.exchange
 ### Make swap market
 
 ```ts
+import { simpleFetch } from "simple-typed-fetch";
+
 // Each trading pair has its own quantity precision
 // You need to prepare (round) the quantity according to quantity precision
 
@@ -348,7 +353,7 @@ unit.farmingManager.removeAllLiquidity({
 ### Get aggregated orderbook
 
 ```ts
-import { simpleFetch } from "@orionprotocol/sdk";
+import { simpleFetch } from "simple-typed-fetch";
 
 const orderbook = await simpleFetch(unit.aggregator.getAggregatedOrderbook)(
   "ORN-USDT",
@@ -359,7 +364,7 @@ const orderbook = await simpleFetch(unit.aggregator.getAggregatedOrderbook)(
 ### Get historical price
 
 ```ts
-import { simpleFetch } from "@orionprotocol/sdk";
+import { simpleFetch } from "simple-typed-fetch";
 
 const candles = await simpleFetch(unit.priceFeed.getCandles)(
   "ORN-USDT",
@@ -372,7 +377,7 @@ const candles = await simpleFetch(unit.priceFeed.getCandles)(
 ### Get tradable pairs
 
 ```ts
-import { simpleFetch } from "@orionprotocol/sdk";
+import { simpleFetch } from "simple-typed-fetch";
 const pairsList = await simpleFetch(unit.aggregator.getPairsList)();
 console.log(pairsList); // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN']
 ```
@@ -380,14 +385,14 @@ console.log(pairsList); // ['ORN-USDT', 'BNB-ORN', 'FTM-ORN', 'ETH-ORN']
 ### Get fee assets
 
 ```ts
-import { simpleFetch } from "@orionprotocol/sdk";
+import { simpleFetch } from "simple-typed-fetch";
 const feeAssets = await simpleFetch(unit.blockchainService.getTokensFee)();
 ```
 
 ### Get swap info
 
 ```ts
-import { simpleFetch } from "@orionprotocol/sdk";
+import { simpleFetch } from "simple-typed-fetch";
 
 const swapInfo = await simpleFetch(unit.aggregator.getSwapInfo)(
   // Use 'exactSpend' when 'amount' is how much you want to spend. Use 'exactReceive' otherwise
@@ -430,7 +435,8 @@ Swap info response example:
 ### Place order in Aggregator
 
 ```ts
-import { simpleFetch, crypt } from "@orionprotocol/sdk";
+import { simpleFetch } from "simple-typed-fetch";
+import { crypt } from "@orionprotocol/sdk";
 import { Exchange__factory } from "@orionprotocol/contracts";
 
 const myAddress = await signer.getAddress(); // or wallet.address (without await)
@@ -475,6 +481,31 @@ const { orderId } = await simpleFetch(unit.aggregator.placeOrder)(
   signedOrder,
   false // True if you want to place order to "internal" orderbook. If you do not want your order to be executed on CEXes or DEXes, but could be filled with other "internal" order(s).
 );
+```
+
+### Cancel order in Aggregator
+
+```ts
+import { simpleFetch } from "simple-typed-fetch";
+import { crypt } from "@orionprotocol/sdk";
+
+const myAddress = await signer.getAddress();
+const orderId = '0x...';
+
+const signedCancelOrderRequest: SignedCancelOrderRequest = await crypt.signCancelOrder(
+  myAddress, // senderAddress
+  orderId,
+  false, // usePersonalSign
+  signer, // signer
+  chainId, // chainId
+);
+
+const { orderId, remainingAmount } = await simpleFetch(unit.aggregator.cancelOrder)(
+  signedCancelOrderRequest
+);
+
+console.log(`Order ${orderId} canceled. Remaining amount: ${remainingAmount}`);
+
 ```
 
 ### Aggregator WebSocket
@@ -646,7 +677,7 @@ if (getCandlesResult.isErr()) {
 ```
 
 ```ts
-// Simple Fetch
+import { simpleFetch } from "simple-typed-fetch";
 
 const { candles, timeStart, timeEnd } = await simpleFetch(
   unit.priceFeed.getCandles
