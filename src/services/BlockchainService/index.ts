@@ -21,7 +21,7 @@ import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/
 import { makePartial } from '../../utils/index.js';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
-import { BasicAuthCredentials } from '../../types.js';
+import type { BasicAuthCredentials } from '../../types.js';
 
 type IAdminAuthHeaders = {
   auth: string
