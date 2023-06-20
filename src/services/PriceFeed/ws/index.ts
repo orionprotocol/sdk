@@ -1,6 +1,6 @@
 import type WebSocket from 'ws';
 import PriceFeedSubscription, { type SubscriptionType, type Subscription } from './PriceFeedSubscription.js';
-import { BasicAuthCredentials } from '../../../types.js';
+import type { BasicAuthCredentials } from '../../../types.js';
 
 export * as schemas from './schemas/index.js';
 export class PriceFeedWS {
