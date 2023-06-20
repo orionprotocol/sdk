@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types.js';
 import { pairConfigSchema } from './schemas/index.js';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
@@ -26,6 +26,8 @@ class Aggregator {
 
   readonly ws: AggregatorWS;
 
+  private readonly basicAuth?: BasicAuthCredentials | undefined;
+
   get api() {
     return this.apiUrl;
   }
@@ -33,6 +35,7 @@ class Aggregator {
   constructor(
     httpAPIUrl: string,
     wsAPIUrl: string,
+    basicAuth?: BasicAuthCredentials
   ) {
     // const oaUrl = new URL(apiUrl);
     // const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
@@ -42,6 +45,7 @@ class Aggregator {
 
     this.apiUrl = httpAPIUrl;
     this.ws = new AggregatorWS(httpToWS(wsAPIUrl));
+    this.basicAuth = basicAuth;
 
     this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
     this.getPairConfig = this.getPairConfig.bind(this);
@@ -61,6 +65,15 @@ class Aggregator {
     this.getVersion = this.getVersion.bind(this);
   }
 
+  get basicAuthHeaders() {
+    if (this.basicAuth) {
+      return {
+        Authorization: `Basic ${btoa(`${this.basicAuth.username}:${this.basicAuth.password}`)}`,
+      };
+    }
+    return {};
+  }
+
   getOrder = (orderId: string, owner?: string) => {
     if (!ethers.utils.isHexString(orderId)) {
       throw new Error(`Invalid order id: ${orderId}. Must be a hex string`);
@@ -76,7 +89,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       orderSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   }
@@ -88,6 +101,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       z.array(z.string().toUpperCase()),
+      { headers: this.basicAuthHeaders },
     );
   };
 
@@ -98,7 +112,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       aggregatedOrderbookSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   };
@@ -123,7 +137,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       exchangeOrderbookSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   };
@@ -135,7 +149,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       exchangeInfoSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   }
@@ -148,7 +162,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       poolReservesSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   };
@@ -160,21 +174,21 @@ class Aggregator {
       version: z.string(),
       apiVersion: z.string(),
     }),
-    undefined,
+    { headers: this.basicAuthHeaders },
     errorSchema,
   );
 
   getPairConfig = (assetPair: string) => fetchWithValidation(
     `${this.apiUrl}/api/v1/pairs/exchangeInfo/${assetPair}`,
     pairConfigSchema,
-    undefined,
+    { headers: this.basicAuthHeaders },
     errorSchema,
   );
 
   checkWhitelisted = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/v1/whitelist/check?address=${address}`,
     z.boolean(),
-    undefined,
+    { headers: this.basicAuthHeaders },
     errorSchema,
   );
 
@@ -191,6 +205,7 @@ class Aggregator {
         'X-Reverse-Order': isReversedOrder ? 'true' : 'false',
       },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
+      ...this.basicAuthHeaders,
     };
 
     const url = new URL(`${this.apiUrl}/api/v1/order/${isCreateInternalOrder ? 'internal' : ''}`);
@@ -224,6 +239,7 @@ class Aggregator {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...this.basicAuthHeaders,
       },
       body: JSON.stringify({
         ...signedCancelOrderRequest,
@@ -243,6 +259,7 @@ class Aggregator {
       ...(isReversedOrder !== undefined) && {
         'X-Reverse-Order': isReversedOrder ? 'true' : 'false',
       },
+      ...this.basicAuthHeaders,
     };
 
     return fetchWithValidation(
@@ -298,7 +315,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       swapInfoSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   };
@@ -311,7 +328,7 @@ class Aggregator {
       z.object({
         [currency]: z.number(),
       }).partial(),
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   };
@@ -329,7 +346,7 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       orderBenefitsSchema,
-      undefined,
+      { headers: this.basicAuthHeaders },
       errorSchema,
     );
   };
@@ -350,6 +367,7 @@ class Aggregator {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...this.basicAuthHeaders,
       },
       method: 'POST',
       body: JSON.stringify({
@@ -369,7 +387,7 @@ class Aggregator {
     const url = new URL(`${this.apiUrl}/api/v1/atomic-swap/history/all`);
     url.searchParams.append('sender', sender);
     url.searchParams.append('limit', limit.toString());
-    return fetchWithValidation(url.toString(), atomicSwapHistorySchema);
+    return fetchWithValidation(url.toString(), atomicSwapHistorySchema, { headers: this.basicAuthHeaders });
   };
 }
 export * as schemas from './schemas/index.js';

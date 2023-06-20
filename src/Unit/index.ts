@@ -72,12 +72,13 @@ export default class Unit {
     this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
     this.provider.pollingInterval = 1000;
 
-    this.blockchainService = new BlockchainService(this.config.services.blockchainService.http);
+    this.blockchainService = new BlockchainService(this.config.services.blockchainService.http, this.config.basicAuth);
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,
+      this.config.basicAuth,
     );
-    this.priceFeed = new PriceFeed(this.config.services.priceFeed.api);
+    this.priceFeed = new PriceFeed(this.config.services.priceFeed.api, this.config.basicAuth);
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
   }
