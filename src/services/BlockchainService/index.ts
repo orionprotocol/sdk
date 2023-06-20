@@ -21,6 +21,7 @@ import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/
 import { makePartial } from '../../utils/index.js';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
+import type { BasicAuthCredentials } from '../../types.js';
 
 type IAdminAuthHeaders = {
   auth: string
@@ -67,12 +68,15 @@ type CfdHistoryQuery = {
 class BlockchainService {
   private readonly apiUrl: string;
 
+  private readonly basicAuth?: BasicAuthCredentials | undefined;
+
   get api() {
     return this.apiUrl;
   }
 
-  constructor(apiUrl: string) {
+  constructor(apiUrl: string, basicAuth?: BasicAuthCredentials) {
     this.apiUrl = apiUrl;
+    this.basicAuth = basicAuth;
 
     this.getAtomicSwapAssets = this.getAtomicSwapAssets.bind(this);
     this.getAtomicSwapHistory = this.getAtomicSwapHistory.bind(this);
@@ -114,6 +118,15 @@ class BlockchainService {
     this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
   }
 
+  get basicAuthHeaders() {
+    if (this.basicAuth) {
+      return {
+        Authorization: `Basic ${btoa(`${this.basicAuth.username}:${this.basicAuth.password}`)}`,
+      };
+    }
+    return {};
+  }
+
   get blockchainServiceWsUrl() {
     return `${this.apiUrl}/`;
   }
@@ -129,17 +142,20 @@ class BlockchainService {
     return fetchWithValidation(
       url.toString(),
       atomicSummarySchema,
+      { headers: this.basicAuthHeaders }
     );
   };
 
   private readonly getSummaryClaim = (brokerAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/summary-claim/${brokerAddress}`,
     atomicSummarySchema,
+    { headers: this.basicAuthHeaders },
   );
 
   private readonly getQueueLength = () => fetchWithValidation(
     `${this.apiUrl}/api/queueLength`,
     z.number().int(),
+    { headers: this.basicAuthHeaders },
   );
 
   get internal() {
@@ -153,11 +169,13 @@ class BlockchainService {
   getAuthToken = () => fetchWithValidation(
     `${this.apiUrl}/api/auth/token`,
     z.object({ token: z.string() }),
+    { headers: this.basicAuthHeaders }
   );
 
   getCirculatingSupply = () => fetchWithValidation(
     `${this.apiUrl}/api/circulating-supply`,
     z.number(),
+    { headers: this.basicAuthHeaders }
   );
 
   getInfo = () => fetchWithValidation(`${this.apiUrl}/api/info`, infoSchema);
@@ -165,56 +183,67 @@ class BlockchainService {
   getPoolsConfig = () => fetchWithValidation(
     `${this.apiUrl}/api/pools/config`,
     poolsConfigSchema,
+    { headers: this.basicAuthHeaders }
   );
 
   getPoolsInfo = () => fetchWithValidation(
     `${this.apiUrl}/api/pools/info`,
     poolsInfoSchema,
+    { headers: this.basicAuthHeaders }
   );
 
   getPoolsLpAndStaked = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/pools/user-lp/${address}`,
     poolsLpAndStakedSchema,
+    { headers: this.basicAuthHeaders }
   );
 
   getUserVotes = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/pools/user-votes/${address}`,
     userVotesSchema,
+    { headers: this.basicAuthHeaders }
   );
 
   getUserEarned = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/pools/user-earned/${address}`,
     userEarnedSchema,
+    { headers: this.basicAuthHeaders }
   );
 
   getHistory = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/history/${address}`,
     historySchema,
+    { headers: this.basicAuthHeaders }
   );
 
   getPrices = () => fetchWithValidation(
     `${this.apiUrl}/api/prices`,
     z.record(z.string()).transform(makePartial),
+    { headers: this.basicAuthHeaders }
   );
 
   getCFDPrices = () => fetchWithValidation(
     `${this.apiUrl}/api/cfd/prices`,
     z.record(z.string()).transform(makePartial),
+    { headers: this.basicAuthHeaders }
   );
 
   getTokensFee = () => fetchWithValidation(
     `${this.apiUrl}/api/tokensFee`,
     z.record(z.string()).transform(makePartial),
+    { headers: this.basicAuthHeaders }
   );
 
   getGasPriceWei = () => fetchWithValidation(
     `${this.apiUrl}/api/gasPrice`,
     z.string(),
+    { headers: this.basicAuthHeaders }
   );
 
   checkFreeRedeemAvailable = (walletAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/has-free-redeem/${walletAddress}`,
     z.boolean(),
+    { headers: this.basicAuthHeaders }
   );
 
   getRedeemOrderBySecretHash = (secretHash: string) => fetchWithValidation(
@@ -224,6 +253,7 @@ class BlockchainService {
       secret: z.string(),
       redeemTxHash: z.string(),
     }),
+    { headers: this.basicAuthHeaders }
   );
 
   claimOrder = (
@@ -242,6 +272,7 @@ class BlockchainService {
       }),
       headers: {
         'Content-Type': 'application/json',
+        ...this.basicAuthHeaders,
       },
     },
   );
@@ -262,6 +293,7 @@ class BlockchainService {
       }),
       headers: {
         'Content-Type': 'application/json',
+        ...this.basicAuthHeaders,
       },
     },
   );
@@ -286,6 +318,7 @@ class BlockchainService {
       }),
       headers: {
         'Content-Type': 'application/json',
+        ...this.basicAuthHeaders,
       },
     },
   );
@@ -293,31 +326,33 @@ class BlockchainService {
   checkRedeem = (secretHash: string) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/matcher-redeem/${secretHash}`,
     z.enum(['OK', 'FAIL']).nullable(),
+    { headers: this.basicAuthHeaders }
   );
 
   checkRedeem2Atomics = (firstSecretHash: string, secondSecretHash: string) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/matcher-redeem/${firstSecretHash}-${secondSecretHash}`,
     z.enum(['OK', 'FAIL']).nullable(),
+    { headers: this.basicAuthHeaders }
   );
 
-  getBlockNumber = () => fetchWithValidation(`${this.apiUrl}/api/blocknumber`, z.number().int());
+  getBlockNumber = () => fetchWithValidation(`${this.apiUrl}/api/blocknumber`, z.number().int(), { headers: this.basicAuthHeaders });
 
-  getIDOInfo = () => fetchWithValidation(`${this.apiUrl}/api/solarflare`, IDOSchema);
+  getIDOInfo = () => fetchWithValidation(`${this.apiUrl}/api/solarflare`, IDOSchema, { headers: this.basicAuthHeaders });
 
   checkAuth = (headers: IAdminAuthHeaders) => fetchWithValidation(`${this.apiUrl}/api/auth/check`, z.object({
     auth: z.boolean(),
-  }), { headers });
+  }), { headers: { ...headers, ...this.basicAuthHeaders }});
 
   getPool = (address: string, headers: IAdminAuthHeaders) => fetchWithValidation(
     `${this.apiUrl}/api/pools/${address}`,
     adminPoolSchema,
-    { headers },
+    { headers: { ...headers, ...this.basicAuthHeaders }},
   );
 
   getPoolsList = (headers: IAdminAuthHeaders) => fetchWithValidation(
     `${this.apiUrl}/api/pools/list`,
     adminPoolsListSchema,
-    { headers },
+    { headers: { ...headers, ...this.basicAuthHeaders }},
   );
 
   editPool = (address: string, data: IEditPool, headers: IAdminAuthHeaders) => fetchWithValidation(
@@ -329,6 +364,7 @@ class BlockchainService {
       headers: {
         'Content-Type': 'application/json',
         ...headers,
+        ...this.basicAuthHeaders,
       },
     },
   );
@@ -342,6 +378,7 @@ class BlockchainService {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...this.basicAuthHeaders,
       },
     },
     z.string(),
@@ -350,11 +387,13 @@ class BlockchainService {
   checkPoolInformation = (poolAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/pools/check/${poolAddress}`,
     pairStatusSchema,
+    { headers: this.basicAuthHeaders },
   );
 
   getAtomicSwapAssets = () => fetchWithValidation(
     `${this.apiUrl}/api/atomic/swap-assets`,
     z.array(z.string()),
+    { headers: this.basicAuthHeaders },
   );
 
   /**
@@ -370,7 +409,7 @@ class BlockchainService {
         url.searchParams.append(key, value.toString());
       });
 
-    return fetchWithValidation(url.toString(), atomicHistorySchema);
+    return fetchWithValidation(url.toString(), atomicHistorySchema, { headers: this.basicAuthHeaders });
   };
 
   getSourceAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery) => {
@@ -384,7 +423,7 @@ class BlockchainService {
 
     if (query.type === undefined) url.searchParams.append('type', 'source');
 
-    return fetchWithValidation(url.toString(), sourceAtomicHistorySchema);
+    return fetchWithValidation(url.toString(), sourceAtomicHistorySchema, { headers: this.basicAuthHeaders });
   };
 
   getTargetAtomicSwapHistory = (query: AtomicSwapHistoryTargetQuery) => {
@@ -398,7 +437,7 @@ class BlockchainService {
 
     if (query.type === undefined) url.searchParams.append('type', 'target');
 
-    return fetchWithValidation(url.toString(), targetAtomicHistorySchema);
+    return fetchWithValidation(url.toString(), targetAtomicHistorySchema, { headers: this.basicAuthHeaders });
   };
 
   checkIfHashUsed = (secretHashes: string[]) => fetchWithValidation(
@@ -408,6 +447,7 @@ class BlockchainService {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...this.basicAuthHeaders,
       },
       method: 'POST',
       body: JSON.stringify(secretHashes),
@@ -417,6 +457,7 @@ class BlockchainService {
   getCFDContracts = () => fetchWithValidation(
     `${this.apiUrl}/api/cfd/contracts`,
     cfdContractsSchema,
+    { headers: this.basicAuthHeaders },
   );
 
   getCFDHistory = (address: string, query: CfdHistoryQuery = {}) => {
@@ -428,27 +469,31 @@ class BlockchainService {
         url.searchParams.append(key, value.toString());
       });
 
-    return fetchWithValidation(url.toString(), cfdHistorySchema);
+    return fetchWithValidation(url.toString(), cfdHistorySchema, { headers: this.basicAuthHeaders });
   };
 
   getGovernanceContracts = () => fetchWithValidation(
     `${this.apiUrl}/api/governance/info`,
     governanceContractsSchema,
+    { headers: this.basicAuthHeaders },
   );
 
   getGovernancePools = () => fetchWithValidation(
     `${this.apiUrl}/api/governance/pools`,
     governancePoolsSchema,
+    { headers: this.basicAuthHeaders },
   );
 
   getGovernancePool = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/governance/pools/${address}`,
     governancePoolSchema,
+    { headers: this.basicAuthHeaders },
   );
 
   getGovernanceChainsInfo = () => fetchWithValidation(
     `${this.apiUrl}/api/governance/chains-info`,
     governanceChainsInfoSchema,
+    { headers: this.basicAuthHeaders },
   );
 }
 
