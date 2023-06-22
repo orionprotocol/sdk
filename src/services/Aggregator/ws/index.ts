@@ -274,7 +274,7 @@ class AggregatorWS {
         this.isAlive = false;
       } else {
         this.logger?.('Heartbeat timeout');
-        this.isClosedIntentionally = true;
+        this.isClosedIntentionally = false;
         this.ws?.close(4000);
       }
     };
