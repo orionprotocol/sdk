@@ -33,6 +33,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     sp: z.number(), // safe price (with safe deviation but without slippage)
   }).optional(),
   as: alternativeSchema.array(),
+  anm: z.record(z.string()).optional(), // address to ERC20 names
 });
 
 const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
