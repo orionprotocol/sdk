@@ -567,6 +567,7 @@ class AggregatorWS {
               availableAmountIn: item.aa,
               availableAmountOut: item.aao,
             })),
+            assetsNameMapping: json.anm,
           };
 
           switch (json.k) { // kind
