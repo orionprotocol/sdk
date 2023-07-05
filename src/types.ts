@@ -229,6 +229,7 @@ export type SwapInfoBase = {
     safePrice: number
   } | undefined
   alternatives: SwapInfoAlternative[]
+  assetsNameMapping?: Partial<Record<string, string>> | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
