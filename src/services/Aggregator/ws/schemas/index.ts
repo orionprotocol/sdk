@@ -7,6 +7,5 @@ export { default as initMessageSchema } from './initMessageSchema.js';
 export { default as pingPongMessageSchema } from './pingPongMessageSchema.js';
 export { default as swapInfoSchema } from './swapInfoSchema.js';
 export { default as balancesSchema } from './balancesSchema.js';
-export { default as cfdBalancesSchema } from './cfdBalancesSchema.js';
 
 export * from './orderBookSchema.js';

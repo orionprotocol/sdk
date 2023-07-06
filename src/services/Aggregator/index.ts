@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, Exchange, SignedCancelOrderRequest, SignedCFDOrder, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
 import { pairConfigSchema } from './schemas/index.js';
 import {
   aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
@@ -55,7 +55,6 @@ class Aggregator {
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
-    this.placeCFDOrder = this.placeCFDOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
     this.checkWhitelisted = this.checkWhitelisted.bind(this);
     this.getLockedBalance = this.getLockedBalance.bind(this);
@@ -248,40 +247,6 @@ class Aggregator {
     },
     errorSchema,
   );
-
-  placeCFDOrder = (
-    signedOrder: SignedCFDOrder,
-    isReversedOrder?: boolean,
-  ) => {
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...(isReversedOrder !== undefined) && {
-        'X-Reverse-Order': isReversedOrder ? 'true' : 'false',
-      },
-      ...this.basicAuthHeaders,
-    };
-
-    return fetchWithValidation(
-      `${this.apiUrl}/api/v1/order/futures`,
-      z.object({
-        orderId: z.string(),
-        placementRequests: z.array(
-          z.object({
-            amount: z.number(),
-            brokerAddress: z.string(),
-            exchange: z.string(),
-          }),
-        ).optional(),
-      }),
-      {
-        headers,
-        method: 'POST',
-        body: JSON.stringify(signedOrder),
-      },
-      errorSchema,
-    );
-  };
 
   getSwapInfo = (
     type: 'exactSpend' | 'exactReceive',

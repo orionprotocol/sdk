@@ -9,8 +9,6 @@ import {
   userEarnedSchema,
   type PairStatusEnum,
   pairStatusSchema,
-  cfdContractsSchema,
-  cfdHistorySchema,
   governanceContractsSchema,
   governancePoolsSchema,
   governancePoolSchema,
@@ -59,12 +57,6 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
   expiredRedeem?: 0 | 1
   state?: 'REDEEMED' | 'BEFORE-REDEEM'
 }
-
-type CfdHistoryQuery = {
-  instrument?: string
-  page?: number
-  limit?: number
-} & Partial<Record<string, string | number>>
 class BlockchainService {
   private readonly apiUrl: string;
 
@@ -110,8 +102,6 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
-    this.getCFDContracts = this.getCFDContracts.bind(this);
-    this.getCFDHistory = this.getCFDHistory.bind(this);
     this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
     this.getGovernancePools = this.getGovernancePools.bind(this);
     this.getGovernancePool = this.getGovernancePool.bind(this);
@@ -218,12 +208,6 @@ class BlockchainService {
 
   getPrices = () => fetchWithValidation(
     `${this.apiUrl}/api/prices`,
-    z.record(z.string()).transform(makePartial),
-    { headers: this.basicAuthHeaders }
-  );
-
-  getCFDPrices = () => fetchWithValidation(
-    `${this.apiUrl}/api/cfd/prices`,
     z.record(z.string()).transform(makePartial),
     { headers: this.basicAuthHeaders }
   );
@@ -453,24 +437,6 @@ class BlockchainService {
       body: JSON.stringify(secretHashes),
     },
   );
-
-  getCFDContracts = () => fetchWithValidation(
-    `${this.apiUrl}/api/cfd/contracts`,
-    cfdContractsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getCFDHistory = (address: string, query: CfdHistoryQuery = {}) => {
-    const url = new URL(`${this.apiUrl}/api/cfd/deposit-withdraw/${address}`);
-
-    Object.entries(query)
-      .forEach(([key, value]) => {
-        if (value === undefined) throw new Error('Value must be defined');
-        url.searchParams.append(key, value.toString());
-      });
-
-    return fetchWithValidation(url.toString(), cfdHistorySchema, { headers: this.basicAuthHeaders });
-  };
 
   getGovernanceContracts = () => fetchWithValidation(
     `${this.apiUrl}/api/governance/info`,
