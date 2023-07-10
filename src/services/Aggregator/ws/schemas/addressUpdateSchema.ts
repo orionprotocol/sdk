@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { exchanges } from '../../../../constants/index.js';
 import orderStatuses from '../../../../constants/orderStatuses.js';
+import executionTypes from '../../../../constants/executionTypes.js';
 import subOrderStatuses from '../../../../constants/subOrderStatuses.js';
 import MessageType from '../MessageType.js';
 import balancesSchema from './balancesSchema.js';
@@ -35,6 +36,7 @@ export const orderUpdateSchema = z.object({
   l: z.boolean().optional(), // is liquidation order
   t: z.number(), // update time
   C: z.string().optional(), // trigger condition
+  E: z.enum(executionTypes).optional(),
   c: subOrderSchema.array(),
 })
   .transform((val) => ({
@@ -46,6 +48,7 @@ export const orderUpdateSchema = z.object({
     settledAmount: o.A,
     status: o.S,
     liquidated: o.l,
+    executionType: o.E,
     triggerCondition: o.C,
     subOrders: o.c.map((so) => ({
       pair: so.P,
@@ -77,6 +80,7 @@ export const fullOrderSchema = z.object({
   T: z.number(), // creation time / unix timestamp
   t: z.number(), // update time
   c: subOrderSchema.array(),
+  E: z.enum(executionTypes).optional(),
   C: z.string().optional(), // trigger condition
   ro: z.boolean().optional(), // is reversed order
 }).transform((val) => ({
@@ -97,6 +101,7 @@ export const fullOrderSchema = z.object({
   pair: o.P,
   amount: o.a,
   price: o.p,
+  executionType: o.E,
   triggerCondition: o.C,
   isReversedOrder: o.ro,
   subOrders: o.c.map((so) => ({
