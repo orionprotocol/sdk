@@ -11,12 +11,11 @@ import {
 import UnsubscriptionType from './UnsubscriptionType.js';
 import type {
   SwapInfoBase, AssetPairUpdate, OrderbookItem,
-  Balance, Exchange, FuturesTradeInfo, SwapInfo, Json, BasicAuthCredentials,
+  Balance, Exchange, SwapInfo, Json, BasicAuthCredentials,
 } from '../../../types.js';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema.js';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema.js';
 import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema.js';
-import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema.js';
 import { objectKeys } from '../../../utils/objectKeys.js';
 // import assertError from '../../../utils/assertError.js';
 // import errorSchema from './schemas/errorSchema';
@@ -34,7 +33,6 @@ const messageSchema = z.union([
   brokerMessageSchema,
   orderBookSchema,
   swapInfoSchema,
-  futuresTradeInfoSchema,
   errorSchema,
   unsubscriptionDoneSchema,
 ]);
@@ -47,13 +45,6 @@ type SwapInfoSubscriptionPayload = {
   es?: Exchange[] | 'cex' | 'pools' // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
   e?: boolean // is amount IN? Value `false` means a = amount OUT, `true` if omitted
   is?: boolean // instant settlement
-}
-
-type FuturesTradeInfoPayload = {
-  s: string // wallet address
-  i: string // pair
-  a: number // amount
-  p?: number // price
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
@@ -88,12 +79,6 @@ type AggregatedOrderbookSubscription = {
 type SwapInfoSubscription = {
   payload: SwapInfoSubscriptionPayload
   callback: (swapInfo: SwapInfo) => void
-}
-
-type FuturesTradeInfoSubscription = {
-  payload: FuturesTradeInfoPayload
-  callback: (futuresTradeInfo: FuturesTradeInfo) => void
-  errorCb?: (message: string) => void
 }
 
 type AddressUpdateUpdate = {
@@ -131,7 +116,6 @@ type Subscription = {
   [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription
   [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
-  [SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]: FuturesTradeInfoSubscription
 }
 
 const exclusiveSubscriptions = [
@@ -170,8 +154,6 @@ const nonExistentMessageRegex = /Could not cancel nonexistent subscription: (.*)
 type Subscriptions = Partial<{
   [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
 }>;
-
-const FUTURES_SUFFIX = 'USDF';
 
 class AggregatorWS {
   private ws?: WebSocket | undefined;
@@ -368,8 +350,7 @@ class AggregatorWS {
 
     const isOrderBooksSubscription = (subId: string) => {
       const isSpotPairName = subId.includes('-') && subId.split('-').length === 2;
-      const isFuturesPairName = subId.endsWith(FUTURES_SUFFIX);
-      return isSpotPairName || isFuturesPairName;
+      return isSpotPairName;
     }
 
     if (newestSubId.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
@@ -385,7 +366,6 @@ class AggregatorWS {
       // is swap info subscription (contains hyphen)
       delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[newestSubId];
       delete this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[newestSubId];
-      delete this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[newestSubId];
       // !!! swap info subscription is uuid that contains hyphen
     } else if (isOrderBooksSubscription(newestSubId)) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
@@ -563,18 +543,6 @@ class AggregatorWS {
               break;
           }
         }
-          break;
-        case MessageType.FUTURES_TRADE_INFO_UPDATE:
-          this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[json.id]?.callback({
-            futuresTradeRequestId: json.id,
-            sender: json.S,
-            instrument: json.i,
-            buyPrice: json.bp,
-            sellPrice: json.sp,
-            buyPower: json.bpw,
-            sellPower: json.spw,
-            minAmount: json.ma,
-          });
           break;
         case MessageType.INITIALIZATION:
           this.onInit?.();

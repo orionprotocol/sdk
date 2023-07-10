@@ -5,7 +5,6 @@ const SubscriptionType = {
   ADDRESS_UPDATES_SUBSCRIBE: 'aus',
   BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE: 'btasabus',
   SWAP_SUBSCRIBE: 'ss',
-  FUTURES_TRADE_INFO_SUBSCRIBE: 'fts',
 } as const;
 
 export default SubscriptionType;

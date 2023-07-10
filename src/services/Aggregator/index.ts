@@ -9,10 +9,10 @@ import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
 import type { BasicAuthCredentials, Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
-import { pairConfigSchema } from './schemas/index.js';
 import {
-  aggregatedOrderbookSchema, exchangeOrderbookSchema, poolReservesSchema,
-} from './schemas/aggregatedOrderbookSchema.js';
+  pairConfigSchema, aggregatedOrderbookSchema,
+  exchangeOrderbookSchema, poolReservesSchema,
+} from './schemas/index.js';
 import type networkCodes from '../../constants/networkCodes.js';
 import toUpperCase from '../../utils/toUpperCase.js';
 import httpToWS from '../../utils/httpToWS.js';
@@ -93,7 +93,7 @@ class Aggregator {
     );
   }
 
-  getPairsList = (market: 'spot' | 'futures') => {
+  getPairsList = (market: 'spot') => {
     const url = new URL(`${this.apiUrl}/api/v1/pairs/list`);
     url.searchParams.append('market', toUpperCase(market));
 
@@ -141,7 +141,7 @@ class Aggregator {
     );
   };
 
-  getPairConfigs = (market: 'spot' | 'futures') => {
+  getPairConfigs = (market: 'spot') => {
     const url = new URL(`${this.apiUrl}/api/v1/pairs/exchangeInfo`);
     url.searchParams.append('market', toUpperCase(market));
 

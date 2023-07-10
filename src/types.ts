@@ -203,17 +203,6 @@ export type SwapInfoByAmountOut = SwapInfoBase & {
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
 
-export type FuturesTradeInfo = {
-  futuresTradeRequestId: string
-  sender: string
-  instrument: string
-  buyPrice: number | undefined
-  sellPrice: number | undefined
-  buyPower: number
-  sellPower: number
-  minAmount: number
-}
-
 export enum HistoryTransactionStatus {
   PENDING = 'Pending',
   DONE = 'Done',
@@ -255,7 +244,7 @@ export type VerboseUnitConfig = {
       // https://price-feed:3003/
     }
   }
-  basicAuth?: BasicAuthCredentials,
+  basicAuth?: BasicAuthCredentials
 }
 
 export type KnownEnv = typeof knownEnvs[number];
