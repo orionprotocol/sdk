@@ -35,29 +35,6 @@ export type Balance = {
 
 export type PositionStatus = typeof positionStatuses[number];
 
-export type CFDBalance = {
-  instrument: string
-  balance: string
-  profitLoss: string
-  fundingRate: string
-  equity: string
-  position: string
-  currentPrice: string
-  positionPrice: string
-  reserves: string
-  margin: string
-  marginUSD: string
-  freeMarginUSD: string
-  availableWithdrawBalance: string
-  leverage: string
-  status: PositionStatus
-  longFundingRatePerSecond: string
-  longFundingRatePerDay: string
-  shortFundingRatePerSecond: string
-  shortFundingRatePerDay: string
-  stopOutPrice: string | undefined
-}
-
 export type Order = {
   senderAddress: string // address
   matcherAddress: string // address
@@ -72,26 +49,6 @@ export type Order = {
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
   isPersonalSign: boolean // bool
 }
-
-export type CFDOrder = {
-  senderAddress: string // address
-  matcherAddress: string // address
-  instrumentAddress: string // address
-  amount: number // uint64
-  price: number // uint64
-  matcherFee: number // uint64
-  nonce: number // uint64
-  expiration: number // uint64
-  buySide: 0 | 1 // uint8, 1=buy, 0=sell
-  stopPrice?: number | undefined // uint64
-  isPersonalSign: boolean // bool
-  isFromDelegate?: boolean | undefined // bool
-}
-
-export type SignedCFDOrder = {
-  id: string // hash of Order (it's not part of order structure in smart-contract)
-  signature: string // bytes
-} & CFDOrder
 
 export type SignedOrder = {
   id: string // hash of Order (it's not part of order structure in smart-contract)
@@ -246,17 +203,6 @@ export type SwapInfoByAmountOut = SwapInfoBase & {
 
 export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
 
-export type FuturesTradeInfo = {
-  futuresTradeRequestId: string
-  sender: string
-  instrument: string
-  buyPrice: number | undefined
-  sellPrice: number | undefined
-  buyPower: number
-  sellPower: number
-  minAmount: number
-}
-
 export enum HistoryTransactionStatus {
   PENDING = 'Pending',
   DONE = 'Done',
@@ -298,7 +244,7 @@ export type VerboseUnitConfig = {
       // https://price-feed:3003/
     }
   }
-  basicAuth?: BasicAuthCredentials,
+  basicAuth?: BasicAuthCredentials
 }
 
 export type KnownEnv = typeof knownEnvs[number];

@@ -11,13 +11,11 @@ import {
 import UnsubscriptionType from './UnsubscriptionType.js';
 import type {
   SwapInfoBase, AssetPairUpdate, OrderbookItem,
-  Balance, Exchange, CFDBalance, FuturesTradeInfo, SwapInfo, Json, BasicAuthCredentials,
+  Balance, Exchange, SwapInfo, Json, BasicAuthCredentials,
 } from '../../../types.js';
 import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema.js';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema.js';
 import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema.js';
-import cfdAddressUpdateSchema from './schemas/cfdAddressUpdateSchema.js';
-import futuresTradeInfoSchema from './schemas/futuresTradeInfoSchema.js';
 import { objectKeys } from '../../../utils/objectKeys.js';
 // import assertError from '../../../utils/assertError.js';
 // import errorSchema from './schemas/errorSchema';
@@ -30,13 +28,11 @@ const messageSchema = z.union([
   initMessageSchema,
   pingPongMessageSchema,
   addressUpdateSchema,
-  cfdAddressUpdateSchema,
   assetPairsConfigSchema,
   assetPairConfigSchema,
   brokerMessageSchema,
   orderBookSchema,
   swapInfoSchema,
-  futuresTradeInfoSchema,
   errorSchema,
   unsubscriptionDoneSchema,
 ]);
@@ -49,13 +45,6 @@ type SwapInfoSubscriptionPayload = {
   es?: Exchange[] | 'cex' | 'pools' // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
   e?: boolean // is amount IN? Value `false` means a = amount OUT, `true` if omitted
   is?: boolean // instant settlement
-}
-
-type FuturesTradeInfoPayload = {
-  s: string // wallet address
-  i: string // pair
-  a: number // amount
-  p?: number // price
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
@@ -92,12 +81,6 @@ type SwapInfoSubscription = {
   callback: (swapInfo: SwapInfo) => void
 }
 
-type FuturesTradeInfoSubscription = {
-  payload: FuturesTradeInfoPayload
-  callback: (futuresTradeInfo: FuturesTradeInfo) => void
-  errorCb?: (message: string) => void
-}
-
 type AddressUpdateUpdate = {
   kind: 'update'
   balances: Partial<
@@ -120,38 +103,19 @@ type AddressUpdateInitial = {
   orders?: Array<z.infer<typeof fullOrderSchema>> | undefined // The field is not defined if the user has no orders
 }
 
-type CfdAddressUpdateUpdate = {
-  kind: 'update'
-  balances?: CFDBalance[] | undefined
-  order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined
-}
-
-type CfdAddressUpdateInitial = {
-  kind: 'initial'
-  balances: CFDBalance[]
-  orders?: Array<z.infer<typeof fullOrderSchema>> | undefined // The field is not defined if the user has no orders
-}
-
 type AddressUpdateSubscription = {
   payload: string
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
   errorCb?: (message: string) => void
 }
 
-type CfdAddressUpdateSubscription = {
-  payload: string
-  callback: (data: CfdAddressUpdateUpdate | CfdAddressUpdateInitial) => void
-}
-
 type Subscription = {
   [SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]: AddressUpdateSubscription
-  [SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]: CfdAddressUpdateSubscription
   [SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]: AggregatedOrderbookSubscription
   [SubscriptionType.ASSET_PAIRS_CONFIG_UPDATES_SUBSCRIBE]: PairsConfigSubscription
   [SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]: PairConfigSubscription
   [SubscriptionType.BROKER_TRADABLE_ATOMIC_SWAP_ASSETS_BALANCE_UPDATES_SUBSCRIBE]: BrokerTradableAtomicSwapBalanceSubscription
   [SubscriptionType.SWAP_SUBSCRIBE]: SwapInfoSubscription
-  [SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]: FuturesTradeInfoSubscription
 }
 
 const exclusiveSubscriptions = [
@@ -190,8 +154,6 @@ const nonExistentMessageRegex = /Could not cancel nonexistent subscription: (.*)
 type Subscriptions = Partial<{
   [K in keyof Subscription]: Partial<Record<string, Subscription[K]>>
 }>;
-
-const FUTURES_SUFFIX = 'USDF';
 
 class AggregatorWS {
   private ws?: WebSocket | undefined;
@@ -388,8 +350,7 @@ class AggregatorWS {
 
     const isOrderBooksSubscription = (subId: string) => {
       const isSpotPairName = subId.includes('-') && subId.split('-').length === 2;
-      const isFuturesPairName = subId.endsWith(FUTURES_SUFFIX);
-      return isSpotPairName || isFuturesPairName;
+      return isSpotPairName;
     }
 
     if (newestSubId.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
@@ -401,20 +362,10 @@ class AggregatorWS {
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
         }
       }
-
-      const aufSubscriptions = this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE];
-      if (aufSubscriptions) {
-        const targetAufSub = Object.entries(aufSubscriptions).find(([, value]) => value?.payload === newestSubId);
-        if (targetAufSub) {
-          const [key] = targetAufSub;
-          delete this.subscriptions[SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE]?.[key];
-        }
-      }
     } else if (uuidValidate(newestSubId)) {
       // is swap info subscription (contains hyphen)
       delete this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[newestSubId];
       delete this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[newestSubId];
-      delete this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[newestSubId];
       // !!! swap info subscription is uuid that contains hyphen
     } else if (isOrderBooksSubscription(newestSubId)) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
       const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
@@ -593,18 +544,6 @@ class AggregatorWS {
           }
         }
           break;
-        case MessageType.FUTURES_TRADE_INFO_UPDATE:
-          this.subscriptions[SubscriptionType.FUTURES_TRADE_INFO_SUBSCRIBE]?.[json.id]?.callback({
-            futuresTradeRequestId: json.id,
-            sender: json.S,
-            instrument: json.i,
-            buyPrice: json.bp,
-            sellPrice: json.sp,
-            buyPower: json.bpw,
-            sellPower: json.spw,
-            minAmount: json.ma,
-          });
-          break;
         case MessageType.INITIALIZATION:
           this.onInit?.();
           break;
@@ -673,46 +612,6 @@ class AggregatorWS {
             data: priceUpdates,
           });
         }
-          break;
-        case MessageType.CFD_ADDRESS_UPDATE:
-          switch (json.k) { // message kind
-            case 'i': { // initial
-              const fullOrders = (json.o)
-                ? json.o.reduce<Array<z.infer<typeof fullOrderSchema>>>((prev, o) => {
-                  prev.push(o);
-
-                  return prev;
-                }, [])
-                : undefined;
-
-              this.subscriptions[
-                SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE
-              ]?.[json.id]?.callback({
-                kind: 'initial',
-                orders: fullOrders,
-                balances: json.b,
-              });
-            }
-              break;
-            case 'u': { // update
-              let orderUpdate: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined;
-              if (json.o) {
-                const firstOrder = json.o[0];
-                orderUpdate = firstOrder;
-              }
-
-              this.subscriptions[
-                SubscriptionType.CFD_ADDRESS_UPDATES_SUBSCRIBE
-              ]?.[json.id]?.callback({
-                kind: 'update',
-                order: orderUpdate,
-                balances: json.b,
-              });
-            }
-              break;
-            default:
-              break;
-          }
           break;
         case MessageType.ADDRESS_UPDATE: {
           const balances = (json.b)

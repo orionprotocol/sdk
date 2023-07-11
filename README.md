@@ -134,7 +134,7 @@ const assets = await orion.getAssets(); // Optional: tradableOnly: boolean (defa
 ### Get pairs
 
 ```ts
-const pairs = await orion.getPairs("spot"); // 'spot' | 'futures'
+const pairs = await orion.getPairs("spot"); // 'spot'
 
 // Response example:
 // {
