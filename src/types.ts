@@ -94,6 +94,7 @@ export enum SupportedChainId {
   BSC = '56',
   BSC_TESTNET = '97',
   OKC_TESTNET = '65',
+  DRIP_TESTNET = '56303',
 
   // For testing and debug purpose
   // BROKEN = '0',
