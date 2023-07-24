@@ -19,6 +19,7 @@ const mapping: Record<
   QUICKSWAP: 'QuickSwap',
   ORION_POOL: 'Orion Pool',
   INTERNAL_POOL_V2: 'Orion Pool',
+  INTERNAL_POOL_V3: 'Orion Pool',
   CHERRYSWAP: 'CherrySwap',
   OKXSWAP: 'OKXSwap',
   CURVE: 'Curve',
