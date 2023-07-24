@@ -5,7 +5,7 @@ import { makePartial } from '../../../utils';
 const poolsConfigSchema = z.object({
   WETHAddress: z.string().optional(),
   factoryAddress: z.string(),
-  governanceAddress: z.string(),
+  governanceAddress: z.string().optional(),
   routerAddress: z.string(),
   votingAddress: z.string().optional(),
   factories: z.record(
