@@ -106,5 +106,14 @@
     "code": "okc",
     "rpc": "https://exchaintestrpc.okex.org/",
     "baseCurrencyName": "OKT"
+  },
+  "56303": {
+    "chainId": "56303",
+    "label": "DRIP Chain",
+    "shortName": "DRIP Chain",
+    "code": "drip",
+    "baseCurrencyName": "DRIP",
+    "rpc": "testnet.1d.rip",
+    "explorer": "https://explorer-testnet.1d.rip/"
   }
 }

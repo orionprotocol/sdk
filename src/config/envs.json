@@ -160,6 +160,21 @@
             "all": "/price-feed"
           }
         }
+      },
+      "56303": {
+        "api": "https://testing.orionprotocol.io/drip-testnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          }
+        }
       }
     }
   },
