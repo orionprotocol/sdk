@@ -14,6 +14,7 @@ export default [
   'QUICKSWAP',
   'ORION_POOL',
   'INTERNAL_POOL_V2',
+  'INTERNAL_POOL_V3',
   'CHERRYSWAP',
   'OKXSWAP',
   'CURVE',
