@@ -7,7 +7,7 @@ const poolsConfigSchema = z.object({
   factoryAddress: z.string(),
   governanceAddress: z.string(),
   routerAddress: z.string(),
-  votingAddress: z.string(),
+  votingAddress: z.string().optional(),
   factories: z.record(
     z.string(),
     z.string().refine(ethers.utils.isAddress, 'Factory should be an address'),
