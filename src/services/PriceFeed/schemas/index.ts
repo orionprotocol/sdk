@@ -3,3 +3,4 @@ export {
   statisticsOverviewSchema,
   topPairsStatisticsSchema,
 } from './statisticsSchema.js';
+export { allTickersSchema } from './allTickersSchema.js';

@@ -1,6 +1,6 @@
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials, Exchange } from '../../types.js';
-import { statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas/index.js';
+import { allTickersSchema, statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas/index.js';
 import candlesSchema from './schemas/candlesSchema.js';
 import { PriceFeedWS } from './ws/index.js';
 
@@ -23,6 +23,7 @@ class PriceFeed {
     this.getCandles = this.getCandles.bind(this);
     this.getStatisticsOverview = this.getStatisticsOverview.bind(this);
     this.getTopPairStatistics = this.getTopPairStatistics.bind(this);
+    this.getAllTickers = this.getAllTickers.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -77,6 +78,14 @@ class PriceFeed {
     );
   }
 
+  getAllTickers = () => {
+    return fetchWithValidation(
+      `${this.tickersUrl}/all`,
+      allTickersSchema,
+      { headers: this.basicAuthHeaders }
+    );
+  }
+
   get wsUrl() {
     const url = new URL(this.apiUrl);
     const wsProtocol = url.protocol === 'https:' ? 'wss' : 'ws';
@@ -89,6 +98,10 @@ class PriceFeed {
 
   get statisticsUrl() {
     return `${this.apiUrl}/api/v1/statistics`;
+  }
+
+  get tickersUrl() {
+    return `${this.apiUrl}/api/v1/ticker`;
   }
 }
 
