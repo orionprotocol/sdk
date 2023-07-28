@@ -285,6 +285,18 @@ class Aggregator {
     );
   };
 
+  getPrices = (assetPair: string, includePools: boolean) => {
+    const url = new URL(`${this.apiUrl}/api/v1/prices/`);
+    url.searchParams.append('assetPair', assetPair);
+    url.searchParams.append('includePools', includePools.toString());
+    return fetchWithValidation(
+      url.toString(),
+      z.number(),
+      { headers: this.basicAuthHeaders },
+      errorSchema,
+    );
+  };
+
   getLockedBalance = (address: string, currency: string) => {
     const url = new URL(`${this.apiUrl}/api/v1/address/balance/reserved/${currency}`);
     url.searchParams.append('address', address);
