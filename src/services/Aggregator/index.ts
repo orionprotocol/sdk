@@ -62,6 +62,7 @@ class Aggregator {
     this.getExchangeOrderbook = this.getExchangeOrderbook.bind(this);
     this.getPoolReserves = this.getPoolReserves.bind(this);
     this.getVersion = this.getVersion.bind(this);
+    this.getPrices = this.getPrices.bind(this);
   }
 
   get basicAuthHeaders() {
