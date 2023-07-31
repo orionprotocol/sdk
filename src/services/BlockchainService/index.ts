@@ -216,7 +216,7 @@ class BlockchainService {
   );
 
   getPricesWithQuoteAsset = () => fetchWithValidation(
-    `http://localhost:57303/prices.json`,
+    `${this.apiUrl}/api/prices`,
     pricesWithQuoteAssetSchema,
     { headers: this.basicAuthHeaders }
   );
