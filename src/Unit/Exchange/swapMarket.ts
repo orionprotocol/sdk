@@ -75,7 +75,7 @@ export default async function swapMarket({
 
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const feeAssets = await simpleFetch(blockchainService.getTokensFee)();
-  const pricesInOrn = await simpleFetch(blockchainService.getPrices)();
+  const allPrices = await simpleFetch(blockchainService.getPricesWithQuoteAsset)();
   const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
   const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();
   const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
@@ -330,20 +330,20 @@ export default async function swapMarket({
   });
 
   // Fee calculation
-  const baseAssetPriceInOrn = pricesInOrn[baseAssetAddress];
-  if (baseAssetPriceInOrn === undefined) throw new Error(`Base asset price ${baseAssetName} in ORN not found`);
-  const baseCurrencyPriceInOrn = pricesInOrn[ethers.constants.AddressZero];
-  if (baseCurrencyPriceInOrn === undefined) throw new Error('Base currency price in ORN not found');
-  const feeAssetPriceInOrn = pricesInOrn[feeAssetAddress];
-  if (feeAssetPriceInOrn === undefined) throw new Error(`Fee asset price ${feeAsset} in ORN not found`);
+  const baseAssetPriceInQuoteAsset = allPrices.prices[baseAssetAddress];
+  if (baseAssetPriceInQuoteAsset === undefined) throw new Error(`Base asset price ${baseAssetName} in ${allPrices.quoteAsset}not found`);
+  const baseCurrencyPriceInQuoteAsset = allPrices.prices[ethers.constants.AddressZero];
+  if (baseCurrencyPriceInQuoteAsset === undefined) throw new Error(`Base currency price in ${allPrices.quoteAsset} not found`);
+  const feeAssetPriceInQuoteAsset = allPrices.prices[feeAssetAddress];
+  if (feeAssetPriceInQuoteAsset === undefined) throw new Error(`Fee asset price ${feeAsset} in ${allPrices.quoteAsset} not found`);
   const feePercent = feeAssets[feeAsset];
   if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
   const { serviceFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = calculateFeeInFeeAsset(
     swapInfo.orderInfo.amount,
-    feeAssetPriceInOrn,
-    baseAssetPriceInOrn,
-    baseCurrencyPriceInOrn,
+    feeAssetPriceInQuoteAsset,
+    baseAssetPriceInQuoteAsset,
+    baseCurrencyPriceInQuoteAsset,
     gasPriceGwei,
     feePercent,
   );

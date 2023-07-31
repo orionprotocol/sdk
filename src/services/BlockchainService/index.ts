@@ -13,6 +13,7 @@ import {
   governancePoolsSchema,
   governancePoolSchema,
   governanceChainsInfoSchema,
+  pricesWithQuoteAssetSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -81,7 +82,7 @@ class BlockchainService {
     this.getUserVotes = this.getUserVotes.bind(this);
     this.getUserEarned = this.getUserEarned.bind(this);
     this.getHistory = this.getHistory.bind(this);
-    this.getPrices = this.getPrices.bind(this);
+    this.getPricesWithQuoteAsset = this.getPricesWithQuoteAsset.bind(this);
     this.getTokensFee = this.getTokensFee.bind(this);
     this.getGasPriceWei = this.getGasPriceWei.bind(this);
     this.checkFreeRedeemAvailable = this.checkFreeRedeemAvailable.bind(this);
@@ -206,9 +207,9 @@ class BlockchainService {
     { headers: this.basicAuthHeaders }
   );
 
-  getPrices = () => fetchWithValidation(
-    `${this.apiUrl}/api/prices`,
-    z.record(z.string()).transform(makePartial),
+  getPricesWithQuoteAsset = () => fetchWithValidation(
+    `http://localhost:57303/prices.json`,
+    pricesWithQuoteAssetSchema,
     { headers: this.basicAuthHeaders }
   );
 
