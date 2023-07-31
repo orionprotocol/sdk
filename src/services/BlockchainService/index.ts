@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   IDOSchema, atomicHistorySchema,
   poolsConfigSchema, poolsInfoSchema, infoSchema, historySchema,
+  poolsV3InfoSchema,
   type addPoolSchema, adminPoolsListSchema, adminPoolSchema,
   atomicSummarySchema,
   poolsLpAndStakedSchema,
@@ -80,6 +81,7 @@ class BlockchainService {
     this.getPoolsLpAndStaked = this.getPoolsLpAndStaked.bind(this);
     this.getUserVotes = this.getUserVotes.bind(this);
     this.getUserEarned = this.getUserEarned.bind(this);
+    this.getPoolsV3Info = this.getPoolsV3Info.bind(this);
     this.getHistory = this.getHistory.bind(this);
     this.getPrices = this.getPrices.bind(this);
     this.getTokensFee = this.getTokensFee.bind(this);
@@ -197,6 +199,12 @@ class BlockchainService {
   getUserEarned = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/pools/user-earned/${address}`,
     userEarnedSchema,
+    { headers: this.basicAuthHeaders }
+  );
+
+  getPoolsV3Info = () => fetchWithValidation(
+    `${this.apiUrl}/api/pools-v3/info`,
+    poolsV3InfoSchema,
     { headers: this.basicAuthHeaders }
   );
 
@@ -325,18 +333,18 @@ class BlockchainService {
 
   checkAuth = (headers: IAdminAuthHeaders) => fetchWithValidation(`${this.apiUrl}/api/auth/check`, z.object({
     auth: z.boolean(),
-  }), { headers: { ...headers, ...this.basicAuthHeaders }});
+  }), { headers: { ...headers, ...this.basicAuthHeaders } });
 
   getPool = (address: string, headers: IAdminAuthHeaders) => fetchWithValidation(
     `${this.apiUrl}/api/pools/${address}`,
     adminPoolSchema,
-    { headers: { ...headers, ...this.basicAuthHeaders }},
+    { headers: { ...headers, ...this.basicAuthHeaders } },
   );
 
   getPoolsList = (headers: IAdminAuthHeaders) => fetchWithValidation(
     `${this.apiUrl}/api/pools/list`,
     adminPoolsListSchema,
-    { headers: { ...headers, ...this.basicAuthHeaders }},
+    { headers: { ...headers, ...this.basicAuthHeaders } },
   );
 
   editPool = (address: string, data: IEditPool, headers: IAdminAuthHeaders) => fetchWithValidation(
