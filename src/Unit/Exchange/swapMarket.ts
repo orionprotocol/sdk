@@ -346,6 +346,8 @@ export default async function swapMarket({
     baseCurrencyPriceInQuoteAsset,
     gasPriceGwei,
     feePercent,
+    feeAsset,
+    allPrices.prices,
   );
 
   if (feeAsset === assetOut) {

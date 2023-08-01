@@ -140,6 +140,8 @@ export default async function getSwapInfo({
       baseCurrencyPriceInQuoteAsset,
       gasPriceGwei,
       feePercent,
+      feeAssetAddress,
+      allPrices.prices,
     );
 
     return {

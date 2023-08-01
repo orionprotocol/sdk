@@ -2,14 +2,15 @@ import { BigNumber } from 'bignumber.js';
 
 export default function calculateServiceFeeInFeeAsset(
   amount: BigNumber.Value,
-  feeAssetPriceInServiceToken: BigNumber.Value,
-  baseAssetPriceInServiceToken: BigNumber.Value,
+  feeAssetPrice: BigNumber.Value,
+  baseAssetPrice: BigNumber.Value,
   feePercent: BigNumber.Value,
+  feeAssetPriceInQuoteAsset: BigNumber.Value,
 ) {
   const result = new BigNumber(amount)
     .multipliedBy(new BigNumber(feePercent).div(100))
-    .multipliedBy(baseAssetPriceInServiceToken)
-    .multipliedBy(new BigNumber(1).div(feeAssetPriceInServiceToken))
+    .multipliedBy(baseAssetPrice)
+    .div(new BigNumber(feeAssetPriceInQuoteAsset).multipliedBy(feeAssetPrice))
     .toString();
 
   return result;

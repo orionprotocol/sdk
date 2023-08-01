@@ -388,6 +388,8 @@ export default async function swapLimit({
     baseCurrencyPriceInQuoteAsset,
     gasPriceGwei,
     feePercent,
+    feeAsset,
+    allPrices.prices,
   );
 
   if (feeAsset === assetOut) {
