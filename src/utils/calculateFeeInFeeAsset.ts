@@ -5,32 +5,33 @@ import calculateServiceFeeInFeeAsset from './calculateServiceFeeInFeeAsset.js';
 
 const calculateFeeInFeeAsset = (
   amount: BigNumber.Value,
-  feeAssetPrice: BigNumber.Value,
-  baseAssetPrice: BigNumber.Value,
-  baseCurrencyPrice: BigNumber.Value,
   gasPriceGwei: BigNumber.Value,
   feePercent: BigNumber.Value,
-  feeAsset: string,
-  assetPrices: Partial<Record<string, string>>,
+  baseAssetAddress: string,
+  baseCurrencyAddress: string,
+  feeAssetAddress: string,
+  prices: Partial<Record<string, string>>,
 ) => {
-  const feeAssetPriceInQuoteAsset = assetPrices[feeAsset];
-  if (feeAssetPriceInQuoteAsset === undefined) throw Error('feeAssetPriceInQuoteAsset is undefined');
-
-  const feeAssetPriceInQuoteAssetBN = new BigNumber(feeAssetPriceInQuoteAsset);
+  const feeAssetPrice = prices[feeAssetAddress];
+  if (feeAssetPrice === undefined) throw Error(`Fee asset price not found. Available prices: ${Object.keys(prices).join(', ')}`);
+  const baseAssetPrice = prices[baseAssetAddress];
+  if (baseAssetPrice === undefined) throw Error(`Base asset price not found. Available prices: ${Object.keys(prices).join(', ')}`);
+  const baseCurrencyPrice = prices[baseCurrencyAddress]; // ETH, BNB, MATIC, etc.
+  if (baseCurrencyPrice === undefined) throw Error(`Base currency price not found. Available prices: ${Object.keys(prices).join(', ')}`);
 
   const serviceFeeInFeeAsset = calculateServiceFeeInFeeAsset(
     amount,
-    feeAssetPrice,
-    baseAssetPrice,
+    baseAssetAddress,
+    feeAssetAddress,
     feePercent,
-    feeAssetPriceInQuoteAssetBN
+    prices,
   );
   const networkFeeInFeeAsset = calculateNetworkFeeInFeeAsset(
     gasPriceGwei,
     FILL_ORDERS_GAS_LIMIT,
-    baseCurrencyPrice,
-    feeAssetPrice,
-    feeAssetPriceInQuoteAssetBN
+    baseCurrencyAddress,
+    feeAssetAddress,
+    prices,
   );
 
   return {

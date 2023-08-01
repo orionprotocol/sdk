@@ -383,12 +383,11 @@ export default async function swapLimit({
 
   const { serviceFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = calculateFeeInFeeAsset(
     swapInfo.orderInfo.amount,
-    feeAssetPriceInQuoteAsset,
-    baseAssetPriceInQuoteAsset,
-    baseCurrencyPriceInQuoteAsset,
     gasPriceGwei,
     feePercent,
-    feeAsset,
+    baseAssetAddress,
+    ethers.constants.AddressZero,
+    feeAssetAddress,
     allPrices.prices,
   );
 
@@ -405,7 +404,7 @@ export default async function swapLimit({
       name: feeAsset,
       address: feeAssetAddress,
     },
-    amount: networkFeeInFeeAsset,
+    amount: networkFeeInFeeAsset.toString(),
     spenderAddress: exchangeContractAddress,
     sources: getAvailableSources('network_fee', feeAssetAddress, 'aggregator'),
   });
@@ -416,7 +415,7 @@ export default async function swapLimit({
       name: feeAsset,
       address: feeAssetAddress,
     },
-    amount: serviceFeeInFeeAsset,
+    amount: serviceFeeInFeeAsset.toString(),
     spenderAddress: exchangeContractAddress,
     sources: getAvailableSources('service_fee', feeAssetAddress, 'aggregator'),
   });

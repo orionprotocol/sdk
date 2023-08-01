@@ -135,13 +135,12 @@ export default async function getSwapInfo({
       networkFeeInFeeAsset,
     } = calculateFeeInFeeAsset(
       swapInfo.orderInfo.amount,
-      feeAssetPriceInQuoteAsset,
-      baseAssetPriceInQuoteAsset,
-      baseCurrencyPriceInQuoteAsset,
       gasPriceGwei,
       feePercent,
+      baseAssetAddress,
+      ethers.constants.AddressZero,
       feeAssetAddress,
-      allPrices.prices,
+      allPrices.prices
     );
 
     return {
