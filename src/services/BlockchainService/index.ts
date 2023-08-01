@@ -84,6 +84,7 @@ class BlockchainService {
     this.getUserEarned = this.getUserEarned.bind(this);
     this.getPoolsV3Info = this.getPoolsV3Info.bind(this);
     this.getHistory = this.getHistory.bind(this);
+    this.getPrices = this.getPrices.bind(this);
     this.getPricesWithQuoteAsset = this.getPricesWithQuoteAsset.bind(this);
     this.getTokensFee = this.getTokensFee.bind(this);
     this.getGasPriceWei = this.getGasPriceWei.bind(this);
@@ -215,8 +216,14 @@ class BlockchainService {
     { headers: this.basicAuthHeaders }
   );
 
-  getPricesWithQuoteAsset = () => fetchWithValidation(
+  getPrices = () => fetchWithValidation(
     `${this.apiUrl}/api/prices`,
+    z.record(z.string()).transform(makePartial),
+    { headers: this.basicAuthHeaders }
+  );
+
+  getPricesWithQuoteAsset = () => fetchWithValidation(
+    `${this.apiUrl}/api/quotedPrices`,
     pricesWithQuoteAssetSchema,
     { headers: this.basicAuthHeaders }
   );
