@@ -121,12 +121,6 @@ export default async function getSwapInfo({
     if (baseAssetAddress === undefined) throw new Error(`No asset address for ${baseAssetName}`);
 
     // Fee calculation
-    const baseAssetPriceInQuoteAsset = allPrices.prices[baseAssetAddress];
-    if (baseAssetPriceInQuoteAsset === undefined) throw new Error(`Base asset price ${baseAssetName} in ${allPrices.quoteAsset} not found`);
-    const baseCurrencyPriceInQuoteAsset = allPrices.prices[ethers.constants.AddressZero];
-    if (baseCurrencyPriceInQuoteAsset === undefined) throw new Error(`Base currency price in ${allPrices.quoteAsset} not found`);
-    const feeAssetPriceInQuoteAsset = allPrices.prices[feeAssetAddress];
-    if (feeAssetPriceInQuoteAsset === undefined) throw new Error(`Fee asset price ${feeAsset} in ${allPrices.quoteAsset} not found`);
     const feePercent = feeAssets[feeAsset];
     if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
