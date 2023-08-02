@@ -39,7 +39,7 @@ const swapInfoBase = z.object({
     orderInfo: orderInfoSchema,
     isThroughPoolOrCurve: z.boolean(),
   }).array(),
-  anm: z.record(z.string()).optional(), // address to ERC20 names
+  assetNameMapping: z.record(z.string()).optional(), // address to ERC20 names
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({

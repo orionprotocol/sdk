@@ -17,3 +17,4 @@ export { default as governancePoolsSchema } from './governancePoolsSchema.js';
 export { default as governancePoolSchema } from './governancePoolSchema.js';
 export { default as governanceChainsInfoSchema } from './governanceChainsInfoSchema.js';
 export { default as poolsV3InfoSchema } from './poolsV3InfoSchema.js';
+export { pricesWithQuoteAssetSchema } from './pricesWithQuoteAssetSchema.js';

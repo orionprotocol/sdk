@@ -75,7 +75,7 @@ export default async function swapMarket({
 
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
   const feeAssets = await simpleFetch(blockchainService.getTokensFee)();
-  const pricesInOrn = await simpleFetch(blockchainService.getPrices)();
+  const allPrices = await simpleFetch(blockchainService.getPricesWithQuoteAsset)();
   const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
   const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();
   const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
@@ -330,22 +330,17 @@ export default async function swapMarket({
   });
 
   // Fee calculation
-  const baseAssetPriceInOrn = pricesInOrn[baseAssetAddress];
-  if (baseAssetPriceInOrn === undefined) throw new Error(`Base asset price ${baseAssetName} in ORN not found`);
-  const baseCurrencyPriceInOrn = pricesInOrn[ethers.constants.AddressZero];
-  if (baseCurrencyPriceInOrn === undefined) throw new Error('Base currency price in ORN not found');
-  const feeAssetPriceInOrn = pricesInOrn[feeAssetAddress];
-  if (feeAssetPriceInOrn === undefined) throw new Error(`Fee asset price ${feeAsset} in ORN not found`);
   const feePercent = feeAssets[feeAsset];
   if (feePercent === undefined) throw new Error(`Fee asset ${feeAsset} not available`);
 
   const { serviceFeeInFeeAsset, networkFeeInFeeAsset, totalFeeInFeeAsset } = calculateFeeInFeeAsset(
     swapInfo.orderInfo.amount,
-    feeAssetPriceInOrn,
-    baseAssetPriceInOrn,
-    baseCurrencyPriceInOrn,
     gasPriceGwei,
     feePercent,
+    baseAssetAddress,
+    ethers.constants.AddressZero,
+    feeAssetAddress,
+    allPrices.prices,
   );
 
   if (feeAsset === assetOut) {
@@ -361,7 +356,7 @@ export default async function swapMarket({
       name: feeAsset,
       address: feeAssetAddress,
     },
-    amount: networkFeeInFeeAsset,
+    amount: networkFeeInFeeAsset.toString(),
     spenderAddress: exchangeContractAddress,
     sources: getAvailableSources('network_fee', feeAssetAddress, 'aggregator'),
   });
@@ -372,7 +367,7 @@ export default async function swapMarket({
       name: feeAsset,
       address: feeAssetAddress,
     },
-    amount: serviceFeeInFeeAsset,
+    amount: serviceFeeInFeeAsset.toString(),
     spenderAddress: exchangeContractAddress,
     sources: getAvailableSources('service_fee', feeAssetAddress, 'aggregator'),
   });

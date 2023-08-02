@@ -267,7 +267,7 @@ class AggregatorWS {
       if ('payload' in subscription) {
         if (typeof subscription.payload === 'string') {
           subRequest['S'] = subscription.payload;
-        } else { // SwapInfoSubscriptionPayload | FuturesTradeInfoPayload
+        } else { // SwapInfoSubscriptionPayload
           subRequest['S'] = {
             d: id,
             ...subscription.payload,
