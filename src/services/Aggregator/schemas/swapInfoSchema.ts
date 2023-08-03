@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { exchanges } from '../../../constants/index.js';
 
 const orderInfoSchema = z.object({
   assetPair: z.string().toUpperCase(),
@@ -18,13 +17,13 @@ const swapInfoBase = z.object({
   // isThroughPoolOptimal: z.boolean(), // deprecated
   executionInfo: z.string(),
   orderInfo: orderInfoSchema,
-  exchanges: z.array(z.enum(exchanges)),
+  exchanges: z.array(z.string()),
   price: z.number().nullable(), // spending asset price
   minAmountOut: z.number(),
   minAmountIn: z.number(),
   marketPrice: z.number().nullable(), // spending asset market price
   alternatives: z.object({ // execution alternatives
-    exchanges: z.array(z.enum(exchanges)),
+    exchanges: z.array(z.string()),
     path: z.object({
       units: z.object({
         assetPair: z.string().toUpperCase(),
