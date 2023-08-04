@@ -7,30 +7,30 @@ const calculateFeeInFeeAsset = (
   amount: BigNumber.Value,
   gasPriceGwei: BigNumber.Value,
   feePercent: BigNumber.Value,
-  baseAssetAddress: string,
-  baseCurrencyAddress: string,
-  feeAssetAddress: string,
+  baseAssetName: string,
+  baseCurrencyName: string,
+  feeAssetName: string,
   prices: Partial<Record<string, string>>,
 ) => {
-  const feeAssetPrice = prices[feeAssetAddress];
+  const feeAssetPrice = prices[feeAssetName];
   if (feeAssetPrice === undefined) throw Error(`Fee asset price not found. Available prices: ${Object.keys(prices).join(', ')}`);
-  const baseAssetPrice = prices[baseAssetAddress];
+  const baseAssetPrice = prices[baseAssetName];
   if (baseAssetPrice === undefined) throw Error(`Base asset price not found. Available prices: ${Object.keys(prices).join(', ')}`);
-  const baseCurrencyPrice = prices[baseCurrencyAddress]; // ETH, BNB, MATIC, etc.
+  const baseCurrencyPrice = prices[baseCurrencyName]; // ETH, BNB, MATIC, etc.
   if (baseCurrencyPrice === undefined) throw Error(`Base currency price not found. Available prices: ${Object.keys(prices).join(', ')}`);
 
   const serviceFeeInFeeAsset = calculateServiceFeeInFeeAsset(
     amount,
-    baseAssetAddress,
-    feeAssetAddress,
+    baseAssetName,
+    feeAssetName,
     feePercent,
     prices,
   );
   const networkFeeInFeeAsset = calculateNetworkFeeInFeeAsset(
     gasPriceGwei,
     FILL_ORDERS_GAS_LIMIT,
-    baseCurrencyAddress,
-    feeAssetAddress,
+    baseCurrencyName,
+    feeAssetName,
     prices,
   );
 

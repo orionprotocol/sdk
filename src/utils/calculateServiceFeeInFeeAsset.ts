@@ -3,8 +3,8 @@ import convertPrice from './convertPrice.js';
 
 export default function calculateServiceFeeInFeeAsset(
   amount: BigNumber.Value,
-  baseAssetAddress: string,
-  feeAssetAddress: string,
+  baseAssetName: string,
+  feeAssetName: string,
   feePercent: BigNumber.Value,
   prices: Partial<Record<string, string>>
 ) {
@@ -12,8 +12,8 @@ export default function calculateServiceFeeInFeeAsset(
 
   const feeAssetAmount = convertPrice(
     feeAmount,
-    baseAssetAddress,
-    feeAssetAddress,
+    baseAssetName,
+    feeAssetName,
     prices
   );
 

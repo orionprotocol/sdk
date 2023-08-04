@@ -5,16 +5,16 @@ import convertPrice from './convertPrice.js';
 const calculateNetworkFeeInFeeAsset = (
   gasPriceGwei: BigNumber.Value,
   gasLimit: BigNumber.Value,
-  baseCurrencyAddress: string,
-  feeAssetAddress: string,
+  baseCurrencyName: string,
+  feeAssetName: string,
   prices: Partial<Record<string, string>>
 ) => {
   const networkFee = calculateNetworkFee(gasPriceGwei, gasLimit);
 
   return convertPrice(
     networkFee,
-    baseCurrencyAddress, // from
-    feeAssetAddress, // to
+    baseCurrencyName, // from
+    feeAssetName, // to
     prices
   );
 };

@@ -2,15 +2,15 @@ import { BigNumber } from 'bignumber.js';
 
 export default function convertPrice(
   amount: BigNumber.Value,
-  assetInAddress: string,
-  assetOutAddress: string,
-  prices: Partial<Record<string, string>> // quoted in quoteAsset. [address]: priceQuotedInQuoteAsset
+  assetInName: string,
+  assetOutName: string,
+  prices: Partial<Record<string, string>> // quoted in quoteAsset. [name]: priceQuotedInQuoteAsset
 ) {
-  const assetInPrice = prices[assetInAddress.toLowerCase()];
-  if (assetInPrice === undefined) throw Error(`Price conversion: AssetIn (${assetInAddress}) price is undefined`);
+  const assetInPrice = prices[assetInName];
+  if (assetInPrice === undefined) throw Error(`Price conversion: AssetIn (${assetInName}) price is undefined`);
 
-  const assetOutPrice = prices[assetOutAddress.toLowerCase()];
-  if (assetOutPrice === undefined) throw Error(`Price conversion: AssetOut (${assetOutAddress}) price is undefined`);
+  const assetOutPrice = prices[assetOutName];
+  if (assetOutPrice === undefined) throw Error(`Price conversion: AssetOut (${assetOutName}) price is undefined`);
 
   const assetInPriceBN = new BigNumber(assetInPrice);
   const assetOutPriceBN = new BigNumber(assetOutPrice);
