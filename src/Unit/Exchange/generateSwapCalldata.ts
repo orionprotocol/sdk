@@ -2,8 +2,11 @@ import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ether
 import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { BigNumber, ethers } from 'ethers';
 import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
+import { safeGet, type SafeArray } from '../../utils/safeGetters.js';
+import type Unit from '../index.js';
+import { simpleFetch } from 'simple-typed-fetch';
 
-type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
+export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
 export type SwapInfo = {
   pool: string,
@@ -12,24 +15,33 @@ export type SwapInfo = {
   factory: Factory
 }
 
-type CallParams = {
+export type CallParams = {
   isMandatory?: boolean,
   target?: string,
   gaslimit?: BigNumber,
   value?: BigNumber
 }
 
-export default async function generateSwapCalldata(
+export type GenerateSwapCalldataParams = {
   amount: string,
   minReturnAmount: string,
   receiverAddress: string,
-  exchangeAddress: string,
-  executorAddress: string,
-  path: SwapInfo[],
-  weth: string,
-  curveRegistry: string,
-  provider: ethers.providers.JsonRpcProvider
+  path: SafeArray<SwapInfo>,
+  unit: Unit
+}
+
+export default async function generateSwapCalldata({
+  amount,
+  minReturnAmount,
+  receiverAddress,
+  path,
+  unit
+}: GenerateSwapCalldataParams
 ): Promise<{ calldata: string, swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct }> {
+  const wethAddress = safeGet(unit.contracts, "WETH")
+  const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
+  const { exchangeContractAddress, swapExecutorContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
+
   if (path == undefined || path.length == 0) {
     throw new Error(`Empty path`);
   }
@@ -42,34 +54,42 @@ export default async function generateSwapCalldata(
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
-    srcReceiver: executorAddress,
+    srcReceiver: swapExecutorContractAddress,
     dstReceiver: receiverAddress,
     amount: amount,
     minReturnAmount: minReturnAmount,
     flags: 0
   }
+  
   let calldata: string
   switch (factory) {
     case "OrionV2": {
       swapDescription.srcReceiver = path.first().pool
-      calldata = await generateUni2Calls(exchangeAddress, path);
+      calldata = await generateUni2Calls(exchangeContractAddress, path);
       break;
     }
     case "UniswapV2": {
       swapDescription.srcReceiver = path.first().pool
-      calldata = await generateUni2Calls(exchangeAddress, path);
+      calldata = await generateUni2Calls(exchangeContractAddress, path);
       break;
     }
     case "UniswapV3": {
-      calldata = await generateUni3Calls(amount, exchangeAddress, weth, path, provider)
+      calldata = await generateUni3Calls(amount, exchangeContractAddress, wethAddress, path, unit.provider)
       break;
     }
     case "OrionV3": {
-      calldata = await generateOrion3Calls(amount, exchangeAddress, weth, path, provider)
+      calldata = await generateOrion3Calls(amount, exchangeContractAddress, wethAddress, path, unit.provider)
       break;
     }
     case "Curve": {
-      calldata = await generateCurveStableSwapCalls(amount, exchangeAddress, executorAddress, path, provider, curveRegistry);
+      calldata = await generateCurveStableSwapCalls(
+        amount,
+        exchangeContractAddress,
+        swapExecutorContractAddress,
+        path,
+        unit.provider,
+        curveRegistryAddress
+      );
       break;
     }
     default: {
@@ -83,7 +103,7 @@ export default async function generateSwapCalldata(
 
 export async function generateUni2Calls(
   exchangeAddress: string,
-  path: SwapInfo[]
+  path: SafeArray<SwapInfo>
 ) {
   const executorInterface = SwapExecutor__factory.createInterface()
   const calls: BytesLike[] = []
@@ -114,11 +134,11 @@ export async function generateUni2Calls(
   return generateCalls(calls)
 }
 
-export async function generateUni3Calls(
+async function generateUni3Calls(
   amount: string,
-  exchangeAddress: string,
+  exchangeContractAddress: string,
   weth: string,
-  path: SwapInfo[],
+  path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider
 ) {
   const encodedPools: BytesLike[] = []
@@ -141,17 +161,17 @@ export async function generateUni3Calls(
     encodedPools.push(encodedPool)
   }
   const executorInterface = SwapExecutor__factory.createInterface()
-  let calldata = executorInterface.encodeFunctionData("uniswapV3SwapTo", [encodedPools, exchangeAddress, amount])
+  let calldata = executorInterface.encodeFunctionData("uniswapV3SwapTo", [encodedPools, exchangeContractAddress, amount])
   calldata = addCallParams(calldata)
 
   return generateCalls([calldata])
 }
 
-export async function generateOrion3Calls(
+async function generateOrion3Calls(
   amount: string,
-  exchangeAddress: string,
+  exchangeContractAddress: string,
   weth: string,
-  path: SwapInfo[],
+  path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider
 ) {
   const encodedPools: BytesLike[] = []
@@ -174,17 +194,17 @@ export async function generateOrion3Calls(
     encodedPools.push(encodedPool)
   }
   const executorInterface = SwapExecutor__factory.createInterface()
-  let calldata = executorInterface.encodeFunctionData("orionV3SwapTo", [encodedPools, exchangeAddress, amount])
+  let calldata = executorInterface.encodeFunctionData("orionV3SwapTo", [encodedPools, exchangeContractAddress, amount])
   calldata = addCallParams(calldata)
 
   return generateCalls([calldata])
 }
 
-export async function generateCurveStableSwapCalls(
+async function generateCurveStableSwapCalls(
   amount: string,
-  exchangeAddress: string,
+  exchangeContractAddress: string,
   executorAddress: string,
-  path: SwapInfo[],
+  path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider,
   curveRegistry: string
 ) {
@@ -204,7 +224,7 @@ export async function generateCurveStableSwapCalls(
   if (executorAllowance.lt(amount)) {
     const calldata = addCallParams(
       executorInterface.encodeFunctionData("safeApprove", [
-        swap.assetIn, 
+        swap.assetIn,
         swap.pool,
         ethers.constants.MaxUint256
       ])
@@ -218,8 +238,7 @@ export async function generateCurveStableSwapCalls(
     j,
     amount,
     0,
-    exchangeAddress
-  ])
+    exchangeContractAddress])
 
   calldata = addCallParams(calldata)
   calls.push(calldata)
@@ -227,7 +246,7 @@ export async function generateCurveStableSwapCalls(
   return generateCalls(calls)
 }
 
-export function addCallParams(
+function addCallParams(
   calldata: BytesLike,
   callParams?: CallParams
 ) {
@@ -257,37 +276,7 @@ export function addCallParams(
 }
 
 
-export async function generateCalls(calls: BytesLike[]) {
+async function generateCalls(calls: BytesLike[]) {
   const executorInterface = SwapExecutor__factory.createInterface()
   return "0x" + executorInterface.encodeFunctionData("func_70LYiww", [ethers.constants.AddressZero, calls]).slice(74)
-}
-
-declare global {
-  interface Array<T> {
-    get(index: number): T;
-    last(): T
-    first(): T
-  }
-}
-
-if (!Array.prototype.get) {
-  Array.prototype.get = function <T>(this: T[], index: number): T {
-    const value = this.at(index);
-    if (value === undefined) {
-      throw new Error(`Element at index ${index} is undefined. Array: ${this}`)
-    }
-    return value
-  }
-}
-
-if (!Array.prototype.last) {
-  Array.prototype.last = function <T>(this: T[]): T {
-    return this.get(this.length - 1)
-  }
-}
-
-if (!Array.prototype.first) {
-  Array.prototype.first = function <T>(this: T[]): T {
-    return this.get(0)
-  }
 }
