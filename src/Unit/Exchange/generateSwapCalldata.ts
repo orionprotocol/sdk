@@ -2,7 +2,7 @@ import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ether
 import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { BigNumber, ethers } from 'ethers';
 import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
-import { safeGet, type SafeArray } from '../../utils/safeGetters.js';
+import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
@@ -46,7 +46,6 @@ export default async function generateSwapCalldata({
     throw new Error(`Empty path`);
   }
   const factory = path.first().factory
-
   if (!path.every(e => e.factory === factory)) {
     throw new Error(`Supporting only swaps with single factory`);
   }
@@ -60,7 +59,7 @@ export default async function generateSwapCalldata({
     minReturnAmount: minReturnAmount,
     flags: 0
   }
-  
+
   let calldata: string
   switch (factory) {
     case "OrionV2": {

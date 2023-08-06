@@ -1,14 +1,18 @@
 export class SafeArray<T> extends Array<T> {
   
-  public static override from<T>(array: T[]): SafeArray<T> {
+  public static override from<T>(array: ArrayLike<T>): SafeArray<T> {
     return new SafeArray(array);
   }
 
-  constructor(array: T[]) {
+  constructor(array: ArrayLike<T>) {
     super(array.length);
-    array.forEach((element, index) => {
-      this[index] = element;
-    })
+    for (const index in array) {
+      const value = array[index]
+      if (value === undefined) {
+        throw new Error("Array passed to constructor has undefined values")
+      }
+      this[index] = value
+    }
   }
 
   public toArray(): T[] {
@@ -26,7 +30,7 @@ export class SafeArray<T> extends Array<T> {
   public get<T>(this: SafeArray<T>, index: number): T {
     const value = this.at(index);
     if (value === undefined) {
-      throw new Error(`Element at index ${index} is undefined. Array: ${this}`)
+      throw new Error(`Element at index ${index} is undefined.`)
     }
     return value
   }
