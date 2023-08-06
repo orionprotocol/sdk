@@ -1,36 +1,12 @@
-import type { BigNumber } from 'bignumber.js';
-import type { ethers } from 'ethers';
 import { merge } from 'merge-anything';
 import { chains, envs } from '../config/index.js';
 import type { networkCodes } from '../constants/index.js';
 import Unit from '../Unit/index.js';
 import { ReferralSystem } from '../services/ReferralSystem/index.js';
-import type { SupportedChainId, DeepPartial, VerboseUnitConfig, KnownEnv } from '../types.js';
+import type { SupportedChainId, DeepPartial, VerboseUnitConfig, KnownEnv, EnvConfig, AggregatedAssets } from '../types.js';
 import { isValidChainId } from '../utils/index.js';
-import swap from './bridge/swap.js';
-import getHistory from './bridge/getHistory.js';
 import { simpleFetch } from 'simple-typed-fetch';
-
-type EnvConfig = {
-  analyticsAPI: string
-  referralAPI: string
-  networks: Partial<
-    Record<
-      SupportedChainId,
-      VerboseUnitConfig
-    >
-  >
-}
-type AggregatedAssets = Partial<
-  Record<
-    string,
-    Partial<
-      Record<SupportedChainId, {
-        address: string
-      }>
-    >
-  >
-  >;
+import Bridge from './bridge/index.js';
 
 export default class Orion {
   public readonly env?: string;
@@ -38,6 +14,8 @@ export default class Orion {
   public readonly units: Partial<Record<SupportedChainId, Unit>>;
 
   public readonly referralSystem: ReferralSystem;
+
+  public readonly bridge: Bridge;
 
   // TODO: get tradable assets (aggregated)
 
@@ -117,6 +95,11 @@ export default class Orion {
           [chainId]: unit,
         }
       }, {});
+
+    this.bridge = new Bridge(
+      this.unitsArray,
+      this.env,
+    );
   }
 
   get unitsArray() {
@@ -210,29 +193,5 @@ export default class Orion {
     }));
 
     return result;
-  }
-
-  bridge = {
-    getHistory: (address: string, limit = 1000) => getHistory(this.unitsArray, address, limit),
-    swap: (
-      assetName: string,
-      amount: BigNumber.Value,
-      sourceChain: SupportedChainId,
-      targetChain: SupportedChainId,
-      signer: ethers.Signer,
-      options: {
-        autoApprove?: boolean
-        logger?: (message: string) => void
-        withdrawToWallet?: boolean
-      }
-    ) => swap({
-      amount,
-      assetName,
-      sourceChain,
-      targetChain,
-      signer,
-      orion: this,
-      options,
-    })
   }
 }

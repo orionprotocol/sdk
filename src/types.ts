@@ -250,3 +250,102 @@ export type VerboseUnitConfig = {
 export type KnownEnv = typeof knownEnvs[number];
 
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+
+export type EnvConfig = {
+  analyticsAPI: string
+  referralAPI: string
+  networks: Partial<
+    Record<
+      SupportedChainId,
+      VerboseUnitConfig
+    >
+  >
+}
+export type AggregatedAssets = Partial<
+  Record<
+    string,
+    Partial<
+      Record<SupportedChainId, {
+        address: string
+      }>
+    >
+  >
+  >;
+
+export type RedeemOrder = {
+  sender: string
+  receiver: string
+  asset: string
+  amount: number
+  expiration: number
+  secretHash: string
+  signature: string
+  claimReceiver: string
+}
+
+export enum AtomicSwapStatus {
+  ROUTING_REQUESTED = 'ROUTING_REQUESTED',
+  ROUTING_PENDING = 'ROUTING_PENDING',
+  ROUTING = 'ROUTING',
+  ROUTING_FAILED = 'ROUTING_FAILED',
+
+  // ACCEPTED = 'ACCEPTED',
+  FAILED = 'FAILED',
+  REJECTED = 'REJECTED',
+
+  CHECK_REDEEM_THROUGH_OB_AVAILABLE = 'CHECK_REDEEM_THROUGH_OB_AVAILABLE',
+  // Redeem
+  // Blockchain redeem
+  READY_TO_REDEEM = 'READY_TO_REDEEM',
+  REDEEM_REQUESTED = 'REDEEM_REQUESTED',
+  REDEEM_PENDING = 'REDEEM_PENDING',
+  REDEEM_FAILED = 'REDEEM_FAILED',
+
+  // Orion blockchain redeem
+  READY_TO_REDEEM_THROUGH_OB = 'READY_TO_REDEEM_THROUGH_OB',
+  REDEEM_PENDING_THROUGH_OB = 'REDEEM_PENDING_THROUGH_OB',
+  REDEEM_FAILED_THROUGH_OB = 'REDEEM_FAILED_THROUGH_OB',
+
+  SETTLED = 'SETTLED',
+
+  // Refund
+  REFUND_REQUESTED = 'REFUND_REQUESTED',
+  REFUND_PENDING = 'REFUND_PENDING',
+  REFUNDED = 'REFUNDED',
+  REFUND_FAILED = 'REFUND_FAILED',
+}
+
+export type AtomicSwap = {
+  secret: string
+  secretHash: string
+  status: AtomicSwapStatus
+
+  walletAddress: string
+  env?: string | undefined
+
+  sourceNetwork?: SupportedChainId
+  targetNetwork?: SupportedChainId
+
+  amount?: string
+  asset?: string
+
+  creationDate?: number
+  expiration?: number
+
+  lockTransactionHash?: string
+  redeemTransactionHash?: string
+  refundTransactionHash?: string
+  liquidityMigrationTxHash?: string
+
+  redeemOrder?: RedeemOrder
+}
+
+export type ExternalStorage = {
+  bridge: {
+    getAtomicSwaps: () => AtomicSwap[]
+    setAtomicSwaps: (atomics: AtomicSwap[]) => void
+    addAtomicSwap: (atomic: AtomicSwap) => void
+    updateAtomicSwap: (secretHash: string, atomic: Partial<AtomicSwap>) => void
+    removeAtomicSwaps: (secretHashes: string[]) => void
+  }
+}
