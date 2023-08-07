@@ -2,7 +2,7 @@ import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ether
 import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { BigNumber, ethers } from 'ethers';
 import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
-import { safeGet, SafeArray } from '../../utils/safeGetters.js';
+import must, { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
@@ -29,6 +29,8 @@ export type GenerateSwapCalldataParams = {
   minReturnAmount: string,
   receiverAddress: string,
   path: ArrayLike<SwapInfo>,
+  exchangeContractAddress?: string,
+  swapExecutorContractAddress?: string,
   unit: Unit
 }
 
@@ -37,12 +39,21 @@ export default async function generateSwapCalldata({
   minReturnAmount,
   receiverAddress,
   path: path_,
+  exchangeContractAddress,
+  swapExecutorContractAddress,
   unit
 }: GenerateSwapCalldataParams
 ): Promise<{ calldata: string, swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct }> {
   const wethAddress = safeGet(unit.contracts, "WETH")
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
-  const { exchangeContractAddress, swapExecutorContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
+  if (swapExecutorContractAddress === undefined || swapExecutorContractAddress === undefined) {
+    const info = await simpleFetch(unit.blockchainService.getInfo)();
+    if (swapExecutorContractAddress === undefined) swapExecutorContractAddress = info.swapExecutorContractAddress
+    if (exchangeContractAddress === undefined) exchangeContractAddress = info.exchangeContractAddress
+  }
+  must(swapExecutorContractAddress !== undefined)
+  must(exchangeContractAddress !== undefined)
+
   const path = SafeArray.from(path_)
 
   if (path == undefined || path.length == 0) {
