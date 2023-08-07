@@ -6,6 +6,8 @@ import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 
+const EXECUTOR_SWAP_FUNCTION = "func_70LYiww"
+
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
 export type SwapInfo = {
@@ -26,7 +28,7 @@ export type GenerateSwapCalldataParams = {
   amount: string,
   minReturnAmount: string,
   receiverAddress: string,
-  path: SafeArray<SwapInfo>,
+  path: ArrayLike<SwapInfo>,
   unit: Unit
 }
 
@@ -34,13 +36,14 @@ export default async function generateSwapCalldata({
   amount,
   minReturnAmount,
   receiverAddress,
-  path,
+  path: path_,
   unit
 }: GenerateSwapCalldataParams
 ): Promise<{ calldata: string, swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct }> {
   const wethAddress = safeGet(unit.contracts, "WETH")
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
   const { exchangeContractAddress, swapExecutorContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
+  const path = SafeArray.from(path_)
 
   if (path == undefined || path.length == 0) {
     throw new Error(`Empty path`);
@@ -245,28 +248,29 @@ async function generateCurveStableSwapCalls(
   return generateCalls(calls)
 }
 
+// Adds additional byte to single swap with settings
 function addCallParams(
   calldata: BytesLike,
   callParams?: CallParams
 ) {
   let firstByte = 0
   if (callParams) {
-    if (callParams.value !== undefined) {
-      firstByte += 16
+    if (callParams.value !== undefined) { 
+      firstByte += 16 // 00000010
       const encodedValue = ethers.utils.solidityPack(["uint128"], [callParams.value])
       calldata = ethers.utils.hexlify(ethers.utils.concat([encodedValue, calldata]))
     }
     if (callParams.target !== undefined) {
-      firstByte += 32
+      firstByte += 32 // 00000100
       const encodedAddress = ethers.utils.solidityPack(["address"], [callParams.target])
       calldata = ethers.utils.hexlify(ethers.utils.concat([encodedAddress, calldata]))
     }
     if (callParams.gaslimit !== undefined) {
-      firstByte += 64
+      firstByte += 64 // 00000100
       const encodedGaslimit = ethers.utils.solidityPack(["uint32"], [callParams.gaslimit])
       calldata = ethers.utils.hexlify(ethers.utils.concat([encodedGaslimit, calldata]))
     }
-    if (callParams.isMandatory !== undefined) firstByte += 128
+    if (callParams.isMandatory !== undefined) firstByte += 128 // 00001000
   }
 
   const encodedFirstByte = ethers.utils.solidityPack(["uint8"], [firstByte])
@@ -277,5 +281,5 @@ function addCallParams(
 
 async function generateCalls(calls: BytesLike[]) {
   const executorInterface = SwapExecutor__factory.createInterface()
-  return "0x" + executorInterface.encodeFunctionData("func_70LYiww", [ethers.constants.AddressZero, calls]).slice(74)
+  return "0x" + executorInterface.encodeFunctionData(EXECUTOR_SWAP_FUNCTION, [ethers.constants.AddressZero, calls]).slice(74)
 }
