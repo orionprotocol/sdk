@@ -98,7 +98,6 @@ export default class Orion {
 
     this.bridge = new Bridge(
       this.unitsArray,
-      this.env,
     );
   }
 

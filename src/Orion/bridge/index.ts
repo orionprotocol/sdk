@@ -11,7 +11,6 @@ import { BigNumber } from 'bignumber.js';
 export default class Bridge {
   constructor(
     private readonly unitsArray: Unit[],
-    private readonly env?: string,
   ) {}
 
   async getMergedHistory(
