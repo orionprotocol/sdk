@@ -283,42 +283,9 @@ export type RedeemOrder = {
   claimReceiver: string
 }
 
-export enum AtomicSwapStatus {
-  ROUTING_REQUESTED = 'ROUTING_REQUESTED',
-  ROUTING_PENDING = 'ROUTING_PENDING',
-  ROUTING = 'ROUTING',
-  ROUTING_FAILED = 'ROUTING_FAILED',
-
-  // ACCEPTED = 'ACCEPTED',
-  FAILED = 'FAILED',
-  REJECTED = 'REJECTED',
-
-  CHECK_REDEEM_THROUGH_OB_AVAILABLE = 'CHECK_REDEEM_THROUGH_OB_AVAILABLE',
-  // Redeem
-  // Blockchain redeem
-  READY_TO_REDEEM = 'READY_TO_REDEEM',
-  REDEEM_REQUESTED = 'REDEEM_REQUESTED',
-  REDEEM_PENDING = 'REDEEM_PENDING',
-  REDEEM_FAILED = 'REDEEM_FAILED',
-
-  // Orion blockchain redeem
-  READY_TO_REDEEM_THROUGH_OB = 'READY_TO_REDEEM_THROUGH_OB',
-  REDEEM_PENDING_THROUGH_OB = 'REDEEM_PENDING_THROUGH_OB',
-  REDEEM_FAILED_THROUGH_OB = 'REDEEM_FAILED_THROUGH_OB',
-
-  SETTLED = 'SETTLED',
-
-  // Refund
-  REFUND_REQUESTED = 'REFUND_REQUESTED',
-  REFUND_PENDING = 'REFUND_PENDING',
-  REFUNDED = 'REFUNDED',
-  REFUND_FAILED = 'REFUND_FAILED',
-}
-
 export type AtomicSwap = {
   secret: string
   secretHash: string
-  status: AtomicSwapStatus
 
   walletAddress: string
   env?: string | undefined

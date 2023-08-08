@@ -7,10 +7,10 @@ export default function convertPrice(
   prices: Partial<Record<string, string>> // quoted in quoteAsset. [name]: priceQuotedInQuoteAsset
 ) {
   const assetInPrice = prices[assetInName];
-  if (assetInPrice === undefined) throw Error(`Price conversion: AssetIn (${assetInName}) price is undefined`);
+  if (assetInPrice === undefined) throw Error(`Price conversion: AssetIn (${assetInName}) price is undefined. Available prices: ${JSON.stringify(prices)}`);
 
   const assetOutPrice = prices[assetOutName];
-  if (assetOutPrice === undefined) throw Error(`Price conversion: AssetOut (${assetOutName}) price is undefined`);
+  if (assetOutPrice === undefined) throw Error(`Price conversion: AssetOut (${assetOutName}) price is undefined. Available prices: ${JSON.stringify(prices)}`);
 
   const assetInPriceBN = new BigNumber(assetInPrice);
   const assetOutPriceBN = new BigNumber(assetOutPrice);
