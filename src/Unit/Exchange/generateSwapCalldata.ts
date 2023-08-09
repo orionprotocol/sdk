@@ -2,19 +2,38 @@ import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ether
 import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
 import { BigNumber, ethers } from 'ethers';
 import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
-import must, { safeGet, SafeArray } from '../../utils/safeGetters.js';
+import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
+import type { Exchange } from '../../types.js';
 
 const EXECUTOR_SWAP_FUNCTION = "func_70LYiww"
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
+const exchangeToType: Partial<Record<Exchange, Factory>> = {
+  'SPOOKYSWAP': 'UniswapV2',
+  'PANCAKESWAP': 'UniswapV2',
+  'UNISWAP': 'UniswapV2',
+  'QUICKSWAP': 'UniswapV2',
+  'ORION_POOL': 'UniswapV2',
+  'CHERRYSWAP': 'UniswapV2',
+  'OKXSWAP': 'UniswapV2',
+  'INTERNAL_POOL_V2': 'UniswapV2',
+  'INTERNAL_POOL_V3': "OrionV3",
+  'INTERNAL_POOL_V3_0_01': "OrionV3",
+  'INTERNAL_POOL_V3_0_05': "OrionV3",
+  'INTERNAL_POOL_V3_0_3': "OrionV3",
+  'INTERNAL_POOL_V3_1_0': "OrionV3",
+  'CURVE': "Curve",
+  'CURVE_FACTORY': "Curve",
+}
+
 export type SwapInfo = {
   pool: string,
   assetIn: string,
   assetOut: string,
-  factory: Factory
+  factory: Exchange
 }
 
 export type CallParams = {
@@ -29,8 +48,6 @@ export type GenerateSwapCalldataParams = {
   minReturnAmount: string,
   receiverAddress: string,
   path: ArrayLike<SwapInfo>,
-  exchangeContractAddress?: string,
-  swapExecutorContractAddress?: string,
   unit: Unit
 }
 
@@ -39,28 +56,25 @@ export default async function generateSwapCalldata({
   minReturnAmount,
   receiverAddress,
   path: path_,
-  exchangeContractAddress,
-  swapExecutorContractAddress,
   unit
 }: GenerateSwapCalldataParams
 ): Promise<{ calldata: string, swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct }> {
-  const wethAddress = safeGet(unit.contracts, "WETH")
-  const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
-  if (swapExecutorContractAddress === undefined || swapExecutorContractAddress === undefined) {
-    const info = await simpleFetch(unit.blockchainService.getInfo)();
-    if (swapExecutorContractAddress === undefined) swapExecutorContractAddress = info.swapExecutorContractAddress
-    if (exchangeContractAddress === undefined) exchangeContractAddress = info.exchangeContractAddress
-  }
-  must(swapExecutorContractAddress !== undefined)
-  must(exchangeContractAddress !== undefined)
-
-  const path = SafeArray.from(path_)
-
-  if (path == undefined || path.length == 0) {
+  if (path_ == undefined || path_.length == 0) {
     throw new Error(`Empty path`);
   }
+  const wethAddress = safeGet(unit.contracts, "WETH")
+  const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
+  const {assetToAddress, swapExecutorContractAddress, exchangeContractAddress} = await simpleFetch(unit.blockchainService.getInfo)();
+
+  const path = SafeArray.from(path_).map((swapInfo) => {
+    const swapInfoWithAddresses: SwapInfo = swapInfo
+    swapInfoWithAddresses.assetIn = safeGet(assetToAddress, swapInfo.assetIn);
+    swapInfoWithAddresses.assetOut = safeGet(assetToAddress, swapInfo.assetOut);
+    return swapInfoWithAddresses;
+  });
+
   const factory = path.first().factory
-  if (!path.every(e => e.factory === factory)) {
+  if (!path.every(swapInfo => swapInfo.factory === factory)) {
     throw new Error(`Supporting only swaps with single factory`);
   }
 
@@ -75,7 +89,7 @@ export default async function generateSwapCalldata({
   }
 
   let calldata: string
-  switch (factory) {
+  switch (exchangeToType[factory]) {
     case "OrionV2": {
       swapDescription.srcReceiver = path.first().pool
       calldata = await generateUni2Calls(exchangeContractAddress, path);

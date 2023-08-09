@@ -52,7 +52,7 @@ export function safeGet<V>(obj: Partial<Record<string, V>>, key: string, errorMe
 
 const prefix = 'Requirement not met';
 
-export default function must(condition: unknown, message?: string | (() => string)): asserts condition {
+export function must(condition: unknown, message?: string | (() => string)): asserts condition {
     if (condition) return;
     const provided = typeof message === 'function' ? message() : message;
     const value = provided ? `${prefix}: ${provided}` : prefix;
