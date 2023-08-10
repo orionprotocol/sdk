@@ -1,5 +1,5 @@
 import { fetchWithValidation } from 'simple-typed-fetch';
-import type { BasicAuthCredentials, Exchange } from '../../types.js';
+import type { BasicAuthCredentials } from '../../types.js';
 import { allTickersSchema, statisticsOverviewSchema, topPairsStatisticsSchema } from './schemas/index.js';
 import candlesSchema from './schemas/candlesSchema.js';
 import { PriceFeedWS } from './ws/index.js';
@@ -56,7 +56,7 @@ class PriceFeed {
     );
   };
 
-  getStatisticsOverview = (exchange: Exchange | 'ALL' = 'ALL') => {
+  getStatisticsOverview = (exchange: string | 'ALL' = 'ALL') => {
     const url = new URL(`${this.statisticsUrl}/overview`);
     url.searchParams.append('exchange', exchange);
 
@@ -67,7 +67,7 @@ class PriceFeed {
     );
   }
 
-  getTopPairStatistics = (exchange: Exchange | 'ALL' = 'ALL') => {
+  getTopPairStatistics = (exchange: string | 'ALL' = 'ALL') => {
     const url = new URL(`${this.statisticsUrl}/top-pairs`);
     url.searchParams.append('exchange', exchange);
 

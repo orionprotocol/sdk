@@ -86,7 +86,7 @@ const subOrderSchema = baseOrderSchema.extend({
   parentOrderId: z.string().refine(ethers.utils.isHexString, (value) => ({
     message: `subOrder.parentOrderId must be a hex string, got ${value}`,
   })),
-  exchange: z.enum(exchanges),
+  exchange: z.string(),
   brokerAddress: brokerAddressSchema,
   tradesInfo: z.record(
     z.string().uuid(),

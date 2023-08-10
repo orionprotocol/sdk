@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import type { BigNumber } from 'bignumber.js';
-import type exchanges from './constants/exchanges.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas/index.js';
@@ -143,12 +142,12 @@ export type BalanceIssue = {
   readonly fixes?: Fix[]
 }
 
-export type Exchange = typeof exchanges[number];
+// export type Exchange = typeof exchanges[number];
 
 export type OrderbookItem = {
   price: string
   amount: string
-  exchanges: Exchange[]
+  exchanges: string[]
   vob: Array<{
     side: 'BUY' | 'SELL'
     pairName: string
@@ -156,7 +155,7 @@ export type OrderbookItem = {
 }
 
 export type SwapInfoAlternative = {
-  exchanges: Exchange[]
+  exchanges: string[]
   path: string[]
   marketAmountOut?: number | undefined
   marketAmountIn?: number | undefined
@@ -175,7 +174,7 @@ export type SwapInfoBase = {
   minAmountOut: number
 
   path: string[]
-  exchanges?: Exchange[] | undefined
+  exchanges?: string[] | undefined
   poolOptimal: boolean
 
   price?: number | undefined
@@ -251,3 +250,69 @@ export type VerboseUnitConfig = {
 export type KnownEnv = typeof knownEnvs[number];
 
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+
+export type EnvConfig = {
+  analyticsAPI: string
+  referralAPI: string
+  networks: Partial<
+    Record<
+      SupportedChainId,
+      VerboseUnitConfig
+    >
+  >
+}
+export type AggregatedAssets = Partial<
+  Record<
+    string,
+    Partial<
+      Record<SupportedChainId, {
+        address: string
+      }>
+    >
+  >
+  >;
+
+export type RedeemOrder = {
+  sender: string
+  receiver: string
+  asset: string
+  amount: number
+  expiration: number
+  secretHash: string
+  signature: string
+  claimReceiver: string
+}
+
+export type AtomicSwap = {
+  secret: string
+  secretHash: string
+
+  walletAddress: string
+  env?: string | undefined
+
+  sourceNetwork?: SupportedChainId
+  targetNetwork?: SupportedChainId
+
+  amount?: string
+  asset?: string
+
+  creationDate?: number
+  expiration?: number
+
+  lockTransactionHash?: string
+  redeemTransactionHash?: string
+  refundTransactionHash?: string
+  liquidityMigrationTxHash?: string
+
+  redeemOrder?: RedeemOrder
+}
+
+export type ExternalStorage = {
+  bridge: {
+    getAtomicSwaps: () => AtomicSwap[]
+    setAtomicSwaps: (atomics: AtomicSwap[]) => void
+    addAtomicSwap: (atomic: AtomicSwap) => void
+    updateAtomicSwap: (secretHash: string, atomic: Partial<AtomicSwap>) => void
+    removeAtomicSwaps: (secretHashes: string[]) => void
+  }
+}

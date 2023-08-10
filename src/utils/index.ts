@@ -16,6 +16,7 @@ export { default as getNativeCryptocurrencyName } from './getNativeCryptocurrenc
 export { default as laconicParse } from './laconic-parse.js';
 export { default as isValidChainId } from './isValidChainId.js';
 export { default as isKnownEnv } from './isKnownEnv.js';
+export { default as removeFieldsFromObject } from './removeFieldsFromObject.js';
 // export { default as HttpError } from './httpError';
 
 export * from './typeHelpers.js';

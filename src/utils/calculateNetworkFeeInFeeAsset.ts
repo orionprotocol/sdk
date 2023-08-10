@@ -1,22 +1,22 @@
-import { BigNumber } from 'bignumber.js';
+import type { BigNumber } from 'bignumber.js';
 import calculateNetworkFee from './calculateNetworkFee.js';
+import convertPrice from './convertPrice.js';
 
 const calculateNetworkFeeInFeeAsset = (
   gasPriceGwei: BigNumber.Value,
   gasLimit: BigNumber.Value,
-  baseCurrencyPriceInServiceToken: BigNumber.Value,
-  feeAssetPriceInServiceToken: BigNumber.Value,
+  baseCurrencyName: string,
+  feeAssetName: string,
+  prices: Partial<Record<string, string>>
 ) => {
   const networkFee = calculateNetworkFee(gasPriceGwei, gasLimit);
 
-  const networkFeeInServiceToken = new BigNumber(networkFee).multipliedBy(baseCurrencyPriceInServiceToken);
-  const networkFeeInFeeAsset = networkFeeInServiceToken
-    .multipliedBy(
-      new BigNumber(1)
-        .div(feeAssetPriceInServiceToken),
-    );
-
-  return networkFeeInFeeAsset.toString();
+  return convertPrice(
+    networkFee,
+    baseCurrencyName, // from
+    feeAssetName, // to
+    prices
+  );
 };
 
 export default calculateNetworkFeeInFeeAsset;

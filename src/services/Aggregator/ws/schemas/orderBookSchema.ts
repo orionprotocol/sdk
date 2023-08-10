@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import exchanges from '../../../../constants/exchanges.js';
 import MessageType from '../MessageType.js';
 import baseMessageSchema from './baseMessageSchema.js';
 
@@ -7,7 +6,7 @@ export const orderBookItemSchema = z.tuple([
   z.string(), // price
   z.string(), // size
   z.array(
-    z.enum(exchanges),
+    z.string(),
   ), // exchanges
   z.array(z.tuple([
     z.enum(['SELL', 'BUY']), // side

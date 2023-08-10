@@ -1,16 +1,21 @@
 import { BigNumber } from 'bignumber.js';
+import convertPrice from './convertPrice.js';
 
 export default function calculateServiceFeeInFeeAsset(
   amount: BigNumber.Value,
-  feeAssetPriceInServiceToken: BigNumber.Value,
-  baseAssetPriceInServiceToken: BigNumber.Value,
+  baseAssetName: string,
+  feeAssetName: string,
   feePercent: BigNumber.Value,
+  prices: Partial<Record<string, string>>
 ) {
-  const result = new BigNumber(amount)
-    .multipliedBy(new BigNumber(feePercent).div(100))
-    .multipliedBy(baseAssetPriceInServiceToken)
-    .multipliedBy(new BigNumber(1).div(feeAssetPriceInServiceToken))
-    .toString();
+  const feeAmount = new BigNumber(amount).multipliedBy(new BigNumber(feePercent).div(100));
 
-  return result;
+  const feeAssetAmount = convertPrice(
+    feeAmount,
+    baseAssetName,
+    feeAssetName,
+    prices
+  );
+
+  return feeAssetAmount;
 }
