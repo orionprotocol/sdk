@@ -1,9 +1,4 @@
-import type exchanges from './exchanges.js';
-
-const mapping: Record<
-    typeof exchanges[number],
-    string
-> = {
+const mapping: Record<string, string> = {
   // CEXes
   ASCENDEX: 'AscendEx',
   OKX: 'OKX',
@@ -28,6 +23,6 @@ const mapping: Record<
   OKXSWAP: 'OKXSwap',
   CURVE: 'Curve',
   CURVE_FACTORY: 'Curve Factory',
-} as const;
+};
 
 export default mapping;

@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, Exchange, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
@@ -18,7 +18,6 @@ import toUpperCase from '../../utils/toUpperCase.js';
 import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
-import { exchanges } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 
 class Aggregator {
@@ -119,12 +118,12 @@ class Aggregator {
 
   getAvailableExchanges = () => fetchWithValidation(
     `${this.apiUrl}/api/v1/exchange/list`,
-    z.enum(exchanges).array(),
+    z.string().array(),
   );
 
   getExchangeOrderbook = (
     pair: string,
-    exchange: Exchange,
+    exchange: string,
     depth = 20,
     filterByBrokerBalances: boolean | null = null,
   ) => {
@@ -156,7 +155,7 @@ class Aggregator {
 
   getPoolReserves = (
     pair: string,
-    exchange: Exchange,
+    exchange: string,
   ) => {
     const url = new URL(`${this.apiUrl}/api/v1/pools/reserves/${exchange}/${pair}`);
     return fetchWithValidation(
@@ -255,7 +254,7 @@ class Aggregator {
     assetOut: string,
     amount: string,
     instantSettlement?: boolean,
-    exchanges?: Exchange[] | 'cex' | 'pools',
+    exchanges?: string[] | 'cex' | 'pools',
   ) => {
     const url = new URL(`${this.apiUrl}/api/v1/swap`);
     url.searchParams.append('assetIn', assetIn);

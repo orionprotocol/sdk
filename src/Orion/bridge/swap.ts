@@ -14,10 +14,10 @@ import {
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from '../../utils/index.js';
 import type { SupportedChainId } from '../../types.js';
-import type Orion from '../index.js';
 import type { z } from 'zod';
 import type { placeAtomicSwapSchema } from '../../services/Aggregator/schemas/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
+import type { Unit } from '../../index.js';
 
 type Params = {
   assetName: string
@@ -25,7 +25,7 @@ type Params = {
   sourceChain: SupportedChainId
   targetChain: SupportedChainId
   signer: ethers.Signer
-  orion: Orion
+  unitsArray: Unit[]
   options?: {
     withdrawToWallet?: boolean // By default, the transfer amount remains in the exchange contract
     autoApprove?: boolean
@@ -40,7 +40,7 @@ export default async function swap({
   targetChain,
   signer,
   options,
-  orion
+  unitsArray,
 }: Params) {
   const startProcessingTime = Date.now();
   if (amount === '') throw new Error('Amount can not be empty');
@@ -50,8 +50,11 @@ export default async function swap({
   if (amountBN.isNaN()) throw new Error(`Amount '${amountBN.toString()}' is not a number`);
   if (amountBN.lte(0)) throw new Error(`Amount '${amountBN.toString()}' should be greater than 0`);
 
-  const sourceChainUnit = orion.getUnit(sourceChain);
-  const targetChainUnit = orion.getUnit(targetChain);
+  const sourceChainUnit = unitsArray.find(({ chainId }) => chainId === sourceChain);
+  const targetChainUnit = unitsArray.find(({ chainId }) => chainId === targetChain);
+
+  if (sourceChainUnit === undefined) throw new Error(`Source chain '${sourceChain}' not found`);
+  if (targetChainUnit === undefined) throw new Error(`Target chain '${targetChain}' not found`);
 
   const {
     blockchainService: sourceBlockchainService,
