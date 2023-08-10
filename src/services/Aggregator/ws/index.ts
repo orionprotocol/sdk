@@ -500,6 +500,12 @@ class AggregatorWS {
             minAmountIn: json.ma,
             path: json.ps,
             exchanges: json.e,
+            exchangeContractPath: json.eps.map((path) => ({
+              poolAddress: path.p,
+              assetIn: path.ai,
+              assetOut: path.ao,
+              factory: path.f,
+            })),
             poolOptimal: json.po,
             ...(json.oi) && {
               orderInfo: {
