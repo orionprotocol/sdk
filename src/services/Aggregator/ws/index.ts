@@ -501,7 +501,7 @@ class AggregatorWS {
             path: json.ps,
             exchanges: json.e,
             exchangeContractPath: json.eps.map((path) => ({
-              poolAddress: path.p,
+              pool: path.p,
               assetIn: path.ai,
               assetOut: path.ao,
               factory: path.f,

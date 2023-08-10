@@ -165,7 +165,7 @@ export type SwapInfoAlternative = {
 }
 
 type ExchangeContractPath = {
-  poolAddress: string
+  pool: string
   assetIn: string
   assetOut: string
   factory: string
