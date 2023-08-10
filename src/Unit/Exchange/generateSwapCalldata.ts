@@ -5,13 +5,12 @@ import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
 import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
-import type { Exchange } from '../../types.js';
 
 const EXECUTOR_SWAP_FUNCTION = "func_70LYiww"
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
-const exchangeToType: Partial<Record<Exchange, Factory>> = {
+const exchangeToType: Partial<Record<string, Factory>> = {
   'SPOOKYSWAP': 'UniswapV2',
   'PANCAKESWAP': 'UniswapV2',
   'UNISWAP': 'UniswapV2',
@@ -33,7 +32,7 @@ export type SwapInfo = {
   pool: string,
   assetIn: string,
   assetOut: string,
-  factory: Exchange
+  factory: string
 }
 
 export type CallParams = {
