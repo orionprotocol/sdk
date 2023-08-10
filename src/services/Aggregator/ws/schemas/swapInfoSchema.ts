@@ -35,10 +35,10 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
   as: alternativeSchema.array(),
   anm: z.record(z.string()).optional(), // address to ERC20 names
   eps: z.array(z.object({
-    p: z.string(),
-    ai: z.string().toUpperCase(),
-    ao: z.string().toUpperCase(),
-    f: z.string().toUpperCase(),
+    p: z.string(), // pool address
+    ai: z.string().toUpperCase(), // asset in
+    ao: z.string().toUpperCase(), // asset out
+    f: z.string().toUpperCase(), // factory
   }))
 });
 
