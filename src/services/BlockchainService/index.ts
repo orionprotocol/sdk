@@ -51,7 +51,7 @@ type AtomicSwapHistoryBaseQuery = {
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
   type?: 'source'
   expiredLock?: 0 | 1
-  state?: 'LOCKED' | 'CLAIMED' | 'REFUNDED'
+  state?: 'BEFORE-LOCK' | 'LOCKED' | 'CLAIMED' | 'REFUNDED'
 
 }
 type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
