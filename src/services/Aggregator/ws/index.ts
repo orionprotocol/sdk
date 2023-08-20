@@ -292,6 +292,9 @@ class AggregatorWS {
         const prevSub = this.subscriptions[type]?.[prevSubscriptionId];
         if (prevSub) {
           this.subIdReplacements[prevSubscriptionId] = id; // Save mapping for future use (unsubscribe)
+          if (this.subscriptions[type]?.[prevSubscriptionId]) {
+            delete this.subscriptions[type]?.[prevSubscriptionId];
+          }
           this.subscriptions[type] = {
             ...this.subscriptions[type],
             [subKey]: {
