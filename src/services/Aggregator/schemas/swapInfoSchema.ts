@@ -22,14 +22,15 @@ const swapInfoBase = z.object({
   minAmountOut: z.number(),
   minAmountIn: z.number(),
   marketPrice: z.number().nullable(), // spending asset market price
+  exchangeContractPaths: z.array(z.object({
+    pool: z.string(),
+    assetIn: z.string(),
+    assetOut: z.string(),
+    factory: z.string(),
+  })),
   alternatives: z.object({ // execution alternatives
     exchanges: z.array(z.string()),
-    path: z.object({
-      units: z.object({
-        assetPair: z.string().toUpperCase(),
-        action: z.string(),
-      }).array(),
-    }),
+    path: z.string().array(),
     marketAmountOut: z.number().nullable(),
     marketAmountIn: z.number().nullable(),
     marketPrice: z.number(),
