@@ -64,14 +64,11 @@ export default async function generateSwapCalldata({
   const wethAddress = safeGet(unit.contracts, "WETH")
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
   const {assetToAddress, swapExecutorContractAddress, exchangeContractAddress} = await simpleFetch(unit.blockchainService.getInfo)();
-
-  const path = SafeArray.from(path_).map((swapInfo) => {
-    const swapInfoWithAddresses: SwapInfo = swapInfo
-    swapInfoWithAddresses.assetIn = safeGet(assetToAddress, swapInfo.assetIn);
-    swapInfoWithAddresses.assetOut = safeGet(assetToAddress, swapInfo.assetOut);
-    return swapInfoWithAddresses;
-  });
-
+  let path = SafeArray.from(path_).map((swapInfo) => {
+    swapInfo.assetIn = safeGet(assetToAddress, swapInfo.assetIn);
+    swapInfo.assetOut = safeGet(assetToAddress, swapInfo.assetOut);
+    return swapInfo; 
+  })
   const factory = path.first().factory
   if (!path.every(swapInfo => swapInfo.factory === factory)) {
     throw new Error(`Supporting only swaps with single factory`);
@@ -86,6 +83,12 @@ export default async function generateSwapCalldata({
     minReturnAmount: minReturnAmount,
     flags: 0
   }
+  path = SafeArray.from(path_).map((swapInfo) => {
+    if (swapInfo.assetIn == ethers.constants.AddressZero) swapInfo.assetIn = wethAddress
+    if (swapInfo.assetOut == ethers.constants.AddressZero) swapInfo.assetOut = wethAddress
+    return swapInfo;
+  });
+  
 
   let calldata: string
   switch (exchangeToType[factory]) {
@@ -100,11 +103,11 @@ export default async function generateSwapCalldata({
       break;
     }
     case "UniswapV3": {
-      calldata = await generateUni3Calls(amount, exchangeContractAddress, wethAddress, path, unit.provider)
+      calldata = await generateUni3Calls(amount, exchangeContractAddress, path, unit.provider)
       break;
     }
     case "OrionV3": {
-      calldata = await generateOrion3Calls(amount, exchangeContractAddress, wethAddress, path, unit.provider)
+      calldata = await generateOrion3Calls(amount, exchangeContractAddress, path, unit.provider)
       break;
     }
     case "Curve": {
@@ -161,7 +164,6 @@ export async function generateUni2Calls(
 async function generateUni3Calls(
   amount: string,
   exchangeContractAddress: string,
-  weth: string,
   path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider
 ) {
@@ -171,9 +173,6 @@ async function generateUni3Calls(
     const token0 = await pool.token0()
     const zeroForOne = token0 === swap.assetIn
     const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
-    if (unwrapWETH) {
-      swap.assetOut = weth
-    }
 
     let encodedPool = ethers.utils.solidityPack(["uint256"], [pool.address])
     encodedPool = ethers.utils.hexDataSlice(encodedPool, 1)
@@ -194,7 +193,6 @@ async function generateUni3Calls(
 async function generateOrion3Calls(
   amount: string,
   exchangeContractAddress: string,
-  weth: string,
   path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider
 ) {
@@ -204,9 +202,6 @@ async function generateOrion3Calls(
     const token0 = await pool.token0()
     const zeroForOne = token0 === swap.assetIn
     const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
-    if (unwrapWETH) {
-      swap.assetOut = weth
-    }
 
     let encodedPool = ethers.utils.solidityPack(["uint256"], [pool.address])
     encodedPool = ethers.utils.hexDataSlice(encodedPool, 1)
