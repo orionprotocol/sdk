@@ -51,7 +51,7 @@ type AtomicSwapHistoryBaseQuery = {
 type AtomicSwapHistorySourceQuery = AtomicSwapHistoryBaseQuery & {
   type?: 'source'
   expiredLock?: 0 | 1
-  state?: 'LOCKED' | 'CLAIMED' | 'REFUNDED'
+  state?: 'BEFORE-LOCK' | 'LOCKED' | 'CLAIMED' | 'REFUNDED'
 
 }
 type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
@@ -84,7 +84,6 @@ class BlockchainService {
     this.getUserEarned = this.getUserEarned.bind(this);
     this.getPoolsV3Info = this.getPoolsV3Info.bind(this);
     this.getHistory = this.getHistory.bind(this);
-    this.getPrices = this.getPrices.bind(this);
     this.getPricesWithQuoteAsset = this.getPricesWithQuoteAsset.bind(this);
     this.getTokensFee = this.getTokensFee.bind(this);
     this.getGasPriceWei = this.getGasPriceWei.bind(this);
@@ -213,12 +212,6 @@ class BlockchainService {
   getHistory = (address: string) => fetchWithValidation(
     `${this.apiUrl}/api/history/${address}`,
     historySchema,
-    { headers: this.basicAuthHeaders }
-  );
-
-  getPrices = () => fetchWithValidation(
-    `${this.apiUrl}/api/prices`,
-    z.record(z.string()).transform(makePartial),
     { headers: this.basicAuthHeaders }
   );
 
