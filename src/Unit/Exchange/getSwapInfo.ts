@@ -18,7 +18,8 @@ export type GetSwapInfoParams = {
   options?: {
     instantSettlement?: boolean
     poolOnly?: boolean
-  }
+  },
+  walletAddress?: string,
 }
 
 export default async function getSwapInfo({
@@ -30,6 +31,7 @@ export default async function getSwapInfo({
   blockchainService,
   aggregator,
   options,
+  walletAddress,
 }: GetSwapInfoParams) {
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
@@ -45,7 +47,7 @@ export default async function getSwapInfo({
   } = await simpleFetch(blockchainService.getInfo)();
   const nativeCryptocurrencyName = getNativeCryptocurrencyName(assetToAddress);
 
-  const feeAssets = await simpleFetch(blockchainService.getTokensFee)();
+  const feeAssets = await simpleFetch(blockchainService.getPlatformFees)({ walletAddress, assetIn, assetOut });
   const allPrices = await simpleFetch(blockchainService.getPricesWithQuoteAsset)();
   const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
 

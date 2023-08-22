@@ -86,6 +86,7 @@ class BlockchainService {
     this.getHistory = this.getHistory.bind(this);
     this.getPricesWithQuoteAsset = this.getPricesWithQuoteAsset.bind(this);
     this.getTokensFee = this.getTokensFee.bind(this);
+    this.getPlatformFees = this.getPlatformFees.bind(this);
     this.getGasPriceWei = this.getGasPriceWei.bind(this);
     this.checkFreeRedeemAvailable = this.checkFreeRedeemAvailable.bind(this);
     this.redeemAtomicSwap = this.redeemAtomicSwap.bind(this);
@@ -221,11 +222,42 @@ class BlockchainService {
     { headers: this.basicAuthHeaders }
   );
 
+  /**
+   * @deprecated In favor of getPlatformFees
+   */
   getTokensFee = () => fetchWithValidation(
     `${this.apiUrl}/api/tokensFee`,
     z.record(z.string()).transform(makePartial),
     { headers: this.basicAuthHeaders }
   );
+
+  getPlatformFees = (
+    { assetIn, assetOut, walletAddress }: {
+      assetIn?: string | undefined,
+      assetOut?: string | undefined,
+      walletAddress?: string | undefined
+    }
+  ) => {
+    const url = new URL(`${this.apiUrl}/api/platform-fees`);
+    
+    if (assetIn) {
+      url.searchParams.append('assetIn', assetIn);
+    }
+
+    if (assetOut) {
+      url.searchParams.append('assetOut', assetOut);
+    }
+
+    if (walletAddress) {
+      url.searchParams.append('walletAddress', walletAddress);
+    }
+
+    return fetchWithValidation(
+      url.toString(),
+      z.record(z.string()).transform(makePartial),
+      { headers: this.basicAuthHeaders }
+    )
+  };
 
   getGasPriceWei = () => fetchWithValidation(
     `${this.apiUrl}/api/gasPrice`,
