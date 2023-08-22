@@ -5,7 +5,7 @@
     "label": "Ethereum Mainnet",
     "shortName": "ETH",
     "code": "eth",
-    "rpc": "https://trade.orionprotocol.io/rpc",
+    "rpc": "https://trade.orionprotocol.io/eth-mainnet/rpc",
     "baseCurrencyName": "ETH"
   },
   "56": {
