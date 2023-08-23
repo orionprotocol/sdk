@@ -283,36 +283,73 @@ export type RedeemOrder = {
   claimReceiver: string
 }
 
-export type AtomicSwap = {
+export interface AtomicSwapLocal {
   secret: string
   secretHash: string
-
   walletAddress: string
   env?: string | undefined
 
-  sourceNetwork?: SupportedChainId
-  targetNetwork?: SupportedChainId
+  sourceChainId?: SupportedChainId | undefined
+  targetChainId?: SupportedChainId | undefined
 
-  amount?: string
-  asset?: string
+  amount?: string | undefined
+  assetName?: string | undefined
 
-  creationDate?: number
-  expiration?: number
+  liquidityMigrationTxHash?: string | undefined
+  lockTransactionHash?: string | undefined
+  refundTransactionHash?: string | undefined
 
-  lockTransactionHash?: string
-  redeemTransactionHash?: string
-  refundTransactionHash?: string
-  liquidityMigrationTxHash?: string
-
-  redeemOrder?: RedeemOrder
+  creationDate?: number | undefined
+  lockExpiration?: number | undefined
+  placingOrderError?: string | undefined
+  redeemSettlement?: {
+    type: 'own_tx'
+  } | {
+    type: 'orion_tx'
+    requestedAt?: number
+    result?: {
+      timestamp: number
+      value: 'success' | 'failed'
+    }
+  } | undefined
 }
 
-export type ExternalStorage = {
-  bridge: {
-    getAtomicSwaps: () => AtomicSwap[]
-    setAtomicSwaps: (atomics: AtomicSwap[]) => void
-    addAtomicSwap: (atomic: AtomicSwap) => void
-    updateAtomicSwap: (secretHash: string, atomic: Partial<AtomicSwap>) => void
-    removeAtomicSwaps: (secretHashes: string[]) => void
+export enum TxStatus {
+  PENDING = 'pending',
+  FAILED = 'failed',
+  SETTLED = 'settled',
+}
+
+export enum TxType {
+  BRIDGE_LOCK = 'BRIDGE_LOCK',
+  BRIDGE_REDEEM = 'BRIDGE_REDEEM',
+  BRIDGE_REFUND = 'BRIDGE_REFUND',
+}
+
+type BridgeRedeemTxPayload = {
+  type: TxType.BRIDGE_REDEEM
+  data: {
+    secretHash: string
   }
+}
+
+type BridgeLockTxPayload = {
+  type: TxType.BRIDGE_LOCK
+  data: {
+    secretHash: string
+  }
+}
+
+type BridgeRefundTxPayload = {
+  type: TxType.BRIDGE_REFUND
+  data: {
+    secretHash: string
+  }
+}
+
+export type TransactionInfo = {
+  id?: string
+  status?: TxStatus
+  hash?: string
+  payload?: BridgeLockTxPayload | BridgeRedeemTxPayload | BridgeRefundTxPayload
 }

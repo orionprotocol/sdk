@@ -130,19 +130,19 @@ const getHistory = async (units: Unit[], address: string, limit = 1000) => {
       asset: string
       sender: string
       secretHash: string
-      receiver: string | undefined
-      secret: string | undefined
+      receiver?: string | undefined
+      secret?: string | undefined
       timestamp: TargetItem['timestamp'] & SourceItem['timestamp']
       expiration: TargetItem['expiration'] & SourceItem['expiration']
       transactions: TargetItem['transactions'] & SourceItem['transactions']
-      lockOrder: AggItem['lockOrder'] | undefined
-      redeemOrder: AggItem['redeemOrder'] | undefined
+      lockOrder?: AggItem['lockOrder'] | undefined
+      redeemOrder?: AggItem['redeemOrder'] | undefined
       amountToReceive: SourceItem['amountToReceive']
       amountToSpend: SourceItem['amountToSpend']
       status: {
         source: SourceItem['state']
-        target: TargetItem['state'] | undefined
-        aggregator: AggItem['status'] | undefined
+        target?: TargetItem['state'] | undefined
+        aggregator?: AggItem['status'] | undefined
       }
     }
 
