@@ -358,14 +358,14 @@ export type TxSwapThroughOrionPoolPayload = {
   }
 };
 
-type TxBridgePayload = {
+export type TxBridgePayload = {
   type: TxType.BRIDGE_LOCK | TxType.BRIDGE_REDEEM | TxType.BRIDGE_REFUND
   data: {
     secretHash: string
   }
 }
 
-type TxLiquidityMigrationPayload = {
+export type TxLiquidityMigrationPayload = {
   type: TxType.LIQUIDITY_MIGRATION
   data: {
     source: SupportedChainId
@@ -387,7 +387,7 @@ type TxLiquidityMigrationPayload = {
   }
 }
 
-type TxRedeemTwoAtomicsPayload = {
+export type TxRedeemTwoAtomicsPayload = {
   type: TxType.REDEEM_TWO_ATOMICS
   data: {
     secretHash1: string
