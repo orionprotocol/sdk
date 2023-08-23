@@ -140,7 +140,7 @@ const getHistory = async (units: Unit[], address: string, limit = 1000) => {
       amountToReceive: SourceItem['amountToReceive']
       amountToSpend: SourceItem['amountToSpend']
       status: {
-        source: SourceItem['state']
+        source?: SourceItem['state'] | undefined
         target?: TargetItem['state'] | undefined
         aggregator?: AggItem['status'] | undefined
       }
