@@ -10,6 +10,7 @@ import { BigNumber } from 'bignumber.js';
 import generateSecret from '../../utils/generateSecret.js';
 import { isPresent } from 'ts-is-present';
 import { invariant } from '../../utils/invariant.js';
+import { simpleFetch } from 'simple-typed-fetch';
 
 export const SECONDS_IN_DAY = 60 * 60 * 24;
 export const EXPIRATION_DAYS = 4;
@@ -21,6 +22,12 @@ export default class Bridge {
     lastUpdate: number
     data: ExternalAtomicsData
   }>> = {};
+
+  readonly ADDRESS_TO_ASSET_CACHE_TIME_MS = 5 * 60 * 1000; // 5 minutes
+  private addressToAsset: {
+    lastUpdate: number
+    data: Partial<Record<string, Partial<Record<SupportedChainId, string>>>>
+  } = { lastUpdate: 0, data: {} };
 
   constructor(
     private readonly unitsArray: Unit[],
@@ -46,11 +53,38 @@ export default class Bridge {
     }
   }
 
+  async getCombinedAddressToAsset() {
+    const { lastUpdate, data } = this.addressToAsset;
+    const cacheIsExpired = lastUpdate + this.EXTERNAL_ATOMICS_DATA_CACHE_TIME_MS < Date.now();
+    if (!cacheIsExpired) return data;
+    const addressToAssetData: Partial<Record<string, Partial<Record<SupportedChainId, string>>>> = {};
+    await Promise.all(this.unitsArray.map(async (unit) => {
+      const { blockchainService, chainId } = unit;
+      const { assetToAddress } = await simpleFetch(blockchainService.getInfo)();
+      Object.entries(assetToAddress).forEach(([asset, address]) => {
+        if (address !== undefined) {
+          const assetRecord = addressToAssetData[address];
+          if (assetRecord !== undefined) {
+            assetRecord[chainId] = asset;
+          } else {
+            addressToAssetData[address] = {
+              [chainId]: asset,
+            };
+          }
+        }
+      });
+    }));
+    this.addressToAsset = {
+      lastUpdate: Date.now(),
+      data: addressToAssetData,
+    }
+    return addressToAssetData;
+  }
+
   async combineLocalAndExternalData(
     walletAddress: string,
     localAtomicSwaps: AtomicSwapLocal[],
     transactions: TransactionInfo[],
-    combinedAddressToAsset: Partial<Record<string, Partial<Record<SupportedChainId, string>>>>,
   ) {
     // Prepare transactions data
     const byTxHashMap = new Map<string, TransactionInfo>();
@@ -78,6 +112,7 @@ export default class Bridge {
 
     // Combine local data and external data
     const bridgeHistory = await this.getHistory(walletAddress);
+    const combinedAddressToAsset = await this.getCombinedAddressToAsset();
     const atomicSwapsMap = new Map<string, AtomicSwap>();
     Object.values(bridgeHistory)
       .filter(isPresent)
