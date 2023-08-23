@@ -1,4 +1,4 @@
-import type { ethers } from 'ethers';
+import { ethers } from 'ethers';
 import {
   type AtomicSwap, type SupportedChainId,
   type Unit, INTERNAL_PROTOCOL_PRECISION
@@ -7,7 +7,10 @@ import getHistoryExt from './getHistory.js';
 import swapExt from './swap.js';
 
 import { BigNumber } from 'bignumber.js';
+import generateSecret from '../../utils/generateSecret.js';
 
+export const SECONDS_IN_DAY = 60 * 60 * 24;
+export const EXPIRATION_DAYS = 4;
 export default class Bridge {
   constructor(
     private readonly unitsArray: Unit[],
@@ -69,6 +72,32 @@ export default class Bridge {
         redeemOrder: atomicSwap.redeemOrder,
       };
     });
+  }
+
+  makeAtomicSwap = (
+    walletAddress: string,
+    networkFrom: SupportedChainId,
+    networkTo: SupportedChainId,
+    amount: string,
+    asset: string,
+    env?: string | undefined,
+  ) => {
+    const secret = generateSecret();
+    const secretHash = ethers.utils.keccak256(secret);
+    const lockExpiration = Date.now() + SECONDS_IN_DAY * EXPIRATION_DAYS * 1000;
+
+    return {
+      sourceChainId: networkFrom,
+      targetChainId: networkTo,
+      amount,
+      walletAddress,
+      secret,
+      secretHash,
+      assetName: asset,
+      creationDate: Date.now(),
+      lockExpiration,
+      env,
+    };
   }
 
   getHistory(address: string, limit = 1000) {
