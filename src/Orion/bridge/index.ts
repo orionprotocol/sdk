@@ -74,14 +74,14 @@ export default class Bridge {
     });
   }
 
-  makeAtomicSwap = (
+  makeAtomicSwap(
     walletAddress: string,
     networkFrom: SupportedChainId,
     networkTo: SupportedChainId,
     amount: string,
     asset: string,
     env?: string | undefined,
-  ) => {
+  ) {
     const secret = generateSecret();
     const secretHash = ethers.utils.keccak256(secret);
     const lockExpiration = Date.now() + SECONDS_IN_DAY * EXPIRATION_DAYS * 1000;
