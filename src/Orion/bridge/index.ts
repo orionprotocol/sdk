@@ -81,6 +81,7 @@ export default class Bridge {
     walletAddress: string,
     localAtomicSwaps: AtomicSwapLocal[],
     transactions: TransactionInfo[],
+    combinedAddressToAsset: Partial<Record<string, Partial<Record<SupportedChainId, string>>>>,
   ) {
     // Prepare transactions data
     const byTxHashMap = new Map<string, TransactionInfo>();
@@ -140,8 +141,7 @@ export default class Bridge {
           if (currentTime > atomicHistoryItem.redeemOrder.expiration) redeemExpired = true;
         }
 
-        // const assetName = combinedAddressToAsset[atomicHistoryItem.asset]?.[atomicHistoryItem.sourceChainId];
-        const assetName = 'asdf';
+        const assetName = combinedAddressToAsset[atomicHistoryItem.asset]?.[atomicHistoryItem.sourceChainId];
 
         const amount = atomicHistoryItem.amountToReceive ?? atomicHistoryItem.amountToSpend;
 
