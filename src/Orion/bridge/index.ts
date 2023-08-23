@@ -3,7 +3,7 @@ import type {
   Unit, AtomicSwapLocal, SupportedChainId, TransactionInfo, AtomicSwap
 } from '../../index.js';
 import { INTERNAL_PROTOCOL_PRECISION, TxStatus, TxType } from '../../index.js';
-import getHistoryExt from './getHistory.js';
+import getHistory from './getHistory.js';
 import swapExt from './swap.js';
 
 import { BigNumber } from 'bignumber.js';
@@ -243,7 +243,7 @@ export default class Bridge {
   }
 
   getHistory(address: string, limit = 1000) {
-    return getHistoryExt(this.unitsArray, address, limit);
+    return getHistory(this.unitsArray, address, limit);
   }
 
   swap(

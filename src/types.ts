@@ -329,29 +329,69 @@ export enum TxStatus {
 }
 
 export enum TxType {
+  SWAP_THROUGH_ORION_POOL = 'SWAP_THROUGH_ORION_POOL',
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
   BRIDGE_LOCK = 'BRIDGE_LOCK',
   BRIDGE_REDEEM = 'BRIDGE_REDEEM',
   BRIDGE_REFUND = 'BRIDGE_REFUND',
+  LIQUIDITY_MIGRATION = 'LIQUIDITY_MIGRATION',
+  REDEEM_TWO_ATOMICS = 'REDEEM_TWO_ATOMICS',
 }
 
-type BridgeRedeemTxPayload = {
-  type: TxType.BRIDGE_REDEEM
+export type TxDepositOrWithdrawPayload = {
+  type: TxType.DEPOSIT | TxType.WITHDRAW
+  data: {
+    asset: string
+    amount: string
+  }
+};
+
+export type TxSwapThroughOrionPoolPayload = {
+  type: TxType.SWAP_THROUGH_ORION_POOL
+  data: {
+    side: 'buy' | 'sell'
+    assetIn: string
+    assetOut: string
+    amount: string
+    price: string
+  }
+};
+
+type TxBridgePayload = {
+  type: TxType.BRIDGE_LOCK | TxType.BRIDGE_REDEEM | TxType.BRIDGE_REFUND
   data: {
     secretHash: string
   }
 }
 
-type BridgeLockTxPayload = {
-  type: TxType.BRIDGE_LOCK
+type TxLiquidityMigrationPayload = {
+  type: TxType.LIQUIDITY_MIGRATION
   data: {
-    secretHash: string
+    source: SupportedChainId
+    target: SupportedChainId
+    pair: string
+    pairAddress: string
+    assetA: {
+      amount: string
+      secretHash: string
+      secret: string
+    }
+    assetB: {
+      amount: string
+      secretHash: string
+      secret: string
+    }
+    expiration: number
+    env?: string
   }
 }
 
-type BridgeRefundTxPayload = {
-  type: TxType.BRIDGE_REFUND
+type TxRedeemTwoAtomicsPayload = {
+  type: TxType.REDEEM_TWO_ATOMICS
   data: {
-    secretHash: string
+    secretHash1: string
+    secretHash2: string
   }
 }
 
@@ -359,7 +399,11 @@ export type TransactionInfo = {
   id?: string
   status?: TxStatus
   hash?: string
-  payload?: BridgeLockTxPayload | BridgeRedeemTxPayload | BridgeRefundTxPayload
+  payload?: TxDepositOrWithdrawPayload
+  | TxSwapThroughOrionPoolPayload
+  | TxBridgePayload
+  | TxLiquidityMigrationPayload
+  | TxRedeemTwoAtomicsPayload
 }
 
 type BridgeHistory = Awaited<ReturnType<typeof getHistory>>;
