@@ -16,7 +16,7 @@ export const EXPIRATION_DAYS = 4;
 
 type ExternalAtomicsData = Awaited<ReturnType<typeof getHistory>>;
 export default class Bridge {
-  readonly EXTERNAL_ATOMICS_DATA_CACHE_TIME = 5 * 1000; // 5 seconds
+  readonly EXTERNAL_ATOMICS_DATA_CACHE_TIME_MS = 5 * 1000; // 5 seconds
   private externalAtomicSwaps: Partial<Record<string, { // wallet address -> data
     lastUpdate: number
     data: ExternalAtomicsData
@@ -212,15 +212,20 @@ export default class Bridge {
   }
 
   async getHistory(address: string, limit = 1000) {
-    const cached = this.externalAtomicSwaps[address];
-    if (cached !== undefined && Date.now() - cached.lastUpdate < this.EXTERNAL_ATOMICS_DATA_CACHE_TIME) {
-      return cached.data;
+    const cachedData = this.externalAtomicSwaps[address];
+    let data: ExternalAtomicsData | undefined;
+    if (cachedData !== undefined) {
+      const cacheIsExpired = cachedData.lastUpdate + this.EXTERNAL_ATOMICS_DATA_CACHE_TIME_MS < Date.now();
+      if (!cacheIsExpired) data = cachedData.data;
     }
-    const data = await getHistory(this.unitsArray, address, limit);
-    this.externalAtomicSwaps[address] = {
-      lastUpdate: Date.now(),
-      data,
-    };
+
+    if (data === undefined) {
+      data = await getHistory(this.unitsArray, address, limit);
+      this.externalAtomicSwaps[address] = {
+        lastUpdate: Date.now(),
+        data,
+      };
+    }
     return data;
   }
 
