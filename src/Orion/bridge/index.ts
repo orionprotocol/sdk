@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import type {
-  Unit, AtomicSwapLocal, SupportedChainId, TransactionInfo, AtomicSwap
+  Unit, AtomicSwapLocal, SupportedChainId, TransactionInfo, AtomicSwap, RedeemOrder
 } from '../../index.js';
 import { INTERNAL_PROTOCOL_PRECISION, TxStatus, TxType } from '../../index.js';
 import getHistory from './getHistory.js';
@@ -14,67 +14,36 @@ import { invariant } from '../../utils/invariant.js';
 export const SECONDS_IN_DAY = 60 * 60 * 24;
 export const EXPIRATION_DAYS = 4;
 
+type ExternalAtomicsData = Awaited<ReturnType<typeof getHistory>>;
 export default class Bridge {
+  readonly EXTERNAL_ATOMICS_DATA_CACHE_TIME = 5 * 1000; // 5 seconds
+  private externalAtomicSwaps: Partial<Record<string, { // wallet address -> data
+    lastUpdate: number
+    data: ExternalAtomicsData
+  }>> = {};
+
   constructor(
     private readonly unitsArray: Unit[],
   ) {}
 
-  async getMergedHistory(
-    externalStoredAtomicSwaps: AtomicSwap[],
-    walletAddress: string,
+  registerRedeemOrder(
+    secretHash: string,
+    redeemOrder: RedeemOrder,
   ) {
-    const bridgeHistory = await this.getHistory(walletAddress);
-
-    return Object.values(bridgeHistory).map((atomicSwap) => {
-      if (atomicSwap === undefined) throw new Error('No atomic swap');
-
-      const {
-        secretHash,
-        amountToReceive,
-        amountToSpend,
-        targetChainId,
-        asset,
-        sourceChainId,
-        sender,
-        transactions,
-        expiration,
-        creationDate,
-      } = atomicSwap;
-
-      const localSwap = externalStoredAtomicSwaps.find(
-        (swap) => secretHash === swap.secretHash,
-      );
-
-      const amount = amountToReceive ?? amountToSpend ?? 0;
-
-      // Checking if transaction hash from blockchain is different from the same in local storage
-      // and changing it to the correct one
-
-      let assetName = asset;
-
-      // LEGACY. Some old atomic swaps have address instead of asset name. Here we handle this case
-      if (asset.includes('0x')) {
-        assetName = '—'; // We don't want to display address even if we can't find asset name
+    const senderCached = this.externalAtomicSwaps[redeemOrder.sender];
+    const receiverCached = this.externalAtomicSwaps[redeemOrder.receiver];
+    if (senderCached !== undefined) {
+      const atomic = senderCached.data[secretHash];
+      if (atomic !== undefined) {
+        atomic.redeemOrder = redeemOrder;
       }
-
-      return {
-        localSwap,
-        sourceNetwork: sourceChainId,
-        targetNetwork: targetChainId,
-        amount: new BigNumber(amount)
-          .multipliedBy(new BigNumber(10).pow(INTERNAL_PROTOCOL_PRECISION))
-          .toString(),
-        walletAddress: sender,
-        secretHash,
-        lockTransactionHash: transactions?.lock,
-        refundTransactionHash: transactions?.refund,
-        asset: assetName,
-        expiration:
-              expiration?.lock ?? creationDate.getTime() + 60 * 60 * 24 * 4, // Or default 4 days
-        creationDate: creationDate.getTime(),
-        redeemOrder: atomicSwap.redeemOrder,
-      };
-    });
+    }
+    if (receiverCached !== undefined) {
+      const atomic = receiverCached.data[secretHash];
+      if (atomic !== undefined) {
+        atomic.redeemOrder = redeemOrder;
+      }
+    }
   }
 
   async combineLocalAndExternalData(
@@ -242,8 +211,17 @@ export default class Bridge {
     };
   }
 
-  getHistory(address: string, limit = 1000) {
-    return getHistory(this.unitsArray, address, limit);
+  async getHistory(address: string, limit = 1000) {
+    const cached = this.externalAtomicSwaps[address];
+    if (cached !== undefined && Date.now() - cached.lastUpdate < this.EXTERNAL_ATOMICS_DATA_CACHE_TIME) {
+      return cached.data;
+    }
+    const data = await getHistory(this.unitsArray, address, limit);
+    this.externalAtomicSwaps[address] = {
+      lastUpdate: Date.now(),
+      data,
+    };
+    return data;
   }
 
   swap(
