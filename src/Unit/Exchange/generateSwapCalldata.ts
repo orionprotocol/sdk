@@ -1,10 +1,11 @@
 import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ethers-v5/Exchange.js';
 import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, type BigNumberish } from 'ethers';
 import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
 import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
+import type { PromiseOrValue } from '@orionprotocol/contracts/lib/ethers-v5/common.js';
 
 const EXECUTOR_SWAP_FUNCTION = "func_70LYiww"
 
@@ -43,8 +44,8 @@ export type CallParams = {
 }
 
 export type GenerateSwapCalldataParams = {
-  amount: string,
-  minReturnAmount: string,
+  amount: BigNumberish,
+  minReturnAmount: BigNumberish,
   receiverAddress: string,
   path: ArrayLike<SwapInfo>,
   unit: Unit
@@ -73,7 +74,7 @@ export default async function generateSwapCalldata({
   if (!path.every(swapInfo => swapInfo.factory === factory)) {
     throw new Error(`Supporting only swaps with single factory`);
   }
-
+  
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
@@ -83,6 +84,18 @@ export default async function generateSwapCalldata({
     minReturnAmount: minReturnAmount,
     flags: 0
   }
+
+  const exchangeToNativeDecimals = async (token: PromiseOrValue<string>) => {
+    token = await token
+    let decimals = 18
+    if (token !== ethers.constants.AddressZero) {
+      const contract = ERC20__factory.connect(token, unit.provider)
+      decimals = await contract.decimals()
+    }
+    return BigNumber.from(amount).mul(BigNumber.from(10).pow(decimals)).div(BigNumber.from(10).pow(8))
+  }
+  const amountNativeDecimals = await exchangeToNativeDecimals(swapDescription.srcToken);
+
   path = SafeArray.from(path_).map((swapInfo) => {
     if (swapInfo.assetIn == ethers.constants.AddressZero) swapInfo.assetIn = wethAddress
     if (swapInfo.assetOut == ethers.constants.AddressZero) swapInfo.assetOut = wethAddress
@@ -103,16 +116,16 @@ export default async function generateSwapCalldata({
       break;
     }
     case "UniswapV3": {
-      calldata = await generateUni3Calls(amount, exchangeContractAddress, path, unit.provider)
+      calldata = await generateUni3Calls(amountNativeDecimals, exchangeContractAddress, path, unit.provider)
       break;
     }
     case "OrionV3": {
-      calldata = await generateOrion3Calls(amount, exchangeContractAddress, path, unit.provider)
+      calldata = await generateOrion3Calls(amountNativeDecimals, exchangeContractAddress, path, unit.provider)
       break;
     }
     case "Curve": {
       calldata = await generateCurveStableSwapCalls(
-        amount,
+        amountNativeDecimals,
         exchangeContractAddress,
         swapExecutorContractAddress,
         path,
@@ -164,7 +177,7 @@ export async function generateUni2Calls(
 }
 
 async function generateUni3Calls(
-  amount: string,
+  amount: BigNumberish,
   exchangeContractAddress: string,
   path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider
@@ -193,7 +206,7 @@ async function generateUni3Calls(
 }
 
 async function generateOrion3Calls(
-  amount: string,
+  amount: BigNumberish,
   exchangeContractAddress: string,
   path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider
@@ -222,7 +235,7 @@ async function generateOrion3Calls(
 }
 
 async function generateCurveStableSwapCalls(
-  amount: string,
+  amount: BigNumberish,
   exchangeContractAddress: string,
   executorAddress: string,
   path: SafeArray<SwapInfo>,
