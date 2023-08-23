@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import type {
-  Orion, Unit, AtomicSwapLocal, SupportedChainId, TransactionInfo
+  Unit, AtomicSwapLocal, SupportedChainId, TransactionInfo, AtomicSwap
 } from '../../index.js';
 import { INTERNAL_PROTOCOL_PRECISION, TxStatus, TxType } from '../../index.js';
 import getHistoryExt from './getHistory.js';
@@ -14,30 +14,6 @@ import { invariant } from '../../utils/invariant.js';
 export const SECONDS_IN_DAY = 60 * 60 * 24;
 export const EXPIRATION_DAYS = 4;
 
-type BridgeHistory = Awaited<ReturnType<Orion['bridge']['getHistory']>>;
-
-type BridgeHistoryItem = NonNullable<BridgeHistory[string]>;
-
-export type AtomicSwap = Partial<
-  Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
-> & Partial<
-  Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
-> & {
-  sourceChainId: SupportedChainId
-  targetChainId: SupportedChainId
-  lockExpiration: number
-  secretHash: string
-  walletAddress: string
-  secret?: string | undefined
-
-  creationDate?: number | undefined
-  redeemExpired?: boolean | undefined
-
-  lockTx?: TransactionInfo | undefined
-  redeemTx?: TransactionInfo | undefined
-  refundTx?: TransactionInfo | undefined
-  liquidityMigrationTx?: TransactionInfo | undefined
-}
 export default class Bridge {
   constructor(
     private readonly unitsArray: Unit[],

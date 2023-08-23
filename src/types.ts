@@ -3,6 +3,7 @@ import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas/index.js';
+import type getHistory from './Orion/bridge/getHistory.js';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -315,9 +316,16 @@ export interface AtomicSwapLocal {
 }
 
 export enum TxStatus {
+  QUEUED = 'queued',
+  SIGN_FAILED = 'sign_failed',
+  GAS_ESTIMATING = 'gas_estimating',
+  ESTIMATE_GAS_FAILED = 'estimate_gas_failed',
+  CANCELLED = 'cancelled',
   PENDING = 'pending',
   FAILED = 'failed',
   SETTLED = 'settled',
+  SIGNING = 'signing',
+  UNKNOWN = 'unknown',
 }
 
 export enum TxType {
@@ -352,4 +360,29 @@ export type TransactionInfo = {
   status?: TxStatus
   hash?: string
   payload?: BridgeLockTxPayload | BridgeRedeemTxPayload | BridgeRefundTxPayload
+}
+
+type BridgeHistory = Awaited<ReturnType<typeof getHistory>>;
+
+type BridgeHistoryItem = NonNullable<BridgeHistory[string]>;
+
+export type AtomicSwap = Partial<
+  Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
+> & Partial<
+  Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
+> & {
+  sourceChainId: SupportedChainId
+  targetChainId: SupportedChainId
+  lockExpiration: number
+  secretHash: string
+  walletAddress: string
+  secret?: string | undefined
+
+  creationDate?: number | undefined
+  redeemExpired?: boolean | undefined
+
+  lockTx?: TransactionInfo | undefined
+  redeemTx?: TransactionInfo | undefined
+  refundTx?: TransactionInfo | undefined
+  liquidityMigrationTx?: TransactionInfo | undefined
 }
