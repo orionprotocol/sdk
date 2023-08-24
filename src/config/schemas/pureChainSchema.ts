@@ -10,6 +10,7 @@ export const pureChainInfoPayloadSchema = z.object({
   explorer: z.string(),
   rpc: z.string(),
   baseCurrencyName: z.string(),
+  contracts: z.record(z.string(), z.string())
 });
 
 export const pureChainInfoSchema = z.record(

@@ -165,6 +165,13 @@ export type SwapInfoAlternative = {
   availableAmountOut?: number | undefined
 }
 
+type ExchangeContractPath = {
+  pool: string
+  assetIn: string
+  assetOut: string
+  factory: string
+}
+
 export type SwapInfoBase = {
   swapRequestId: string
   assetIn: string
@@ -175,6 +182,7 @@ export type SwapInfoBase = {
   minAmountOut: number
 
   path: string[]
+  exchangeContractPath: ExchangeContractPath[]
   exchanges?: string[] | undefined
   poolOptimal: boolean
 
