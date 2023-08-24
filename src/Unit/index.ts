@@ -32,6 +32,8 @@ export default class Unit {
 
   public readonly config: VerboseUnitConfig;
 
+  public readonly contracts: Record<string, string>;
+
   constructor(config: KnownConfig | VerboseUnitConfig) {
     if ('env' in config) {
       const staticConfig = envs[config.env];
@@ -42,7 +44,6 @@ export default class Unit {
 
       const networkConfig = staticConfig.networks[config.chainId];
       if (!networkConfig) throw new Error(`Invalid chainId: ${config.chainId}. Available chainIds: ${Object.keys(staticConfig.networks).join(', ')}`);
-
       this.config = {
         chainId: config.chainId,
         nodeJsonRpc: networkConfig.rpc ?? chainConfig.rpc,
@@ -64,9 +65,10 @@ export default class Unit {
     }
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
-
+    
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
+    this.contracts = chainInfo.contracts
     const intNetwork = parseInt(this.chainId, 10);
     if (Number.isNaN(intNetwork)) throw new Error('Invalid chainId (not a number)' + this.chainId);
     this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);

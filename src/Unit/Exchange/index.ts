@@ -1,8 +1,8 @@
 import type Unit from '../index.js';
 import deposit, { type DepositParams } from './deposit.js';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
-import type { SwapLimitParams } from './swapLimit.js';
-import swapLimit from './swapLimit.js';
+import generateSwapCalldata, { type GenerateSwapCalldataParams } from './generateSwapCalldata.js';
+import swapLimit, {type SwapLimitParams} from './swapLimit.js';
 import swapMarket, { type SwapMarketParams } from './swapMarket.js';
 import withdraw, { type WithdrawParams } from './withdraw.js';
 
@@ -11,6 +11,7 @@ type PureSwapLimitParams = Omit<SwapLimitParams, 'unit'>
 type PureDepositParams = Omit<DepositParams, 'unit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'unit'>
 type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'blockchainService' | 'aggregator'>
+type PureGenerateSwapCalldataParams = Omit<GenerateSwapCalldataParams, 'unit'>
 
 export default class Exchange {
   private readonly unit: Unit;
@@ -53,5 +54,12 @@ export default class Exchange {
       ...params,
       unit: this.unit,
     });
+  }
+
+  public generateSwapCalldata(params: PureGenerateSwapCalldataParams) {
+    return generateSwapCalldata({
+      ...params,
+      unit: this.unit
+    })
   }
 }
