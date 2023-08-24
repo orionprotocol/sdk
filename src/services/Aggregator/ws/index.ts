@@ -229,7 +229,7 @@ class AggregatorWS {
     this.logger?.(`Sent: ${jsonData}`);
   }
 
-  private hearbeatIntervalId: NodeJS.Timer | undefined;
+  private hearbeatIntervalId: ReturnType<typeof setInterval> | undefined;
   private setupHeartbeat() {
     const heartbeat = () => {
       if (this.isAlive) {
@@ -558,7 +558,7 @@ class AggregatorWS {
           break;
         case MessageType.AGGREGATED_ORDER_BOOK_UPDATE: {
           const { ob, S } = json;
-          const mapOrderbookItems = (rawItems: typeof ob.a | typeof ob.b) => rawItems.reduce<OrderbookItem[]>((acc, item) => {
+          const mapOrderbookItems = (rawItems: typeof ob.a) => rawItems.reduce<OrderbookItem[]>((acc, item) => {
             const [
               price,
               amount,
