@@ -141,8 +141,6 @@ export default async function generateSwapCalldata({
   return { swapDescription, calldata }
 }
 
-
-
 export async function generateUni2Calls(
   exchangeAddress: string,
   path: SafeArray<SwapInfo>
