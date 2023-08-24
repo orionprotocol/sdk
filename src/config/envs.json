@@ -4,7 +4,7 @@
     "referralAPI": "https://trade.orionprotocol.io/referral-api",
     "networks": {
       "1": {
-        "api": "https://trade.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/eth-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -20,7 +20,7 @@
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
       },
       "56": {
-        "api": "https://trade-exp.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/bsc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -35,7 +35,7 @@
         }
       },
       "250": {
-        "api": "https://trade-ftm.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/ftm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -50,7 +50,7 @@
         }
       },
       "137": {
-        "api": "https://trade-polygon.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/polygon-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -65,7 +65,7 @@
         }
       },
       "66": {
-        "api": "https://trade-okc.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/okc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -183,7 +183,7 @@
     "referralAPI": "https://staging.orionprotocol.io/referral-api",
     "networks": {
       "1": {
-        "api": "https://staging.orionprotocol.io",
+        "api": "https://staging.orionprotocol.io/eth-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -198,7 +198,7 @@
         }
       },
       "56": {
-        "api": "https://staging-bsc.orionprotocol.io",
+        "api": "https://staging.orionprotocol.io/bsc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -213,7 +213,7 @@
         }
       },
       "250": {
-        "api": "https://staging-ftm.orionprotocol.io",
+        "api": "https://staging.orionprotocol.io/ftm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -228,7 +228,7 @@
         }
       },
       "137": {
-        "api": "https://staging-polygon.orionprotocol.io",
+        "api": "https://staging.orionprotocol.io/polygon-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -243,7 +243,7 @@
         }
       },
       "66": {
-        "api": "https://staging-okc.orionprotocol.io",
+        "api": "https://staging.orionprotocol.io/okc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -300,7 +300,7 @@
     "referralAPI": "https://trade.orionprotocol.io/referral-api",
     "networks": {
       "1": {
-        "api": "https://trade.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/eth-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -316,7 +316,7 @@
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
       },
       "56": {
-        "api": "https://trade-exp.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/bsc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -331,7 +331,7 @@
         }
       },
       "250": {
-        "api": "https://trade-ftm.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/ftm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -346,7 +346,7 @@
         }
       },
       "137": {
-        "api": "https://trade-polygon.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/polygon-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -361,7 +361,7 @@
         }
       },
       "66": {
-        "api": "https://trade-okc.orionprotocol.io",
+        "api": "https://trade.orionprotocol.io/okc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",

@@ -1,0 +1,15 @@
+diff --git a/node_modules/unfetch/package.json b/node_modules/unfetch/package.json
+index ec47dc2..33954f7 100644
+--- a/node_modules/unfetch/package.json
++++ b/node_modules/unfetch/package.json
+@@ -15,8 +15,8 @@
+   },
+   "exports": {
+     ".": {
+-      "import": "./index.mjs",
+-      "default": "./index.js"
++      "import": "./dist/unfetch.mjs",
++      "default": "./dist/unfetch.js"
+     },
+     "./polyfill": {
+       "default": "./polyfill/index.js"

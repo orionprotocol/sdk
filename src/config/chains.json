@@ -5,7 +5,7 @@
     "label": "Ethereum Mainnet",
     "shortName": "ETH",
     "code": "eth",
-    "rpc": "https://trade.orionprotocol.io/rpc",
+    "rpc": "https://trade.orionprotocol.io/eth-mainnet/rpc",
     "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -31,7 +31,7 @@
     "label": "Binance Smart Chain Testnet",
     "shortName": "BSC-Testnet",
     "code": "bsc",
-    "rpc": "https://bsc-stage.node.orionprotocol.io/",
+    "rpc": "https://data-seed-prebsc-1-s1.bnbchain.org:8545/",
     "baseCurrencyName": "BNB",
     "contracts": {
       "WETH": "0x23eE96bEaAB62abE126AA192e677c52bB7d274F0",
@@ -83,7 +83,7 @@
     "label": "Fantom Testnet",
     "shortName": "FTM-Testnet",
     "code": "ftm",
-    "rpc": "https://testing.orionprotocol.io/ftm-testnet/rpc",
+    "rpc": "https://rpc.testnet.fantom.network/",
     "baseCurrencyName": "FTM",
     "contracts": {
       "WETH": "",
