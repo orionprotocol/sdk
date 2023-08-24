@@ -186,7 +186,7 @@ async function generateUni3Calls(
   for (const swap of path) {
     const pool = UniswapV3Pool__factory.connect(swap.pool, provider)
     const token0 = await pool.token0()
-    const zeroForOne = token0 === swap.assetIn
+    const zeroForOne = token0.toLowerCase() === swap.assetIn.toLowerCase()
     const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
 
     let encodedPool = ethers.utils.solidityPack(["uint256"], [pool.address])
@@ -215,7 +215,7 @@ async function generateOrion3Calls(
   for (const swap of path) {
     const pool = UniswapV3Pool__factory.connect(swap.pool, provider)
     const token0 = await pool.token0()
-    const zeroForOne = token0 === swap.assetIn
+    const zeroForOne = token0.toLowerCase() === swap.assetIn.toLowerCase()
     const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
 
     let encodedPool = ethers.utils.solidityPack(["uint256"], [pool.address])
@@ -288,21 +288,21 @@ function addCallParams(
   let firstByte = 0
   if (callParams) {
     if (callParams.value !== undefined) { 
-      firstByte += 16 // 00000010
+      firstByte += 16 // 00010000
       const encodedValue = ethers.utils.solidityPack(["uint128"], [callParams.value])
       calldata = ethers.utils.hexlify(ethers.utils.concat([encodedValue, calldata]))
     }
     if (callParams.target !== undefined) {
-      firstByte += 32 // 00000100
+      firstByte += 32 // 00100000
       const encodedAddress = ethers.utils.solidityPack(["address"], [callParams.target])
       calldata = ethers.utils.hexlify(ethers.utils.concat([encodedAddress, calldata]))
     }
     if (callParams.gaslimit !== undefined) {
-      firstByte += 64 // 00000100
+      firstByte += 64 // 01000000
       const encodedGaslimit = ethers.utils.solidityPack(["uint32"], [callParams.gaslimit])
       calldata = ethers.utils.hexlify(ethers.utils.concat([encodedGaslimit, calldata]))
     }
-    if (callParams.isMandatory !== undefined) firstByte += 128 // 00001000
+    if (callParams.isMandatory !== undefined) firstByte += 128 // 10000000
   }
 
   const encodedFirstByte = ethers.utils.solidityPack(["uint8"], [firstByte])
