@@ -34,7 +34,7 @@ const sourceAtomicHistorySchemaItem = baseAtomicHistoryItem.extend({
   expiration: z.object({
     lock: z.number().optional(),
   }).optional(),
-  state: z.enum(['BEFORE-LOCK', 'LOCKED', 'REFUNDED', 'CLAIMED']),
+  state: z.enum(['BEFORE-LOCK', 'LOCKED', 'REFUNDED', 'CLAIMED']).optional(),
   targetChainId: z.number(),
   transactions: z.object({
     lock: z.string().optional(),
@@ -51,7 +51,7 @@ const targetAtomicHistorySchemaItem = baseAtomicHistoryItem.extend({
   expiration: z.object({
     redeem: z.number().optional(),
   }).optional(),
-  state: z.enum(['BEFORE-REDEEM', 'REDEEMED']),
+  state: z.enum(['BEFORE-REDEEM', 'REDEEMED']).optional(),
   transactions: z.object({
     redeem: z.string().optional(),
   }).optional(),

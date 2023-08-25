@@ -3,6 +3,7 @@ import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas/index.js';
+import type getHistory from './Orion/bridge/getHistory.js';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -164,6 +165,13 @@ export type SwapInfoAlternative = {
   availableAmountOut?: number | undefined
 }
 
+type ExchangeContractPath = {
+  pool: string
+  assetIn: string
+  assetOut: string
+  factory: string
+}
+
 export type SwapInfoBase = {
   swapRequestId: string
   assetIn: string
@@ -174,6 +182,7 @@ export type SwapInfoBase = {
   minAmountOut: number
 
   path: string[]
+  exchangeContractPath: ExchangeContractPath[]
   exchanges?: string[] | undefined
   poolOptimal: boolean
 
@@ -283,36 +292,149 @@ export type RedeemOrder = {
   claimReceiver: string
 }
 
-export type AtomicSwap = {
+export interface AtomicSwapLocal {
   secret: string
   secretHash: string
-
   walletAddress: string
   env?: string | undefined
 
-  sourceNetwork?: SupportedChainId
-  targetNetwork?: SupportedChainId
+  sourceChainId?: SupportedChainId | undefined
+  targetChainId?: SupportedChainId | undefined
 
-  amount?: string
-  asset?: string
+  amount?: string | undefined
+  assetName?: string | undefined
 
-  creationDate?: number
-  expiration?: number
+  liquidityMigrationTxHash?: string | undefined
+  lockTransactionHash?: string | undefined
+  refundTransactionHash?: string | undefined
 
-  lockTransactionHash?: string
-  redeemTransactionHash?: string
-  refundTransactionHash?: string
-  liquidityMigrationTxHash?: string
-
-  redeemOrder?: RedeemOrder
+  creationDate?: number | undefined
+  lockExpiration?: number | undefined
+  placingOrderError?: string | undefined
+  redeemSettlement?: {
+    type: 'own_tx'
+  } | {
+    type: 'orion_tx'
+    requestedAt?: number
+    result?: {
+      timestamp: number
+      value: 'success' | 'failed'
+    }
+  } | undefined
 }
 
-export type ExternalStorage = {
-  bridge: {
-    getAtomicSwaps: () => AtomicSwap[]
-    setAtomicSwaps: (atomics: AtomicSwap[]) => void
-    addAtomicSwap: (atomic: AtomicSwap) => void
-    updateAtomicSwap: (secretHash: string, atomic: Partial<AtomicSwap>) => void
-    removeAtomicSwaps: (secretHashes: string[]) => void
+export enum TxStatus {
+  QUEUED = 'queued',
+  SIGN_FAILED = 'sign_failed',
+  GAS_ESTIMATING = 'gas_estimating',
+  ESTIMATE_GAS_FAILED = 'estimate_gas_failed',
+  CANCELLED = 'cancelled',
+  PENDING = 'pending',
+  FAILED = 'failed',
+  SETTLED = 'settled',
+  SIGNING = 'signing',
+  UNKNOWN = 'unknown',
+}
+
+export enum TxType {
+  SWAP_THROUGH_ORION_POOL = 'SWAP_THROUGH_ORION_POOL',
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+  BRIDGE_LOCK = 'BRIDGE_LOCK',
+  BRIDGE_REDEEM = 'BRIDGE_REDEEM',
+  BRIDGE_REFUND = 'BRIDGE_REFUND',
+  LIQUIDITY_MIGRATION = 'LIQUIDITY_MIGRATION',
+  REDEEM_TWO_ATOMICS = 'REDEEM_TWO_ATOMICS',
+}
+
+export type TxDepositOrWithdrawPayload = {
+  type: TxType.DEPOSIT | TxType.WITHDRAW
+  data: {
+    asset: string
+    amount: string
   }
+};
+
+export type TxSwapThroughOrionPoolPayload = {
+  type: TxType.SWAP_THROUGH_ORION_POOL
+  data: {
+    side: 'buy' | 'sell'
+    assetIn: string
+    assetOut: string
+    amount: string
+    price: string
+  }
+};
+
+export type TxBridgePayload = {
+  type: TxType.BRIDGE_LOCK | TxType.BRIDGE_REDEEM | TxType.BRIDGE_REFUND
+  data: {
+    secretHash: string
+  }
+}
+
+export type TxLiquidityMigrationPayload = {
+  type: TxType.LIQUIDITY_MIGRATION
+  data: {
+    source: SupportedChainId
+    target: SupportedChainId
+    pair: string
+    pairAddress: string
+    assetA: {
+      amount: string
+      secretHash: string
+      secret: string
+    }
+    assetB: {
+      amount: string
+      secretHash: string
+      secret: string
+    }
+    expiration: number
+    env?: string
+  }
+}
+
+export type TxRedeemTwoAtomicsPayload = {
+  type: TxType.REDEEM_TWO_ATOMICS
+  data: {
+    secretHash1: string
+    secretHash2: string
+  }
+}
+
+export type TransactionInfo = {
+  id?: string
+  status?: TxStatus
+  hash?: string
+  payload?: TxDepositOrWithdrawPayload
+  | TxSwapThroughOrionPoolPayload
+  | TxBridgePayload
+  | TxLiquidityMigrationPayload
+  | TxRedeemTwoAtomicsPayload
+}
+
+type BridgeHistory = Awaited<ReturnType<typeof getHistory>>;
+
+type BridgeHistoryItem = NonNullable<BridgeHistory[string]>;
+
+export type AtomicSwap = Partial<
+  Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
+> & Partial<
+  Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
+> & {
+  sourceChainId: SupportedChainId
+  targetChainId: SupportedChainId
+  lockExpiration: number
+  secretHash: string
+  walletAddress: string
+  secret?: string | undefined
+
+  creationDate?: number | undefined
+  redeemExpired?: boolean | undefined
+
+  lockTx?: TransactionInfo | undefined
+  redeemTx?: TransactionInfo | undefined
+  refundTx?: TransactionInfo | undefined
+  liquidityMigrationTx?: TransactionInfo | undefined
 }
