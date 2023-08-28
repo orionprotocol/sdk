@@ -1,4 +1,4 @@
-import {fetchWithValidation} from 'simple-typed-fetch';
+import { fetchWithValidation } from 'simple-typed-fetch';
 import {
   errorSchema,
   miniStatsSchema,
@@ -10,9 +10,10 @@ import {
   ratingSchema,
   claimInfoSchema,
   aggregatedHistorySchema,
+  inviteCodeLinkSchema,
+  contractsAddressesSchema,
 } from './schemas/index.js';
-import {SupportedChainId} from "../../types.js";
-import contractsAddressesSchema from './schemas/contractsAddressesSchema.js';
+import type { SupportedChainId } from '../../types.js';
 
 type CreateLinkPayloadType = {
   referer: string
@@ -22,6 +23,12 @@ type CreateLinkPayloadType = {
 type ClaimRewardsPayload = {
   reward_recipient: string
   chain_id: number
+};
+
+type SubmitInviteCodekWithLinkPayload = {
+  inviteCode: string
+  referer: string
+  linkOption: number
 };
 
 type SubscribePayloadType = {
@@ -34,7 +41,7 @@ type SignatureType = {
 };
 
 class ReferralSystem {
-  private readonly apiUrl: string;
+  private readonly apiUrl: string
 
   get api() {
     return this.apiUrl;
@@ -48,6 +55,8 @@ class ReferralSystem {
     this.createReferralLink = this.createReferralLink.bind(this);
     this.subscribeToReferral = this.subscribeToReferral.bind(this);
     this.getMyReferral = this.getMyReferral.bind(this);
+    this.getMyInviteCodeAndLink = this.getMyInviteCodeAndLink.bind(this);
+    this.submitInviteCodeWithLink = this.submitInviteCodeWithLink.bind(this);
     this.getGlobalAnalytics = this.getGlobalAnalytics.bind(this);
     this.getMiniStats = this.getMiniStats.bind(this);
     this.getRewardsMapping = this.getRewardsMapping.bind(this);
@@ -72,6 +81,40 @@ class ReferralSystem {
         referral: myWalletAddress,
       },
     });
+
+  getMyInviteCodeAndLink = (refererAddress: string, suppressError = false) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/invite/status2?suppress_error=${Number(
+        suppressError
+      )}`,
+      inviteCodeLinkSchema,
+      {
+        headers: {
+          'referer-address': refererAddress,
+        },
+      }
+    );
+
+  submitInviteCodeWithLink = ({
+    inviteCode,
+    referer,
+    linkOption,
+  }: SubmitInviteCodekWithLinkPayload) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/invite/submit-code2`,
+      inviteCodeLinkSchema,
+      {
+        headers: {
+          'Content-type': 'application/json',
+          'invite-code': inviteCode,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          referer,
+          link_option: linkOption,
+        }),
+      }
+    );
 
   getDistinctAnalytics = (refererAddress: string) =>
     fetchWithValidation(
@@ -130,13 +173,11 @@ class ReferralSystem {
           'Content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({payload, signature}),
+        body: JSON.stringify({ payload, signature }),
       }
     );
 
-  createReferralLink = (
-    payload: CreateLinkPayloadType
-  ) =>
+  createReferralLink = (payload: CreateLinkPayloadType) =>
     fetchWithValidation(`${this.apiUrl}/referer/create2`, linkSchema, {
       headers: {
         'Content-type': 'application/json',
@@ -145,9 +186,7 @@ class ReferralSystem {
       body: JSON.stringify(payload),
     });
 
-  subscribeToReferral = (
-    payload: SubscribePayloadType
-  ) =>
+  subscribeToReferral = (payload: SubscribePayloadType) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/subscribe2`,
       linkSchema,
@@ -166,7 +205,10 @@ class ReferralSystem {
       `${this.apiUrl}/referer/ve/rating-table-leaderboard?chain_id=${chainId}`,
       ratingSchema,
       {
-        headers: refererAddress !== undefined ? {'referer-address': refererAddress} : {},
+        headers:
+          refererAddress !== undefined
+            ? { 'referer-address': refererAddress }
+            : {},
       },
       errorSchema
     );
@@ -201,7 +243,7 @@ class ReferralSystem {
     const queryParams: Record<string, string | number> = {
       n_per_page: itemPerPage,
       page,
-      suppress_error: 1
+      suppress_error: 1,
     };
 
     if (chainId !== undefined) {
@@ -212,7 +254,9 @@ class ReferralSystem {
       queryParams['history_filter'] = encodeURIComponent(types.join(','));
     }
 
-    const queryString = Object.entries(queryParams).map(([k, v]) => `${k}=${v}`).join('&')
+    const queryString = Object.entries(queryParams)
+      .map(([k, v]) => `${k}=${v}`)
+      .join('&');
 
     return fetchWithValidation(
       `${this.apiUrl}/referer/view/aggregated-history?${queryString}`,
@@ -224,8 +268,8 @@ class ReferralSystem {
       },
       errorSchema
     );
-  }
+  };
 }
 
 export * as schemas from './schemas/index.js';
-export {ReferralSystem};
+export { ReferralSystem };
