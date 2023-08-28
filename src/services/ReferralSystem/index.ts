@@ -29,7 +29,6 @@ type SubmitInviteCodekWithLinkPayload = {
   inviteCode: string
   referer: string
   linkOption: number
-  suppressError: boolean
 };
 
 type SubscribePayloadType = {
@@ -83,9 +82,11 @@ class ReferralSystem {
       },
     });
 
-  getMyInviteCodeAndLink = (refererAddress: string) =>
+  getMyInviteCodeAndLink = (refererAddress: string, suppressError = false) =>
     fetchWithValidation(
-      `${this.apiUrl}/referer/invite/status2`,
+      `${this.apiUrl}/referer/invite/status2?suppress_error=${Number(
+        suppressError
+      )}`,
       inviteCodeLinkSchema,
       {
         headers: {
@@ -98,7 +99,6 @@ class ReferralSystem {
     inviteCode,
     referer,
     linkOption,
-    suppressError,
   }: SubmitInviteCodekWithLinkPayload) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/invite/submit-code2`,
@@ -112,7 +112,6 @@ class ReferralSystem {
         body: JSON.stringify({
           referer,
           link_option: linkOption,
-          suppress_error: Number(suppressError),
         }),
       }
     );
