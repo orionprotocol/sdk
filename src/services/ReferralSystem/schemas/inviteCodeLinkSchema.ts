@@ -5,7 +5,6 @@ const inviteCodeLinkSchema = z.object({
     .object({
       referer: z.string(),
       ref_link: z.string(),
-      option: z.number(),
     })
     .nullable(),
   invite: z
