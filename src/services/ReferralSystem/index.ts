@@ -28,7 +28,6 @@ type ClaimRewardsPayload = {
 type SubmitInviteCodekWithLinkPayload = {
   inviteCode: string
   referer: string
-  linkOption: number
 };
 
 type SubscribePayloadType = {
@@ -98,7 +97,6 @@ class ReferralSystem {
   submitInviteCodeWithLink = ({
     inviteCode,
     referer,
-    linkOption,
   }: SubmitInviteCodekWithLinkPayload) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/invite/submit-code2`,
@@ -109,10 +107,7 @@ class ReferralSystem {
           'invite-code': inviteCode,
         },
         method: 'POST',
-        body: JSON.stringify({
-          referer,
-          link_option: linkOption,
-        }),
+        body: JSON.stringify({ referer }),
       }
     );
 
