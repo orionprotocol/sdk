@@ -122,7 +122,7 @@
     "shortName": "Polygon Mumbai",
     "code": "polygon",
     "baseCurrencyName": "MATIC",
-    "rpc": "https://rpc-mumbai.matic.today",
+    "rpc": "https://rpc.ankr.com/polygon_mumbai",
     "explorer": "https://mumbai.polygonscan.com/",
     "contracts": {
       "WETH": "",
