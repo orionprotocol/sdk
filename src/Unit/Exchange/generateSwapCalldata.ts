@@ -78,7 +78,7 @@ export default async function generateSwapCalldata({
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
-    srcReceiver: swapExecutorContractAddress,
+    srcReceiver: swapExecutorContractAddress ?? '',
     dstReceiver: receiverAddress,
     amount: amount,
     minReturnAmount: minReturnAmount,
@@ -127,7 +127,7 @@ export default async function generateSwapCalldata({
       calldata = await generateCurveStableSwapCalls(
         amountNativeDecimals,
         exchangeContractAddress,
-        swapExecutorContractAddress,
+        swapExecutorContractAddress ?? '',
         path,
         unit.provider,
         curveRegistryAddress
@@ -235,7 +235,7 @@ async function generateOrion3Calls(
 async function generateCurveStableSwapCalls(
   amount: BigNumberish,
   exchangeContractAddress: string,
-  executorAddress: string | undefined,
+  executorAddress: string,
   path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider,
   curveRegistry: string
