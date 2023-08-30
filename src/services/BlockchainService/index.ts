@@ -232,24 +232,29 @@ class BlockchainService {
   );
 
   getPlatformFees = (
-    { assetIn, assetOut, walletAddress }: {
+    { assetIn, assetOut, walletAddress, fromWidget }: {
       assetIn?: string | undefined,
       assetOut?: string | undefined,
-      walletAddress?: string | undefined
+      walletAddress?: string | undefined,
+      fromWidget?: string | undefined
     }
   ) => {
     const url = new URL(`${this.apiUrl}/api/platform-fees`);
-    
-    if (assetIn) {
+
+    if (assetIn !== undefined) {
       url.searchParams.append('assetIn', assetIn);
     }
 
-    if (assetOut) {
+    if (assetOut !== undefined) {
       url.searchParams.append('assetOut', assetOut);
     }
 
-    if (walletAddress) {
+    if (walletAddress !== undefined) {
       url.searchParams.append('walletAddress', walletAddress);
+    }
+
+    if (fromWidget !== undefined) {
+      url.searchParams.append('fromWidget', fromWidget);
     }
 
     return fetchWithValidation(
