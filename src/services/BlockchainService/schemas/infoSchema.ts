@@ -11,7 +11,7 @@ const infoSchema = z.object({
   chainId: z.number(),
   chainName: z.string(),
   exchangeContractAddress: z.string(),
-  swapExecutorContractAddress: z.string(),
+  swapExecutorContractAddress: z.string().optional(),
   oracleContractAddress: z.string(),
   matcherAddress: z.string(),
   orderFeePercent: z.number(),

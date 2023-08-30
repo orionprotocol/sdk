@@ -64,7 +64,7 @@ export default async function generateSwapCalldata({
   }
   const wethAddress = safeGet(unit.contracts, "WETH")
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry")
-  const {assetToAddress, swapExecutorContractAddress, exchangeContractAddress} = await simpleFetch(unit.blockchainService.getInfo)();
+  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
   let path = SafeArray.from(path_).map((swapInfo) => {
     swapInfo.assetIn = safeGet(assetToAddress, swapInfo.assetIn);
     swapInfo.assetOut = safeGet(assetToAddress, swapInfo.assetOut);
@@ -235,7 +235,7 @@ async function generateOrion3Calls(
 async function generateCurveStableSwapCalls(
   amount: BigNumberish,
   exchangeContractAddress: string,
-  executorAddress: string,
+  executorAddress: string | undefined,
   path: SafeArray<SwapInfo>,
   provider: ethers.providers.JsonRpcProvider,
   curveRegistry: string
