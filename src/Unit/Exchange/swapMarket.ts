@@ -74,7 +74,7 @@ export default async function swapMarket({
   const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
 
   const exchangeContract = Exchange__factory.connect(exchangeContractAddress, provider);
-  const feeAssets = await simpleFetch(blockchainService.getTokensFee)();
+  const feeAssets = await simpleFetch(blockchainService.getPlatformFees)({ walletAddress, assetIn, assetOut });
   const allPrices = await simpleFetch(blockchainService.getPricesWithQuoteAsset)();
   const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
   const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();

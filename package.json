@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.19.77",
+  "version": "0.19.58-rc6",
   "description": "Orion Protocol SDK",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -114,3 +114,4 @@
     "tsconfig-paths": "^4.0.0"
   }
 }
+
