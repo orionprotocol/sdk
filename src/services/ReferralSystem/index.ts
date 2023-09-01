@@ -45,6 +45,7 @@ type submitTransactionDataForWidgetPayload = {
   sender_address: string
   tx_hash: string
   chain_id: number
+  signature: string
 }
 
 class ReferralSystem {
