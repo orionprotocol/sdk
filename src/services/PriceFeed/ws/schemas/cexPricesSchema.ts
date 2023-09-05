@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const cexPriceTickerInfoSchema = z.tuple([
   z.string(), // pair name
-  z.string(), // lastPrice
+  z.number(), // lastPrice
 ]).transform(([pairName, lastPrice]) => ({
   pairName:pairName.toUpperCase(),
   lastPrice,
