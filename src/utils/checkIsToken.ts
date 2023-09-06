@@ -1,8 +1,8 @@
-import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import { ethers } from 'ethers';
 import invariant from 'tiny-invariant';
 
-const checkIsToken = async (address: string, provider?: ethers.providers.Provider) => {
+const checkIsToken = async (address: string, provider?: ethers.Provider) => {
   invariant(provider, 'No provider for token checking');
   const tokenContract = ERC20__factory.connect(address, provider);
   try {
@@ -12,7 +12,7 @@ const checkIsToken = async (address: string, provider?: ethers.providers.Provide
         tokenContract.symbol(),
         tokenContract.decimals(),
         tokenContract.totalSupply(),
-        tokenContract.balanceOf(ethers.constants.AddressZero),
+        tokenContract.balanceOf(ethers.ZeroAddress),
       ],
     );
 

@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import type Unit from '../index.js';
@@ -50,7 +50,7 @@ export default async function withdraw({
   const balances = await getBalances(
     {
       [asset]: assetAddress,
-      [nativeCryptocurrency]: ethers.constants.AddressZero,
+      [nativeCryptocurrency]: ethers.ZeroAddress,
     },
     aggregator,
     walletAddress,
@@ -62,7 +62,7 @@ export default async function withdraw({
     balances,
     {
       name: nativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     provider,
     signer,
@@ -78,27 +78,27 @@ export default async function withdraw({
     sources: ['exchange'],
   });
 
-  const unsignedTx = await exchangeContract.populateTransaction.withdraw(
+  const unsignedTx = await exchangeContract.withdraw.populateTransaction(
     assetAddress,
-    normalizeNumber(amount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
+    normalizeNumber(amount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString(),
   );
-  unsignedTx.gasLimit = ethers.BigNumber.from(WITHDRAW_GAS_LIMIT);
+  unsignedTx.gasLimit = BigInt(WITHDRAW_GAS_LIMIT);
 
-  const transactionCost = ethers.BigNumber.from(unsignedTx.gasLimit).mul(gasPriceWei);
-  const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+  const transactionCost = BigInt(unsignedTx.gasLimit) * BigInt(gasPriceWei);
+  const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
   balanceGuard.registerRequirement({
     reason: 'Network fee',
     asset: {
       name: nativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     amount: denormalizedTransactionCost.toString(),
     sources: ['wallet'],
   });
 
-  unsignedTx.chainId = parseInt(chainId, 10);
-  unsignedTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
+  unsignedTx.chainId = BigInt(chainId);
+  unsignedTx.gasPrice = BigInt(gasPriceWei);
   unsignedTx.from = walletAddress;
 
   await balanceGuard.check(true);
@@ -107,11 +107,11 @@ export default async function withdraw({
   unsignedTx.nonce = nonce;
 
   const signedTx = await signer.signTransaction(unsignedTx);
-  const txResponse = await provider.sendTransaction(signedTx);
+  const txResponse = await provider.broadcastTransaction(signedTx);
   console.log(`Withdraw tx sent: ${txResponse.hash}. Waiting for confirmation...`);
   try {
     const txReceipt = await txResponse.wait();
-    if (txReceipt.status !== undefined) {
+    if (txReceipt?.status !== undefined) {
       console.log('Withdraw tx confirmed');
     } else {
       console.log('Withdraw tx failed');
