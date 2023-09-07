@@ -2,7 +2,7 @@
   "1": {
     "chainId": "1",
     "explorer": "https://etherscan.io/",
-    "label": "Ethereum Mainnet",
+    "label": "Ethereum",
     "shortName": "ETH",
     "code": "eth",
     "rpc": "https://trade.orionprotocol.io/eth-mainnet/rpc",
@@ -93,7 +93,7 @@
   "250": {
     "chainId": "250",
     "explorer": "https://ftmscan.com/",
-    "label": "Fantom Mainnet",
+    "label": "Fantom",
     "shortName": "FTM",
     "code": "ftm",
     "rpc": "https://rpcapi.fantom.network/",
@@ -105,7 +105,7 @@
   },
   "137": {
     "chainId": "137",
-    "label": "Polygon Mainnet",
+    "label": "Polygon",
     "shortName": "Polygon",
     "code": "polygon",
     "baseCurrencyName": "MATIC",
@@ -132,7 +132,7 @@
   "66": {
     "chainId": "66",
     "explorer": "https://www.oklink.com/okc/",
-    "label": "OKC Mainnet",
+    "label": "OKT Chain",
     "shortName": "OKC",
     "code": "okc",
     "rpc": "https://exchainrpc.okex.org/",
