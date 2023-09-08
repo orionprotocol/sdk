@@ -206,37 +206,6 @@ async function generateUni3Calls(
   return await generateCalls([calldata])
 }
 
-async function generatePancake3Calls(
-  amount: BigNumberish,
-  exchangeContractAddress: string,
-  path: SafeArray<SwapInfo>,
-  provider: ethers.providers.JsonRpcProvider
-) {
-  const encodedPools: BytesLike[] = []
-  for (const swap of path) {
-    // TODO: change to PancakeV3Pool__factory
-    const pool = UniswapV3Pool__factory.connect(swap.pool, provider)
-    const token0 = await pool.token0()
-    const zeroForOne = token0.toLowerCase() === swap.assetIn.toLowerCase()
-    const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
-
-    let encodedPool = ethers.utils.solidityPack(['uint256'], [pool.address])
-    encodedPool = ethers.utils.hexDataSlice(encodedPool, 1)
-    let firstByte = 0
-    if (unwrapWETH) firstByte += 32
-    if (!zeroForOne) firstByte += 128
-    const encodedFirstByte = ethers.utils.solidityPack(['uint8'], [firstByte])
-    encodedPool = ethers.utils.hexlify(ethers.utils.concat([encodedFirstByte, encodedPool]))
-    encodedPools.push(encodedPool)
-  }
-  const executorInterface = SwapExecutor__factory.createInterface()
-  // TODO: change to pancakeV3SwapTo
-  let calldata = executorInterface.encodeFunctionData('uniswapV3SwapTo', [encodedPools, exchangeContractAddress, amount])
-  calldata = addCallParams(calldata)
-
-  return await generateCalls([calldata])
-}
-
 async function generateOrion3Calls(
   amount: BigNumberish,
   exchangeContractAddress: string,
