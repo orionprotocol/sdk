@@ -9,7 +9,7 @@ import type { PromiseOrValue } from '@orionprotocol/contracts/lib/ethers-v5/comm
 
 const EXECUTOR_SWAP_FUNCTION = "func_70LYiww"
 
-export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
+export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3" | "PancakeSwapV3"
 
 const exchangeToType: Partial<Record<string, Factory>> = {
   'SPOOKYSWAP': 'UniswapV2',
