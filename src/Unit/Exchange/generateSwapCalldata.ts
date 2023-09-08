@@ -20,6 +20,7 @@ const exchangeToType: Partial<Record<string, Factory>> = {
   CHERRYSWAP: 'UniswapV2',
   OKXSWAP: 'UniswapV2',
   INTERNAL_POOL_V2: 'UniswapV2',
+  UniswapV3: 'UniswapV3',
   UniswapV3_0_05: 'UniswapV3',
   UniswapV3_0_3: 'UniswapV3',
   UniswapV3_1_0: 'UniswapV3',
@@ -28,10 +29,6 @@ const exchangeToType: Partial<Record<string, Factory>> = {
   INTERNAL_POOL_V3_0_05: 'OrionV3',
   INTERNAL_POOL_V3_0_3: 'OrionV3',
   INTERNAL_POOL_V3_1_0: 'OrionV3',
-  PANCAKESWAP_V3_0_01: 'PancakeSwapV3',
-  PANCAKESWAP_V3_0_05: 'PancakeSwapV3',
-  PANCAKESWAP_V3_0_25: 'PancakeSwapV3',
-  PANCAKESWAP_V3_1_0: 'PancakeSwapV3',
   CURVE: 'Curve',
   CURVE_FACTORY: 'Curve',
 }
@@ -138,10 +135,6 @@ export default async function generateSwapCalldata({
         unit.provider,
         curveRegistryAddress
       );
-      break;
-    }
-    case 'PancakeSwapV3': {
-      calldata = await generatePancake3Calls(amountNativeDecimals, exchangeContractAddress, path, unit.provider)
       break;
     }
     default: {
