@@ -9,7 +9,7 @@ import type { PromiseOrValue } from '@orionprotocol/contracts/lib/ethers-v5/comm
 
 const EXECUTOR_SWAP_FUNCTION = 'func_70LYiww'
 
-export type Factory = 'UniswapV2' | 'UniswapV3' | 'Curve' | 'OrionV2' | 'OrionV3' // | 'PancakeSwapV3'
+export type Factory = 'UniswapV2' | 'UniswapV3' | 'Curve' | 'OrionV2' | 'OrionV3' | 'PancakeSwapV3'
 
 const exchangeToType: Partial<Record<string, Factory>> = {
   SPOOKYSWAP: 'UniswapV2',
@@ -28,11 +28,10 @@ const exchangeToType: Partial<Record<string, Factory>> = {
   INTERNAL_POOL_V3_0_05: 'OrionV3',
   INTERNAL_POOL_V3_0_3: 'OrionV3',
   INTERNAL_POOL_V3_1_0: 'OrionV3',
-  // TODO: add PancakeSwapV3 factory
-  PANCAKESWAP_V3_0_01: 'UniswapV3',
-  PANCAKESWAP_V3_0_05: 'UniswapV3',
-  PANCAKESWAP_V3_0_25: 'UniswapV3',
-  PANCAKESWAP_V3_1_0: 'UniswapV3',
+  PANCAKESWAP_V3_0_01: 'PancakeSwapV3',
+  PANCAKESWAP_V3_0_05: 'PancakeSwapV3',
+  PANCAKESWAP_V3_0_25: 'PancakeSwapV3',
+  PANCAKESWAP_V3_1_0: 'PancakeSwapV3',
   CURVE: 'Curve',
   CURVE_FACTORY: 'Curve',
 }
@@ -86,7 +85,7 @@ export default async function generateSwapCalldata({
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
-    srcReceiver: swapExecutorContractAddress ?? '',
+    srcReceiver: swapExecutorContractAddress,
     dstReceiver: receiverAddress,
     amount,
     minReturnAmount,
@@ -134,11 +133,15 @@ export default async function generateSwapCalldata({
       calldata = await generateCurveStableSwapCalls(
         amountNativeDecimals,
         exchangeContractAddress,
-        swapExecutorContractAddress ?? '',
+        swapExecutorContractAddress,
         path,
         unit.provider,
         curveRegistryAddress
       );
+      break;
+    }
+    case 'PancakeSwapV3': {
+      calldata = await generatePancake3Calls(amountNativeDecimals, exchangeContractAddress, path, unit.provider)
       break;
     }
     default: {
@@ -204,6 +207,37 @@ async function generateUni3Calls(
     encodedPools.push(encodedPool)
   }
   const executorInterface = SwapExecutor__factory.createInterface()
+  let calldata = executorInterface.encodeFunctionData('uniswapV3SwapTo', [encodedPools, exchangeContractAddress, amount])
+  calldata = addCallParams(calldata)
+
+  return await generateCalls([calldata])
+}
+
+async function generatePancake3Calls(
+  amount: BigNumberish,
+  exchangeContractAddress: string,
+  path: SafeArray<SwapInfo>,
+  provider: ethers.providers.JsonRpcProvider
+) {
+  const encodedPools: BytesLike[] = []
+  for (const swap of path) {
+    // TODO: change to PancakeV3Pool__factory
+    const pool = UniswapV3Pool__factory.connect(swap.pool, provider)
+    const token0 = await pool.token0()
+    const zeroForOne = token0.toLowerCase() === swap.assetIn.toLowerCase()
+    const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
+
+    let encodedPool = ethers.utils.solidityPack(['uint256'], [pool.address])
+    encodedPool = ethers.utils.hexDataSlice(encodedPool, 1)
+    let firstByte = 0
+    if (unwrapWETH) firstByte += 32
+    if (!zeroForOne) firstByte += 128
+    const encodedFirstByte = ethers.utils.solidityPack(['uint8'], [firstByte])
+    encodedPool = ethers.utils.hexlify(ethers.utils.concat([encodedFirstByte, encodedPool]))
+    encodedPools.push(encodedPool)
+  }
+  const executorInterface = SwapExecutor__factory.createInterface()
+  // TODO: change to pancakeV3SwapTo
   let calldata = executorInterface.encodeFunctionData('uniswapV3SwapTo', [encodedPools, exchangeContractAddress, amount])
   calldata = addCallParams(calldata)
 
