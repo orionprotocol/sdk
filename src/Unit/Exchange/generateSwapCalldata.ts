@@ -82,7 +82,7 @@ export default async function generateSwapCalldata({
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
-    srcReceiver: swapExecutorContractAddress,
+    srcReceiver: swapExecutorContractAddress ?? '',
     dstReceiver: receiverAddress,
     amount,
     minReturnAmount,
@@ -130,7 +130,7 @@ export default async function generateSwapCalldata({
       calldata = await generateCurveStableSwapCalls(
         amountNativeDecimals,
         exchangeContractAddress,
-        swapExecutorContractAddress,
+        swapExecutorContractAddress ?? '',
         path,
         unit.provider,
         curveRegistryAddress
