@@ -15,7 +15,7 @@
   "56": {
     "chainId": "56",
     "explorer": "https://bscscan.com/",
-    "label": "Binance Smart Chain",
+    "label": "BNB Chain",
     "shortName": "BSC",
     "code": "bsc",
     "rpc": "https://bsc-dataseed.binance.org/",
@@ -28,7 +28,7 @@
   "97": {
     "chainId": "97",
     "explorer": "https://testnet.bscscan.com/",
-    "label": "Binance Smart Chain Testnet",
+    "label": "BNB Chain Testnet",
     "shortName": "BSC-Testnet",
     "code": "bsc",
     "rpc": "https://data-seed-prebsc-1-s1.bnbchain.org:8545/",
