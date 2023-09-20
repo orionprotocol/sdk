@@ -62,6 +62,8 @@ export default async function generateSwapCalldata({
   if (path_ == undefined || path_.length == 0) {
     throw new Error('Empty path');
   }
+  console.log("Initial path")
+  console.log(path_)
   const wethAddress = safeGet(unit.contracts, 'WETH')
   const curveRegistryAddress = safeGet(unit.contracts, 'curveRegistry')
   const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
@@ -74,7 +76,9 @@ export default async function generateSwapCalldata({
   if (!path.every(swapInfo => swapInfo.factory === factory)) {
     throw new Error('Supporting only swaps with single factory');
   }
-
+  console.log("Updated path")
+  console.log(path)
+  console.log(factory)
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
