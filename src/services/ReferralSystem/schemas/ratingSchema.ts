@@ -33,6 +33,10 @@ const ratingSchema = z.object({
     weighted_volume_fmt: z.number(),
     total_weight: z.string(),
     total_weight_fmt: z.number(),
+    total_volume_fmt: z.number(),
+    total_earnings_fmt: z.number(),
+    referrals_count_fmt: z.number(),
+    total_trades_fmt: z.number(),
     reward: z.string(),
     reward_fmt: z.number()
   })),
