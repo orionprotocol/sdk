@@ -4,6 +4,8 @@ const ratingSchema = z.object({
   info: z.object({
     weekly_boost_budget: z.string(),
     weekly_boost_budget_fmt: z.number(),
+    monthly_boost_budget: z.string(),
+    monthly_boost_budget_fmt: z.number(),
     time_left_for_the_reward: z.number(),
     time_left_for_the_reward_local: z.string(),
     time_left_for_the_reward_utc: z.string(),
@@ -34,6 +36,7 @@ const ratingSchema = z.object({
     total_weight: z.string(),
     total_weight_fmt: z.number(),
     total_volume_fmt: z.number(),
+    weekly_earnings_fmt: z.number(),
     total_earnings_fmt: z.number(),
     referrals_count_fmt: z.number(),
     total_trades_fmt: z.number(),
