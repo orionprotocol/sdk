@@ -15,8 +15,16 @@ const distinctAnalyticsSchema = z.object({
       latest_block: z.number(),
     }),
   ),
-  total_earned: z.number(),
   total_sent_to_governance: z.number(),
+  total_earned: z.number(),
+  total_volume: z.number(),
+  total_trades: z.number(),
+  all_time_earnings_boost_only: z.number(),
+  all_time_earnings_boost_only_usd: z.number(),
+  all_time_earnings: z.number(),
+  all_time_earnings_usd: z.number(),
+  all_weekly_earnings: z.number(),
+  all_weekly_earnings_usd: z.number(),
 });
 
 export default distinctAnalyticsSchema;
