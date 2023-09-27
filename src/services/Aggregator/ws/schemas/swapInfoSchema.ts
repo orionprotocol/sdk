@@ -37,7 +37,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     p: z.string(), // pool address
     ai: z.string().toUpperCase(), // asset in
     ao: z.string().toUpperCase(), // asset out
-    f: z.string().toUpperCase(), // factory
+    f: z.string(), // factory
   }))
 });
 
