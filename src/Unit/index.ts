@@ -7,6 +7,7 @@ import Exchange from './Exchange/index.js';
 import FarmingManager from './FarmingManager/index.js';
 import { chains, envs } from '../config/index.js';
 import type { networkCodes } from '../constants/index.js';
+import { IntegratorService } from '../services/Integrator/index.js';
 
 type KnownConfig = {
   env: KnownEnv
@@ -21,6 +22,8 @@ export default class Unit {
   public readonly provider: ethers.providers.StaticJsonRpcProvider;
 
   public readonly blockchainService: BlockchainService;
+
+  public readonly integrator: IntegratorService;
 
   public readonly aggregator: Aggregator;
 
@@ -58,6 +61,9 @@ export default class Unit {
           priceFeed: {
             api: networkConfig.api + networkConfig.services.priceFeed.all,
           },
+          integrator: {
+            api: networkConfig.api + networkConfig.services.integrator.http,
+          }
         },
       }
     } else {
@@ -65,7 +71,7 @@ export default class Unit {
     }
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
-    
+
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
     this.contracts = chainInfo.contracts
@@ -75,6 +81,7 @@ export default class Unit {
     this.provider.pollingInterval = 1000;
 
     this.blockchainService = new BlockchainService(this.config.services.blockchainService.http, this.config.basicAuth);
+    this.integrator = new IntegratorService(this.config.services.integrator.api, intNetwork);
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,
