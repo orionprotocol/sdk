@@ -9,6 +9,6 @@ export const evmAddressSchema = z
 
 export const hexStringSchema = z
   .string()
-  .refine(ethers.utils.isAddress, (v) => ({
+  .refine(ethers.utils.isHexString, (v) => ({
     message: `${v} is not a valid hex string`,
   }));
