@@ -16,7 +16,7 @@ export async function generateUni3Call(
   const executorInterface = SwapExecutor__factory.createInterface()
   let calldata = executorInterface.encodeFunctionData('uniswapV3SingleSwapTo', [encodedPool, recipient, amount])
 
-  return calldata
+  return addCallParams(calldata)
 }
 
 export async function generateOrion3Call(
@@ -31,7 +31,7 @@ export async function generateOrion3Call(
   const executorInterface = SwapExecutor__factory.createInterface()
   let calldata = executorInterface.encodeFunctionData('orionV3SingleSwapTo', [encodedPool, recipient, amount])
 
-  return calldata
+  return addCallParams(calldata)
 }
 
 export async function generateUni3Calls(
