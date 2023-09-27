@@ -3,6 +3,7 @@ import {
   getPoolResponseSchema,
   listNFTOrderResponseSchema,
   listPoolResponseSchema,
+  veORNInfoSchema,
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 
@@ -35,11 +36,18 @@ type ListPoolPayload = BasePayload & {
   params: [string]
 };
 
+type VeORNInfoPayload = BasePayload & {
+  model: 'veORN'
+  method: 'info'
+  params: [string]
+}
+
 type Payload =
-  | GetEnvironmentPayload
-  | ListNFTOrderPayload
-  | GetPoolInfoPayload
-  | ListPoolPayload;
+    | GetEnvironmentPayload
+    | ListNFTOrderPayload
+    | GetPoolInfoPayload
+    | ListPoolPayload
+    | VeORNInfoPayload;
 
 class IntegratorService {
   private readonly apiUrl: string;
@@ -58,6 +66,7 @@ class IntegratorService {
     this.listNFTOrder = this.listNFTOrder.bind(this);
     this.getPoolInfo = this.getPoolInfo.bind(this);
     this.listPool = this.listPool.bind(this);
+    this.veORNInfo = this.veORNInfo.bind(this);
   }
 
   makeRPCPayload = (payload: Omit<Payload, 'chainId' | 'jsonrpc'>) => {
@@ -114,6 +123,17 @@ class IntegratorService {
         params: [address],
       }),
     });
+  }
+
+  private readonly veORNInfo = (address: string) => {
+    return fetchWithValidation(this.apiUrl, veORNInfoSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'veORN',
+        method: 'info',
+        params: [address]
+      })
+    })
   }
 }
 
