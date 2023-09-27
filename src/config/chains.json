@@ -5,7 +5,7 @@
     "label": "Ethereum",
     "shortName": "ETH",
     "code": "eth",
-    "rpc": "https://trade.orionprotocol.io/eth-mainnet/rpc",
+    "rpc": "https://trade.orion.xyz/eth-mainnet/rpc",
     "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -44,7 +44,7 @@
     "label": "Ropsten",
     "shortName": "ETH-Ropsten",
     "code": "eth",
-    "rpc": "https://testing.orionprotocol.io/eth-ropsten/rpc",
+    "rpc": "https://testing.orion.xyz/eth-ropsten/rpc",
     "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "",
@@ -57,7 +57,7 @@
     "label": "Goerli",
     "shortName": "ETH-Goerli",
     "code": "eth",
-    "rpc": "https://testing.orionprotocol.io/eth-goerli/rpc",
+    "rpc": "https://testing.orion.xyz/eth-goerli/rpc",
     "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "",
