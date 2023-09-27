@@ -1,26 +1,22 @@
 import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ethers-v5/Exchange.js';
-import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
-import { BigNumber, ethers, type BigNumberish } from 'ethers';
-import { concat, defaultAbiCoder, type BytesLike } from 'ethers/lib/utils.js';
+import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { type BytesLike, ethers, type BigNumberish, providers } from 'ethers';
 import { safeGet, SafeArray } from '../../utils/safeGetters.js';
-import type Unit from '../index.js';
 import { simpleFetch } from 'simple-typed-fetch';
-import type { PromiseOrValue } from '@orionprotocol/contracts/lib/ethers-v5/common.js';
+import type Unit from '../index.js';
+import { generateUni2Calls, generateUni2Call } from './callGenerators/uniswapV2.js';
+import { generateUni3Calls, generateOrion3Calls, generateUni3Call, generateOrion3Call } from './callGenerators/uniswapV3.js';
+import { exchangeToNativeDecimals, generateCalls, pathCallWithBalance } from './callGenerators/utils.js';
+import { generateApproveCall, generateTransferCall } from './callGenerators/erc20.js';
+import { generateCurveStableSwapCall } from './callGenerators/curve.js';
 
-const EXECUTOR_SWAP_FUNCTION = 'func_70LYiww'
+export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
 export type SwapInfo = {
   pool: string
   assetIn: string
   assetOut: string
-  factory: string
-}
-
-export type CallParams = {
-  isMandatory?: boolean
-  target?: string
-  gaslimit?: BigNumber
-  value?: BigNumber
+  factory: Factory
 }
 
 export type GenerateSwapCalldataParams = {
@@ -35,81 +31,124 @@ export default async function generateSwapCalldata({
   amount,
   minReturnAmount,
   receiverAddress,
-  path: path_,
+  path: arrayLikePath,
   unit
 }: GenerateSwapCalldataParams
 ): Promise<{ calldata: string, swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct }> {
-  if (path_ == undefined || path_.length == 0) {
+  if (arrayLikePath == undefined || arrayLikePath.length == 0) {
     throw new Error('Empty path');
   }
   const wethAddress = safeGet(unit.contracts, 'WETH')
   const curveRegistryAddress = safeGet(unit.contracts, 'curveRegistry')
   const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
-  let path = SafeArray.from(path_).map((swapInfo) => {
+  let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
     swapInfo.assetIn = safeGet(assetToAddress, swapInfo.assetIn);
     swapInfo.assetOut = safeGet(assetToAddress, swapInfo.assetOut);
     return swapInfo;
   })
-  const factory = path.first().factory
-  if (!path.every(swapInfo => swapInfo.factory === factory)) {
-    throw new Error('Supporting only swaps with single factory');
-  }
-  const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
-    srcToken: path.first().assetIn,
-    dstToken: path.last().assetOut,
-    srcReceiver: swapExecutorContractAddress ?? '',
+
+  const { factory, assetIn: srcToken } = path.first()
+  const dstToken = path.last().assetOut
+
+  let swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
+    srcToken: srcToken,
+    dstToken: dstToken,
+    srcReceiver: swapExecutorContractAddress,
     dstReceiver: receiverAddress,
     amount,
     minReturnAmount,
     flags: 0
   }
+  const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, unit.provider);
 
-  const exchangeToNativeDecimals = async (token: PromiseOrValue<string>) => {
-    token = await token
-    let decimals = 18
-    if (token !== ethers.constants.AddressZero) {
-      const contract = ERC20__factory.connect(token, unit.provider)
-      decimals = await contract.decimals()
-    }
-    return BigNumber.from(amount).mul(BigNumber.from(10).pow(decimals)).div(BigNumber.from(10).pow(8))
-  }
-  const amountNativeDecimals = await exchangeToNativeDecimals(swapDescription.srcToken);
-
-  path = SafeArray.from(path_).map((swapInfo) => {
+  path = SafeArray.from(arrayLikePath).map((swapInfo) => {
     if (swapInfo.assetIn == ethers.constants.AddressZero) swapInfo.assetIn = wethAddress
     if (swapInfo.assetOut == ethers.constants.AddressZero) swapInfo.assetOut = wethAddress
     return swapInfo;
   });
+  const isSingleFactorySwap = path.every(swapInfo => swapInfo.factory === factory)
+  let calldata: BytesLike
+  if (isSingleFactorySwap) {
+    ({ swapDescription, calldata } = await processSingleFactorySwaps(
+      factory,
+      swapDescription,
+      path,
+      exchangeContractAddress,
+      amountNativeDecimals,
+      swapExecutorContractAddress,
+      curveRegistryAddress,
+      unit.provider
+    ))
+  } else {
+    ({ swapDescription, calldata } = await processMultiFactorySwaps(
+      swapDescription,
+      path,
+      exchangeContractAddress,
+      amountNativeDecimals,
+      swapExecutorContractAddress,
+      curveRegistryAddress,
+      unit.provider
+    ))
+  }
 
-  let calldata: string
+  return { swapDescription, calldata }
+}
+
+async function processSingleFactorySwaps(
+  factory: Factory,
+  swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct,
+  path: SafeArray<SwapInfo>,
+  recipient: string,
+  amount: BigNumberish,
+  swapExecutorContractAddress: string,
+  curveRegistryAddress: string,
+  provider: providers.JsonRpcProvider
+) {
+  let calldata: BytesLike
   switch (factory) {
     case 'OrionV2': {
       swapDescription.srcReceiver = path.first().pool
-      calldata = await generateUni2Calls(exchangeContractAddress, path);
+      calldata = await generateUni2Calls(path, recipient);
       break;
     }
     case 'UniswapV2': {
       swapDescription.srcReceiver = path.first().pool
-      calldata = await generateUni2Calls(exchangeContractAddress, path);
+      calldata = await generateUni2Calls(path, recipient);
       break;
     }
     case 'UniswapV3': {
-      calldata = await generateUni3Calls(amountNativeDecimals, exchangeContractAddress, path, unit.provider)
+      calldata = await generateUni3Calls(path, amount, recipient, provider)
       break;
     }
     case 'OrionV3': {
-      calldata = await generateOrion3Calls(amountNativeDecimals, exchangeContractAddress, path, unit.provider)
+      calldata = await generateOrion3Calls(path, amount, recipient, provider)
       break;
     }
     case 'Curve': {
-      calldata = await generateCurveStableSwapCalls(
-        amountNativeDecimals,
-        exchangeContractAddress,
-        swapExecutorContractAddress ?? '',
-        path,
-        unit.provider,
+      if (path.length > 1) {
+        throw new Error('Supporting only single stable swap on curve')
+      }
+      const { pool, assetIn } = path.first()
+      const firstToken = ERC20__factory.connect(assetIn, provider)
+      const executorAllowance = await firstToken.allowance(swapExecutorContractAddress, pool)
+      const calls: BytesLike[] = []
+      if (executorAllowance.lt(amount)) {
+          const approveCall = await generateApproveCall(
+            assetIn,
+            pool,
+            ethers.constants.MaxUint256
+          )
+        calls.push(approveCall)
+      }
+      let curveCall = await generateCurveStableSwapCall(
+        amount,
+        recipient,
+        path.first(),
+        provider,
         curveRegistryAddress
       );
+      calls.push(curveCall)
+      calldata = await generateCalls(calls)
       break;
     }
     default: {
@@ -119,174 +158,77 @@ export default async function generateSwapCalldata({
   return { swapDescription, calldata }
 }
 
-export async function generateUni2Calls(
-  exchangeAddress: string,
-  path: SafeArray<SwapInfo>
-) {
-  const executorInterface = SwapExecutor__factory.createInterface()
-  const calls: BytesLike[] = []
-  if (path.length > 1) {
-    for (let i = 0; i < path.length - 1; ++i) {
-      const currentSwap = path.get(i)
-      const nextSwap = path.get(i + 1)
-
-      const calldata = executorInterface.encodeFunctionData('swapUniV2', [
-        currentSwap.pool,
-        currentSwap.assetIn,
-        currentSwap.assetOut,
-        defaultAbiCoder.encode(['uint256'], [concat(['0x03', nextSwap.pool])]),
-      ]
-      )
-      calls.push(addCallParams(calldata))
-    }
-  }
-  const lastSwap = path.last();
-  const calldata = executorInterface.encodeFunctionData('swapUniV2', [
-    lastSwap.pool,
-    lastSwap.assetIn,
-    lastSwap.assetOut,
-    defaultAbiCoder.encode(['uint256'], [concat(['0x03', exchangeAddress])]),
-  ])
-  calls.push(addCallParams(calldata))
-
-  return await generateCalls(calls)
-}
-
-async function generateUni3Calls(
-  amount: BigNumberish,
-  exchangeContractAddress: string,
+async function processMultiFactorySwaps(
+  swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct,
   path: SafeArray<SwapInfo>,
-  provider: ethers.providers.JsonRpcProvider
+  recipient: string,
+  amount: BigNumberish,
+  swapExecutorContractAddress: string,
+  curveRegistryAddress: string,
+  provider: providers.JsonRpcProvider
 ) {
-  const encodedPools: BytesLike[] = []
+  let calls: BytesLike[] = []
   for (const swap of path) {
-    const pool = UniswapV3Pool__factory.connect(swap.pool, provider)
-    const token0 = await pool.token0()
-    const zeroForOne = token0.toLowerCase() === swap.assetIn.toLowerCase()
-    const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
-
-    let encodedPool = ethers.utils.solidityPack(['uint256'], [pool.address])
-    encodedPool = ethers.utils.hexDataSlice(encodedPool, 1)
-    let firstByte = 0
-    if (unwrapWETH) firstByte += 32
-    if (!zeroForOne) firstByte += 128
-    const encodedFirstByte = ethers.utils.solidityPack(['uint8'], [firstByte])
-    encodedPool = ethers.utils.hexlify(ethers.utils.concat([encodedFirstByte, encodedPool]))
-    encodedPools.push(encodedPool)
-  }
-  const executorInterface = SwapExecutor__factory.createInterface()
-  let calldata = executorInterface.encodeFunctionData('uniswapV3SwapTo', [encodedPools, exchangeContractAddress, amount])
-  calldata = addCallParams(calldata)
-
-  return await generateCalls([calldata])
-}
-
-async function generateOrion3Calls(
-  amount: BigNumberish,
-  exchangeContractAddress: string,
-  path: SafeArray<SwapInfo>,
-  provider: ethers.providers.JsonRpcProvider
-) {
-  const encodedPools: BytesLike[] = []
-  for (const swap of path) {
-    const pool = UniswapV3Pool__factory.connect(swap.pool, provider)
-    const token0 = await pool.token0()
-    const zeroForOne = token0.toLowerCase() === swap.assetIn.toLowerCase()
-    const unwrapWETH = swap.assetOut === ethers.constants.AddressZero
-
-    let encodedPool = ethers.utils.solidityPack(['uint256'], [pool.address])
-    encodedPool = ethers.utils.hexDataSlice(encodedPool, 1)
-    let firstByte = 0
-    if (unwrapWETH) firstByte += 32
-    if (!zeroForOne) firstByte += 128
-    const encodedFirstByte = ethers.utils.solidityPack(['uint8'], [firstByte])
-    encodedPool = ethers.utils.hexlify(ethers.utils.concat([encodedFirstByte, encodedPool]))
-    encodedPools.push(encodedPool)
-  }
-  const executorInterface = SwapExecutor__factory.createInterface()
-  let calldata = executorInterface.encodeFunctionData('orionV3SwapTo', [encodedPools, exchangeContractAddress, amount])
-  calldata = addCallParams(calldata)
-
-  return await generateCalls([calldata])
-}
-
-async function generateCurveStableSwapCalls(
-  amount: BigNumberish,
-  exchangeContractAddress: string,
-  executorAddress: string,
-  path: SafeArray<SwapInfo>,
-  provider: ethers.providers.JsonRpcProvider,
-  curveRegistry: string
-) {
-  if (path.length > 1) {
-    throw new Error('Supporting only single stable swap on curve')
-  }
-  const executorInterface = SwapExecutor__factory.createInterface()
-  const registry = CurveRegistry__factory.connect(curveRegistry, provider)
-
-  const swap = path.first()
-  const firstToken = ERC20__factory.connect(swap.assetIn, provider)
-  const { pool, assetIn, assetOut } = swap
-  const [i, j,] = await registry.get_coin_indices(pool, assetIn, assetOut)
-
-  const executorAllowance = await firstToken.allowance(executorAddress, swap.pool)
-  const calls: BytesLike[] = []
-  if (executorAllowance.lt(amount)) {
-    const calldata = addCallParams(
-      executorInterface.encodeFunctionData('safeApprove', [
-        swap.assetIn,
-        swap.pool,
-        ethers.constants.MaxUint256
-      ])
-    )
-    calls.push(calldata)
-  }
-  let calldata = executorInterface.encodeFunctionData('curveSwapStableAmountIn', [
-    pool,
-    assetOut,
-    i,
-    j,
-    amount,
-    0,
-    exchangeContractAddress])
-
-  calldata = addCallParams(calldata)
-  calls.push(calldata)
-
-  return await generateCalls(calls)
-}
-
-// Adds additional byte to single swap with settings
-function addCallParams(
-  calldata: BytesLike,
-  callParams?: CallParams
-) {
-  let firstByte = 0
-  if (callParams) {
-    if (callParams.value !== undefined) {
-      firstByte += 16 // 00010000
-      const encodedValue = ethers.utils.solidityPack(['uint128'], [callParams.value])
-      calldata = ethers.utils.hexlify(ethers.utils.concat([encodedValue, calldata]))
+    switch (swap.factory) {
+      case 'OrionV2': {
+        let transferCall = await generateTransferCall(swap.assetIn, swap.pool, 0)
+        transferCall = pathCallWithBalance(transferCall, swap.assetIn)
+        const uni2Call = await generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress)
+        calls = calls.concat([transferCall, uni2Call])
+        break;
+      }
+      case 'UniswapV2': {
+        let transferCall = await generateTransferCall(swap.assetIn, swap.pool, 0)
+        transferCall = pathCallWithBalance(transferCall, swap.assetIn)
+        const uni2Call = await generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress)
+        calls = calls.concat([transferCall, uni2Call])
+        break;
+      }
+      case 'UniswapV3': {
+        let uni3Call = await generateUni3Call(swap, 0, swapExecutorContractAddress, provider)
+        uni3Call = pathCallWithBalance(uni3Call, swap.assetIn)
+        calls.push(uni3Call)
+        break;
+      }
+      case 'OrionV3': {
+        let orion3Call = await generateOrion3Call(swap, 0, swapExecutorContractAddress, provider)
+        orion3Call = pathCallWithBalance(orion3Call, swap.assetIn)
+        calls.push(orion3Call)
+        break;
+      }
+      case 'Curve': {
+        const { pool, assetIn } = swap
+        const firstToken = ERC20__factory.connect(assetIn, provider)
+        const executorAllowance = await firstToken.allowance(swapExecutorContractAddress, pool)
+        if (executorAllowance.lt(amount)) {
+            const approveCall = await generateApproveCall(
+              assetIn,
+              pool,
+              ethers.constants.MaxUint256
+            )
+          calls.push(approveCall)
+        }
+        let curveCall = await generateCurveStableSwapCall(
+          amount,
+          swapExecutorContractAddress,
+          swap,
+          provider,
+          curveRegistryAddress
+        );
+        curveCall = pathCallWithBalance(curveCall, swap.assetIn)
+        calls.push(curveCall)
+        break;
+      }
+      default: {
+        throw new Error(`Factory ${swap.factory} is not supported`)
+      }
     }
-    if (callParams.target !== undefined) {
-      firstByte += 32 // 00100000
-      const encodedAddress = ethers.utils.solidityPack(['address'], [callParams.target])
-      calldata = ethers.utils.hexlify(ethers.utils.concat([encodedAddress, calldata]))
-    }
-    if (callParams.gaslimit !== undefined) {
-      firstByte += 64 // 01000000
-      const encodedGaslimit = ethers.utils.solidityPack(['uint32'], [callParams.gaslimit])
-      calldata = ethers.utils.hexlify(ethers.utils.concat([encodedGaslimit, calldata]))
-    }
-    if (callParams.isMandatory !== undefined) firstByte += 128 // 10000000
   }
+  const dstToken = await swapDescription.dstToken
+  let finalTransferCall = await generateTransferCall(dstToken, recipient, 0)
+  finalTransferCall = pathCallWithBalance(finalTransferCall, dstToken)
+  calls.push(finalTransferCall)
+  const calldata = await generateCalls(calls)
 
-  const encodedFirstByte = ethers.utils.solidityPack(['uint8'], [firstByte])
-  calldata = ethers.utils.hexlify(ethers.utils.concat([encodedFirstByte, calldata]))
-  return calldata
-}
-
-async function generateCalls(calls: BytesLike[]) {
-  const executorInterface = SwapExecutor__factory.createInterface()
-  return '0x' + executorInterface.encodeFunctionData(EXECUTOR_SWAP_FUNCTION, [ethers.constants.AddressZero, calls]).slice(74)
+  return { swapDescription, calldata }
 }
