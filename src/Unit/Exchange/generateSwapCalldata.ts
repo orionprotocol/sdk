@@ -9,26 +9,6 @@ import type { PromiseOrValue } from '@orionprotocol/contracts/lib/ethers-v5/comm
 
 const EXECUTOR_SWAP_FUNCTION = 'func_70LYiww'
 
-// export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
-
-/* const exchangeToType: Partial<Record<string, Factory>> = {
-  'SPOOKYSWAP': 'UniswapV2',
-  'PANCAKESWAP': 'UniswapV2',
-  'UNISWAP': 'UniswapV2',
-  'QUICKSWAP': 'UniswapV2',
-  'ORION_POOL': 'UniswapV2',
-  'CHERRYSWAP': 'UniswapV2',
-  'OKXSWAP': 'UniswapV2',
-  'INTERNAL_POOL_V2': 'UniswapV2',
-  'INTERNAL_POOL_V3': "OrionV3",
-  'INTERNAL_POOL_V3_0_01': "OrionV3",
-  'INTERNAL_POOL_V3_0_05': "OrionV3",
-  'INTERNAL_POOL_V3_0_3': "OrionV3",
-  'INTERNAL_POOL_V3_1_0': "OrionV3",
-  'CURVE': "Curve",
-  'CURVE_FACTORY': "Curve",
-} */
-
 export type SwapInfo = {
   pool: string
   assetIn: string
@@ -62,8 +42,6 @@ export default async function generateSwapCalldata({
   if (path_ == undefined || path_.length == 0) {
     throw new Error('Empty path');
   }
-  console.log("Initial path")
-  console.log(path_)
   const wethAddress = safeGet(unit.contracts, 'WETH')
   const curveRegistryAddress = safeGet(unit.contracts, 'curveRegistry')
   const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
@@ -76,9 +54,6 @@ export default async function generateSwapCalldata({
   if (!path.every(swapInfo => swapInfo.factory === factory)) {
     throw new Error('Supporting only swaps with single factory');
   }
-  console.log("Updated path")
-  console.log(path)
-  console.log(factory)
   const swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
     srcToken: path.first().assetIn,
     dstToken: path.last().assetOut,
