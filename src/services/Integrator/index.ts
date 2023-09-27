@@ -77,6 +77,17 @@ class IntegratorService {
     });
   };
 
+  veORNInfo = (address: string) => {
+    return fetchWithValidation(this.apiUrl, veORNInfoSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'veORN',
+        method: 'info',
+        params: [address]
+      })
+    })
+  }
+
   private readonly getEnvironment = () => {
     return fetchWithValidation(this.apiUrl, environmentResponseSchema, {
       method: 'POST',
@@ -123,17 +134,6 @@ class IntegratorService {
         params: [address],
       }),
     });
-  }
-
-  private readonly veORNInfo = (address: string) => {
-    return fetchWithValidation(this.apiUrl, veORNInfoSchema, {
-      method: 'POST',
-      body: this.makeRPCPayload({
-        model: 'veORN',
-        method: 'info',
-        params: [address]
-      })
-    })
   }
 }
 
