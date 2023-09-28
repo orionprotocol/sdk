@@ -13,7 +13,7 @@ const veORNResultSchema = z.object({
   userAPR: z.number(),
   userVeORN: z.number(),
   userORNLocked: z.number(),
-  userPeriodLock: z.number(),
+  userLockEndDate: z.number(),
   userReward: z.number(),
   userWeeklyReward: z.number()
 });
