@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import MessageType from '../MessageType.js';
 import baseMessageSchema from './baseMessageSchema.js';
+import factories from '../../../../constants/factories.js';
 
 const alternativeSchema = z.object({ // execution alternatives
   e: z.string().array(), // exchanges
@@ -11,6 +12,7 @@ const alternativeSchema = z.object({ // execution alternatives
   aa: z.number().optional(), // available amount in
   aao: z.number().optional(), // available amount out
 });
+const factorySchema = z.enum(factories);
 const swapInfoSchemaBase = baseMessageSchema.extend({
   T: z.literal(MessageType.SWAP_INFO),
   S: z.string(), // swap request id
@@ -37,7 +39,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     p: z.string(), // pool address
     ai: z.string().toUpperCase(), // asset in
     ao: z.string().toUpperCase(), // asset out
-    f: z.string(), // factory
+    f: factorySchema, // factory
   }))
 });
 

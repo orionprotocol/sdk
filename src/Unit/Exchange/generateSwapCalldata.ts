@@ -9,15 +9,11 @@ import { generateUni3Calls, generateOrion3Calls, generateUni3Call, generateOrion
 import { exchangeToNativeDecimals, generateCalls, pathCallWithBalance } from './callGenerators/utils.js';
 import { generateApproveCall, generateTransferCall } from './callGenerators/erc20.js';
 import { generateCurveStableSwapCall } from './callGenerators/curve.js';
+import type { SingleSwap } from '../../types.js';
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
-export type SingleSwap = {
-  pool: string
-  assetIn: string
-  assetOut: string
-  factory: Factory
-}
+
 
 export type GenerateSwapCalldataParams = {
   amount: BigNumberish

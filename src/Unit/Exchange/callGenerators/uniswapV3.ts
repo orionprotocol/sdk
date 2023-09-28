@@ -1,8 +1,8 @@
 import { SwapExecutor__factory, UniswapV3Pool__factory } from "@orionprotocol/contracts/lib/ethers-v5/index.js"
 import { type BigNumberish, providers, type BytesLike, ethers } from "ethers"
 import { SafeArray } from "../../../utils/safeGetters.js"
-import type { SingleSwap } from "../generateSwapCalldata.js"
 import { addCallParams, generateCalls } from "./utils.js"
+import type { SingleSwap } from "../../../types.js"
 
 export async function generateUni3Call(
   swap: SingleSwap,

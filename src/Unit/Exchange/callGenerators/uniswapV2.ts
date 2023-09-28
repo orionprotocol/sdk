@@ -3,8 +3,8 @@ import { SafeArray } from "../../../utils/safeGetters.js"
 import { BigNumber } from "ethers"
 import type { BytesLike, BigNumberish } from "ethers"
 import { defaultAbiCoder, concat } from "ethers/lib/utils.js"
-import type { SingleSwap } from "../generateSwapCalldata.js"
 import { addCallParams, generateCalls } from "./utils.js"
+import type { SingleSwap } from "../../../types.js"
 
 export async function generateUni2Calls(
   path: SafeArray<SingleSwap>,
