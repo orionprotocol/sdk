@@ -3,11 +3,11 @@ import { SafeArray } from "../../../utils/safeGetters.js"
 import { BigNumber } from "ethers"
 import type { BytesLike, BigNumberish } from "ethers"
 import { defaultAbiCoder, concat } from "ethers/lib/utils.js"
-import type { SwapInfo } from "../generateSwapCalldata.js"
+import type { SingleSwap } from "../generateSwapCalldata.js"
 import { addCallParams, generateCalls } from "./utils.js"
 
 export async function generateUni2Calls(
-  path: SafeArray<SwapInfo>,
+  path: SafeArray<SingleSwap>,
   recipient: string
 ) {
   const executorInterface = SwapExecutor__factory.createInterface()
