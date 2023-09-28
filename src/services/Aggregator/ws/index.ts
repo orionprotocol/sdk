@@ -508,7 +508,7 @@ class AggregatorWS {
               pool: path.p,
               assetIn: path.ai,
               assetOut: path.ao,
-              factory: path.f as Factory,
+              factory: path.f,
             })),
             poolOptimal: json.po,
             ...(json.oi) && {
