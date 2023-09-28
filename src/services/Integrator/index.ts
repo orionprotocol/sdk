@@ -1,11 +1,14 @@
 import {
   environmentResponseSchema,
   getPoolResponseSchema,
+  listAmountResponseSchema,
   listNFTOrderResponseSchema,
   listPoolResponseSchema,
-  veORNInfoSchema,
+  veORNInfoResponseSchema,
+  votingInfoResponseSchema
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
+import { BigNumber } from 'bignumber.js';
 
 type BasePayload = {
   chainId: number
@@ -42,12 +45,29 @@ type VeORNInfoPayload = BasePayload & {
   params: [string]
 }
 
+type ListAmountPayload = BasePayload & {
+  model: string
+  method: 'listAmount'
+  params: []
+}
+
+type GetAmountByORNPayload = BasePayload & {
+  amountToken: number
+  timeLock: number
+}
+
 type Payload =
     | GetEnvironmentPayload
     | ListNFTOrderPayload
     | GetPoolInfoPayload
     | ListPoolPayload
-    | VeORNInfoPayload;
+    | VeORNInfoPayload
+    | ListAmountPayload
+    | GetAmountByORNPayload;
+
+const START_TIME = 1690848000;// Aug 01 2023 00:00:00 UTC
+const DAY = 86400
+const YEAR = 365 * DAY
 
 class IntegratorService {
   private readonly apiUrl: string;
@@ -67,6 +87,10 @@ class IntegratorService {
     this.getPoolInfo = this.getPoolInfo.bind(this);
     this.listPool = this.listPool.bind(this);
     this.veORNInfo = this.veORNInfo.bind(this);
+    this.listAmount = this.listAmount.bind(this);
+    this.getAmountByORN = this.getAmountByORN.bind(this);
+    this.getAmountAtCurrent = this.getAmountAtCurrent.bind(this);
+    this.getVotingInfo = this.getVotingInfo.bind(this);
   }
 
   makeRPCPayload = (payload: Omit<Payload, 'chainId' | 'jsonrpc'>) => {
@@ -78,7 +102,7 @@ class IntegratorService {
   };
 
   veORNInfo = (address: string) => {
-    return fetchWithValidation(this.apiUrl, veORNInfoSchema, {
+    return fetchWithValidation(this.apiUrl, veORNInfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
         model: 'veORN',
@@ -86,6 +110,13 @@ class IntegratorService {
         params: [address]
       })
     })
+  }
+
+  getAmountAtCurrent = (amount: number) => {
+    const timestamp = Date.now() / 1000;
+
+    // sqrt
+    return BigNumber(amount).dividedBy(this.getK(timestamp));
   }
 
   private readonly getEnvironment = () => {
@@ -132,6 +163,47 @@ class IntegratorService {
         model: 'OrionFarmV3',
         method: 'listPool',
         params: [address],
+      }),
+    });
+  }
+
+  private readonly listAmount = (poolKey: string) => {
+    return fetchWithValidation(this.apiUrl, listAmountResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: poolKey,
+        method: 'listAmount',
+        params: [],
+      }),
+    });
+  }
+
+  private readonly getK = (time: number) => {
+    const currentTime = time < START_TIME ? START_TIME : time;
+
+    const deltaYears = BigNumber(currentTime).minus(START_TIME).dividedBy(YEAR);
+    return BigNumber(2).pow(BigNumber(deltaYears).pow(2));
+  }
+
+  private readonly getAmountByORN = (amountToken: number, timeLock: number) => {
+    const timestamp = Date.now() / 1000;
+
+    const deltaDays = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
+    if (deltaDays.lt(0)) {
+      return 0;
+    }
+
+    // sqrt
+    return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(5);
+  }
+
+  private readonly getVotingInfo = (userAddress: number) => {
+    return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionVoting',
+        method: 'info',
+        params: [userAddress],
       }),
     });
   }
