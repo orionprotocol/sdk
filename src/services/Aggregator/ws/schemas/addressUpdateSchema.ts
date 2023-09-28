@@ -23,6 +23,7 @@ const subOrderSchema = z.object({
   A: z.number(), // settled amount
   p: z.number(), // avg weighed settlement price
   e: z.string(), // exchange
+  es: z.string().array().optional(), // exchanges
   b: z.string(), // broker address
   S: z.enum(subOrderStatuses), // status
   o: z.boolean(), // internal only
@@ -52,6 +53,7 @@ export const orderUpdateSchema = z.object({
     subOrders: o.c.map((so) => ({
       pair: so.P,
       exchange: so.e,
+      exchanges: so.es,
       id: so.i,
       amount: so.a,
       settledAmount: so.A,
@@ -106,6 +108,7 @@ export const fullOrderSchema = z.object({
   subOrders: o.c.map((so) => ({
     pair: so.P,
     exchange: so.e,
+    exchangs: so.es,
     id: so.i,
     amount: so.a,
     settledAmount: so.A,
