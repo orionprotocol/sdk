@@ -87,6 +87,7 @@ const subOrderSchema = baseOrderSchema.extend({
     message: `subOrder.parentOrderId must be a hex string, got ${value}`,
   })),
   exchange: z.string(),
+  exchanges: z.string().array().optional(),
   brokerAddress: brokerAddressSchema,
   tradesInfo: z.record(
     z.string().uuid(),
