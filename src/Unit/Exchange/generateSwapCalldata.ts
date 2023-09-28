@@ -12,7 +12,7 @@ import { generateCurveStableSwapCall } from './callGenerators/curve.js';
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
-export type SwapInfo = {
+export type SingleSwap = {
   pool: string
   assetIn: string
   assetOut: string
@@ -23,7 +23,7 @@ export type GenerateSwapCalldataParams = {
   amount: BigNumberish
   minReturnAmount: BigNumberish
   receiverAddress: string
-  path: ArrayLike<SwapInfo>
+  path: ArrayLike<SingleSwap>
   unit: Unit
 }
 
@@ -41,10 +41,10 @@ export default async function generateSwapCalldata({
   const wethAddress = safeGet(unit.contracts, 'WETH')
   const curveRegistryAddress = safeGet(unit.contracts, 'curveRegistry')
   const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
-  let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
-    swapInfo.assetIn = safeGet(assetToAddress, swapInfo.assetIn);
-    swapInfo.assetOut = safeGet(assetToAddress, swapInfo.assetOut);
-    return swapInfo;
+  let path = SafeArray.from(arrayLikePath).map((singleSwap) => {
+    singleSwap.assetIn = safeGet(assetToAddress, singleSwap.assetIn);
+    singleSwap.assetOut = safeGet(assetToAddress, singleSwap.assetOut);
+    return singleSwap;
   })
 
   const { factory, assetIn: srcToken } = path.first()
@@ -61,12 +61,12 @@ export default async function generateSwapCalldata({
   }
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, unit.provider);
 
-  path = SafeArray.from(arrayLikePath).map((swapInfo) => {
-    if (swapInfo.assetIn == ethers.constants.AddressZero) swapInfo.assetIn = wethAddress
-    if (swapInfo.assetOut == ethers.constants.AddressZero) swapInfo.assetOut = wethAddress
-    return swapInfo;
+  path = SafeArray.from(arrayLikePath).map((singleSwap) => {
+    if (singleSwap.assetIn == ethers.constants.AddressZero) singleSwap.assetIn = wethAddress
+    if (singleSwap.assetOut == ethers.constants.AddressZero) singleSwap.assetOut = wethAddress
+    return singleSwap;
   });
-  const isSingleFactorySwap = path.every(swapInfo => swapInfo.factory === factory)
+  const isSingleFactorySwap = path.every(singleSwap => singleSwap.factory === factory)
   let calldata: BytesLike
   if (isSingleFactorySwap) {
     ({ swapDescription, calldata } = await processSingleFactorySwaps(
@@ -97,7 +97,7 @@ export default async function generateSwapCalldata({
 async function processSingleFactorySwaps(
   factory: Factory,
   swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct,
-  path: SafeArray<SwapInfo>,
+  path: SafeArray<SingleSwap>,
   recipient: string,
   amount: BigNumberish,
   swapExecutorContractAddress: string,
@@ -160,7 +160,7 @@ async function processSingleFactorySwaps(
 
 async function processMultiFactorySwaps(
   swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct,
-  path: SafeArray<SwapInfo>,
+  path: SafeArray<SingleSwap>,
   recipient: string,
   amount: BigNumberish,
   swapExecutorContractAddress: string,
