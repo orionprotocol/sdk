@@ -17,6 +17,7 @@ import unsubscriptionDoneSchema from './schemas/unsubscriptionDoneSchema.js';
 import assetPairConfigSchema from './schemas/assetPairConfigSchema.js';
 import type { fullOrderSchema, orderUpdateSchema } from './schemas/addressUpdateSchema.js';
 import { objectKeys } from '../../../utils/objectKeys.js';
+import type { Factory } from '../../../Unit/Exchange/generateSwapCalldata.js';
 // import assertError from '../../../utils/assertError.js';
 // import errorSchema from './schemas/errorSchema';
 
@@ -507,7 +508,7 @@ class AggregatorWS {
               pool: path.p,
               assetIn: path.ai,
               assetOut: path.ao,
-              factory: path.f,
+              factory: path.f as Factory,
             })),
             poolOptimal: json.po,
             ...(json.oi) && {

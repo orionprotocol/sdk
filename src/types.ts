@@ -4,6 +4,7 @@ import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas/index.js';
 import type getHistory from './Orion/bridge/getHistory.js';
+import type { SingleSwap } from './Unit/Exchange/generateSwapCalldata.js';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -165,13 +166,6 @@ export type SwapInfoAlternative = {
   availableAmountOut?: number | undefined
 }
 
-type ExchangeContractPath = {
-  pool: string
-  assetIn: string
-  assetOut: string
-  factory: string
-}
-
 export type SwapInfoBase = {
   swapRequestId: string
   assetIn: string
@@ -182,7 +176,7 @@ export type SwapInfoBase = {
   minAmountOut: number
 
   path: string[]
-  exchangeContractPath: ExchangeContractPath[]
+  exchangeContractPath: SingleSwap[]
   exchanges?: string[] | undefined
   poolOptimal: boolean
 
