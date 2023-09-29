@@ -9,6 +9,7 @@ import {
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
+import { DAY, LOCK_START_TIME, YEAR } from '../../constants/index.js';
 
 type BasePayload = {
   chainId: number
@@ -64,10 +65,6 @@ type Payload =
     | VeORNInfoPayload
     | ListAmountPayload
     | GetAmountByORNPayload;
-
-const START_TIME = 1690848000;// Aug 01 2023 00:00:00 UTC
-const DAY = 86400
-const YEAR = 365 * DAY
 
 class IntegratorService {
   private readonly apiUrl: string;
@@ -179,9 +176,9 @@ class IntegratorService {
   }
 
   private readonly getK = (time: number) => {
-    const currentTime = time < START_TIME ? START_TIME : time;
+    const currentTime = time < LOCK_START_TIME ? LOCK_START_TIME : time;
 
-    const deltaYears = BigNumber(currentTime).minus(START_TIME).dividedBy(YEAR);
+    const deltaYears = BigNumber(currentTime).minus(LOCK_START_TIME).dividedBy(YEAR);
     return BigNumber(2).pow(BigNumber(deltaYears).pow(2));
   }
 
