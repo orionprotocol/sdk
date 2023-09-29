@@ -9,7 +9,7 @@ import {
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
-import { DAY, LOCK_START_TIME, YEAR } from '../../constants/index.js';
+import { DAY, INITIAL_VEORN_ADJUSTMENT_FACTOR, LOCK_START_TIME, YEAR } from '../../constants/index.js';
 
 type BasePayload = {
   chainId: number
@@ -109,7 +109,7 @@ class IntegratorService {
     })
   }
 
-  getAmountAtCurrent = (amount: number) => {
+  getAmountAtCurrent = async (amount: number) => {
     const timestamp = Date.now() / 1000;
 
     // sqrt
@@ -191,7 +191,7 @@ class IntegratorService {
     }
 
     // sqrt
-    return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(5);
+    return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(INITIAL_VEORN_ADJUSTMENT_FACTOR);
   }
 
   private readonly getVotingInfo = (userAddress: number) => {

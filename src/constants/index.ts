@@ -12,3 +12,4 @@ export * from './gasLimits.js';
 export * from './timings.js';
 
 export const SERVICE_TOKEN = 'ORN';
+export const INITIAL_VEORN_ADJUSTMENT_FACTOR = 5;
