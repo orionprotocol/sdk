@@ -9,7 +9,8 @@ import {
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
-import { DAY, INITIAL_VEORN_ADJUSTMENT_FACTOR, LOCK_START_TIME, YEAR } from '../../constants/index.js';
+import { DAY, YEAR } from '../../constants/index.js';
+import { INITIAL_VEORN_ADJUSTMENT_FACTOR, LOCK_START_TIME } from './constants.js';
 
 type BasePayload = {
   chainId: number
@@ -109,7 +110,7 @@ class IntegratorService {
     })
   }
 
-  getAmountAtCurrent = async (amount: number) => {
+  getAmountAtCurrent = (amount: number) => {
     const timestamp = Date.now() / 1000;
 
     // sqrt
