@@ -1,10 +1,10 @@
 {
   "production": {
-    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
-    "referralAPI": "https://trade.orionprotocol.io/referral-api",
+    "analyticsAPI": "https://trade.orion.xyz/api/stats",
+    "referralAPI": "https://trade.orion.xyz/referral-api",
     "networks": {
       "1": {
-        "api": "https://trade.orionprotocol.io/eth-mainnet",
+        "api": "https://trade.orion.xyz/eth-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -23,7 +23,7 @@
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
       },
       "56": {
-        "api": "https://trade.orionprotocol.io/bsc-mainnet",
+        "api": "https://trade.orion.xyz/bsc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -41,7 +41,7 @@
         }
       },
       "250": {
-        "api": "https://trade.orionprotocol.io/ftm-mainnet",
+        "api": "https://trade.orion.xyz/ftm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -59,7 +59,7 @@
         }
       },
       "137": {
-        "api": "https://trade.orionprotocol.io/polygon-mainnet",
+        "api": "https://trade.orion.xyz/polygon-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -77,7 +77,7 @@
         }
       },
       "66": {
-        "api": "https://trade.orionprotocol.io/okc-mainnet",
+        "api": "https://trade.orion.xyz/okc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -97,11 +97,11 @@
     }
   },
   "testing": {
-    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
-    "referralAPI": "https://testing.orionprotocol.io/referral-api",
+    "analyticsAPI": "https://trade.orion.xyz/api/stats",
+    "referralAPI": "https://testing.orion.xyz/referral-api",
     "networks": {
       "97": {
-        "api": "https://testing.orionprotocol.io/bsc-testnet",
+        "api": "https://testing.orion.xyz/bsc-testnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -120,7 +120,7 @@
         "liquidityMigratorAddress": "0x01b10dds12478C88A5E18e2707E729906bC25CfF6"
       },
       "5": {
-        "api": "https://testing.orionprotocol.io/eth-goerli",
+        "api": "https://testing.orion.xyz/eth-goerli",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -138,7 +138,7 @@
         }
       },
       "421613": {
-        "api": "https://testing.orionprotocol.io/arbitrum-goerli",
+        "api": "https://testing.orion.xyz/arbitrum-goerli",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -156,7 +156,7 @@
         }
       },
       "4002": {
-        "api": "https://testing.orionprotocol.io/ftm-testnet",
+        "api": "https://testing.orion.xyz/ftm-testnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -174,7 +174,7 @@
         }
       },
       "80001": {
-        "api": "https://testing.orionprotocol.io/polygon-mumbai",
+        "api": "https://testing.orion.xyz/polygon-mumbai",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -192,7 +192,7 @@
         }
       },
       "56303": {
-        "api": "https://testing.orionprotocol.io/drip-testnet",
+        "api": "https://testing.orion.xyz/drip-testnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -212,11 +212,11 @@
     }
   },
   "staging": {
-    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
-    "referralAPI": "https://staging.orionprotocol.io/referral-api",
+    "analyticsAPI": "https://trade.orion.xyz/api/stats",
+    "referralAPI": "https://staging.orion.xyz/referral-api",
     "networks": {
       "1": {
-        "api": "https://staging.orionprotocol.io/eth-mainnet",
+        "api": "https://staging.orion.xyz/eth-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -234,7 +234,7 @@
         }
       },
       "56": {
-        "api": "https://staging.orionprotocol.io/bsc-mainnet",
+        "api": "https://staging.orion.xyz/bsc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -252,7 +252,7 @@
         }
       },
       "250": {
-        "api": "https://staging.orionprotocol.io/ftm-mainnet",
+        "api": "https://staging.orion.xyz/ftm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -270,7 +270,7 @@
         }
       },
       "137": {
-        "api": "https://staging.orionprotocol.io/polygon-mainnet",
+        "api": "https://staging.orion.xyz/polygon-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -288,7 +288,7 @@
         }
       },
       "66": {
-        "api": "https://staging.orionprotocol.io/okc-mainnet",
+        "api": "https://staging.orion.xyz/okc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -308,11 +308,11 @@
     }
   },
   "experimental": {
-    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
-    "referralAPI": "https://testing.orionprotocol.io/referral-api",
+    "analyticsAPI": "https://trade.orion.xyz/api/stats",
+    "referralAPI": "https://testing.orion.xyz/referral-api",
     "networks": {
       "97": {
-        "api": "https://dn-dev.orionprotocol.io/bsc-testnet",
+        "api": "https://dn-dev.orion.xyz/bsc-testnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -330,7 +330,7 @@
         }
       },
       "3": {
-        "api": "https://dn-dev.orionprotocol.io/eth-ropsten",
+        "api": "https://dn-dev.orion.xyz/eth-ropsten",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -350,11 +350,11 @@
     }
   },
   "kucoin-production": {
-    "analyticsAPI": "https://trade.orionprotocol.io/api/stats",
-    "referralAPI": "https://trade.orionprotocol.io/referral-api",
+    "analyticsAPI": "https://trade.orion.xyz/api/stats",
+    "referralAPI": "https://trade.orion.xyz/referral-api",
     "networks": {
       "1": {
-        "api": "https://trade.orionprotocol.io/eth-mainnet",
+        "api": "https://trade.orion.xyz/eth-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -373,7 +373,7 @@
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
       },
       "56": {
-        "api": "https://trade.orionprotocol.io/bsc-mainnet",
+        "api": "https://trade.orion.xyz/bsc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -391,7 +391,7 @@
         }
       },
       "250": {
-        "api": "https://trade.orionprotocol.io/ftm-mainnet",
+        "api": "https://trade.orion.xyz/ftm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -409,7 +409,7 @@
         }
       },
       "137": {
-        "api": "https://trade.orionprotocol.io/polygon-mainnet",
+        "api": "https://trade.orion.xyz/polygon-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -427,7 +427,7 @@
         }
       },
       "66": {
-        "api": "https://trade.orionprotocol.io/okc-mainnet",
+        "api": "https://trade.orion.xyz/okc-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
