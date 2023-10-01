@@ -9,8 +9,8 @@ import {
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
-import { DAY, YEAR } from '../../constants/index.js';
-import { INITIAL_VEORN_ADJUSTMENT_FACTOR, LOCK_START_TIME } from './constants.js';
+import { DAY, WEEK_DAYS, YEAR } from '../../constants/index.js';
+import { LOCK_START_TIME } from './constants.js';
 
 type BasePayload = {
   chainId: number
@@ -110,7 +110,7 @@ class IntegratorService {
     })
   }
 
-  getAmountAtCurrent = (amount: number) => {
+  getAmountAtCurrent = (amount: number): BigNumber => {
     const timestamp = Date.now() / 1000;
 
     // sqrt
@@ -176,11 +176,11 @@ class IntegratorService {
     });
   }
 
-  private readonly getK = (time: number) => {
+  private readonly getK = (time: number): BigNumber => {
     const currentTime = time < LOCK_START_TIME ? LOCK_START_TIME : time;
 
     const deltaYears = BigNumber(currentTime).minus(LOCK_START_TIME).dividedBy(YEAR);
-    return BigNumber(2).pow(BigNumber(deltaYears).pow(2));
+    return BigNumber(2).pow(BigNumber(deltaYears).multipliedBy(2));
   }
 
   private readonly getAmountByORN = (amountToken: number, timeLock: number) => {
@@ -192,7 +192,7 @@ class IntegratorService {
     }
 
     // sqrt
-    return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(INITIAL_VEORN_ADJUSTMENT_FACTOR);
+    return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(BigNumber(WEEK_DAYS).sqrt());
   }
 
   private readonly getVotingInfo = (userAddress: number) => {
