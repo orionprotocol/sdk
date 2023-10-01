@@ -117,6 +117,17 @@ class IntegratorService {
     return BigNumber(amount).dividedBy(this.getK(timestamp));
   }
 
+  getVotingInfo = (userAddress: number) => {
+    return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionVoting',
+        method: 'info',
+        params: [userAddress],
+      }),
+    });
+  }
+
   private readonly getEnvironment = () => {
     return fetchWithValidation(this.apiUrl, environmentResponseSchema, {
       method: 'POST',
@@ -193,17 +204,6 @@ class IntegratorService {
 
     // sqrt
     return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(BigNumber(WEEK_DAYS).sqrt());
-  }
-
-  private readonly getVotingInfo = (userAddress: number) => {
-    return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
-      method: 'POST',
-      body: this.makeRPCPayload({
-        model: 'OrionVoting',
-        method: 'info',
-        params: [userAddress],
-      }),
-    });
   }
 }
 
