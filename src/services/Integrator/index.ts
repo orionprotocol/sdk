@@ -176,11 +176,11 @@ class IntegratorService {
     });
   }
 
-  private readonly getK = (time: number): BigNumber => {
+  private readonly getK = (time: number) => {
     const currentTime = time < LOCK_START_TIME ? LOCK_START_TIME : time;
 
     const deltaYears = BigNumber(currentTime).minus(LOCK_START_TIME).dividedBy(YEAR);
-    return BigNumber(2).pow(BigNumber(deltaYears).multipliedBy(2));
+    return 2 ** BigNumber(deltaYears).multipliedBy(2).toNumber();
   }
 
   private readonly getAmountByORN = (amountToken: number, timeLock: number) => {
