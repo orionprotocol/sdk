@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import infoSchema from './info-schema.js';
 
 const poolSchema = z.object({
   allVote: z.number(),
@@ -8,7 +9,7 @@ const poolSchema = z.object({
   userVote: z.number()
 })
 
-const votingInfoSchema = z.object({
+const votingResultSchema = z.object({
   absoluteVeTokenInVoting: z.number(),
   pools: z.array(poolSchema),
   userVeTokenBalance: z.number(),
@@ -17,5 +18,10 @@ const votingInfoSchema = z.object({
   votingAddress: z.string(),
   weeklyReward: z.number()
 })
+
+const votingInfoSchema = z.object({
+  result: votingResultSchema,
+  info: infoSchema,
+});
 
 export default votingInfoSchema;
