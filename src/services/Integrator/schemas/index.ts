@@ -5,3 +5,4 @@ export { default as listPoolResponseSchema } from './list-pool-response-schema.j
 export { default as veORNInfoResponseSchema } from './veORN-info-schema.js';
 export { default as listAmountResponseSchema } from './list-amount-schema.js';
 export { default as votingInfoResponseSchema } from './voting-info-schema.js';
+export { default as testIncrementorSchema } from './test-incrementor-schema.js';

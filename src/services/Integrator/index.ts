@@ -4,6 +4,7 @@ import {
   listAmountResponseSchema,
   listNFTOrderResponseSchema,
   listPoolResponseSchema,
+  testIncrementorSchema,
   veORNInfoResponseSchema,
   votingInfoResponseSchema
 } from './schemas/index.js';
@@ -182,6 +183,17 @@ class IntegratorService {
       body: this.makeRPCPayload({
         model: poolKey,
         method: 'listAmount',
+        params: [],
+      }),
+    });
+  }
+
+  readonly testRetrieve = () => {
+    return fetchWithValidation(this.apiUrl, testIncrementorSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'Incrementer',
+        method: 'retrieve',
         params: [],
       }),
     });
