@@ -118,7 +118,7 @@ class IntegratorService {
     return BigNumber(amount).dividedBy(this.getK(timestamp));
   }
 
-  readonly getVotingInfo = (userAddress: number) => {
+  readonly getVotingInfo = (userAddress: string) => {
     return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
