@@ -91,7 +91,7 @@ class IntegratorService {
     this.getVotingInfo = this.getVotingInfo.bind(this);
   }
 
-  makeRPCPayload = (payload: Omit<Payload, 'chainId' | 'jsonrpc'>) => {
+  readonly makeRPCPayload = (payload: Omit<Payload, 'chainId' | 'jsonrpc'>) => {
     return JSON.stringify({
       ...payload,
       chainId: this.chainId,
@@ -99,7 +99,7 @@ class IntegratorService {
     });
   };
 
-  veORNInfo = (address: string) => {
+  readonly veORNInfo = (address: string) => {
     return fetchWithValidation(this.apiUrl, veORNInfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -110,14 +110,14 @@ class IntegratorService {
     })
   }
 
-  getAmountAtCurrent = (amount: number): BigNumber => {
+  readonly getAmountAtCurrent = (amount: number): BigNumber => {
     const timestamp = Date.now() / 1000;
 
     // sqrt
     return BigNumber(amount).dividedBy(this.getK(timestamp));
   }
 
-  getVotingInfo = (userAddress: number) => {
+  readonly getVotingInfo = (userAddress: number) => {
     return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -128,7 +128,7 @@ class IntegratorService {
     });
   }
 
-  private readonly getEnvironment = () => {
+  readonly getEnvironment = () => {
     return fetchWithValidation(this.apiUrl, environmentResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -139,7 +139,7 @@ class IntegratorService {
     });
   };
 
-  private readonly listNFTOrder = (address: string) => {
+  readonly listNFTOrder = (address: string) => {
     return fetchWithValidation(this.apiUrl, listNFTOrderResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -150,7 +150,7 @@ class IntegratorService {
     });
   };
 
-  private readonly getPoolInfo = (
+  readonly getPoolInfo = (
     token0: string,
     token1: string,
     poolAddress: string
@@ -165,7 +165,7 @@ class IntegratorService {
     });
   }
 
-  private readonly listPool = (address: string) => {
+  readonly listPool = (address: string) => {
     return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -176,7 +176,7 @@ class IntegratorService {
     });
   }
 
-  private readonly listAmount = (poolKey: string) => {
+  readonly listAmount = (poolKey: string) => {
     return fetchWithValidation(this.apiUrl, listAmountResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
