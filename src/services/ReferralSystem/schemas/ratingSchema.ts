@@ -6,6 +6,7 @@ const ratingSchema = z.object({
     weekly_boost_budget_fmt: z.number(),
     monthly_boost_budget: z.string(),
     monthly_boost_budget_fmt: z.number(),
+    displayed_boost_budget_fmt: z.string(),
     time_left_for_the_reward: z.number(),
     time_left_for_the_reward_local: z.string(),
     time_left_for_the_reward_utc: z.string(),
