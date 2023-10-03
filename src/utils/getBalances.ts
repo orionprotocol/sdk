@@ -1,4 +1,4 @@
-import type { Exchange } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import type { Exchange } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import type { BigNumber } from 'bignumber.js';
 import type { ethers } from 'ethers';
 import type { Aggregator } from '../services/Aggregator/index.js';
@@ -9,7 +9,7 @@ export default async (
   aggregator: Aggregator,
   walletAddress: string,
   exchangeContract: Exchange,
-  provider: ethers.providers.Provider,
+  provider: ethers.Provider,
 ) => {
   const balances = await Promise.all(
     Object.entries(balancesRequired)

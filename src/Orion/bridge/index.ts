@@ -229,7 +229,7 @@ export default class Bridge {
     env?: string | undefined,
   ) {
     const secret = generateSecret();
-    const secretHash = ethers.utils.keccak256(secret);
+    const secretHash = ethers.keccak256(secret);
     const lockExpiration = Date.now() + SECONDS_IN_DAY * EXPIRATION_DAYS * 1000;
 
     return {

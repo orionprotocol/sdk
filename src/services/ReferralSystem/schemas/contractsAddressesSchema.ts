@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { SupportedChainId } from '../../../types.js';
-import { isAddress } from 'ethers/lib/utils.js';
+import { ethers } from 'ethers';
 
 const contractsAddressesSchema = z.record(
   z.nativeEnum(SupportedChainId),
-  z.string().refine(isAddress)
+  z.string().refine(ethers.isAddress)
 );
 
 export default contractsAddressesSchema;

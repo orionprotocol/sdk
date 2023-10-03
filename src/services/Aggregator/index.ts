@@ -74,13 +74,13 @@ class Aggregator {
   }
 
   getOrder = (orderId: string, owner?: string) => {
-    if (!ethers.utils.isHexString(orderId)) {
+    if (!ethers.isHexString(orderId)) {
       throw new Error(`Invalid order id: ${orderId}. Must be a hex string`);
     }
     const url = new URL(`${this.apiUrl}/api/v1/order`);
     url.searchParams.append('orderId', orderId);
     if (owner !== undefined) {
-      if (!ethers.utils.isAddress(owner)) {
+      if (!ethers.isAddress(owner)) {
         throw new Error(`Invalid owner address: ${owner}`);
       }
       url.searchParams.append('owner', owner);

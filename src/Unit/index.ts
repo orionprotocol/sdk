@@ -7,6 +7,7 @@ import Exchange from './Exchange/index.js';
 import FarmingManager from './FarmingManager/index.js';
 import { chains, envs } from '../config/index.js';
 import type { networkCodes } from '../constants/index.js';
+import type { JsonRpcProvider } from 'ethers';
 
 type KnownConfig = {
   env: KnownEnv
@@ -18,7 +19,7 @@ export default class Unit {
 
   public readonly chainId: SupportedChainId;
 
-  public readonly provider: ethers.providers.StaticJsonRpcProvider;
+  public readonly provider: JsonRpcProvider;
 
   public readonly blockchainService: BlockchainService;
 
@@ -65,13 +66,12 @@ export default class Unit {
     }
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
-    
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
     this.contracts = chainInfo.contracts
     const intNetwork = parseInt(this.chainId, 10);
     if (Number.isNaN(intNetwork)) throw new Error('Invalid chainId (not a number)' + this.chainId);
-    this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
+    this.provider = new ethers.JsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
     this.provider.pollingInterval = 1000;
 
     this.blockchainService = new BlockchainService(this.config.services.blockchainService.http, this.config.basicAuth);

@@ -1,13 +1,13 @@
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6';
 import { ethers } from 'ethers';
 import { z } from 'zod';
 
 const swapThroughOrionPoolSchema = z.object({
   name: z.literal('swapThroughOrionPool'),
   args: z.tuple([
-    z.instanceof(ethers.BigNumber), // amount_spend
-    z.instanceof(ethers.BigNumber), // amount_receive
-    z.string().refine(ethers.utils.isAddress).array().nonempty(), // path
+    z.bigint(), // amount_spend
+    z.bigint(), // amount_receive
+    z.string().refine(ethers.isAddress).array().nonempty(), // path
     z.boolean(), // is_exact_spend
   ]),
 }).transform((data) => ({
@@ -21,34 +21,34 @@ const swapThroughOrionPoolSchema = z.object({
 }));
 
 const buyOrderSchema = z.tuple([ // buy order
-  z.string().refine(ethers.utils.isAddress), // senderAddress
-  z.string().refine(ethers.utils.isAddress), // matcherAddress
-  z.string().refine(ethers.utils.isAddress), // baseAsset
-  z.string().refine(ethers.utils.isAddress), // quoteAsset
-  z.string().refine(ethers.utils.isAddress), // matcherFeeAsset
-  z.instanceof(ethers.BigNumber), // amount
-  z.instanceof(ethers.BigNumber), // price
-  z.instanceof(ethers.BigNumber), // matcherFee
-  z.instanceof(ethers.BigNumber), // nonce
-  z.instanceof(ethers.BigNumber), // expiration
+  z.string().refine(ethers.isAddress), // senderAddress
+  z.string().refine(ethers.isAddress), // matcherAddress
+  z.string().refine(ethers.isAddress), // baseAsset
+  z.string().refine(ethers.isAddress), // quoteAsset
+  z.string().refine(ethers.isAddress), // matcherFeeAsset
+  z.bigint(), // amount
+  z.bigint(), // price
+  z.bigint(), // matcherFee
+  z.bigint(), // nonce
+  z.bigint(), // expiration
   z.literal(1), // buySide
   z.boolean(), // isPersonalSign
-  z.string().refine(ethers.utils.isHexString), // signature
+  z.string().refine(ethers.isHexString), // signature
 ]);
 const sellOrderSchema = z.tuple([ // sell orer
-  z.string().refine(ethers.utils.isAddress), // senderAddress
-  z.string().refine(ethers.utils.isAddress), // matcherAddress
-  z.string().refine(ethers.utils.isAddress), // baseAsset
-  z.string().refine(ethers.utils.isAddress), // quoteAsset
-  z.string().refine(ethers.utils.isAddress), // matcherFeeAsset
-  z.instanceof(ethers.BigNumber), // amount
-  z.instanceof(ethers.BigNumber), // price
-  z.instanceof(ethers.BigNumber), // matcherFee
-  z.instanceof(ethers.BigNumber), // nonce
-  z.instanceof(ethers.BigNumber), // expiration
+  z.string().refine(ethers.isAddress), // senderAddress
+  z.string().refine(ethers.isAddress), // matcherAddress
+  z.string().refine(ethers.isAddress), // baseAsset
+  z.string().refine(ethers.isAddress), // quoteAsset
+  z.string().refine(ethers.isAddress), // matcherFeeAsset
+  z.bigint(), // amount
+  z.bigint(), // price
+  z.bigint(), // matcherFee
+  z.bigint(), // nonce
+  z.bigint(), // expiration
   z.literal(0), // buySide
   z.boolean(), // isPersonalSign
-  z.string().refine(ethers.utils.isHexString), // signature
+  z.string().refine(ethers.isHexString), // signature
 ]);
 
 const toOrder = <T extends z.infer<typeof buyOrderSchema> | z.infer<typeof sellOrderSchema>>(data: T) => ({
@@ -71,9 +71,9 @@ const fillThroughOrionPoolSchema = z.object({
   name: z.literal('fillThroughOrionPool'),
   args: z.tuple([
     sellOrderSchema,
-    z.instanceof(ethers.BigNumber), // filled amount
-    z.instanceof(ethers.BigNumber), // blockchainFee
-    z.string().refine(ethers.utils.isAddress).array().nonempty(), // path
+    z.bigint(), // filled amount
+    z.bigint(), // blockchainFee
+    z.string().refine(ethers.isAddress).array().nonempty(), // path
   ]),
 }).transform((data) => ({
   name: data.name,
@@ -90,8 +90,8 @@ const fillOrdersSchema = z.object({
   args: z.tuple([
     buyOrderSchema,
     sellOrderSchema,
-    z.instanceof(ethers.BigNumber), // filledPrice
-    z.instanceof(ethers.BigNumber), // filledAmount
+    z.bigint(), // filledPrice
+    z.bigint(), // filledAmount
   ]),
 }).transform((data) => ({
   name: data.name,

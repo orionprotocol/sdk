@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import type Unit from '../index.js';
@@ -51,7 +51,7 @@ export default async function deposit({
   const balances = await getBalances(
     {
       [asset]: assetAddress,
-      [nativeCryptocurrency]: ethers.constants.AddressZero,
+      [nativeCryptocurrency]: ethers.ZeroAddress,
     },
     aggregator,
     walletAddress,
@@ -63,7 +63,7 @@ export default async function deposit({
     balances,
     {
       name: nativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     provider,
     signer,
@@ -80,34 +80,34 @@ export default async function deposit({
     sources: ['wallet'],
   });
 
-  let unsignedTx: ethers.PopulatedTransaction;
+  let unsignedTx: ethers.TransactionLike;
   if (asset === nativeCryptocurrency) {
-    unsignedTx = await exchangeContract.populateTransaction.deposit();
+    unsignedTx = await exchangeContract.deposit.populateTransaction();
     unsignedTx.value = normalizeNumber(amount, NATIVE_CURRENCY_PRECISION, BigNumber.ROUND_CEIL);
-    unsignedTx.gasLimit = ethers.BigNumber.from(DEPOSIT_ETH_GAS_LIMIT);
+    unsignedTx.gasLimit = BigInt(DEPOSIT_ETH_GAS_LIMIT);
   } else {
-    unsignedTx = await exchangeContract.populateTransaction.depositAsset(
+    unsignedTx = await exchangeContract.depositAsset.populateTransaction(
       assetAddress,
       normalizeNumber(amount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_CEIL),
     );
-    unsignedTx.gasLimit = ethers.BigNumber.from(DEPOSIT_ERC20_GAS_LIMIT);
+    unsignedTx.gasLimit = BigInt(DEPOSIT_ERC20_GAS_LIMIT);
   }
 
-  const transactionCost = ethers.BigNumber.from(unsignedTx.gasLimit).mul(gasPriceWei);
-  const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+  const transactionCost = BigInt(unsignedTx.gasLimit) * BigInt(gasPriceWei);
+  const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
   balanceGuard.registerRequirement({
     reason: 'Network fee',
     asset: {
       name: nativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     amount: denormalizedTransactionCost.toString(),
     sources: ['wallet'],
   });
 
   unsignedTx.chainId = parseInt(chainId, 10);
-  unsignedTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
+  unsignedTx.gasPrice = BigInt(gasPriceWei);
   unsignedTx.from = walletAddress;
 
   await balanceGuard.check(true);
@@ -117,10 +117,10 @@ export default async function deposit({
 
   const signedTx = await signer.signTransaction(unsignedTx);
   try {
-    const txResponse = await provider.sendTransaction(signedTx);
+    const txResponse = await provider.broadcastTransaction(signedTx);
     console.log(`Deposit tx sent: ${txResponse.hash}. Waiting for confirmation...`);
     const txReceipt = await txResponse.wait();
-    if (txReceipt.status !== undefined) {
+    if (txReceipt?.status !== undefined) {
       console.log('Deposit tx confirmed');
     } else {
       console.log('Deposit tx failed');

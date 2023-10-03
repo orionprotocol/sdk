@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { arrayify, joinSignature, splitSignature } from 'ethers/lib/utils.js';
 import type { CancelOrderRequest } from '../types.js';
 
 const signCancelOrderPersonal = async (
@@ -7,14 +6,14 @@ const signCancelOrderPersonal = async (
   signer: ethers.Signer,
 ) => {
   const types = ['string', 'string', 'address'];
-  const message = ethers.utils.solidityKeccak256(
+  const message = ethers.solidityPackedKeccak256(
     types,
     ['cancelOrder', cancelOrderRequest.id, cancelOrderRequest.senderAddress],
   );
-  const signature = await signer.signMessage(arrayify(message));
+  const signature = await signer.signMessage(ethers.getBytes(message));
 
   // NOTE: metamask broke sig.v value and we fix it in next line
-  return joinSignature(splitSignature(signature));
+  return ethers.Signature.from(signature).serialized;
 };
 
 export default signCancelOrderPersonal;
