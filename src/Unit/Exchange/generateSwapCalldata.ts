@@ -1,5 +1,8 @@
 import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ethers-v6/Exchange.js';
-import { UniswapV3Pool__factory, ERC20__factory, SwapExecutor__factory, CurveRegistry__factory } from '@orionprotocol/contracts/lib/ethers-v6';
+import {
+  UniswapV3Pool__factory, ERC20__factory,
+  SwapExecutor__factory, CurveRegistry__factory
+} from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import { ethers, type BigNumberish, type AddressLike, concat, type BytesLike } from 'ethers';
 import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import type Unit from '../index.js';
