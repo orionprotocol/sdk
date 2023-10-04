@@ -1,14 +1,14 @@
-import { isHexString, isAddress } from 'ethers';
+import { ethers } from 'ethers';
 import { z } from 'zod';
 
 export const evmAddressSchema = z
   .string()
-  .refine(isAddress, (v) => ({
+  .refine(ethers.isAddress, (v) => ({
     message: `${v} is not a valid address`,
   }));
 
 export const hexStringSchema = z
   .string()
-  .refine(isHexString, (v) => ({
+  .refine(ethers.isHexString, (v) => ({
     message: `${v} is not a valid hex string`,
   }));
