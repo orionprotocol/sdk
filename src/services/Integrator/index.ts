@@ -6,7 +6,7 @@ import {
   listPoolResponseSchema,
   testIncrementorSchema,
   veORNInfoResponseSchema,
-  votingInfoResponseSchema
+  votingInfoResponseSchema,
 } from './schemas/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
@@ -46,27 +46,27 @@ type VeORNInfoPayload = BasePayload & {
   model: 'veORN'
   method: 'info'
   params: [string]
-}
+};
 
 type ListAmountPayload = BasePayload & {
   model: string
   method: 'listAmount'
   params: []
-}
+};
 
 type GetAmountByORNPayload = BasePayload & {
   amountToken: number
   timeLock: number
-}
+};
 
 type Payload =
-    | GetEnvironmentPayload
-    | ListNFTOrderPayload
-    | GetPoolInfoPayload
-    | ListPoolPayload
-    | VeORNInfoPayload
-    | ListAmountPayload
-    | GetAmountByORNPayload;
+  | GetEnvironmentPayload
+  | ListNFTOrderPayload
+  | GetPoolInfoPayload
+  | ListPoolPayload
+  | VeORNInfoPayload
+  | ListAmountPayload
+  | GetAmountByORNPayload;
 
 class IntegratorService {
   private readonly apiUrl: string;
@@ -106,17 +106,29 @@ class IntegratorService {
       body: this.makeRPCPayload({
         model: 'veORN',
         method: 'info',
-        params: [address]
-      })
-    })
-  }
+        params: [address],
+      }),
+    });
+  };
 
   readonly getAmountAtCurrent = (amount: number): BigNumber => {
     const timestamp = Date.now() / 1000;
 
     // sqrt
     return BigNumber(amount).dividedBy(this.getK(timestamp));
-  }
+  };
+
+  readonly getAmountByORN = (amountToken: number, timeLock: number) => {
+    const timestamp = Date.now() / 1000;
+
+    const deltaDays = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
+
+    if (deltaDays.lte(0)) return 0;
+
+    return BigNumber(amountToken)
+      .multipliedBy(BigNumber(deltaDays).sqrt())
+      .dividedBy(BigNumber(WEEK_DAYS).sqrt());
+  };
 
   readonly getVotingInfo = (userAddress: string) => {
     return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
@@ -127,7 +139,7 @@ class IntegratorService {
         params: [userAddress],
       }),
     });
-  }
+  };
 
   readonly getEnvironment = () => {
     return fetchWithValidation(this.apiUrl, environmentResponseSchema, {
@@ -164,7 +176,7 @@ class IntegratorService {
         params: [token0, token1, poolAddress],
       }),
     });
-  }
+  };
 
   readonly listPool = (address: string) => {
     return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
@@ -175,7 +187,7 @@ class IntegratorService {
         params: [address],
       }),
     });
-  }
+  };
 
   readonly listAmount = (poolKey: string) => {
     return fetchWithValidation(this.apiUrl, listAmountResponseSchema, {
@@ -186,7 +198,7 @@ class IntegratorService {
         params: [],
       }),
     });
-  }
+  };
 
   readonly testRetrieve = () => {
     return fetchWithValidation(this.apiUrl, testIncrementorSchema, {
@@ -197,26 +209,16 @@ class IntegratorService {
         params: [],
       }),
     });
-  }
+  };
 
   private readonly getK = (time: number) => {
     const currentTime = time < LOCK_START_TIME ? LOCK_START_TIME : time;
 
-    const deltaYears = BigNumber(currentTime).minus(LOCK_START_TIME).dividedBy(YEAR);
+    const deltaYears = BigNumber(currentTime)
+      .minus(LOCK_START_TIME)
+      .dividedBy(YEAR);
     return 2 ** BigNumber(deltaYears).multipliedBy(2).toNumber();
-  }
-
-  private readonly getAmountByORN = (amountToken: number, timeLock: number) => {
-    const timestamp = Date.now() / 1000;
-
-    const deltaDays = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
-    if (deltaDays.lt(0)) {
-      return 0;
-    }
-
-    // sqrt
-    return BigNumber(amountToken).multipliedBy(BigNumber(deltaDays).sqrt()).dividedBy(BigNumber(WEEK_DAYS).sqrt());
-  }
+  };
 }
 
 export * as schemas from './schemas/index.js';
