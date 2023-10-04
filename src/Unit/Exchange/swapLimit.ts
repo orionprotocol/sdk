@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
@@ -44,7 +44,7 @@ type PoolSwap = {
   amountOut: number
   through: 'pool'
   txHash: string
-  wait: (confirmations?: number | undefined) => Promise<ethers.providers.TransactionReceipt>
+  wait: (confirmations?: number | undefined) => Promise<ethers.TransactionReceipt | null>
 }
 
 export type Swap = AggregatorOrder | PoolSwap;
@@ -95,7 +95,7 @@ export default async function swapLimit({
   const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();
   const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
 
-  const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
+  const gasPriceGwei = ethers.formatUnits(gasPriceWei, 'gwei').toString();
 
   const assetInAddress = assetToAddress[assetIn];
   if (assetInAddress === undefined) throw new Error(`Asset '${assetIn}' not found`);
@@ -108,7 +108,7 @@ export default async function swapLimit({
     {
       [assetIn]: assetInAddress,
       [feeAsset]: feeAssetAddress,
-      [nativeCryptocurrency]: ethers.constants.AddressZero,
+      [nativeCryptocurrency]: ethers.ZeroAddress,
     },
     aggregator,
     walletAddress,
@@ -120,7 +120,7 @@ export default async function swapLimit({
     balances,
     {
       name: nativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     provider,
     signer,
@@ -271,7 +271,7 @@ export default async function swapLimit({
       BigNumber.ROUND_FLOOR,
     );
 
-    const unsignedSwapThroughOrionPoolTx = await exchangeContract.populateTransaction.swapThroughOrionPool(
+    const unsignedSwapThroughOrionPoolTx = await exchangeContract.swapThroughOrionPool.populateTransaction(
       amountSpendBlockchainParam,
       amountReceiveBlockchainParam,
       factoryAddress !== undefined
@@ -280,8 +280,8 @@ export default async function swapLimit({
       type === 'exactSpend',
     );
 
-    unsignedSwapThroughOrionPoolTx.chainId = parseInt(chainId, 10);
-    unsignedSwapThroughOrionPoolTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
+    unsignedSwapThroughOrionPoolTx.chainId = BigInt(parseInt(chainId, 10));
+    unsignedSwapThroughOrionPoolTx.gasPrice = BigInt(gasPriceWei);
 
     unsignedSwapThroughOrionPoolTx.from = walletAddress;
     const amountSpendBN = new BigNumber(amountSpend);
@@ -297,19 +297,19 @@ export default async function swapLimit({
       NATIVE_CURRENCY_PRECISION,
       BigNumber.ROUND_CEIL,
     );
-    unsignedSwapThroughOrionPoolTx.gasLimit = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
+    unsignedSwapThroughOrionPoolTx.gasLimit = BigInt(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
 
-    const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const transactionCost = BigInt(SWAP_THROUGH_ORION_POOL_GAS_LIMIT) * BigInt(gasPriceWei);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
     balanceGuard.registerRequirement({
       reason: 'Network fee',
       asset: {
         name: nativeCryptocurrency,
-        address: ethers.constants.AddressZero,
+        address: ethers.ZeroAddress,
       },
       amount: denormalizedTransactionCost.toString(),
-      sources: getAvailableSources('network_fee', ethers.constants.AddressZero, 'pool'),
+      sources: getAvailableSources('network_fee', ethers.ZeroAddress, 'pool'),
     });
 
     // if (value.gt(0)) {
@@ -317,10 +317,10 @@ export default async function swapLimit({
     //     reason: 'Transaction value (extra amount)',
     //     asset: {
     //       name: nativeCryptocurrency,
-    //       address: ethers.constants.AddressZero,
+    //       address: ethers.ZeroAddress,
     //     },
     //     amount: value.toString(),
-    //     sources: getAvailableSources('amount', ethers.constants.AddressZero, 'pool'),
+    //     sources: getAvailableSources('amount', ethers.ZeroAddress, 'pool'),
     //   });
     // }
 
@@ -380,7 +380,7 @@ export default async function swapLimit({
     gasPriceGwei,
     feePercent,
     baseAssetAddress,
-    ethers.constants.AddressZero,
+    ethers.ZeroAddress,
     feeAssetAddress,
     allPrices.prices,
   );

@@ -12,8 +12,7 @@
   ],
   "compilerOptions": {
     "target": "esnext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
     "esModuleInterop": true,
     "resolveJsonModule": true /* Enable importing .json files */,
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,

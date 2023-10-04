@@ -198,7 +198,7 @@ describe('Orion', () => {
     expect(unit.aggregator.ws.api).toBe(`ws://localhost:${server1.port}/v1`);
     expect(unit.blockchainService.api).toBe(blockchainServiceAPI);
     expect(unit.priceFeed.api).toBe(orionPriceFeedAPI + '/price-feed');
-    expect(unit.provider.connection.url).toBe('https://cloudflare-eth.com/');
+    expect(unit.provider._getConnection().url).toBe('https://cloudflare-eth.com/');
 
     const info = await simpleFetch(unit.blockchainService.getInfo)();
     expect(info).toBeDefined();
@@ -249,7 +249,7 @@ describe('Orion', () => {
     });
 
     const bscUnit = orion.units[SupportedChainId.BSC_TESTNET]
-    expect(bscUnit?.provider.connection.url).toBe('https://data-seed-prebsc-1-s1.binance.org:8545/');
+    expect(bscUnit?.provider._getConnection().url).toBe('https://data-seed-prebsc-1-s1.binance.org:8545/');
     expect(orion.referralSystem.api).toBe('https://zxczxc.orionprotocol.io');
   });
 
@@ -315,7 +315,7 @@ describe('Orion', () => {
     const network = await unitBSC.provider.getNetwork();
     expect(network.chainId).toBe(97);
 
-    const zeroAddressWithout0x = ethers.constants.AddressZero.slice(2);
+    const zeroAddressWithout0x = ethers.ZeroAddress.slice(2);
     expect(simpleFetch(orion.referralSystem.getMiniStats)(zeroAddressWithout0x))
       .rejects
       .toThrow('empty reward history');

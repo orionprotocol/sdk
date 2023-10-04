@@ -1,8 +1,12 @@
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { Aggregator } from '../services/Aggregator/index.js';
 import { BlockchainService } from '../services/BlockchainService/index.js';
 import { PriceFeed } from '../services/PriceFeed/index.js';
-import type { KnownEnv, SupportedChainId, VerboseUnitConfig } from '../types.js';
+import type {
+  KnownEnv,
+  SupportedChainId,
+  VerboseUnitConfig,
+} from '../types.js';
 import Exchange from './Exchange/index.js';
 import FarmingManager from './FarmingManager/index.js';
 import { chains, envs } from '../config/index.js';
@@ -12,14 +16,14 @@ import { IntegratorService } from '../services/Integrator/index.js';
 type KnownConfig = {
   env: KnownEnv
   chainId: SupportedChainId
-}
+};
 
 export default class Unit {
-  public readonly networkCode: typeof networkCodes[number];
+  public readonly networkCode: (typeof networkCodes)[number];
 
   public readonly chainId: SupportedChainId;
 
-  public readonly provider: ethers.providers.StaticJsonRpcProvider;
+  public readonly provider: JsonRpcProvider;
 
   public readonly blockchainService: BlockchainService;
 
@@ -40,13 +44,33 @@ export default class Unit {
   constructor(config: KnownConfig | VerboseUnitConfig) {
     if ('env' in config) {
       const staticConfig = envs[config.env];
-      if (!staticConfig) throw new Error(`Invalid environment: ${config.env}. Available environments: ${Object.keys(envs).join(', ')}`);
+      if (!staticConfig) {
+        throw new Error(
+          `Invalid environment: ${
+            config.env
+          }. Available environments: ${Object.keys(envs).join(', ')}`
+        );
+      }
 
       const chainConfig = chains[config.chainId];
-      if (!chainConfig) throw new Error(`Invalid chainId: ${config.chainId}. Available chainIds: ${Object.keys(chains).join(', ')}`);
+      if (!chainConfig) {
+        throw new Error(
+          `Invalid chainId: ${
+            config.chainId
+          }. Available chainIds: ${Object.keys(chains).join(', ')}`
+        );
+      }
 
       const networkConfig = staticConfig.networks[config.chainId];
-      if (!networkConfig) throw new Error(`Invalid chainId: ${config.chainId}. Available chainIds: ${Object.keys(staticConfig.networks).join(', ')}`);
+      if (!networkConfig) {
+        throw new Error(
+          `Invalid chainId: ${
+            config.chainId
+          }. Available chainIds: ${Object.keys(staticConfig.networks).join(
+            ', '
+          )}`
+        );
+      }
       this.config = {
         chainId: config.chainId,
         nodeJsonRpc: networkConfig.rpc ?? chainConfig.rpc,
@@ -63,31 +87,41 @@ export default class Unit {
           },
           integrator: {
             api: networkConfig.api + networkConfig.services.integrator.http,
-          }
+          },
         },
-      }
+      };
     } else {
       this.config = config;
     }
     const chainInfo = chains[config.chainId];
     if (!chainInfo) throw new Error('Chain info is required');
-
     this.chainId = config.chainId;
     this.networkCode = chainInfo.code;
-    this.contracts = chainInfo.contracts
+    this.contracts = chainInfo.contracts;
     const intNetwork = parseInt(this.chainId, 10);
-    if (Number.isNaN(intNetwork)) throw new Error('Invalid chainId (not a number)' + this.chainId);
-    this.provider = new ethers.providers.StaticJsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
+    if (Number.isNaN(intNetwork)) {
+      throw new Error('Invalid chainId (not a number)' + this.chainId);
+    }
+    this.provider = new JsonRpcProvider(this.config.nodeJsonRpc, intNetwork);
     this.provider.pollingInterval = 1000;
 
-    this.blockchainService = new BlockchainService(this.config.services.blockchainService.http, this.config.basicAuth);
-    this.integrator = new IntegratorService(this.config.services.integrator.api, intNetwork);
+    this.blockchainService = new BlockchainService(
+      this.config.services.blockchainService.http,
+      this.config.basicAuth
+    );
+    this.integrator = new IntegratorService(
+      this.config.services.integrator.api,
+      intNetwork
+    );
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,
-      this.config.basicAuth,
+      this.config.basicAuth
     );
-    this.priceFeed = new PriceFeed(this.config.services.priceFeed.api, this.config.basicAuth);
+    this.priceFeed = new PriceFeed(
+      this.config.services.priceFeed.api,
+      this.config.basicAuth
+    );
     this.exchange = new Exchange(this);
     this.farmingManager = new FarmingManager(this);
   }

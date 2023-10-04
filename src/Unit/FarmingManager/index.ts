@@ -1,4 +1,4 @@
-import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory, IUniswapV2Pair__factory, IUniswapV2Router__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { simpleFetch } from 'simple-typed-fetch';
@@ -71,7 +71,7 @@ export default class FarmingManager {
       {
         [assetA]: assetAAddress,
         [assetB]: assetBAddress,
-        [nativeCryptocurrency]: ethers.constants.AddressZero,
+        [nativeCryptocurrency]: ethers.ZeroAddress,
       },
       this.unit.aggregator,
       walletAddress,
@@ -81,7 +81,7 @@ export default class FarmingManager {
     const balanceGuard = new BalanceGuard(
       balances,
       {
-        address: ethers.constants.AddressZero,
+        address: ethers.ZeroAddress,
         name: nativeCryptocurrency,
       },
       this.unit.provider,
@@ -109,13 +109,13 @@ export default class FarmingManager {
     const assetAReserve = pairTokensIsInversed ? _reserve1 : _reserve0;
     const assetBReserve = pairTokensIsInversed ? _reserve0 : _reserve1;
 
-    const denormalizedAssetAReserve = denormalizeNumber(assetAReserve, assetADecimals);
-    const denormalizedAssetBReserve = denormalizeNumber(assetBReserve, assetBDecimals);
+    const denormalizedAssetAReserve = denormalizeNumber(assetAReserve, BigInt(assetADecimals));
+    const denormalizedAssetBReserve = denormalizeNumber(assetBReserve, BigInt(assetBDecimals));
 
     const price = denormalizedAssetBReserve.div(denormalizedAssetAReserve);
 
-    const assetAIsNativeCurrency = assetAAddress === ethers.constants.AddressZero;
-    const assetBIsNativeCurrency = assetBAddress === ethers.constants.AddressZero;
+    const assetAIsNativeCurrency = assetAAddress === ethers.ZeroAddress;
+    const assetBIsNativeCurrency = assetBAddress === ethers.ZeroAddress;
 
     const assetAAmount = assetA === amountAsset ? amountBN : amountBN.div(price);
     const assetBAmount = assetA === amountAsset ? amountBN.multipliedBy(price) : amountBN;
@@ -145,33 +145,33 @@ export default class FarmingManager {
       sources: ['exchange', 'wallet'],
     });
 
-    const unsignedTx = await exchangeContract.populateTransaction.withdrawToPool(
+    const unsignedTx = await exchangeContract.withdrawToPool.populateTransaction(
       assetBIsNativeCurrency ? assetBAddress : assetAAddress,
       assetBIsNativeCurrency ? assetAAddress : assetBAddress,
       assetBIsNativeCurrency
-        ? normalizeNumber(assetBAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetAAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetBAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString()
+        : normalizeNumber(assetAAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString(),
       assetBIsNativeCurrency
-        ? normalizeNumber(assetAAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetBAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetAAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString()
+        : normalizeNumber(assetBAmount, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString(),
       assetBIsNativeCurrency
-        ? normalizeNumber(assetBAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetAAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetBAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString()
+        : normalizeNumber(assetAAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString(),
       assetBIsNativeCurrency
-        ? normalizeNumber(assetAAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR)
-        : normalizeNumber(assetBAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR),
+        ? normalizeNumber(assetAAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString()
+        : normalizeNumber(assetBAmountWithSlippage, INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_FLOOR).toString(),
     );
 
-    const gasPrice = await this.unit.provider.getGasPrice();
+    const { gasPrice, maxFeePerGas } = await this.unit.provider.getFeeData();
 
-    const transactionCost = ethers.BigNumber.from(ADD_LIQUIDITY_GAS_LIMIT).mul(gasPrice);
-    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const transactionCost = BigInt(ADD_LIQUIDITY_GAS_LIMIT) * (gasPrice ?? 0n);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
     balanceGuard.registerRequirement({
       reason: 'Network fee',
       asset: {
         name: nativeCryptocurrency,
-        address: ethers.constants.AddressZero,
+        address: ethers.ZeroAddress,
       },
       amount: denormalizedTransactionCost.toString(),
       sources: ['wallet'],
@@ -195,8 +195,11 @@ export default class FarmingManager {
       }
     }
 
+    if (gasPrice !== null && maxFeePerGas !== null) {
+      unsignedTx.gasPrice = gasPrice;
+      unsignedTx.maxFeePerGas = maxFeePerGas;
+    }
     unsignedTx.chainId = network.chainId;
-    unsignedTx.gasPrice = gasPrice;
     unsignedTx.nonce = nonce;
     unsignedTx.from = walletAddress;
     const gasLimit = await this.unit.provider.estimateGas(unsignedTx);
@@ -205,13 +208,13 @@ export default class FarmingManager {
     await balanceGuard.check(true);
 
     const signedTx = await signer.signTransaction(unsignedTx);
-    const txResponse = await this.unit.provider.sendTransaction(signedTx);
+    const txResponse = await this.unit.provider.broadcastTransaction(signedTx);
     console.log(`Add liquidity tx sent: ${txResponse.hash}. Waiting for confirmation...`);
     const txReceipt = await txResponse.wait();
-    if (txReceipt.status === 1) {
-      console.log(`Add liquidity tx confirmed: ${txReceipt.transactionHash}`);
+    if (txReceipt?.status === 1) {
+      console.log(`Add liquidity tx confirmed: ${txReceipt.hash}`);
     } else {
-      console.log(`Add liquidity tx failed: ${txReceipt.transactionHash}`);
+      console.log(`Add liquidity tx failed: ${txReceipt?.hash}`);
     }
   }
 
@@ -254,7 +257,7 @@ export default class FarmingManager {
         [assetA]: assetAAddress,
         [assetB]: assetBAddress,
         [`${poolName} LP Token`]: pool.lpTokenAddress,
-        [nativeCryptocurrency]: ethers.constants.AddressZero,
+        [nativeCryptocurrency]: ethers.ZeroAddress,
       },
       this.unit.aggregator,
       walletAddress,
@@ -265,7 +268,7 @@ export default class FarmingManager {
     const balanceGuard = new BalanceGuard(
       balances,
       {
-        address: ethers.constants.AddressZero,
+        address: ethers.ZeroAddress,
         name: nativeCryptocurrency,
       },
       this.unit.provider,
@@ -298,8 +301,8 @@ export default class FarmingManager {
     const assetAReserve = pairTokensIsInversed ? _reserve1 : _reserve0;
     const assetBReserve = pairTokensIsInversed ? _reserve0 : _reserve1;
 
-    const denormalizedAssetAReserve = denormalizeNumber(assetAReserve, assetADecimals);
-    const denormalizedAssetBReserve = denormalizeNumber(assetBReserve, assetBDecimals);
+    const denormalizedAssetAReserve = denormalizeNumber(assetAReserve, BigInt(assetADecimals));
+    const denormalizedAssetBReserve = denormalizeNumber(assetBReserve, BigInt(assetBDecimals));
 
     const denormalizedUserPooledAssetA = denormalizedAssetAReserve.multipliedBy(userShare);
     const denormalizedUserPooledAssetB = denormalizedAssetBReserve.multipliedBy(userShare);
@@ -307,8 +310,8 @@ export default class FarmingManager {
     const denormalizedUserPooledAssetAWithSlippage = denormalizedUserPooledAssetA.multipliedBy(1 - ADD_LIQUIDITY_SLIPPAGE);
     const denormalizedUserPooledAssetBWithSlippage = denormalizedUserPooledAssetB.multipliedBy(1 - ADD_LIQUIDITY_SLIPPAGE);
 
-    const assetAIsNativeCurrency = assetAAddress === ethers.constants.AddressZero;
-    const assetBIsNativeCurrency = assetBAddress === ethers.constants.AddressZero;
+    const assetAIsNativeCurrency = assetAAddress === ethers.ZeroAddress;
+    const assetBIsNativeCurrency = assetBAddress === ethers.ZeroAddress;
 
     balanceGuard.registerRequirement({
       reason: `${poolName} liquidity`,
@@ -321,9 +324,9 @@ export default class FarmingManager {
       sources: ['wallet'],
     });
 
-    let unsignedTx: ethers.PopulatedTransaction;
+    let unsignedTx: ethers.TransactionLike;
     if (assetAIsNativeCurrency || assetBIsNativeCurrency) {
-      unsignedTx = await routerContract.populateTransaction.removeLiquidityETH(
+      unsignedTx = await routerContract.removeLiquidityETH.populateTransaction(
         assetBIsNativeCurrency ? assetAAddress : assetBAddress, // token
         lpTokenUserBalance,
         assetBIsNativeCurrency
@@ -331,28 +334,28 @@ export default class FarmingManager {
             denormalizedUserPooledAssetAWithSlippage,
             assetADecimals,
             BigNumber.ROUND_FLOOR,
-          )
+          ).toString()
           : normalizeNumber(
             denormalizedUserPooledAssetBWithSlippage,
             assetBDecimals,
             BigNumber.ROUND_FLOOR,
-          ), // token min
+          ).toString(), // token min
         assetBIsNativeCurrency
           ? normalizeNumber(
             denormalizedUserPooledAssetBWithSlippage,
             assetBDecimals,
             BigNumber.ROUND_FLOOR,
-          )
+          ).toString()
           : normalizeNumber(
             denormalizedUserPooledAssetAWithSlippage,
             assetADecimals,
             BigNumber.ROUND_FLOOR,
-          ), // eth min
+          ).toString(), // eth min
         walletAddress,
         Math.floor(Date.now() / 1000) + 60 * 20,
       );
     } else {
-      unsignedTx = await routerContract.populateTransaction.removeLiquidity(
+      unsignedTx = await routerContract.removeLiquidity.populateTransaction(
         assetAAddress,
         assetBAddress,
         lpTokenUserBalance,
@@ -360,27 +363,27 @@ export default class FarmingManager {
           denormalizedUserPooledAssetAWithSlippage,
           assetADecimals,
           BigNumber.ROUND_FLOOR,
-        ),
+        ).toString(),
         normalizeNumber(
           denormalizedUserPooledAssetBWithSlippage,
           assetBDecimals,
           BigNumber.ROUND_FLOOR,
-        ),
+        ).toString(),
         walletAddress,
         Math.floor(Date.now() / 1000) + 60 * 20,
       );
     }
 
-    const gasPrice = await this.unit.provider.getGasPrice();
+    const { gasPrice } = await this.unit.provider.getFeeData()
 
-    const transactionCost = ethers.BigNumber.from(ADD_LIQUIDITY_GAS_LIMIT).mul(gasPrice);
-    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const transactionCost = BigInt(ADD_LIQUIDITY_GAS_LIMIT) * (gasPrice ?? 0n);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
     balanceGuard.registerRequirement({
       reason: 'Network fee',
       asset: {
         name: nativeCryptocurrency,
-        address: ethers.constants.AddressZero,
+        address: ethers.ZeroAddress,
       },
       amount: denormalizedTransactionCost.toString(),
       sources: ['wallet'],
@@ -398,13 +401,13 @@ export default class FarmingManager {
     unsignedTx.gasLimit = gasLimit;
 
     const signedTx = await signer.signTransaction(unsignedTx);
-    const txResponse = await this.unit.provider.sendTransaction(signedTx);
+    const txResponse = await this.unit.provider.broadcastTransaction(signedTx);
     console.log(`Remove all liquidity tx sent: ${txResponse.hash}. Waiting for confirmation...`);
     const txReceipt = await txResponse.wait();
-    if (txReceipt.status === 1) {
-      console.log(`Remove all liquidity tx confirmed: ${txReceipt.transactionHash}`);
+    if (txReceipt?.status === 1) {
+      console.log(`Remove all liquidity tx confirmed: ${txReceipt.hash}`);
     } else {
-      console.log(`Remove all liquidity tx failed: ${txReceipt.transactionHash}`);
+      console.log(`Remove all liquidity tx failed: ${txReceipt?.hash}`);
     }
   }
 }

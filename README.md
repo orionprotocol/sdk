@@ -71,7 +71,7 @@ npm i @orionprotocol/sdk
 
 ## Initialization
 
-> :warning: **Ethers ^5.6.0 required**
+> :warning: **Ethers ^6.7.0 required**
 
 ```js
 // Node.js

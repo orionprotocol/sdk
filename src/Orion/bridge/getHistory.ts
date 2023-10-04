@@ -5,10 +5,10 @@ import { isValidChainId } from '../../utils/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 import bsonObjectId from 'bson-objectid';
 
-const ObjectID = bsonObjectId.default
+const ObjectID = bsonObjectId;
 
 const getHistory = async (units: Unit[], address: string, limit = 1000) => {
-  if (!ethers.utils.isAddress(address)) throw new Error(`Invalid address: ${address}`);
+  if (!ethers.isAddress(address)) throw new Error(`Invalid address: ${address}`);
   const data = await Promise.all(units.map(async ({ blockchainService, aggregator, chainId }) => {
     const sourceNetworkHistory = await simpleFetch(blockchainService.getSourceAtomicSwapHistory)({
       limit,
