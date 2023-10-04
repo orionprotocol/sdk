@@ -61,8 +61,8 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
 }
 
 type PlatformFees = {
-  assetIn: string
-  assetOut: string
+  assetIn?: string // TODO: return types from main branch
+  assetOut?: string
   walletAddress?: string | undefined
   fromWidget?: string | undefined
 }
@@ -247,8 +247,13 @@ class BlockchainService {
   ) => {
     const url = new URL(`${this.apiUrl}/api/platform-fees`);
 
-    url.searchParams.append('assetIn', assetIn);
-    url.searchParams.append('assetOut', assetOut);
+    if (assetIn !== undefined) { // TODO: make same as in main branch
+      url.searchParams.append('assetIn', assetIn);
+    }
+
+    if (assetOut !== undefined) {
+      url.searchParams.append('assetOut', assetOut);
+    }
 
     if (walletAddress !== undefined) {
       url.searchParams.append('walletAddress', walletAddress);

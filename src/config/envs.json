@@ -15,6 +15,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
@@ -31,6 +34,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -46,6 +52,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -61,6 +70,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -76,6 +88,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       }
@@ -97,6 +112,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         },
         "liquidityMigratorAddress": "0x01b10dds12478C88A5E18e2707E729906bC25CfF6"
@@ -113,6 +131,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -128,6 +149,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -143,6 +167,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -158,6 +185,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -173,6 +203,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       }
@@ -194,6 +227,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -209,6 +245,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -224,6 +263,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -239,6 +281,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -254,6 +299,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       }
@@ -275,6 +323,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -290,6 +341,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       }
@@ -311,6 +365,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
@@ -327,6 +384,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -342,6 +402,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -357,6 +420,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       },
@@ -372,6 +438,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "integrator": {
+            "http": "/orion-integrator/"
           }
         }
       }
