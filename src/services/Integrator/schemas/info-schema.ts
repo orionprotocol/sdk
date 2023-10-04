@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { ethers } from 'ethers';
+import { isHexString } from 'ethers';
 
 const infoSchema = z.object({
   blockNumber: z.number().int().nonnegative(),
-  blockHash: z.string().refine((v) => v.length === 0 || ethers.utils.isHexString(v), {
+  blockHash: z.string().refine((v) => v.length === 0 || isHexString(v), {
     message: 'blockHash must be a valid hex string or empty',
   }),
   timeRequest: z.number().int().nonnegative(),

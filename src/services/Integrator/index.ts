@@ -7,11 +7,11 @@ import {
   testIncrementorSchema,
   veORNInfoResponseSchema,
   votingInfoResponseSchema
-} from './schemas/index.js';
+} from './schemas';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
-import { DAY, WEEK_DAYS, YEAR } from '../../constants/index.js';
-import { LOCK_START_TIME } from './constants.js';
+import { DAY, WEEK_DAYS, YEAR } from '../../constants';
+import { LOCK_START_TIME } from './constants';
 
 type BasePayload = {
   chainId: number
@@ -154,7 +154,7 @@ class IntegratorService {
   readonly getPoolInfo = (
     token0: string,
     token1: string,
-    poolAddress: string
+    poolAddress?: string
   ) => {
     return fetchWithValidation(this.apiUrl, getPoolResponseSchema, {
       method: 'POST',
