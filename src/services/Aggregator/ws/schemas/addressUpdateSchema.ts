@@ -108,7 +108,7 @@ export const fullOrderSchema = z.object({
   subOrders: o.c.map((so) => ({
     pair: so.P,
     exchange: so.e,
-    exchangs: so.es,
+    exchanges: so.es,
     id: so.i,
     amount: so.a,
     settledAmount: so.A,
