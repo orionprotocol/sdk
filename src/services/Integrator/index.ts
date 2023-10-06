@@ -100,7 +100,7 @@ class IntegratorService {
     });
   };
 
-  readonly veORNInfo = (address: string) => {
+  readonly veORNInfo = (address?: string) => {
     return fetchWithValidation(this.apiUrl, veORNInfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -121,16 +121,16 @@ class IntegratorService {
   readonly getAmountByORN = (amountToken: number, timeLock: number) => {
     const timestamp = Date.now() / 1000;
 
-    const deltaDays = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
+    const deltaDaysBN = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
 
-    if (deltaDays.lte(0)) return 0;
+    if (deltaDaysBN.lte(0)) return 0;
 
     return BigNumber(amountToken)
-      .multipliedBy(BigNumber(deltaDays).sqrt())
+      .multipliedBy(deltaDaysBN.sqrt())
       .dividedBy(BigNumber(WEEK_DAYS).sqrt());
   };
 
-  readonly getVotingInfo = (userAddress: string) => {
+  readonly getVotingInfo = (userAddress?: string) => {
     return fetchWithValidation(this.apiUrl, votingInfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
@@ -178,7 +178,7 @@ class IntegratorService {
     });
   };
 
-  readonly listPool = (address: string) => {
+  readonly listPool = (address?: string) => {
     return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
