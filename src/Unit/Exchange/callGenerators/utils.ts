@@ -63,25 +63,21 @@ export function addCallParams(
 
 export function createPatchMask(calldata: BytesLike, patchParams?: PatchParams) {
   let firstByte = 0
-  let mask = ethers.solidityPacked(["uint256"], [(calldata.length - 4) / 2 - 32])
+  let mask = ethers.solidityPacked(["uint256"], [(calldata.length - 4) / 2 - 32]) //finding offset of last 32 bytes slot in calldata
   mask = ethers.dataSlice(mask, 1)
   if (patchParams) {
     if (patchParams.skipOnZeroAmount !== undefined && patchParams.skipOnZeroAmount === false) {
       firstByte += 32
-      console.log(firstByte)
     }
     if (patchParams.skipCallDataPatching !== undefined && patchParams.skipCallDataPatching) {
       firstByte += 64
-      console.log(firstByte)
     }
     if (patchParams.skipValuePatching !== undefined && patchParams.skipValuePatching) {
       firstByte += 128
-      console.log(firstByte)
     }
   }
   const encodedFirstByte = ethers.solidityPacked(["uint8"], [firstByte])
   mask = ethers.hexlify(ethers.concat([encodedFirstByte, mask]))
-  console.log(mask)
   return mask
 }
 

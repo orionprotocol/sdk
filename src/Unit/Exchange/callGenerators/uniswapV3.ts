@@ -25,11 +25,11 @@ export async function generateOrion3Call(
   recipient: string,
   provider: JsonRpcProvider
 ) {
-  if (typeof amount === 'undefined') amount = 0
+  if (amount === undefined) amount = 0
 
   const encodedPool = await encodePoolV3(swap.pool, swap.assetIn, swap.assetOut, provider)
   const executorInterface = SwapExecutor__factory.createInterface()
-  let calldata = executorInterface.encodeFunctionData('orionV3SingleSwapTo', [encodedPool, recipient, amount])
+  const calldata = executorInterface.encodeFunctionData('orionV3SingleSwapTo', [encodedPool, recipient, amount])
 
   return addCallParams(calldata)
 }
