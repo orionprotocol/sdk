@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
+import factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
@@ -165,11 +166,13 @@ export type SwapInfoAlternative = {
   availableAmountOut?: number | undefined
 }
 
-type ExchangeContractPath = {
+export type Factory = typeof factories[number]
+
+export type SingleSwap = {
   pool: string
   assetIn: string
   assetOut: string
-  factory: string
+  factory: Factory
 }
 
 export type SwapInfoBase = {
@@ -182,7 +185,7 @@ export type SwapInfoBase = {
   minAmountOut: number
 
   path: string[]
-  exchangeContractPath: ExchangeContractPath[]
+  exchangeContractPath: SingleSwap[]
   exchanges?: string[] | undefined
   poolOptimal: boolean
 
