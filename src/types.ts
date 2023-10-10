@@ -255,6 +255,12 @@ export type VerboseUnitConfig = {
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
     }
+    integrator: {
+      api: string
+      // For example:
+      // http://localhost:3004/,
+      // http://
+    }
   }
   basicAuth?: BasicAuthCredentials
 }

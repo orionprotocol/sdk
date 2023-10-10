@@ -1,6 +1,8 @@
-import type { ExchangeWithGenericSwap } from '@orionprotocol/contracts/lib/ethers-v5/Exchange.js';
-import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
-import { type BytesLike, ethers, type BigNumberish, providers } from 'ethers';
+import type { LibValidator } from '@orionprotocol/contracts/lib/ethers-v6/Exchange.js';
+import {
+  ERC20__factory
+} from '@orionprotocol/contracts/lib/ethers-v6/index.js';
+import { ethers, type BigNumberish, type BytesLike, JsonRpcProvider } from 'ethers';
 import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import { simpleFetch } from 'simple-typed-fetch';
 import type Unit from '../index.js';
@@ -12,8 +14,6 @@ import { generateCurveStableSwapCall } from './callGenerators/curve.js';
 import type { SingleSwap } from '../../types.js';
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
-
-
 
 export type GenerateSwapCalldataParams = {
   amount: BigNumberish
@@ -30,23 +30,23 @@ export default async function generateSwapCalldata({
   path: arrayLikePath,
   unit
 }: GenerateSwapCalldataParams
-): Promise<{ calldata: string, swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct }> {
+): Promise<{ calldata: string, swapDescription: LibValidator.SwapDescriptionStruct }> {
   if (arrayLikePath == undefined || arrayLikePath.length == 0) {
     throw new Error('Empty path');
   }
   const wethAddress = safeGet(unit.contracts, 'WETH')
   const curveRegistryAddress = safeGet(unit.contracts, 'curveRegistry')
   const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
-  let path = SafeArray.from(arrayLikePath).map((singleSwap) => {
-    singleSwap.assetIn = safeGet(assetToAddress, singleSwap.assetIn);
-    singleSwap.assetOut = safeGet(assetToAddress, singleSwap.assetOut);
-    return singleSwap;
+  let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
+    swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn.toLowerCase();
+    swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut.toLowerCase();
+    return swapInfo;
   })
 
   const { factory, assetIn: srcToken } = path.first()
   const dstToken = path.last().assetOut
 
-  let swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct = {
+  let swapDescription: LibValidator.SwapDescriptionStruct = {
     srcToken: srcToken,
     dstToken: dstToken,
     srcReceiver: swapExecutorContractAddress,
@@ -58,8 +58,8 @@ export default async function generateSwapCalldata({
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, unit.provider);
 
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
-    if (singleSwap.assetIn == ethers.constants.AddressZero) singleSwap.assetIn = wethAddress
-    if (singleSwap.assetOut == ethers.constants.AddressZero) singleSwap.assetOut = wethAddress
+    if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress
+    if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress
     return singleSwap;
   });
   const isSingleFactorySwap = path.every(singleSwap => singleSwap.factory === factory)
@@ -92,13 +92,13 @@ export default async function generateSwapCalldata({
 
 async function processSingleFactorySwaps(
   factory: Factory,
-  swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct,
+  swapDescription: LibValidator.SwapDescriptionStruct,
   path: SafeArray<SingleSwap>,
   recipient: string,
   amount: BigNumberish,
   swapExecutorContractAddress: string,
   curveRegistryAddress: string,
-  provider: providers.JsonRpcProvider
+  provider: JsonRpcProvider
 ) {
   let calldata: BytesLike
   switch (factory) {
@@ -128,12 +128,12 @@ async function processSingleFactorySwaps(
       const firstToken = ERC20__factory.connect(assetIn, provider)
       const executorAllowance = await firstToken.allowance(swapExecutorContractAddress, pool)
       const calls: BytesLike[] = []
-      if (executorAllowance.lt(amount)) {
-          const approveCall = await generateApproveCall(
-            assetIn,
-            pool,
-            ethers.constants.MaxUint256
-          )
+      if (executorAllowance <= BigInt(amount)) {
+        const approveCall = await generateApproveCall(
+          assetIn,
+          pool,
+          ethers.MaxUint256
+        )
         calls.push(approveCall)
       }
       let curveCall = await generateCurveStableSwapCall(
@@ -155,13 +155,13 @@ async function processSingleFactorySwaps(
 }
 
 async function processMultiFactorySwaps(
-  swapDescription: ExchangeWithGenericSwap.SwapDescriptionStruct,
+  swapDescription: LibValidator.SwapDescriptionStruct,
   path: SafeArray<SingleSwap>,
   recipient: string,
   amount: BigNumberish,
   swapExecutorContractAddress: string,
   curveRegistryAddress: string,
-  provider: providers.JsonRpcProvider
+  provider: JsonRpcProvider
 ) {
   let calls: BytesLike[] = []
   for (const swap of path) {
@@ -196,12 +196,12 @@ async function processMultiFactorySwaps(
         const { pool, assetIn } = swap
         const firstToken = ERC20__factory.connect(assetIn, provider)
         const executorAllowance = await firstToken.allowance(swapExecutorContractAddress, pool)
-        if (executorAllowance.lt(amount)) {
-            const approveCall = await generateApproveCall(
-              assetIn,
-              pool,
-              ethers.constants.MaxUint256
-            )
+        if (executorAllowance <= BigInt(amount)) {
+          const approveCall = await generateApproveCall(
+            assetIn,
+            pool,
+            ethers.MaxUint256
+          )
           calls.push(approveCall)
         }
         let curveCall = await generateCurveStableSwapCall(
@@ -220,11 +220,11 @@ async function processMultiFactorySwaps(
       }
     }
   }
-  const dstToken = await swapDescription.dstToken
+  const dstToken = swapDescription.dstToken
   let finalTransferCall = await generateTransferCall(dstToken, recipient, 0)
   finalTransferCall = pathCallWithBalance(finalTransferCall, dstToken)
   calls.push(finalTransferCall)
-  const calldata = await generateCalls(calls)
+  const calldata = generateCalls(calls)
 
   return { swapDescription, calldata }
 }

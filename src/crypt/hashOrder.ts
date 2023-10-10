@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import type { Order } from '../types.js';
 
-const hashOrder = (order: Order) => ethers.utils.solidityKeccak256(
+const hashOrder = (order: Order) => ethers.solidityPackedKeccak256(
   [
     'uint8',
     'address',

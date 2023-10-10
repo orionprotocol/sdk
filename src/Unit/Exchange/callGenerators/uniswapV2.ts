@@ -1,8 +1,6 @@
 import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v5/index.js"
 import { SafeArray } from "../../../utils/safeGetters.js"
-import { BigNumber } from "ethers"
-import type { BytesLike, BigNumberish } from "ethers"
-import { defaultAbiCoder, concat } from "ethers/lib/utils.js"
+import { type BytesLike, type BigNumberish, concat, ethers, toBeHex } from "ethers"
 import { addCallParams, generateCalls } from "./utils.js"
 import type { SingleSwap } from "../../../types.js"
 
@@ -31,7 +29,7 @@ export async function generateUni2Calls(
     lastSwap.pool,
     lastSwap.assetIn,
     lastSwap.assetOut,
-    defaultAbiCoder.encode(['uint256'], [concat(['0x03', recipient])]),
+    ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [concat(['0x03', recipient])]),
   ])
   calls.push(addCallParams(calldata))
 
@@ -43,14 +41,14 @@ export async function generateUni2Call(
   assetIn: string,
   assetOut: string,
   recipient: string,
-  fee: BigNumberish = BigNumber.from(3),
+  fee: BigNumberish = 3,
 ) {
   const executorInterface = SwapExecutor__factory.createInterface()
   const calldata = executorInterface.encodeFunctionData('swapUniV2', [
     pool,
     assetIn,
     assetOut,
-    defaultAbiCoder.encode(['uint256'], [concat([BigNumber.from(fee).toHexString(), recipient])]),
+    ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [concat([toBeHex(fee), recipient])]),
   ])
   return addCallParams(calldata)
 }

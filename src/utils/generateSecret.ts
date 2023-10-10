@@ -45,7 +45,7 @@ function isomorphicCryptoRandomBytes(size: number): Uint8Array {
 const generateSecret = () => {
   const RANDOM_BITS = 256;
   const rand = isomorphicCryptoRandomBytes(RANDOM_BITS);
-  const secret = ethers.utils.keccak256(rand);
+  const secret = ethers.keccak256(rand);
   return secret;
 };
 

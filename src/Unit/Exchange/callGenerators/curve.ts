@@ -1,5 +1,5 @@
-import { SwapExecutor__factory, CurveRegistry__factory } from "@orionprotocol/contracts/lib/ethers-v5/index.js"
-import type { BigNumberish, providers } from "ethers"
+import { SwapExecutor__factory, CurveRegistry__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
+import type { BigNumberish, JsonRpcProvider } from "ethers"
 import { addCallParams } from "./utils.js"
 import type { SingleSwap } from "../../../types.js"
 
@@ -7,7 +7,7 @@ export async function generateCurveStableSwapCall(
   amount: BigNumberish,
   to: string,
   swap: SingleSwap,
-  provider: providers.JsonRpcProvider,
+  provider: JsonRpcProvider,
   curveRegistry: string
 ) {
   const executorInterface = SwapExecutor__factory.createInterface()

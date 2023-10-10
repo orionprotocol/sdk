@@ -28,7 +28,7 @@ import { BaseProvider } from "@metamask/providers";
 import { ethers } from "ethers";
 
 const startApp = async (provider: BaseProvider) => {
-  const web3Provider = new ethers.providers.Web3Provider(provider);
+  const web3Provider = new ethers.Web3Provider(provider);
   await web3Provider.ready;
   const signer = web3Provider.getSigner(); // ready to go
 };

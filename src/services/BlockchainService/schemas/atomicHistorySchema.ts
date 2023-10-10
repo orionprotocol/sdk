@@ -16,9 +16,9 @@ const baseAtomicHistoryItem = z.object({
   _id: z.string(),
   __v: z.number(),
   asset: z.string(),
-  sender: z.string().refine(ethers.utils.isAddress),
-  secretHash: z.string().refine(ethers.utils.isHexString),
-  receiver: z.string().refine(ethers.utils.isAddress).optional(),
+  sender: z.string().refine(ethers.isAddress),
+  secretHash: z.string().refine(ethers.isHexString),
+  receiver: z.string().refine(ethers.isAddress).optional(),
   secret: z.string().optional(),
 });
 
