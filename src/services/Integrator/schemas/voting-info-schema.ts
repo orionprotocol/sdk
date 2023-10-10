@@ -6,8 +6,14 @@ const poolSchema = z.object({
   name: z.string(),
   poolAddress: z.string(),
   type: z.string(),
-  userVote: z.number()
-})
+  userVote: z.number(),
+  token0: z.string(), // deprecated
+  token1: z.string(), // deprecated
+  name0: z.string(),
+  name1: z.string(),
+  poolFee: z.number(),
+  weight: z.number(),
+});
 
 const votingResultSchema = z.object({
   absoluteVeTokenInVoting: z.number(),
@@ -16,8 +22,8 @@ const votingResultSchema = z.object({
   userVeTokenInVoting: z.number(),
   veTokenAddress: z.string(),
   votingAddress: z.string(),
-  weeklyReward: z.number()
-})
+  weeklyReward: z.number(),
+});
 
 const votingInfoSchema = z.object({
   result: votingResultSchema,
