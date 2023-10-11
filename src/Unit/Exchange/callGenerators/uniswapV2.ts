@@ -1,4 +1,4 @@
-import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v5/index.js"
+import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
 import { SafeArray } from "../../../utils/safeGetters.js"
 import { type BytesLike, type BigNumberish, concat, ethers, toBeHex } from "ethers"
 import { addCallParams, generateCalls } from "./utils.js"
