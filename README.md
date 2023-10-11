@@ -64,6 +64,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 ## Install
 
 ```console
+npm i simple-typed-fetch
 npm i @orionprotocol/sdk
 ```
 
