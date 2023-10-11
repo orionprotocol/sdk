@@ -1,6 +1,7 @@
 import { SwapExecutor__factory, UniswapV3Pool__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
-import { type BigNumberish , type BytesLike, ethers, JsonRpcProvider } from "ethers"
-import { SafeArray } from "../../../utils/safeGetters.js"
+import { ethers } from "ethers";
+import type { JsonRpcProvider , BigNumberish } from "ethers";
+import type { SafeArray } from "../../../utils/safeGetters.js"
 import { addCallParams, generateCalls } from "./utils.js"
 import type { SingleSwap } from "../../../types.js"
 
@@ -10,11 +11,13 @@ export async function generateUni3Call(
   recipient: string,
   provider: JsonRpcProvider
 ) {
-  if (typeof amount === 'undefined') amount = 0
+  if (typeof amount === 'undefined') {
+    amount = 0
+  }
 
   const encodedPool = await encodePoolV3(swap.pool, swap.assetIn, swap.assetOut, provider)
   const executorInterface = SwapExecutor__factory.createInterface()
-  let calldata = executorInterface.encodeFunctionData('uniswapV3SingleSwapTo', [encodedPool, recipient, amount])
+  const calldata = executorInterface.encodeFunctionData('uniswapV3SingleSwapTo', [encodedPool, recipient, amount])
 
   return addCallParams(calldata)
 }
@@ -25,7 +28,9 @@ export async function generateOrion3Call(
   recipient: string,
   provider: JsonRpcProvider
 ) {
-  if (amount === undefined) amount = 0
+  if (amount === undefined) {
+    amount = 0
+  }
 
   const encodedPool = await encodePoolV3(swap.pool, swap.assetIn, swap.assetOut, provider)
   const executorInterface = SwapExecutor__factory.createInterface()

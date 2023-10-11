@@ -51,11 +51,22 @@ export type Order = {
   isPersonalSign: boolean // bool
 }
 
+export type CrossChainOrder = Order & {
+  secretHash: string // bytes32
+  targetChainId: number // uint24
+}
+
 export type SignedOrder = {
   id: string // hash of Order (it's not part of order structure in smart-contract)
   signature: string // bytes
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
 } & Order
+
+export type SignedCrossChainOrder = {
+  id: string
+  signature: string // bytes
+  needWithdraw?: boolean // bool
+} & CrossChainOrder
 
 export type CancelOrderRequest = {
   id: number | string
