@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { evmAddressSchema } from './util-schemas.js';
-import { AVAILABLE_POOL_FEE } from '../constants.js';
 import basicPoolInfo from './basic-pool-info-schema.js';
 import infoSchema from './info-schema.js';
 
@@ -13,7 +12,7 @@ const getPoolResponseSchema = z.object({
 
     totalLiquidity: z.number().nonnegative(),
     WETH9: evmAddressSchema,
-    pools: z.record(z.enum(AVAILABLE_POOL_FEE), basicPoolInfo.nullable()),
+    pools: z.record(z.number(), basicPoolInfo.nullable()),
   }),
   info: infoSchema,
 });

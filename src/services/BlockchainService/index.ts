@@ -18,7 +18,7 @@ import {
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
-import { makePartial } from '../../utils/index.js';
+import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials } from '../../types.js';
@@ -61,8 +61,8 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
 }
 
 type PlatformFees = {
-  assetIn?: string // TODO: return types from main branch
-  assetOut?: string
+  assetIn: string
+  assetOut: string
   walletAddress?: string | undefined
   fromWidget?: string | undefined
 }
@@ -247,13 +247,8 @@ class BlockchainService {
   ) => {
     const url = new URL(`${this.apiUrl}/api/platform-fees`);
 
-    if (assetIn !== undefined) { // TODO: make same as in main branch
-      url.searchParams.append('assetIn', assetIn);
-    }
-
-    if (assetOut !== undefined) {
-      url.searchParams.append('assetOut', assetOut);
-    }
+    url.searchParams.append('assetIn', assetIn);
+    url.searchParams.append('assetOut', assetOut);
 
     if (walletAddress !== undefined) {
       url.searchParams.append('walletAddress', walletAddress);
