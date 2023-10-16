@@ -9,8 +9,8 @@ import type {
 } from "../types.js";
 import normalizeNumber from "../utils/normalizeNumber.js";
 import getDomainData from "./getDomainData.js";
-import hashOrder from "./hashOrder.js";
 import signOrderPersonal from "./signOrderPersonal.js";
+import hashCrossChainOrder from "./hashCrossChainOrder.js";
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
@@ -25,13 +25,14 @@ export const signCrossChainOrder = async (
   matcherAddress: string,
   serviceFeeAssetAddr: string,
   usePersonalSign: boolean,
-  secretHash: string,
+  secret: string,
   targetChainId: number,
   signer: ethers.Signer,
   chainId: SupportedChainId
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
+  const secretHash = ethers.keccak256(secret);
 
   const order: CrossChainOrder = {
     senderAddress,
@@ -60,6 +61,7 @@ export const signCrossChainOrder = async (
     expiration,
     buySide: side === "BUY" ? 1 : 0,
     isPersonalSign: usePersonalSign,
+    secret,
     secretHash,
     targetChainId,
   };
@@ -80,7 +82,7 @@ export const signCrossChainOrder = async (
 
   const signedOrder: SignedCrossChainOrder = {
     ...order,
-    id: hashOrder(order),
+    id: hashCrossChainOrder(order),
     signature: fixedSignature,
   };
   return signedOrder;

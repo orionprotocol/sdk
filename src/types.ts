@@ -52,6 +52,7 @@ export type Order = {
 }
 
 export type CrossChainOrder = Order & {
+  secret: string // not signed
   secretHash: string // bytes32
   targetChainId: number // uint24
 }
