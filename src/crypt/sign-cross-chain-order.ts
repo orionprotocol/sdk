@@ -4,7 +4,7 @@ import { INTERNAL_PROTOCOL_PRECISION } from "../constants/index.js";
 import CROSS_CHAIN_ORDER_TYPES from "../constants/cross-chain-order-types.js";
 import type {
   CrossChainOrder,
-  SignedOrder,
+  SignedCrossChainOrder,
   SupportedChainId,
 } from "../types.js";
 import normalizeNumber from "../utils/normalizeNumber.js";
@@ -78,7 +78,7 @@ export const signCrossChainOrder = async (
 
   // if (!fixedSignature) throw new Error("Can't sign order");
 
-  const signedOrder: SignedOrder = {
+  const signedOrder: SignedCrossChainOrder = {
     ...order,
     id: hashOrder(order),
     signature: fixedSignature,

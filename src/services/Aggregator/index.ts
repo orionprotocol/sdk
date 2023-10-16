@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedCrossChainOrder, SignedOrder } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
@@ -192,7 +192,7 @@ class Aggregator {
   );
 
   placeOrder = (
-    signedOrder: SignedOrder,
+    signedOrder: SignedOrder | SignedCrossChainOrder,
     isCreateInternalOrder: boolean,
     isReversedOrder?: boolean,
     partnerId?: string,
