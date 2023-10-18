@@ -6,6 +6,9 @@ import infoSchema from './info-schema.js';
 const poolOfListPoolSchema = z.object({
   token0: z.string().nonempty(),
   token1: z.string().nonempty(),
+  name: z.string(),
+  name0: z.string(),
+  name1: z.string(),
   token0Address: evmAddressSchema,
   token1Address: evmAddressSchema,
 
@@ -18,9 +21,9 @@ const poolOfListPoolSchema = z.object({
   type: z.string().nonempty(),
 });
 
-const listPoolResponseSchema = z.object({
+const listPoolV3ResponseSchema = z.object({
   result: z.array(poolOfListPoolSchema),
   info: infoSchema,
 });
 
-export default listPoolResponseSchema;
+export default listPoolV3ResponseSchema;

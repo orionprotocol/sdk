@@ -3,7 +3,8 @@ import {
   getPoolResponseSchema,
   listAmountResponseSchema,
   listNFTOrderResponseSchema,
-  listPoolResponseSchema,
+  listPoolV2ResponseSchema,
+  listPoolV3ResponseSchema,
   testIncrementorSchema,
   veORNInfoResponseSchema,
   votingInfoResponseSchema
@@ -84,7 +85,8 @@ class IntegratorService {
     this.getEnvironment = this.getEnvironment.bind(this);
     this.listNFTOrder = this.listNFTOrder.bind(this);
     this.getPoolInfo = this.getPoolInfo.bind(this);
-    this.listPool = this.listPool.bind(this);
+    this.listPoolV2 = this.listPoolV2.bind(this);
+    this.listPoolV3 = this.listPoolV3.bind(this);
     this.veORNInfo = this.veORNInfo.bind(this);
     this.listAmount = this.listAmount.bind(this);
     this.getAmountByORN = this.getAmountByORN.bind(this);
@@ -178,8 +180,19 @@ class IntegratorService {
     });
   };
 
-  readonly listPool = (address?: string) => {
-    return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
+  readonly listPoolV2 = (address?: string) => {
+    return fetchWithValidation(this.apiUrl, listPoolV2ResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionFarmV2',
+        method: 'listPool',
+        params: [address],
+      }),
+    });
+  };
+
+  readonly listPoolV3 = (address?: string) => {
+    return fetchWithValidation(this.apiUrl, listPoolV3ResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
         model: 'OrionFarmV3',
