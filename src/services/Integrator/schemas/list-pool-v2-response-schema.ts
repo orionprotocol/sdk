@@ -45,6 +45,9 @@ const poolOfListPoolSchema = z.object({
 
   ...basicPoolInfo.shape,
 
+  // This is a crutch. In the nearest future Yury will update his model and this feeRate can be deleted
+  feeRate: z.number().nonnegative(),
+
   type: z.string().nonempty(),
 });
 
