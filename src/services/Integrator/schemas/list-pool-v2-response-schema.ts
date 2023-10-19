@@ -3,6 +3,9 @@ import { evmAddressSchema } from './util-schemas.js';
 import basicPoolInfo from './basic-pool-info-schema.js';
 import infoSchema from './info-schema.js';
 
+// This is a crutch. In the nearest future Yuriy will update his model and we need to replace this constant with basicPoolInfo
+const omittedBasicPoolInfo = basicPoolInfo.omit({ liquidityInUsd: true })
+
 const poolOfListPoolSchema = z.object({
   pair: z.string(),
   token0: z.string().nonempty(),
@@ -19,6 +22,7 @@ const poolOfListPoolSchema = z.object({
   weight: z.number(),
   liquidity0: z.number(),
   liquidity1: z.number(),
+  liquidityInUSD: z.number(),
   token0Price: z.number(),
   token1Price: z.number(),
   totalLPSupply: z.number(),
@@ -42,7 +46,7 @@ const poolOfListPoolSchema = z.object({
   userVeORN: z.number(),
   userORN: z.number(),
 
-  ...basicPoolInfo.shape,
+  ...omittedBasicPoolInfo.shape,
 
   type: z.string().nonempty(),
 });

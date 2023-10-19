@@ -6,7 +6,6 @@ const basicPoolInfo = z.object({
   isInitialized: z.boolean(),
   liquidity: z.number().nonnegative(),
   liquidityInUsd: z.number().nonnegative().optional(),
-  liquidityInUSD: z.number().nonnegative().optional(),
   liquidityShare: z.number().nonnegative(),
   isFarming: z.boolean(),
   rewardsTotal: z.number().nonnegative(),
