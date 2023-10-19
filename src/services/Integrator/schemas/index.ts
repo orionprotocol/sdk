@@ -2,6 +2,7 @@ export { default as environmentResponseSchema } from './environment-response-sch
 export { default as listNFTOrderResponseSchema } from './list-nft-order-response-schema.js';
 export { default as getPoolResponseSchema } from './get-pool-response-schema.js';
 export { default as listPoolV2ResponseSchema } from './list-pool-v2-response-schema.js';
+export { default as PoolV2InfoResponseSchema } from './pool-v2-info-schema';
 export { default as listPoolV3ResponseSchema } from './list-pool-v3-response-schema.js';
 export { default as veORNInfoResponseSchema } from './veORN-info-schema.js';
 export { default as listAmountResponseSchema } from './list-amount-schema.js';
