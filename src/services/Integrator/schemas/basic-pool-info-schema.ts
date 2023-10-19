@@ -20,8 +20,7 @@ const basicPoolInfo = z.object({
   maxAPR: z.number().nonnegative(),
   avgAPR: z.number().nonnegative(),
   maxBoost: z.number().nonnegative().int(),
-  // This is a crutch. In the nearest future Yury will update his model and OR condition need to be removed
-  feeRate: z.array(z.number().nonnegative()).or(z.number().nonnegative()),
+  feeRate: z.array(z.number().nonnegative()),
 });
 
 export default basicPoolInfo;
