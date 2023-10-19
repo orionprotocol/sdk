@@ -3,28 +3,23 @@ import { evmAddressSchema } from './util-schemas.js';
 import basicPoolInfo from './basic-pool-info-schema.js';
 import infoSchema from './info-schema.js';
 
-const poolItem = z.object({
-  ...basicPoolInfo.shape,
-  weeklyReward: z.number(),
-  type: z.string().nonempty(),
-}).or(z.null());
-
 const poolOfListPoolSchema = z.object({
   token0: z.string().nonempty(),
   token1: z.string().nonempty(),
+  name: z.string(),
   name0: z.string(),
   name1: z.string(),
   token0Address: evmAddressSchema,
   token1Address: evmAddressSchema,
-  totalLiquidity: z.number(),
+  token0Decimals: z.number().int().nonnegative().max(18),
+  token1Decimals: z.number().int().nonnegative().max(18),
   WETH9: evmAddressSchema,
+  poolFee: z.number(),
+  weeklyReward: z.number(),
 
-  pools: z.object({
-    1: poolItem,
-    0.3: poolItem,
-    0.05: poolItem,
-    0.01: poolItem,
-  }),
+  ...basicPoolInfo.shape,
+
+  type: z.string().nonempty(),
 });
 
 const listPoolV3ResponseSchema = z.object({
