@@ -3,9 +3,6 @@ import { evmAddressSchema } from './util-schemas.js';
 import basicPoolInfo from './basic-pool-info-schema.js';
 import infoSchema from './info-schema.js';
 
-// This is a crutch. In the nearest future Yuriy will update his model and we need to replace this constant with basicPoolInfo
-const omittedBasicPoolInfo = basicPoolInfo.omit({ feeRate: true })
-
 const poolOfListPoolSchema = z.object({
   pair: z.string(),
   token0: z.string().nonempty(),
@@ -45,9 +42,8 @@ const poolOfListPoolSchema = z.object({
   userLockTimePeriod: z.number(),
   userVeORN: z.number(),
   userORN: z.number(),
-  feeRate: z.number().nonnegative(),
 
-  ...omittedBasicPoolInfo.shape,
+  ...basicPoolInfo.shape,
 
   type: z.string().nonempty(),
 });
