@@ -19,7 +19,6 @@ const poolOfListPoolSchema = z.object({
   weight: z.number(),
   liquidity0: z.number(),
   liquidity1: z.number(),
-  liquidityInUSD: z.number(),
   token0Price: z.number(),
   token1Price: z.number(),
   totalLPSupply: z.number(),
