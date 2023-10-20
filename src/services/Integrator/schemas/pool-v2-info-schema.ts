@@ -30,6 +30,7 @@ const poolInfoSchema = z.object({
   lpPriceInUSD: z.number(),
   lpPriceInORN: z.number(),
   userReward: z.number(),
+  userWeeklyReward: z.number(),
   userRewardToPool: z.number(),
   weeklyReward: z.number(),
   userAPR: z.number(),
