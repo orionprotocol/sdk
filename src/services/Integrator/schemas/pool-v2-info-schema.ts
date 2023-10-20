@@ -21,6 +21,7 @@ const poolInfoSchema = z.object({
   liquidity1: z.number(),
   token0Price: z.number(),
   token1Price: z.number(),
+  userLPBalance: z.number(),
   totalLPSupply: z.number(),
   totalLPStake: z.number(),
   totalLPStakeInUSD: z.number(),
