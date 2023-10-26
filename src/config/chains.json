@@ -161,7 +161,7 @@
     "shortName": "DRIP Chain",
     "code": "drip",
     "baseCurrencyName": "DRIP",
-    "rpc": "testnet.1d.rip",
+    "rpc": "https://testnet.1d.rip/",
     "explorer": "https://explorer-testnet.1d.rip/",
     "contracts": {
       "WETH": "",
