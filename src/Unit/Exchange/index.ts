@@ -1,7 +1,7 @@
 import type Unit from '../index.js';
 import deposit, { type DepositParams } from './deposit.js';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
-import generateSwapCalldata, { type GenerateSwapCalldataParams } from './generateSwapCalldata.js';
+import {generateSwapCalldataWithUnit, type GenerateSwapCalldataParams } from './generateSwapCalldata.js';
 import withdraw, { type WithdrawParams } from './withdraw.js';
 
 type PureDepositParams = Omit<DepositParams, 'unit'>
@@ -39,7 +39,7 @@ export default class Exchange {
   }
 
   public generateSwapCalldata(params: PureGenerateSwapCalldataParams) {
-    return generateSwapCalldata({
+    return generateSwapCalldataWithUnit({
       ...params,
       unit: this.unit
     })

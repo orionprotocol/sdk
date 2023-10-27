@@ -12,10 +12,12 @@ import { exchangeToNativeDecimals, generateCalls, pathCallWithBalance } from './
 import { generateApproveCall, generateTransferCall } from './callGenerators/erc20.js';
 import { generateCurveStableSwapCall } from './callGenerators/curve.js';
 import type { SingleSwap } from '../../types.js';
+import type { AddressLike } from 'ethers';
+import { addressLikeToString } from '../../utils/addressLikeToString.js';
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3"
 
-export type GenerateSwapCalldataParams = {
+export type GenerateSwapCalldataWithUnitParams = {
   amount: BigNumberish
   minReturnAmount: BigNumberish
   receiverAddress: string
@@ -23,13 +25,25 @@ export type GenerateSwapCalldataParams = {
   unit: Unit
 }
 
-export default async function generateSwapCalldata({
+export type GenerateSwapCalldataParams = {
+  amount: BigNumberish
+  minReturnAmount: BigNumberish
+  receiverAddress: string
+  path: ArrayLike<SingleSwap>
+  wethAddress: AddressLike,
+  curveRegistryAddress: AddressLike,
+  swapExecutorContractAddress: AddressLike,
+  exchangeContractAddress: AddressLike,
+  provider: JsonRpcProvider
+}
+
+export async function generateSwapCalldataWithUnit({
   amount,
   minReturnAmount,
   receiverAddress,
   path: arrayLikePath,
   unit
-}: GenerateSwapCalldataParams
+}: GenerateSwapCalldataWithUnitParams
 ): Promise<{ calldata: string, swapDescription: LibValidator.SwapDescriptionStruct }> {
   if (arrayLikePath == undefined || arrayLikePath.length == 0) {
     throw new Error('Empty path');
@@ -43,6 +57,36 @@ export default async function generateSwapCalldata({
     return swapInfo;
   })
 
+  return generateSwapCalldata({
+    amount,
+    minReturnAmount,
+    receiverAddress,
+    path,
+    wethAddress,
+    curveRegistryAddress,
+    swapExecutorContractAddress,
+    exchangeContractAddress,
+    provider: unit.provider
+  })
+}
+
+export async function generateSwapCalldata({
+  amount,
+  minReturnAmount,
+  receiverAddress,
+  path: arrayLikePath,
+  wethAddress: wethAddressLike,
+  curveRegistryAddress: curveRegistryAddressLike,
+  swapExecutorContractAddress: swapExecutorContractAddressLike,
+  exchangeContractAddress: exchangeContractAddressLike,
+  provider,
+}: GenerateSwapCalldataParams) {
+  const wethAddress = await addressLikeToString(wethAddressLike)
+  const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike)
+  const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike)
+  const exchangeContractAddress = await addressLikeToString(exchangeContractAddressLike)
+  let path = SafeArray.from(arrayLikePath)
+
   const { factory, assetIn: srcToken } = path.first()
   const dstToken = path.last().assetOut
 
@@ -55,13 +99,14 @@ export default async function generateSwapCalldata({
     minReturnAmount,
     flags: 0
   }
-  const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, unit.provider);
+  const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
 
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress
     return singleSwap;
   });
+  
   const isSingleFactorySwap = path.every(singleSwap => singleSwap.factory === factory)
   let calldata: BytesLike
   if (isSingleFactorySwap) {
@@ -73,7 +118,7 @@ export default async function generateSwapCalldata({
       amountNativeDecimals,
       swapExecutorContractAddress,
       curveRegistryAddress,
-      unit.provider
+      provider
     ))
   } else {
     ({ swapDescription, calldata } = await processMultiFactorySwaps(
@@ -83,7 +128,7 @@ export default async function generateSwapCalldata({
       amountNativeDecimals,
       swapExecutorContractAddress,
       curveRegistryAddress,
-      unit.provider
+      provider
     ))
   }
 
