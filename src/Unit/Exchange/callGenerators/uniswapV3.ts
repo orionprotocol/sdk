@@ -1,7 +1,7 @@
 import { SwapExecutor__factory, UniswapV3Pool__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
-import { type BigNumberish , type BytesLike, ethers, JsonRpcProvider } from "ethers"
+import { type BigNumberish , ethers, JsonRpcProvider } from "ethers"
 import { SafeArray } from "../../../utils/safeGetters.js"
-import { addCallParams, generateCalls } from "./utils.js"
+import { addCallParams } from "./utils.js"
 import type { SingleSwap } from "../../../types.js"
 
 export async function generateUni3Call(
@@ -49,7 +49,7 @@ export async function generateUni3Calls(
   let calldata = executorInterface.encodeFunctionData('uniswapV3SwapTo', [encodedPools, recipient, amount])
   calldata = addCallParams(calldata)
 
-  return generateCalls([calldata])
+  return [calldata]
 }
 
 export async function generateOrion3Calls(
@@ -67,7 +67,7 @@ export async function generateOrion3Calls(
   let calldata = executorInterface.encodeFunctionData('orionV3SwapTo', [encodedPools, recipient, amount])
   calldata = addCallParams(calldata)
 
-  return generateCalls([calldata])
+  return [calldata]
 }
 
 export async function encodePoolV3(
