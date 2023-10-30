@@ -91,18 +91,17 @@ export async function generateSwapCalldata({
   const { factory, assetIn: srcToken } = path.first();
   const dstToken = path.last().assetOut;
 
-  const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
-  const minReturnAmountNativeDecimals = await exchangeToNativeDecimals(dstToken, minReturnAmount, provider);
   let swapDescription: LibValidator.SwapDescriptionStruct = {
     srcToken: srcToken,
     dstToken: dstToken,
     srcReceiver: swapExecutorContractAddress,
     dstReceiver: receiverAddress,
-    amount: amountNativeDecimals,
-    minReturnAmount: minReturnAmountNativeDecimals,
+    amount,
+    minReturnAmount,
     flags: 0,
   };
-
+  const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
+  
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
@@ -132,7 +131,7 @@ export async function generateSwapCalldata({
     ));
   }
 
-  calls = wrapOrUnwrapIfNeeded(swapDescription, calls);
+  calls = wrapOrUnwrapIfNeeded(amountNativeDecimals, swapDescription, calls);
   const calldata = generateCalls(calls);
   return { swapDescription, calldata };
 }
@@ -248,7 +247,7 @@ async function processMultiFactorySwaps(
   return { swapDescription, calls };
 }
 
-function wrapOrUnwrapIfNeeded(swapDescription: LibValidator.SwapDescriptionStruct, calls: BytesLike[]): BytesLike[] {
+function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibValidator.SwapDescriptionStruct, calls: BytesLike[]): BytesLike[] {
   if (swapDescription.srcToken === ZeroAddress) {
     const wrapCall = generateWrapAndTransferCall(swapDescription.dstReceiver, { value: swapDescription.amount });
     calls = ([wrapCall] as BytesLike[]).concat(calls);
