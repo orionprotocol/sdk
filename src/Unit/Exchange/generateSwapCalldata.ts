@@ -249,7 +249,7 @@ async function processMultiFactorySwaps(
 
 function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibValidator.SwapDescriptionStruct, calls: BytesLike[]): BytesLike[] {
   if (swapDescription.srcToken === ZeroAddress) {
-    const wrapCall = generateWrapAndTransferCall(swapDescription.dstReceiver, { value: swapDescription.amount });
+    const wrapCall = generateWrapAndTransferCall(swapDescription.dstReceiver, { value: amount });
     calls = ([wrapCall] as BytesLike[]).concat(calls);
   }
   if (swapDescription.dstToken === ZeroAddress) {
