@@ -101,7 +101,7 @@ export async function generateSwapCalldata({
     flags: 0,
   };
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
-  
+
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
@@ -131,7 +131,7 @@ export async function generateSwapCalldata({
     ));
   }
 
-  calls = await wrapOrUnwrapIfNeeded(amountNativeDecimals, swapDescription, calls);
+  ({ swapDescription, calls } = await wrapOrUnwrapIfNeeded(amountNativeDecimals, swapDescription, calls, swapExecutorContractAddress));
   const calldata = generateCalls(calls);
   return { swapDescription, calldata };
 }
@@ -247,9 +247,15 @@ async function processMultiFactorySwaps(
   return { swapDescription, calls };
 }
 
-async function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibValidator.SwapDescriptionStruct, calls: BytesLike[]): Promise<BytesLike[]> {
+async function wrapOrUnwrapIfNeeded(
+  amount: BigNumberish,
+  swapDescription: LibValidator.SwapDescriptionStruct,
+  calls: BytesLike[],
+  swapExecutorContractAddress: string
+) {
   if (swapDescription.srcToken === ZeroAddress) {
-    const wrapCall = generateWrapAndTransferCall(swapDescription.dstReceiver, { value: amount });
+    const wrapCall = generateWrapAndTransferCall(swapDescription.srcReceiver, { value: amount });
+    swapDescription.srcReceiver = swapExecutorContractAddress
     calls = ([wrapCall] as BytesLike[]).concat(calls);
   }
   if (swapDescription.dstToken === ZeroAddress) {
@@ -261,5 +267,5 @@ async function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibVa
     transferCall = pathCallWithBalance(transferCall, swapDescription.dstToken);
     calls.push(transferCall);
   }
-  return calls;
+  return { swapDescription, calls };
 }
