@@ -131,7 +131,7 @@ export async function generateSwapCalldata({
     ));
   }
 
-  calls = wrapOrUnwrapIfNeeded(amountNativeDecimals, swapDescription, calls);
+  calls = await wrapOrUnwrapIfNeeded(amountNativeDecimals, swapDescription, calls);
   const calldata = generateCalls(calls);
   return { swapDescription, calldata };
 }
@@ -247,7 +247,7 @@ async function processMultiFactorySwaps(
   return { swapDescription, calls };
 }
 
-function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibValidator.SwapDescriptionStruct, calls: BytesLike[]): BytesLike[] {
+async function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibValidator.SwapDescriptionStruct, calls: BytesLike[]): Promise<BytesLike[]> {
   if (swapDescription.srcToken === ZeroAddress) {
     const wrapCall = generateWrapAndTransferCall(swapDescription.dstReceiver, { value: amount });
     calls = ([wrapCall] as BytesLike[]).concat(calls);
@@ -256,6 +256,10 @@ function wrapOrUnwrapIfNeeded(amount: BigNumberish, swapDescription: LibValidato
     let unwrapCall = generateUnwrapAndTransferCall(swapDescription.dstReceiver, 0);
     unwrapCall = pathCallWithBalance(unwrapCall, swapDescription.dstToken);
     calls.push(unwrapCall);
+  } else {
+    let transferCall = await generateTransferCall(swapDescription.dstToken, swapDescription.dstReceiver, 0);
+    transferCall = pathCallWithBalance(transferCall, swapDescription.dstToken);
+    calls.push(transferCall);
   }
   return calls;
 }
