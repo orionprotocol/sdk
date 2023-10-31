@@ -3,6 +3,7 @@ import {
   getPoolResponseSchema,
   listAmountResponseSchema,
   listNFTOrderResponseSchema,
+  listPoolResponseSchema,
   listPoolV2ResponseSchema,
   listPoolV3ResponseSchema,
   PoolV2InfoResponseSchema,
@@ -14,7 +15,6 @@ import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
 import { DAY, WEEK_DAYS, YEAR } from '../../constants';
 import { LOCK_START_TIME } from './constants';
-import listPoolResponseSchema from './schemas/list-pool-schema';
 
 type BasePayload = {
   chainId: number
