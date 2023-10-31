@@ -17,6 +17,8 @@ import type { SingleSwap } from "../../types.js";
 import type { AddressLike } from "ethers";
 import { addressLikeToString } from "../../utils/addressLikeToString.js";
 import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from "./callGenerators/weth.js";
+import { Exchange__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js";
+import getBalance from "../../utils/getBalance.js";
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
 
@@ -32,6 +34,7 @@ export type GenerateSwapCalldataParams = {
   amount: BigNumberish;
   minReturnAmount: BigNumberish;
   receiverAddress: string;
+  useContractBalance: boolean;
   path: ArrayLike<SingleSwap>;
   wethAddress: AddressLike;
   curveRegistryAddress: AddressLike;
@@ -54,8 +57,21 @@ export async function generateSwapCalldataWithUnit({
   }
   const wethAddress = safeGet(unit.contracts, "WETH");
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry");
-  const { assetToAddress, swapExecutorContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
-  let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
+  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
+    unit.blockchainService.getInfo
+  )();
+
+  let path = SafeArray.from(arrayLikePath);
+  const { wallet } = await getBalance(
+    unit.aggregator,
+    path.first().assetIn,
+    safeGet(assetToAddress, path.first().assetIn),
+    receiverAddress,
+    Exchange__factory.connect(exchangeContractAddress, unit.provider),
+    unit.provider
+  );
+
+  path = SafeArray.from(arrayLikePath).map((swapInfo) => {
     swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn.toLowerCase();
     swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut.toLowerCase();
     return swapInfo;
@@ -65,6 +81,7 @@ export async function generateSwapCalldataWithUnit({
     amount,
     minReturnAmount,
     receiverAddress,
+    useContractBalance: BigInt(wallet.toString()) < BigInt(amount),
     path,
     wethAddress,
     curveRegistryAddress,
@@ -77,6 +94,7 @@ export async function generateSwapCalldata({
   amount,
   minReturnAmount,
   receiverAddress,
+  useContractBalance,
   path: arrayLikePath,
   wethAddress: wethAddressLike,
   curveRegistryAddress: curveRegistryAddressLike,
@@ -131,8 +149,19 @@ export async function generateSwapCalldata({
     ));
   }
 
-  ({ swapDescription, calls } = await wrapOrUnwrapIfNeeded(amountNativeDecimals, swapDescription, calls, swapExecutorContractAddress, wethAddress));
+  ({ swapDescription, calls } = await wrapOrUnwrapIfNeeded(
+    amountNativeDecimals,
+    swapDescription,
+    calls,
+    swapExecutorContractAddress,
+    wethAddress
+  ));
   const calldata = generateCalls(calls);
+
+  if (useContractBalance) {
+    swapDescription.flags = 1n << 255n;
+  }
+
   return { swapDescription, calldata };
 }
 
@@ -256,9 +285,9 @@ async function wrapOrUnwrapIfNeeded(
 ) {
   if (swapDescription.srcToken === ZeroAddress) {
     const wrapCall = generateWrapAndTransferCall(swapDescription.srcReceiver, { value: amount });
-    swapDescription.srcReceiver = swapExecutorContractAddress
+    swapDescription.srcReceiver = swapExecutorContractAddress;
     calls = ([wrapCall] as BytesLike[]).concat(calls);
-  } 
+  }
   if (swapDescription.dstToken === ZeroAddress) {
     let unwrapCall = generateUnwrapAndTransferCall(swapDescription.dstReceiver, 0);
     unwrapCall = pathCallWithBalance(unwrapCall, wethAddress);
