@@ -3,7 +3,7 @@ import { evmAddressSchema } from './util-schemas.js';
 import basicPoolInfo from './basic-pool-info-schema.js';
 import infoSchema from './info-schema.js';
 
-const poolOfListPoolSchema = z.object({
+export const listPoolV2Schema = z.object({
   pair: z.string(),
   token0: z.string().nonempty(),
   token1: z.string().nonempty(),
@@ -55,7 +55,7 @@ const poolOfListPoolSchema = z.object({
 });
 
 const listPoolV2ResponseSchema = z.object({
-  result: z.array(poolOfListPoolSchema),
+  result: z.array(listPoolV2Schema),
   info: infoSchema,
 });
 

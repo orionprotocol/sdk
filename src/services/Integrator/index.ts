@@ -14,6 +14,7 @@ import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
 import { DAY, WEEK_DAYS, YEAR } from '../../constants';
 import { LOCK_START_TIME } from './constants';
+import listPoolResponseSchema from './schemas/list-pool-schema';
 
 type BasePayload = {
   chainId: number
@@ -86,6 +87,7 @@ class IntegratorService {
     this.getEnvironment = this.getEnvironment.bind(this);
     this.listNFTOrder = this.listNFTOrder.bind(this);
     this.getPoolInfo = this.getPoolInfo.bind(this);
+    this.getListPool = this.getListPool.bind(this);
     this.listPoolV2 = this.listPoolV2.bind(this);
     this.poolV2Info = this.poolV2Info.bind(this);
     this.listPoolV3 = this.listPoolV3.bind(this);
@@ -163,6 +165,17 @@ class IntegratorService {
         model: 'OrionV3NFTManager',
         method: 'listNFTOrder',
         params: [address],
+      }),
+    });
+  };
+
+  readonly getListPool = (userAddress?: string) => {
+    return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionVoting',
+        method: 'listPool',
+        params: [userAddress],
       }),
     });
   };
