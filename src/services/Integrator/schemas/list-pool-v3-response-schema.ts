@@ -19,7 +19,7 @@ export const listPoolV3Schema = z.object({
 
   ...basicPoolInfo.shape,
 
-  type: z.string().nonempty(),
+  type: z.literal('v3'),
 });
 
 const listPoolV3ResponseSchema = z.object({

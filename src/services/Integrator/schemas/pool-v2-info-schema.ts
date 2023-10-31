@@ -50,7 +50,7 @@ const poolInfoSchema = z.object({
   boostCurrentLiquidity: z.number(),
   boostCurrentVeORN: z.number(),
   boostTotalReward: z.number(),
-  type: z.string(),
+  type: z.literal('v2'),
 
   ...basicPoolInfo.shape,
 });
