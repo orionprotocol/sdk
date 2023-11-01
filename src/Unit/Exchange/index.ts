@@ -1,13 +1,13 @@
 import type Unit from '../index.js';
 import deposit, { type DepositParams } from './deposit.js';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
-import {generateSwapCalldataWithUnit, type GenerateSwapCalldataParams } from './generateSwapCalldata.js';
+import {generateSwapCalldataWithUnit, type GenerateSwapCalldataWithUnitParams } from './generateSwapCalldata.js';
 import withdraw, { type WithdrawParams } from './withdraw.js';
 
 type PureDepositParams = Omit<DepositParams, 'unit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'unit'>
 type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'blockchainService' | 'aggregator'>
-type PureGenerateSwapCalldataParams = Omit<GenerateSwapCalldataParams, 'unit'>
+type PureGenerateSwapCalldataParams = Omit<GenerateSwapCalldataWithUnitParams, 'unit'>
 
 export default class Exchange {
   private readonly unit: Unit;
