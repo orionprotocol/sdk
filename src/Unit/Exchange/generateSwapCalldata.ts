@@ -62,7 +62,7 @@ export async function generateSwapCalldataWithUnit({
 
   let path = SafeArray.from(arrayLikePath);
   const walletBalance = await getWalletBalance(
-    path.first().assetIn,
+    safeGet(assetToAddress, path.first().assetIn),
     receiverAddress,
     unit.provider
   );
