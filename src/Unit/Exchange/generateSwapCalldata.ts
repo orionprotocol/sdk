@@ -17,7 +17,6 @@ import type { SingleSwap } from "../../types.js";
 import type { AddressLike } from "ethers";
 import { addressLikeToString } from "../../utils/addressLikeToString.js";
 import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from "./callGenerators/weth.js";
-import { Exchange__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js";
 import { getWalletBalance } from "../../utils/getBalance.js";
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
@@ -57,7 +56,7 @@ export async function generateSwapCalldataWithUnit({
   }
   const wethAddress = safeGet(unit.contracts, "WETH");
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry");
-  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
+  const { assetToAddress, swapExecutorContractAddress } = await simpleFetch(
     unit.blockchainService.getInfo
   )();
 
