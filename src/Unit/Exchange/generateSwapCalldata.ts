@@ -77,7 +77,7 @@ export async function generateSwapCalldataWithUnit({
     amount,
     minReturnAmount,
     receiverAddress,
-    useContractBalance: walletBalance < BigInt(amount),
+    useContractBalance: walletBalance < await exchangeToNativeDecimals(path.first().assetIn, amount, unit.provider),
     path,
     wethAddress,
     curveRegistryAddress,

@@ -99,5 +99,5 @@ export async function toNativeDecimals(token: AddressLike, amount: BigNumberish,
     const contract = ERC20__factory.connect(token, provider)
     decimals = BigInt(await contract.decimals())
   }
-  return BigInt(amount) * (BigInt(10) ** decimals) / (BigInt(10) ** 8n)
+  return BigInt(amount) * (BigInt(10) ** decimals)
 }
