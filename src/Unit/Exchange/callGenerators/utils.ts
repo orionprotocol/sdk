@@ -87,6 +87,10 @@ export function generateCalls(calls: BytesLike[]) {
 }
 
 export async function exchangeToNativeDecimals(token: AddressLike, amount: BigNumberish, provider: ethers.JsonRpcProvider) {
+  return await toNativeDecimals(token, amount, provider) / (BigInt(10) ** 8n)
+}
+
+export async function toNativeDecimals(token: AddressLike, amount: BigNumberish, provider: ethers.JsonRpcProvider) {
   token = await token
   if (typeof token !== "string") token = await token.getAddress()
 
