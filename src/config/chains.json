@@ -35,7 +35,7 @@
     "baseCurrencyName": "BNB",
     "contracts": {
       "WETH": "0x23eE96bEaAB62abE126AA192e677c52bB7d274F0",
-      "curveRegistry": "0x8845b36C3DE93379F468590FFa102D4aF8C49A6c"
+      "curveRegistry": "0x93461072c00b2740c474a3d52c70be6249c802d8"
     }
   },
   "3": {
