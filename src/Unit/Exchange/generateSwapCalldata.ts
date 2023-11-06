@@ -17,8 +17,7 @@ import type { SingleSwap } from "../../types.js";
 import type { AddressLike } from "ethers";
 import { addressLikeToString } from "../../utils/addressLikeToString.js";
 import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from "./callGenerators/weth.js";
-import { Exchange__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js";
-import getBalance from "../../utils/getBalance.js";
+import { getWalletBalance } from "../../utils/getBalance.js";
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
 
@@ -57,17 +56,14 @@ export async function generateSwapCalldataWithUnit({
   }
   const wethAddress = safeGet(unit.contracts, "WETH");
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry");
-  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
+  const { assetToAddress, swapExecutorContractAddress } = await simpleFetch(
     unit.blockchainService.getInfo
   )();
 
   let path = SafeArray.from(arrayLikePath);
-  const { wallet } = await getBalance(
-    unit.aggregator,
-    path.first().assetIn,
+  const walletBalance = await getWalletBalance(
     safeGet(assetToAddress, path.first().assetIn),
     receiverAddress,
-    Exchange__factory.connect(exchangeContractAddress, unit.provider),
     unit.provider
   );
 
@@ -81,7 +77,7 @@ export async function generateSwapCalldataWithUnit({
     amount,
     minReturnAmount,
     receiverAddress,
-    useContractBalance: BigInt(wallet.toString()) < BigInt(amount),
+    useContractBalance: walletBalance < await exchangeToNativeDecimals(path.first().assetIn, amount, unit.provider),
     path,
     wethAddress,
     curveRegistryAddress,

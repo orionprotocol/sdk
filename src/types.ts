@@ -48,7 +48,6 @@ export type Order = {
   nonce: number // uint64
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
-  isPersonalSign: boolean // bool
 }
 
 export type SignedOrder = {
@@ -60,7 +59,6 @@ export type SignedOrder = {
 export type CancelOrderRequest = {
   id: number | string
   senderAddress: string
-  isPersonalSign: boolean
 }
 
 export type SignedCancelOrderRequest = {

@@ -41,3 +41,22 @@ export default async function getBalance(
     wallet: denormalizedAssetInWalletBalance,
   };
 }
+
+export async function getWalletBalance(
+  assetAddress: string,
+  walletAddress: string,
+  provider: ethers.Provider,
+) {
+  const assetIsNativeCryptocurrency = assetAddress === ethers.ZeroAddress;
+
+  let assetWalletBalance: bigint | undefined;
+
+  if (!assetIsNativeCryptocurrency) {
+    const assetContract = ERC20__factory.connect(assetAddress, provider);
+    assetWalletBalance = await assetContract.balanceOf(walletAddress);
+  } else {
+    assetWalletBalance = await provider.getBalance(walletAddress);
+  }
+
+  return assetWalletBalance 
+}
