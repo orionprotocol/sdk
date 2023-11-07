@@ -87,6 +87,10 @@ export function generateCalls(calls: BytesLike[]) {
 }
 
 export async function exchangeToNativeDecimals(token: AddressLike, amount: BigNumberish, provider: ethers.JsonRpcProvider) {
+  return await toNativeDecimals(token, amount, provider) / (BigInt(10) ** 8n)
+}
+
+export async function toNativeDecimals(token: AddressLike, amount: BigNumberish, provider: ethers.JsonRpcProvider) {
   token = await token
   if (typeof token !== "string") token = await token.getAddress()
 
@@ -95,5 +99,5 @@ export async function exchangeToNativeDecimals(token: AddressLike, amount: BigNu
     const contract = ERC20__factory.connect(token, provider)
     decimals = BigInt(await contract.decimals())
   }
-  return BigInt(amount) * (BigInt(10) ** decimals) / (BigInt(10) ** 8n)
+  return BigInt(amount) * (BigInt(10) ** decimals)
 }

@@ -7,7 +7,6 @@ import type { Order, SignedOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
 import hashOrder from './hashOrder.js';
-import signOrderPersonal from './signOrderPersonal.js';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
@@ -23,7 +22,6 @@ export const signOrder = async (
   senderAddress: string,
   matcherAddress: string,
   serviceFeeAssetAddr: string,
-  usePersonalSign: boolean,
   signer: ethers.Signer,
   chainId: SupportedChainId,
 ) => {
@@ -54,19 +52,16 @@ export const signOrder = async (
     nonce,
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
-    isPersonalSign: usePersonalSign,
   };
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
 
-  const signature = usePersonalSign
-    ? await signOrderPersonal(order, signer)
-    : await typedDataSigner.signTypedData(
-      getDomainData(chainId),
-      ORDER_TYPES,
-      order,
-    );
+  const signature = await typedDataSigner.signTypedData(
+    getDomainData(chainId),
+    ORDER_TYPES,
+    order,
+  );
 
   // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
   // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
