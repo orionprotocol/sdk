@@ -11,7 +11,7 @@ import Exchange from './Exchange/index.js';
 import FarmingManager from './FarmingManager/index.js';
 import { chains, envs } from '../config/index.js';
 import type { networkCodes } from '../constants/index.js';
-import { IntegratorService } from '../services/Integrator/index.js';
+import { IndexerService } from '../services/Indexer/index.js';
 
 type KnownConfig = {
   env: KnownEnv
@@ -27,7 +27,7 @@ export default class Unit {
 
   public readonly blockchainService: BlockchainService;
 
-  public readonly integrator: IntegratorService;
+  public readonly indexer: IndexerService;
 
   public readonly aggregator: Aggregator;
 
@@ -85,8 +85,8 @@ export default class Unit {
           priceFeed: {
             api: networkConfig.api + networkConfig.services.priceFeed.all,
           },
-          integrator: {
-            api: networkConfig.api + networkConfig.services.integrator.http,
+          indexer: {
+            api: networkConfig.api + networkConfig.services.indexer.http,
           },
         },
       };
@@ -109,8 +109,8 @@ export default class Unit {
       this.config.services.blockchainService.http,
       this.config.basicAuth
     );
-    this.integrator = new IntegratorService(
-      this.config.services.integrator.api,
+    this.indexer = new IndexerService(
+      this.config.services.indexer.api,
       intNetwork
     );
     this.aggregator = new Aggregator(

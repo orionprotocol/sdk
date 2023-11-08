@@ -14,7 +14,7 @@ export const pureEnvNetworksSchema = z.object({
     priceFeed: z.object({
       all: z.string(),
     }),
-    integrator: z.object({
+    indexer: z.object({
       http: z.string(),
     }),
   }),

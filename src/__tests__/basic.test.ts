@@ -177,7 +177,7 @@ describe('Orion', () => {
             priceFeed: {
               api: orionPriceFeedAPI + '/price-feed',
             },
-            integrator: {
+            indexer: {
               api: '',
             }
           },
