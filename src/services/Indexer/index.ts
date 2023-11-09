@@ -68,7 +68,7 @@ type Payload =
   | ListAmountPayload
   | GetAmountByORNPayload;
 
-class IntegratorService {
+class IndexerService {
   private readonly apiUrl: string;
 
   private readonly chainId: number;
@@ -222,4 +222,4 @@ class IntegratorService {
 }
 
 export * as schemas from './schemas/index.js';
-export { IntegratorService };
+export { IndexerService };
