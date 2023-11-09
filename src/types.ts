@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
-import factories from './constants/factories.js';
+import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
@@ -253,7 +253,7 @@ export type VerboseUnitConfig = {
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
     }
-    integrator: {
+    indexer: {
       api: string
       // For example:
       // http://localhost:3004/,
