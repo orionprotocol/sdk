@@ -99,8 +99,8 @@
     "rpc": "https://rpcapi.fantom.network/",
     "baseCurrencyName": "FTM",
     "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
+      "WETH": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+      "curveRegistry": "0x0f854EA9F38ceA4B1c2FC79047E9D0134419D5d6"
     }
   },
   "137": {
@@ -112,8 +112,8 @@
     "rpc": "https://polygon-rpc.com/",
     "explorer": "https://polygonscan.com/",
     "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
+      "WETH": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "curveRegistry": "0x094d12e5b541784701FD8d65F11fc0598FBC6332"
     }
   },
   "80001": {
@@ -138,7 +138,7 @@
     "rpc": "https://exchainrpc.okex.org/",
     "baseCurrencyName": "OKT",
     "contracts": {
-      "WETH": "",
+      "WETH": "0x843340759bFCa4a3776F401cD2E03fE9bc0d838f",
       "curveRegistry": ""
     }
   },
