@@ -16,6 +16,8 @@ export const listPoolV3Schema = z.object({
   WETH9: evmAddressSchema,
   poolFee: z.number(),
   weeklyReward: z.number(),
+  weight: z.number(),
+  totalLPStakeInUSD: z.number(),
 
   ...basicPoolInfo.shape,
 
