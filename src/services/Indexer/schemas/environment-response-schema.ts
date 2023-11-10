@@ -9,7 +9,7 @@ const environmentResponseSchema = z.object({
     OrionV3Factory: evmAddressSchema,
     OrionV2Factory: evmAddressSchema,
     OrionV3NFTManager: evmAddressSchema,
-    SwapRouter: evmAddressSchema,
+    SwapRouterV3: evmAddressSchema,
     OrionFarmV3: evmAddressSchema,
     OrionFarmV2: evmAddressSchema,
     OrionVoting: evmAddressSchema,
