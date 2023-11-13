@@ -124,7 +124,7 @@ class IndexerService {
     return BigNumber(amount).dividedBy(this.getK(timestamp));
   };
 
-  readonly getAmountByORN = (amountToken: number, timeLock: number) => {
+  readonly getAmountByORN = (amountToken: string, timeLock: number) => {
     const alpha = 730 / (30 - Math.sqrt(730 / 7)) ** (1 / 3);
     const timestamp = Date.now() / 1000;
 
