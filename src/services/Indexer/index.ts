@@ -13,7 +13,7 @@ import {
 } from './schemas';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
-import { DAY, WEEK_DAYS, YEAR } from '../../constants';
+import { WEEK_DAYS, YEAR } from '../../constants';
 import { LOCK_START_TIME } from './constants';
 
 type BasePayload = {
@@ -124,11 +124,10 @@ class IndexerService {
     return BigNumber(amount).dividedBy(this.getK(timestamp));
   };
 
-  readonly getAmountByORN = (amountToken: string, timeLock: number) => {
+  readonly getAmountByORN = (amountToken: string, lockingDays: number) => {
     const alpha = 730 / (30 - Math.sqrt(730 / 7)) ** (1 / 3);
-    const timestamp = Date.now() / 1000;
 
-    const deltaDaysBN = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
+    const deltaDaysBN = BigNumber(lockingDays);
 
     if (deltaDaysBN.lte(0)) return BigNumber(0);
 
