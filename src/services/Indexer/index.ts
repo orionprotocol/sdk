@@ -130,7 +130,7 @@ class IndexerService {
 
     const deltaDaysBN = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
 
-    if (deltaDaysBN.lte(0)) return 0;
+    if (deltaDaysBN.lte(0)) return BigNumber(0);
 
     const multSQRT = deltaDaysBN.dividedBy(WEEK_DAYS).sqrt();
     const multCUBE = deltaDaysBN.dividedBy(alpha).pow(3);
