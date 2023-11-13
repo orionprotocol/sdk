@@ -125,15 +125,18 @@ class IndexerService {
   };
 
   readonly getAmountByORN = (amountToken: number, timeLock: number) => {
+    const alpha = 730 / (30 - Math.sqrt(730 / 7)) ** (1 / 3);
     const timestamp = Date.now() / 1000;
 
     const deltaDaysBN = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
 
     if (deltaDaysBN.lte(0)) return 0;
 
+    const multSQRT = deltaDaysBN.dividedBy(WEEK_DAYS).sqrt();
+    const multCUBE = deltaDaysBN.dividedBy(alpha).pow(3);
+
     return BigNumber(amountToken)
-      .multipliedBy(deltaDaysBN.sqrt())
-      .dividedBy(BigNumber(WEEK_DAYS).sqrt());
+      .multipliedBy(multSQRT.plus(multCUBE));
   };
 
   readonly getVotingInfo = (userAddress?: string) => {
