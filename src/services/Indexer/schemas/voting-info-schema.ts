@@ -12,6 +12,7 @@ const poolSchema = z.object({
   name0: z.string(),
   name1: z.string(),
   poolFee: z.number(),
+  userWeight: z.number(),
   weight: z.number(),
 });
 

@@ -4,13 +4,16 @@ import {
   listAmountResponseSchema,
   listNFTOrderResponseSchema,
   listPoolResponseSchema,
+  listPoolV2ResponseSchema,
+  listPoolV3ResponseSchema,
+  PoolV2InfoResponseSchema,
   testIncrementorSchema,
   veORNInfoResponseSchema,
   votingInfoResponseSchema
 } from './schemas';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
-import { DAY, WEEK_DAYS, YEAR } from '../../constants';
+import { WEEK_DAYS, YEAR } from '../../constants';
 import { LOCK_START_TIME } from './constants';
 
 type BasePayload = {
@@ -31,7 +34,7 @@ type ListNFTOrderPayload = BasePayload & {
 };
 
 type GetPoolInfoPayload = BasePayload & {
-  model: 'OrionV3Factory'
+  model: 'OrionV3Factory' | 'OrionV2Factory'
   method: 'getPoolInfo'
   params: [string, string, string]
 };
@@ -84,7 +87,10 @@ class IndexerService {
     this.getEnvironment = this.getEnvironment.bind(this);
     this.listNFTOrder = this.listNFTOrder.bind(this);
     this.getPoolInfo = this.getPoolInfo.bind(this);
-    this.listPool = this.listPool.bind(this);
+    this.getListPool = this.getListPool.bind(this);
+    this.listPoolV2 = this.listPoolV2.bind(this);
+    this.poolV2Info = this.poolV2Info.bind(this);
+    this.listPoolV3 = this.listPoolV3.bind(this);
     this.veORNInfo = this.veORNInfo.bind(this);
     this.listAmount = this.listAmount.bind(this);
     this.getAmountByORN = this.getAmountByORN.bind(this);
@@ -118,16 +124,18 @@ class IndexerService {
     return BigNumber(amount).dividedBy(this.getK(timestamp));
   };
 
-  readonly getAmountByORN = (amountToken: number, timeLock: number) => {
-    const timestamp = Date.now() / 1000;
+  readonly getAmountByORN = (amountToken: string, lockingDays: number) => {
+    const alpha = 730 / (30 - Math.sqrt(730 / 7)) ** (1 / 3);
 
-    const deltaDaysBN = BigNumber(timeLock).minus(timestamp).dividedBy(DAY);
+    const deltaDaysBN = BigNumber(lockingDays);
 
-    if (deltaDaysBN.lte(0)) return 0;
+    if (deltaDaysBN.lte(0)) return BigNumber(0);
+
+    const multSQRT = deltaDaysBN.dividedBy(WEEK_DAYS).sqrt();
+    const multCUBE = deltaDaysBN.dividedBy(alpha).pow(3);
 
     return BigNumber(amountToken)
-      .multipliedBy(deltaDaysBN.sqrt())
-      .dividedBy(BigNumber(WEEK_DAYS).sqrt());
+      .multipliedBy(multSQRT.plus(multCUBE));
   };
 
   readonly getVotingInfo = (userAddress?: string) => {
@@ -163,6 +171,17 @@ class IndexerService {
     });
   };
 
+  readonly getListPool = (userAddress?: string) => {
+    return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionVoting',
+        method: 'listPool',
+        params: [userAddress],
+      }),
+    });
+  };
+
   readonly getPoolInfo = (
     token0: string,
     token1: string,
@@ -178,8 +197,30 @@ class IndexerService {
     });
   };
 
-  readonly listPool = (address?: string) => {
-    return fetchWithValidation(this.apiUrl, listPoolResponseSchema, {
+  readonly listPoolV2 = (address?: string) => {
+    return fetchWithValidation(this.apiUrl, listPoolV2ResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionFarmV2',
+        method: 'listPool',
+        params: [address],
+      }),
+    });
+  };
+
+  readonly poolV2Info = (token0: string, token1: string, address: string) => {
+    return fetchWithValidation(this.apiUrl, PoolV2InfoResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'OrionV2Factory',
+        method: 'getPoolInfo',
+        params: [token0, token1, address],
+      }),
+    });
+  };
+
+  readonly listPoolV3 = (address?: string) => {
+    return fetchWithValidation(this.apiUrl, listPoolV3ResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
         model: 'OrionFarmV3',

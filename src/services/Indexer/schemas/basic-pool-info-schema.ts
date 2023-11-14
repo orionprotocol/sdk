@@ -5,7 +5,7 @@ const basicPoolInfo = z.object({
   poolAddress: evmAddressSchema,
   isInitialized: z.boolean(),
   liquidity: z.number().nonnegative(),
-  liquidityInUsd: z.number().nonnegative(),
+  liquidityInUSD: z.number().nonnegative(),
   liquidityShare: z.number().nonnegative(),
   isFarming: z.boolean(),
   rewardsTotal: z.number().nonnegative(),
