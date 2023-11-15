@@ -15,7 +15,7 @@ export const listPoolV2Schema = z.object({
   token0Decimals: z.number().int().nonnegative().max(18),
   token1Decimals: z.number().int().nonnegative().max(18),
   WETH9: evmAddressSchema,
-  farmAddress: z.string(),
+  farmAddress: z.string().optional(),
   weight: z.number(),
   liquidity0: z.number(),
   liquidity1: z.number(),

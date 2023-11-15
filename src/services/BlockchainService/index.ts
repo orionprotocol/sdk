@@ -10,10 +10,10 @@ import {
   userEarnedSchema,
   type PairStatusEnum,
   pairStatusSchema,
-  governanceContractsSchema,
-  governancePoolsSchema,
-  governancePoolSchema,
-  governanceChainsInfoSchema,
+  // governanceContractsSchema,
+  // governancePoolsSchema,
+  // governancePoolSchema,
+  // governanceChainsInfoSchema,
   pricesWithQuoteAssetSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
@@ -113,10 +113,10 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
-    this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
-    this.getGovernancePools = this.getGovernancePools.bind(this);
-    this.getGovernancePool = this.getGovernancePool.bind(this);
-    this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
+    // this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
+    // this.getGovernancePools = this.getGovernancePools.bind(this);
+    // this.getGovernancePool = this.getGovernancePool.bind(this);
+    // this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -483,30 +483,6 @@ class BlockchainService {
       method: 'POST',
       body: JSON.stringify(secretHashes),
     },
-  );
-
-  getGovernanceContracts = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/info`,
-    governanceContractsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernancePools = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/pools`,
-    governancePoolsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernancePool = (address: string) => fetchWithValidation(
-    `${this.apiUrl}/api/governance/pools/${address}`,
-    governancePoolSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernanceChainsInfo = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/chains-info`,
-    governanceChainsInfoSchema,
-    { headers: this.basicAuthHeaders },
   );
 }
 
