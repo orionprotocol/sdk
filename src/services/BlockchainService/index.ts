@@ -18,12 +18,6 @@ import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials } from '../../types.js';
-import {
-  governanceChainsInfoSchema,
-  governanceContractsSchema,
-  governancePoolSchema,
-  governancePoolsSchema
-} from './schemas';
 
 type IAdminAuthHeaders = {
   auth: string
@@ -116,10 +110,6 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
-    this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
-    this.getGovernancePools = this.getGovernancePools.bind(this);
-    this.getGovernancePool = this.getGovernancePool.bind(this);
-    this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -486,30 +476,6 @@ class BlockchainService {
       method: 'POST',
       body: JSON.stringify(secretHashes),
     },
-  );
-
-  getGovernanceContracts = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/info`,
-    governanceContractsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernancePools = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/pools`,
-    governancePoolsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernancePool = (address: string) => fetchWithValidation(
-    `${this.apiUrl}/api/governance/pools/${address}`,
-    governancePoolSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernanceChainsInfo = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/chains-info`,
-    governanceChainsInfoSchema,
-    { headers: this.basicAuthHeaders },
   );
 }
 
