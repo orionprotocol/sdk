@@ -208,7 +208,7 @@ class IndexerService {
     });
   };
 
-  readonly poolV2Info = (token0: string, token1: string, address: string) => {
+  readonly poolV2Info = (token0: string, token1: string, address: string | undefined) => {
     return fetchWithValidation(this.apiUrl, PoolV2InfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
