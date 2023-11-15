@@ -113,10 +113,6 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
-    // this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
-    // this.getGovernancePools = this.getGovernancePools.bind(this);
-    // this.getGovernancePool = this.getGovernancePool.bind(this);
-    // this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
   }
 
   get basicAuthHeaders() {
