@@ -10,10 +10,6 @@ import {
   userEarnedSchema,
   type PairStatusEnum,
   pairStatusSchema,
-  // governanceContractsSchema,
-  // governancePoolsSchema,
-  // governancePoolSchema,
-  // governanceChainsInfoSchema,
   pricesWithQuoteAssetSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
