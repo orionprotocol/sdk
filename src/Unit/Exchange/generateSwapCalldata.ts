@@ -61,7 +61,8 @@ export async function generateSwapCalldataWithUnit({
     unit.blockchainService.getInfo
   )();
 
-  let path = SafeArray.from(cloneDeep(arrayLikePath));
+  const arrayLikePathCopy = cloneDeep(arrayLikePath);
+  let path = SafeArray.from(arrayLikePathCopy);
   const walletBalance = await getWalletBalance(
     assetToAddress[path.first().assetIn] ?? path.first().assetIn.toLowerCase(),
     receiverAddress,
@@ -101,7 +102,8 @@ export async function generateSwapCalldata({
   const wethAddress = await addressLikeToString(wethAddressLike);
   const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
-  let path = SafeArray.from(cloneDeep(arrayLikePath));
+  const arrayLikePathCopy = cloneDeep(arrayLikePath);
+  let path = SafeArray.from(arrayLikePathCopy);
 
   const { factory, assetIn: srcToken } = path.first();
   const dstToken = path.last().assetOut;
