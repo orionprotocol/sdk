@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 export class SafeArray<T> extends Array<T> {
   public static override from<T>(array: ArrayLike<T>): SafeArray<T> {
     return new SafeArray(array);
@@ -13,7 +11,7 @@ export class SafeArray<T> extends Array<T> {
         throw new Error('Array passed to constructor has undefined values')
       }
 
-      this[index] = cloneDeep(value);
+      this[index] = value;
     }
   }
 
