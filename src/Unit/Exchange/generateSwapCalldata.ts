@@ -102,8 +102,7 @@ export async function generateSwapCalldata({
   const wethAddress = await addressLikeToString(wethAddressLike);
   const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
-  const arrayLikePathCopy = cloneDeep(arrayLikePath);
-  let path = SafeArray.from(arrayLikePathCopy);
+  let path = SafeArray.from(arrayLikePath);
 
   const { factory, assetIn: srcToken } = path.first();
   const dstToken = path.last().assetOut;
@@ -119,7 +118,7 @@ export async function generateSwapCalldata({
   };
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
 
-  path = SafeArray.from(arrayLikePathCopy).map((singleSwap) => {
+  path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
     return singleSwap;
