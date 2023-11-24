@@ -1,6 +1,6 @@
 import type { LibValidator } from '@orionprotocol/contracts/lib/ethers-v6/Exchange.js';
 import { ethers, ZeroAddress } from 'ethers';
-import type { AddressLike, JsonRpcProvider, BigNumberish, type BytesLike } from 'ethers';
+import type { AddressLike, JsonRpcProvider, BigNumberish, BytesLike } from 'ethers';
 import cloneDeep from 'lodash.clonedeep';
 import { safeGet, SafeArray } from '../../utils/safeGetters.js';
 import { simpleFetch } from 'simple-typed-fetch';
