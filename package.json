@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.20.22",
+  "version": "0.20.23-rc0",
   "description": "Orion Protocol SDK",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -89,6 +89,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@orionprotocol/contracts": "1.22.3",
+    "@types/lodash.clonedeep": "^4.5.9",
     "bignumber.js": "^9.1.1",
     "bson-objectid": "^2.0.4",
     "buffer": "^6.0.3",
@@ -96,6 +97,7 @@
     "express": "^4.18.2",
     "isomorphic-ws": "^5.0.0",
     "just-clone": "^6.2.0",
+    "lodash.clonedeep": "^4.5.0",
     "merge-anything": "^5.1.7",
     "neverthrow": "^6.0.0",
     "patch-package": "^8.0.0",
