@@ -69,7 +69,7 @@ export async function generateSwapCalldataWithUnit({
     unit.provider
   );
 
-  path = SafeArray.from(arrayLikePath).map((swapInfo) => {
+  path = SafeArray.from(arrayLikePathCopy).map((swapInfo) => {
     swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn.toLowerCase();
     swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut.toLowerCase();
     return swapInfo;
@@ -119,7 +119,7 @@ export async function generateSwapCalldata({
   };
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
 
-  path = SafeArray.from(arrayLikePath).map((singleSwap) => {
+  path = SafeArray.from(arrayLikePathCopy).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
     return singleSwap;
