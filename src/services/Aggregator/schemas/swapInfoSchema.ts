@@ -40,6 +40,13 @@ const swapInfoBase = z.object({
     isThroughPoolOrCurve: z.boolean(),
   }).array(),
   assetNameMapping: z.record(z.string()).optional(), // address to ERC20 names
+  usd: z.object({ // USD info of this swap, nullable
+    aa: z.number(), // available amount in, USD
+    aao: z.number().optional(), // available amount out, USD
+    mo: z.number(), // market amount out, USD
+    mi: z.number().optional(), // market amount in, USD
+    d: z.number().optional(), // difference in available amount in/out (USD) and market amount out/in (USD) in percentage
+  }).optional(),
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({
