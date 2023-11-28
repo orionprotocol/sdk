@@ -197,13 +197,13 @@ export type SwapInfoBase = {
   } | undefined
   alternatives: SwapInfoAlternative[]
   assetsNameMapping?: Partial<Record<string, string>> | undefined
-  usdInfo?: {
+  usdInfo: {
     availableAmountIn: number
     availableAmountOut: number | undefined
     marketAmountOut: number
     marketAmountIn: number | undefined
     difference: string | undefined
-  }
+  } | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
