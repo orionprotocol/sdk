@@ -199,10 +199,10 @@ export type SwapInfoBase = {
   assetsNameMapping?: Partial<Record<string, string>> | undefined
   usdInfo?: {
     availableAmountIn: number
-    availableAmountOut?: number
-    marketAmountIn: number
-    marketAmountOut?: number
-    difference: string
+    availableAmountOut: number | undefined
+    marketAmountOut: number
+    marketAmountIn: number | undefined
+    difference: string | undefined
   }
 }
 
