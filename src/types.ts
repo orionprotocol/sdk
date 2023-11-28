@@ -202,7 +202,7 @@ export type SwapInfoBase = {
     availableAmountOut?: number
     marketAmountIn: number
     marketAmountOut?: number
-    difference: number
+    difference: string
   }
 }
 
