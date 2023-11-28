@@ -40,7 +40,14 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     ai: z.string().toUpperCase(), // asset in
     ao: z.string().toUpperCase(), // asset out
     f: factorySchema, // factory
-  }))
+  })),
+  usd: z.object({ // USD info of this swap, nullable
+    aa: z.number().optional(), // available amount in, USD
+    aao: z.number().optional(), // available amount out, USD
+    mo: z.number().optional(), // market amount out, USD
+    mi: z.number().optional(), // market amount in, USD
+    d: z.string().optional(), // difference in available amount in/out (USD) and market amount out/in (USD) in percentage
+  }).optional(),
 });
 
 const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({

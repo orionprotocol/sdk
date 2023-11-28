@@ -526,6 +526,13 @@ class AggregatorWS {
               availableAmountOut: item.aao,
             })),
             assetsNameMapping: json.anm,
+            usdInfo: json.usd && {
+              availableAmountIn: json.usd.aa,
+              availableAmountOut: json.usd.aao,
+              marketAmountOut: json.usd.mo,
+              marketAmountIn: json.usd.mi,
+              difference: json.usd.d,
+            },
           };
 
           switch (json.k) { // kind
