@@ -221,11 +221,7 @@ async function processMultiFactorySwaps(
   curveRegistryAddress: string,
   provider: JsonRpcProvider
 ) {
-  const calls: BytesLike[] = [];
-  if (swapDescription.srcToken === ZeroAddress) {
-    const wrapCall = await generateWrapAndTransferCall(swapExecutorContractAddress, { value: amount });
-    calls.push(wrapCall);
-  }
+  let calls: BytesLike[] = [];
   for (const swap of path) {
     switch (swap.factory) {
       case 'OrionV2': {
