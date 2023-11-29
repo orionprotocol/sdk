@@ -251,13 +251,14 @@ async function processMultiFactorySwaps(
         break;
       }
       case 'Curve': {
-        const curveCalls = await generateCurveStableSwapCall(
+        let curveCalls = await generateCurveStableSwapCall(
           amount,
           swapExecutorContractAddress,
           swap,
           provider,
           swapExecutorContractAddress,
-          curveRegistryAddress
+          curveRegistryAddress,
+          true
         );
         calls.push(...curveCalls);
         break;
