@@ -4,7 +4,7 @@ import {
   ERC20__factory,
 } from "@orionprotocol/contracts/lib/ethers-v6/index.js";
 import { MaxUint256, type BigNumberish, type JsonRpcProvider } from "ethers";
-import { addCallParams } from "./utils.js";
+import { addCallParams, pathCallWithBalance } from "./utils.js";
 import type { SingleSwap } from "../../../types.js";
 import { generateApproveCall } from "./erc20.js";
 import type { BytesLike } from "ethers";
@@ -15,7 +15,8 @@ export async function generateCurveStableSwapCall(
   swap: SingleSwap,
   provider: JsonRpcProvider,
   swapExecutorContractAddress: string,
-  curveRegistry: string
+  curveRegistry: string,
+  pathWithBalance = false
 ) {
   const executorInterface = SwapExecutor__factory.createInterface();
   const registry = CurveRegistry__factory.connect(curveRegistry, provider);
@@ -38,7 +39,11 @@ export async function generateCurveStableSwapCall(
     "curveSwapStableAmountIn",
     [pool, assetOut, i, j, to, amount]
   );
-  calls.push(addCallParams(calldata))
+  calldata = addCallParams(calldata)
+  if (pathWithBalance) {
+      calldata = pathCallWithBalance(calldata, swap.assetIn)
+    }
+  calls.push(calldata)
 
   return calls 
 }
