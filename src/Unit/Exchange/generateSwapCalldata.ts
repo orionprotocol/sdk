@@ -170,7 +170,7 @@ export async function generateSwapCalldata({
     true
   );
   const useExchangeBalance =
-    initiatorExchangeBalance !== 0n && (srcToken === ZeroAddress || amountNativeDecimals < initiatorWalletBalance);
+    initiatorExchangeBalance !== 0n && (srcToken === ZeroAddress || initiatorWalletBalance < amountNativeDecimals);
   if (useExchangeBalance) {
     swapDescription.flags = 1n << 255n;
   }
