@@ -54,7 +54,7 @@ export async function generateSwapCalldataWithUnit({
 }: GenerateSwapCalldataWithUnitParams): Promise<{
   calldata: string;
   swapDescription: LibValidator.SwapDescriptionStruct;
-  value: BigInt;
+  value: bigint;
 }> {
   if (arrayLikePath == undefined || arrayLikePath.length == 0) {
     throw new Error("Empty path");
@@ -100,7 +100,7 @@ export async function generateSwapCalldata({
 }: GenerateSwapCalldataParams): Promise<{
   calldata: string;
   swapDescription: LibValidator.SwapDescriptionStruct;
-  value: BigInt;
+  value: bigint;
 }> {
   const wethAddress = await addressLikeToString(wethAddressLike);
   const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
