@@ -61,7 +61,9 @@ export async function generateSwapCalldataWithUnit({
   }
   const wethAddress = safeGet(unit.contracts, "WETH");
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry");
-  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(unit.blockchainService.getInfo)();
+  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
+    unit.blockchainService.getInfo
+  )();
 
   const arrayLikePathCopy = cloneDeep(arrayLikePath);
   let path = SafeArray.from(arrayLikePathCopy);
@@ -159,10 +161,17 @@ export async function generateSwapCalldata({
   ));
   const calldata = generateCalls(calls);
 
-  const initiatorWalletBalance = await getWalletBalance(srcToken, initiatorAddress, provider)
-  const initiatorExchangeBalance = await getExchangeBalance(srcToken, initiatorAddress, exchangeContractAddress, provider, true)
-  const useContractBalance = srcToken === ZeroAddress || amountNativeDecimals < initiatorWalletBalance
-  if (useContractBalance) {
+  const initiatorWalletBalance = await getWalletBalance(srcToken, initiatorAddress, provider);
+  const initiatorExchangeBalance = await getExchangeBalance(
+    srcToken,
+    initiatorAddress,
+    exchangeContractAddress,
+    provider,
+    true
+  );
+  const useExchangeBalance =
+    initiatorExchangeBalance !== 0n && (srcToken === ZeroAddress || amountNativeDecimals < initiatorWalletBalance);
+  if (useExchangeBalance) {
     swapDescription.flags = 1n << 255n;
   }
   let value = 0n;
@@ -170,7 +179,7 @@ export async function generateSwapCalldata({
     value = amountNativeDecimals - initiatorExchangeBalance;
   }
 
-  return { swapDescription, calldata , value};
+  return { swapDescription, calldata, value };
 }
 
 async function processSingleFactorySwaps(
