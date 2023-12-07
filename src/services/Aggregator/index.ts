@@ -197,6 +197,7 @@ class Aggregator {
     isReversedOrder?: boolean,
     partnerId?: string,
     fromWidget?: boolean,
+    source?: string,
   ) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -206,6 +207,7 @@ class Aggregator {
       },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
       ...(fromWidget !== undefined) && { 'X-From-Widget': fromWidget ? 'true' : 'false' },
+      ...(source !== undefined) && { 'X-Source': source },
       ...this.basicAuthHeaders,
     };
 
