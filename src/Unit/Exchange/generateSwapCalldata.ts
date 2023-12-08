@@ -18,7 +18,7 @@ import { generateCurveStableSwapCall } from "./callGenerators/curve.js";
 import type { SingleSwap } from "../../types.js";
 import { addressLikeToString } from "../../utils/addressLikeToString.js";
 import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from "./callGenerators/weth.js";
-import { getExchangeAllowance, getExchangeBalance, getTotalBalance, getWalletBalance } from "../../utils/getBalance.js";
+import { getExchangeAllowance, getTotalBalance } from "../../utils/getBalance.js";
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
 
@@ -334,7 +334,7 @@ async function shouldUseExchangeBalance(
   initiatorAddress: AddressLike,
   exchangeContractAddress: AddressLike,
   amount: bigint,
-  provider: ethers.provider
+  provider: JsonRpcProvider
 ) {
   const { walletBalance, exchangeBalance } = await getTotalBalance(
     srcToken,
