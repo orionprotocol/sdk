@@ -128,7 +128,7 @@ export async function generateSwapCalldata({
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
     return singleSwap;
   });
-  
+
   let calls: BytesLike[];
   ({ swapDescription, calls } = await processSwaps(
     swapDescription,
@@ -151,8 +151,8 @@ export async function generateSwapCalldata({
   if (useExchangeBalance) {
     swapDescription.flags = 1n << 255n;
   }
-
-  return { swapDescription, calldata, value: additionalTransferAmount };
+  const value = srcToken == ZeroAddress ? additionalTransferAmount : 0n;
+  return { swapDescription, calldata, value };
 }
 
 async function processSwaps(
