@@ -58,7 +58,7 @@ async function getExchangeBalanceERC20(
   exchangeAddress = await addressLikeToString(exchangeAddress);
   tokenAddress = await addressLikeToString(tokenAddress);
 
-  const exchange = <Exchange>Exchange__factory.connect(exchangeAddress, provider)
+  const exchange = <Exchange>Exchange__factory.connect(exchangeAddress, provider);
   const exchangeBalance = await exchange.getBalance(tokenAddress, walletAddress);
 
   if (convertToNativeDecimals) {
@@ -79,7 +79,7 @@ async function getExchangeBalanceNative(
 ) {
   walletAddress = await addressLikeToString(walletAddress);
   exchangeAddress = await addressLikeToString(exchangeAddress);
-  const exchange = <Exchange>Exchange__factory.connect(exchangeAddress, provider)
+  const exchange = <Exchange>Exchange__factory.connect(exchangeAddress, provider);
   const exchangeBalance = await exchange.getBalance(ZeroAddress, walletAddress);
 
   if (convertToNativeDecimals) {
@@ -104,6 +104,25 @@ export async function getExchangeBalance(
     return getExchangeBalanceNative(walletAddress, exchangeAddress, provider, convertToNativeDecimals);
   } else {
     return getExchangeBalanceERC20(tokenAddress, walletAddress, exchangeAddress, provider, convertToNativeDecimals);
+  }
+}
+
+export async function getExchangeAllowance(
+  tokenAddress: AddressLike,
+  walletAddress: AddressLike,
+  exchangeAddress: AddressLike,
+  provider: ethers.Provider
+) {
+  if (typeof tokenAddress === "string" && tokenAddress === ZeroAddress) {
+    return 0n;
+  } else {
+    walletAddress = await addressLikeToString(walletAddress);
+    tokenAddress = await addressLikeToString(tokenAddress);
+
+    const tokenContract = ERC20__factory.connect(tokenAddress, provider);
+    let allowance = await tokenContract.allowance(walletAddress, exchangeAddress);
+
+    return allowance;
   }
 }
 
@@ -172,5 +191,9 @@ export async function getTotalBalance(
     provider,
     convertToNativeDecimals
   );
-  return walletBalance + exchangeBalance;
+  return {
+    walletBalance,
+    exchangeBalance,
+    totalBalance: walletBalance + exchangeBalance
+  } 
 }

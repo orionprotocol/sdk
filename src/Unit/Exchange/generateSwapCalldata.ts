@@ -18,7 +18,7 @@ import { generateCurveStableSwapCall } from "./callGenerators/curve.js";
 import type { SingleSwap } from "../../types.js";
 import { addressLikeToString } from "../../utils/addressLikeToString.js";
 import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from "./callGenerators/weth.js";
-import { getExchangeBalance, getWalletBalance } from "../../utils/getBalance.js";
+import { getExchangeAllowance, getTotalBalance } from "../../utils/getBalance.js";
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
 
@@ -109,7 +109,7 @@ export async function generateSwapCalldata({
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
   let path = SafeArray.from(arrayLikePath);
 
-  const { factory, assetIn: srcToken } = path.first();
+  const { assetIn: srcToken } = path.first();
   const { assetOut: dstToken } = path.last();
 
   let swapDescription: LibValidator.SwapDescriptionStruct = {
@@ -129,14 +129,50 @@ export async function generateSwapCalldata({
     return singleSwap;
   });
 
-  const isSingleFactorySwap = path.every((singleSwap) => singleSwap.factory === factory);
+  let calls: BytesLike[];
+  ({ swapDescription, calls } = await processSwaps(
+    swapDescription,
+    path,
+    amountNativeDecimals,
+    wethAddress,
+    swapExecutorContractAddress,
+    curveRegistryAddress,
+    provider
+  ));
+  const calldata = generateCalls(calls);
+
+  const { useExchangeBalance, additionalTransferAmount } = await shouldUseExchangeBalance(
+    srcToken,
+    initiatorAddress,
+    exchangeContractAddress,
+    amountNativeDecimals,
+    provider
+  );
+  if (useExchangeBalance) {
+    swapDescription.flags = 1n << 255n;
+  }
+  const value = srcToken == ZeroAddress ? additionalTransferAmount : 0n;
+  return { swapDescription, calldata, value };
+}
+
+async function processSwaps(
+  swapDescription: LibValidator.SwapDescriptionStruct,
+  path: SafeArray<SingleSwap>,
+  amount: BigNumberish,
+  wethAddress: string,
+  swapExecutorContractAddress: string,
+  curveRegistryAddress: string,
+  provider: JsonRpcProvider
+) {
+  const { factory: firstSwapFactory } = path.first();
+  const isSingleFactorySwap = path.every((singleSwap) => singleSwap.factory === firstSwapFactory);
   let calls: BytesLike[];
   if (isSingleFactorySwap) {
     ({ swapDescription, calls } = await processSingleFactorySwaps(
-      factory,
+      firstSwapFactory,
       swapDescription,
       path,
-      amountNativeDecimals,
+      amount,
       swapExecutorContractAddress,
       curveRegistryAddress,
       provider
@@ -145,41 +181,20 @@ export async function generateSwapCalldata({
     ({ swapDescription, calls } = await processMultiFactorySwaps(
       swapDescription,
       path,
-      amountNativeDecimals,
+      amount,
       swapExecutorContractAddress,
       curveRegistryAddress,
       provider
     ));
   }
-
   ({ swapDescription, calls } = await wrapOrUnwrapIfNeeded(
-    amountNativeDecimals,
+    amount,
     swapDescription,
     calls,
     swapExecutorContractAddress,
     wethAddress
   ));
-  const calldata = generateCalls(calls);
-
-  const initiatorWalletBalance = await getWalletBalance(srcToken, initiatorAddress, provider);
-  const initiatorExchangeBalance = await getExchangeBalance(
-    srcToken,
-    initiatorAddress,
-    exchangeContractAddress,
-    provider,
-    true
-  );
-  const useExchangeBalance =
-    initiatorExchangeBalance !== 0n && (srcToken === ZeroAddress || initiatorWalletBalance < amountNativeDecimals);
-  if (useExchangeBalance) {
-    swapDescription.flags = 1n << 255n;
-  }
-  let value = 0n;
-  if (srcToken === ZeroAddress && initiatorExchangeBalance < amountNativeDecimals) {
-    value = amountNativeDecimals - initiatorExchangeBalance;
-  }
-
-  return { swapDescription, calldata, value };
+  return { swapDescription, calls };
 }
 
 async function processSingleFactorySwaps(
@@ -312,4 +327,41 @@ async function wrapOrUnwrapIfNeeded(
     calls.push(transferCall);
   }
   return { swapDescription, calls };
+}
+
+async function shouldUseExchangeBalance(
+  srcToken: AddressLike,
+  initiatorAddress: AddressLike,
+  exchangeContractAddress: AddressLike,
+  amount: bigint,
+  provider: JsonRpcProvider
+) {
+  const { walletBalance, exchangeBalance } = await getTotalBalance(
+    srcToken,
+    initiatorAddress,
+    exchangeContractAddress,
+    provider
+  );
+  const exchangeAllowance = await getExchangeAllowance(srcToken, initiatorAddress, exchangeContractAddress, provider);
+
+  if (walletBalance + exchangeBalance < amount) {
+    throw new Error(
+      `Not enough balance to make swap, totalBalance - ${walletBalance + exchangeBalance} swapAmount - ${amount}`
+    );
+  }
+  let useExchangeBalance = true;
+  let additionalTransferAmount = 0n;
+
+  if (exchangeBalance == 0n) {
+    useExchangeBalance = false;
+    additionalTransferAmount = amount;
+  } else {
+    additionalTransferAmount = exchangeBalance >= amount ? 0n : amount - exchangeBalance;
+    if (additionalTransferAmount > exchangeAllowance) {
+      throw new Error(
+        `Not enough allowance to make swap, allowance - ${exchangeAllowance} needed allowance - ${additionalTransferAmount}`
+      );
+    }
+  }
+  return { useExchangeBalance, additionalTransferAmount };
 }
