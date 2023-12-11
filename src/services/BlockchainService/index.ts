@@ -240,8 +240,8 @@ class BlockchainService {
   ) => {
     const url = new URL(`${this.apiUrl}/api/platform-fees`);
 
-    url.searchParams.append('assetIn', assetIn);
-    url.searchParams.append('assetOut', assetOut);
+    url.searchParams.append('assetIn', assetIn.toUpperCase());
+    url.searchParams.append('assetOut', assetOut.toUpperCase());
 
     if (walletAddress !== undefined) {
       url.searchParams.append('walletAddress', walletAddress);
