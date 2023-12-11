@@ -9,6 +9,8 @@ import type {
 import { denormalizeNumber } from './utils/index.js';
 import arrayEquals from './utils/arrayEquals.js';
 
+// BalanceGuard helps to check if there is enough balance to perform a swap
+// Also it can fix some balance issues (e.g. approve tokens)
 export default class BalanceGuard {
   private readonly balances: Partial<
     Record<
@@ -55,6 +57,8 @@ export default class BalanceGuard {
     assetBalance[source] = assetBalance[source].plus(amount);
   }
 
+  // Reset is approve some token to zero
+  // This operation may be required by some tokens, e.g. USDT
   private async checkResetRequired(
     assetAddress: string,
     spenderAddress: string,
@@ -109,6 +113,7 @@ export default class BalanceGuard {
       }, []);
   }
 
+  // This method can fix some balance issues (e.g. approve tokens)
   private readonly fixAllAutofixableBalanceIssues = async (
     balanceIssues: BalanceIssue[],
   ) => {
@@ -163,6 +168,7 @@ export default class BalanceGuard {
     return balanceIssues.filter((item) => !autofixableBalanceIssues.includes(item));
   };
 
+  // Check that all balance requirements are fulfilled
   async check(fixAutofixable?: boolean) {
     this.logger?.(`Balance requirements: ${this.requirements
       .map((requirement) => `${requirement.amount} ${requirement.asset.name} ` +
@@ -173,6 +179,7 @@ export default class BalanceGuard {
     const remainingBalances = clone(this.balances);
     const aggregatedRequirements = BalanceGuard.aggregateBalanceRequirements(this.requirements);
 
+    // DO NOT IGNORE THIS COMMENT. THIS IS VERY IMPORTANT TO UNDERSTAND THIS CODE
     // Balance absorption order is important!
     // 1. Exchange-contract only
     // 2. Exchange + wallet (can produce approves requirements)
@@ -321,6 +328,7 @@ export default class BalanceGuard {
     const walletTokensAggregatedRequirements = flattedAggregatedRequirements
       .filter(({ sources, asset }) => sources[0] === 'wallet' && asset.name !== this.nativeCryptocurrency.name);
 
+    // This requirements can be fulfilled by wallet
     await Promise.all(walletTokensAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
         const remainingBalance = remainingBalances[asset.name];
