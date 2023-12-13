@@ -357,7 +357,7 @@ async function shouldUseExchangeBalance(
     additionalTransferAmount = amount;
   } else {
     additionalTransferAmount = exchangeBalance >= amount ? 0n : amount - exchangeBalance;
-    if (additionalTransferAmount > exchangeAllowance) {
+    if (srcToken !== ZeroAddress && additionalTransferAmount > exchangeAllowance) {
       throw new Error(
         `Not enough allowance to make swap, allowance - ${exchangeAllowance} needed allowance - ${additionalTransferAmount}`
       );
