@@ -258,6 +258,15 @@ class BlockchainService {
     )
   };
 
+  getReferralData = (walletAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/api/referral-data/${walletAddress}`,
+    z.object({
+      referer: z.string(),
+      isReferral: z.boolean(),
+    }),
+    { headers: this.basicAuthHeaders }
+  );
+
   getGasPriceWei = () => fetchWithValidation(
     `${this.apiUrl}/api/gasPrice`,
     z.string(),
