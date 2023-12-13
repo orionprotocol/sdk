@@ -11,6 +11,7 @@ import {
   type PairStatusEnum,
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
+  referralDataSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -260,10 +261,7 @@ class BlockchainService {
 
   getReferralData = (walletAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/referral-data/${walletAddress}`,
-    z.object({
-      referer: z.string(),
-      isReferral: z.boolean(),
-    }),
+    referralDataSchema,
     { headers: this.basicAuthHeaders }
   );
 
