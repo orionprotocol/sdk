@@ -1,26 +1,49 @@
 import type { LibValidator } from "@orionprotocol/contracts/lib/ethers-v6/Exchange.js";
 import { ethers, ZeroAddress } from "ethers";
-import type { AddressLike, JsonRpcProvider, BigNumberish, BytesLike } from "ethers";
+import type {
+  AddressLike,
+  JsonRpcProvider,
+  BigNumberish,
+  BytesLike,
+} from "ethers";
 import cloneDeep from "lodash.clonedeep";
 import { safeGet, SafeArray } from "../../utils/safeGetters.js";
 import { simpleFetch } from "simple-typed-fetch";
 import type Unit from "../index.js";
-import { generateUni2Calls, generateUni2Call } from "./callGenerators/uniswapV2.js";
+import {
+  generateUni2Calls,
+  generateUni2Call,
+} from "./callGenerators/uniswapV2.js";
 import {
   generateUni3Calls,
   generateOrion3Calls,
   generateUni3Call,
   generateOrion3Call,
 } from "./callGenerators/uniswapV3.js";
-import { exchangeToNativeDecimals, generateCalls, pathCallWithBalance } from "./callGenerators/utils.js";
+import {
+  exchangeToNativeDecimals,
+  generateCalls,
+  pathCallWithBalance,
+} from "./callGenerators/utils.js";
 import { generateTransferCall } from "./callGenerators/erc20.js";
 import { generateCurveStableSwapCall } from "./callGenerators/curve.js";
 import type { SingleSwap } from "../../types.js";
 import { addressLikeToString } from "../../utils/addressLikeToString.js";
-import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from "./callGenerators/weth.js";
-import { getExchangeAllowance, getTotalBalance } from "../../utils/getBalance.js";
+import {
+  generateUnwrapAndTransferCall,
+  generateWrapAndTransferCall,
+} from "./callGenerators/weth.js";
+import {
+  getExchangeAllowance,
+  getTotalBalance,
+} from "../../utils/getBalance.js";
 
-export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
+export type Factory =
+  | "UniswapV2"
+  | "UniswapV3"
+  | "Curve"
+  | "OrionV2"
+  | "OrionV3";
 
 export type GenerateSwapCalldataWithUnitParams = {
   amount: BigNumberish;
@@ -61,16 +84,20 @@ export async function generateSwapCalldataWithUnit({
   }
   const wethAddress = safeGet(unit.contracts, "WETH");
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry");
-  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
-    unit.blockchainService.getInfo
-  )();
+  const {
+    assetToAddress,
+    swapExecutorContractAddress,
+    exchangeContractAddress,
+  } = await simpleFetch(unit.blockchainService.getInfo)();
 
   const arrayLikePathCopy = cloneDeep(arrayLikePath);
   let path = SafeArray.from(arrayLikePathCopy);
 
   path = SafeArray.from(arrayLikePathCopy).map((swapInfo) => {
-    swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn.toLowerCase();
-    swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut.toLowerCase();
+    swapInfo.assetIn =
+      assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn.toLowerCase();
+    swapInfo.assetOut =
+      assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut.toLowerCase();
     return swapInfo;
   });
 
@@ -105,8 +132,12 @@ export async function generateSwapCalldata({
   value: bigint;
 }> {
   const wethAddress = await addressLikeToString(wethAddressLike);
-  const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
-  const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
+  const curveRegistryAddress = await addressLikeToString(
+    curveRegistryAddressLike
+  );
+  const swapExecutorContractAddress = await addressLikeToString(
+    swapExecutorContractAddressLike
+  );
   let path = SafeArray.from(arrayLikePath);
 
   const { assetIn: srcToken } = path.first();
@@ -121,11 +152,17 @@ export async function generateSwapCalldata({
     minReturnAmount,
     flags: 0,
   };
-  const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
+  const amountNativeDecimals = await exchangeToNativeDecimals(
+    srcToken,
+    amount,
+    provider
+  );
 
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
-    if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
-    if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
+    if (singleSwap.assetIn == ethers.ZeroAddress)
+      singleSwap.assetIn = wethAddress;
+    if (singleSwap.assetOut == ethers.ZeroAddress)
+      singleSwap.assetOut = wethAddress;
     return singleSwap;
   });
 
@@ -141,7 +178,7 @@ export async function generateSwapCalldata({
   ));
   const calldata = generateCalls(calls);
 
-  const { useExchangeBalance, additionalTransferAmount } = await shouldUseExchangeBalance(
+  const { useExchangeBalance } = await shouldUseExchangeBalance(
     srcToken,
     initiatorAddress,
     exchangeContractAddress,
@@ -149,10 +186,10 @@ export async function generateSwapCalldata({
     provider
   );
   if (useExchangeBalance) {
-    swapDescription.flags = 1n << 255n;
+    // swapDescription.flags = 1n << 255n;
   }
-  const value = srcToken == ZeroAddress ? additionalTransferAmount : 0n;
-  return { swapDescription, calldata, value };
+  // const value = srcToken == ZeroAddress ? additionalTransferAmount : 0n;
+  return { swapDescription, calldata, value: 0n };
 }
 
 async function processSwaps(
@@ -165,7 +202,9 @@ async function processSwaps(
   provider: JsonRpcProvider
 ) {
   const { factory: firstSwapFactory } = path.first();
-  const isSingleFactorySwap = path.every((singleSwap) => singleSwap.factory === firstSwapFactory);
+  const isSingleFactorySwap = path.every(
+    (singleSwap) => singleSwap.factory === firstSwapFactory
+  );
   let calls: BytesLike[];
   if (isSingleFactorySwap) {
     ({ swapDescription, calls } = await processSingleFactorySwaps(
@@ -219,11 +258,21 @@ async function processSingleFactorySwaps(
       break;
     }
     case "UniswapV3": {
-      calls = await generateUni3Calls(path, amount, swapExecutorContractAddress, provider);
+      calls = await generateUni3Calls(
+        path,
+        amount,
+        swapExecutorContractAddress,
+        provider
+      );
       break;
     }
     case "OrionV3": {
-      calls = await generateOrion3Calls(path, amount, swapExecutorContractAddress, provider);
+      calls = await generateOrion3Calls(
+        path,
+        amount,
+        swapExecutorContractAddress,
+        provider
+      );
       break;
     }
     case "Curve": {
@@ -259,27 +308,55 @@ async function processMultiFactorySwaps(
   for (const swap of path) {
     switch (swap.factory) {
       case "OrionV2": {
-        let transferCall = await generateTransferCall(swap.assetIn, swap.pool, 0);
+        let transferCall = await generateTransferCall(
+          swap.assetIn,
+          swap.pool,
+          0
+        );
         transferCall = pathCallWithBalance(transferCall, swap.assetIn);
-        const uni2Call = await generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress);
+        const uni2Call = await generateUni2Call(
+          swap.pool,
+          swap.assetIn,
+          swap.assetOut,
+          swapExecutorContractAddress
+        );
         calls.push(transferCall, uni2Call);
         break;
       }
       case "UniswapV2": {
-        let transferCall = await generateTransferCall(swap.assetIn, swap.pool, 0);
+        let transferCall = await generateTransferCall(
+          swap.assetIn,
+          swap.pool,
+          0
+        );
         transferCall = pathCallWithBalance(transferCall, swap.assetIn);
-        const uni2Call = await generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress);
+        const uni2Call = await generateUni2Call(
+          swap.pool,
+          swap.assetIn,
+          swap.assetOut,
+          swapExecutorContractAddress
+        );
         calls.push(transferCall, uni2Call);
         break;
       }
       case "UniswapV3": {
-        let uni3Call = await generateUni3Call(swap, 0, swapExecutorContractAddress, provider);
+        let uni3Call = await generateUni3Call(
+          swap,
+          0,
+          swapExecutorContractAddress,
+          provider
+        );
         uni3Call = pathCallWithBalance(uni3Call, swap.assetIn);
         calls.push(uni3Call);
         break;
       }
       case "OrionV3": {
-        let orion3Call = await generateOrion3Call(swap, 0, swapExecutorContractAddress, provider);
+        let orion3Call = await generateOrion3Call(
+          swap,
+          0,
+          swapExecutorContractAddress,
+          provider
+        );
         orion3Call = pathCallWithBalance(orion3Call, swap.assetIn);
         calls.push(orion3Call);
         break;
@@ -313,16 +390,25 @@ async function wrapOrUnwrapIfNeeded(
   wethAddress: string
 ) {
   if (swapDescription.srcToken === ZeroAddress) {
-    const wrapCall = generateWrapAndTransferCall(swapDescription.srcReceiver, { value: amount });
+    const wrapCall = generateWrapAndTransferCall(swapDescription.srcReceiver, {
+      value: amount,
+    });
     swapDescription.srcReceiver = swapExecutorContractAddress;
     calls = ([wrapCall] as BytesLike[]).concat(calls);
   }
   if (swapDescription.dstToken === ZeroAddress) {
-    let unwrapCall = generateUnwrapAndTransferCall(swapDescription.dstReceiver, 0);
+    let unwrapCall = generateUnwrapAndTransferCall(
+      swapDescription.dstReceiver,
+      0
+    );
     unwrapCall = pathCallWithBalance(unwrapCall, wethAddress);
     calls.push(unwrapCall);
   } else {
-    let transferCall = await generateTransferCall(swapDescription.dstToken, swapDescription.dstReceiver, 0);
+    let transferCall = await generateTransferCall(
+      swapDescription.dstToken,
+      swapDescription.dstReceiver,
+      0
+    );
     transferCall = pathCallWithBalance(transferCall, swapDescription.dstToken);
     calls.push(transferCall);
   }
@@ -336,19 +422,26 @@ async function shouldUseExchangeBalance(
   amount: bigint,
   provider: JsonRpcProvider
 ) {
-  const { walletBalance, exchangeBalance } = await getTotalBalance(
+  const { exchangeBalance } = await getTotalBalance(
     srcToken,
     initiatorAddress,
     exchangeContractAddress,
     provider
   );
-  const exchangeAllowance = await getExchangeAllowance(srcToken, initiatorAddress, exchangeContractAddress, provider);
+  const exchangeAllowance = await getExchangeAllowance(
+    srcToken,
+    initiatorAddress,
+    exchangeContractAddress,
+    provider
+  );
 
-  if (walletBalance + exchangeBalance < amount) {
-    throw new Error(
-      `Not enough balance to make swap, totalBalance - ${walletBalance + exchangeBalance} swapAmount - ${amount}`
-    );
-  }
+  // if (walletBalance + exchangeBalance < amount) {
+  //   throw new Error(
+  //     `Not enough balance to make swap, totalBalance - ${
+  //       walletBalance + exchangeBalance
+  //     } swapAmount - ${amount}`
+  //   );
+  // }
   let useExchangeBalance = true;
   let additionalTransferAmount = 0n;
 
@@ -356,8 +449,12 @@ async function shouldUseExchangeBalance(
     useExchangeBalance = false;
     additionalTransferAmount = amount;
   } else {
-    additionalTransferAmount = exchangeBalance >= amount ? 0n : amount - exchangeBalance;
-    if (srcToken !== ZeroAddress && additionalTransferAmount > exchangeAllowance) {
+    additionalTransferAmount =
+      exchangeBalance >= amount ? 0n : amount - exchangeBalance;
+    if (
+      srcToken !== ZeroAddress &&
+      additionalTransferAmount > exchangeAllowance
+    ) {
       throw new Error(
         `Not enough allowance to make swap, allowance - ${exchangeAllowance} needed allowance - ${additionalTransferAmount}`
       );
