@@ -14,3 +14,4 @@ export { default as userVotesSchema } from './userVotesSchema.js';
 export { default as userEarnedSchema } from './userEarnedSchema.js';
 export { default as poolsV3InfoSchema } from './poolsV3InfoSchema.js';
 export { pricesWithQuoteAssetSchema } from './pricesWithQuoteAssetSchema.js';
+export { referralDataSchema } from './referralDataSchema.js';
