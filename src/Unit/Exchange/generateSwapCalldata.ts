@@ -422,7 +422,7 @@ async function shouldUseExchangeBalance(
   amount: bigint,
   provider: JsonRpcProvider
 ) {
-  const { walletBalance, exchangeBalance } = await getTotalBalance(
+  const { exchangeBalance } = await getTotalBalance(
     srcToken,
     initiatorAddress,
     exchangeContractAddress,
@@ -435,13 +435,13 @@ async function shouldUseExchangeBalance(
     provider
   );
 
-  if (walletBalance + exchangeBalance < amount) {
-    throw new Error(
-      `Not enough balance to make swap, totalBalance - ${
-        walletBalance + exchangeBalance
-      } swapAmount - ${amount}`
-    );
-  }
+  // if (walletBalance + exchangeBalance < amount) {
+  //   throw new Error(
+  //     `Not enough balance to make swap, totalBalance - ${
+  //       walletBalance + exchangeBalance
+  //     } swapAmount - ${amount}`
+  //   );
+  // }
   let useExchangeBalance = true;
   let additionalTransferAmount = 0n;
 
