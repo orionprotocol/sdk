@@ -36,7 +36,7 @@ export async function generateUni2Calls(
   return calls
 }
 
-export async function generateUni2Call(
+export function generateUni2Call(
   pool: string,
   assetIn: string,
   assetOut: string,

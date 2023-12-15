@@ -1,9 +1,8 @@
 import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
-import type { BigNumberish } from "ethers"
+import type { BigNumberish, AddressLike } from "ethers"
 import { type CallParams, addCallParams } from "./utils.js"
-import type { AddressLike } from "ethers"
 
-export async function generateTransferCall(
+export function generateTransferCall(
   token: AddressLike,
   target: AddressLike,
   amount: BigNumberish,
@@ -20,7 +19,7 @@ export async function generateTransferCall(
   return addCallParams(calldata, callParams)
 }
 
-export async function generateApproveCall(
+export function generateApproveCall(
   token: AddressLike,
   target: AddressLike,
   amount: BigNumberish,
