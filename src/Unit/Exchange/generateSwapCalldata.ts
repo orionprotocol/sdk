@@ -138,6 +138,7 @@ export async function generateSwapCalldata({
     flags: 0,
   };
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
+  const feeNativeDecimals = await exchangeToNativeDecimals(feeToken, fee, provider)
 
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
@@ -152,7 +153,7 @@ export async function generateSwapCalldata({
     amountNativeDecimals,
     matcher,
     feeToken,
-    fee,
+    feeNativeDecimals,
     wethAddress,
     swapExecutorContractAddress,
     curveRegistryAddress,
@@ -210,7 +211,7 @@ async function processSwaps(
     ));
   }
 
-  ({swapDescription, calls} = payFeeToMatcher(matcher, feeToken, fee, calls, swapDescription));
+  ({swapDescription, calls} = await payFeeToMatcher(matcher, feeToken, fee, calls, swapDescription));
 
   ({ swapDescription, calls } = wrapOrUnwrapIfNeeded(
     amount,
@@ -331,14 +332,13 @@ async function processMultiFactorySwaps(
   return { swapDescription, calls };
 }
 
-function payFeeToMatcher(
+async function payFeeToMatcher(
   matcher: AddressLike,
   feeToken: AddressLike,
   feeAmount: BigNumberish,
   calls: BytesLike[],
   swapDescription: LibValidator.SwapDescriptionStruct,
 ) {
-  feeAmount = BigInt(feeAmount)
   if (feeAmount !== 0n && feeToken === swapDescription.dstToken) {
     const feePaymentCall = generateFeePaymentCall(matcher, feeToken, feeAmount)
     calls.push(feePaymentCall)
