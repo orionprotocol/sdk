@@ -341,7 +341,10 @@ async function payFeeToMatcher(
   calls: BytesLike[],
   swapDescription: LibValidator.SwapDescriptionStruct,
 ) {
-
+  console.log(matcher)
+  console.log(feeAmount)
+  console.log(feeToken)
+  console.log(swapDescription.dstToken)
   if (BigInt(feeAmount) !== 0n && feeToken === swapDescription.dstToken) {
     const feePaymentCall = generateFeePaymentCall(matcher, feeToken, feeAmount)
     calls.push(feePaymentCall)
