@@ -5,5 +5,5 @@ export async function addressLikeToString(address: AddressLike): Promise<string>
   if (typeof address !== 'string') {
     address = await address.getAddress()
   }
-  return address
+  return address.toLowerCase()
 }

@@ -107,8 +107,8 @@ export async function generateSwapCalldata({
   initiatorAddress,
   receiverAddress,
   path: arrayLikePath,
-  matcher = ZeroAddress,
-  feeToken = ZeroAddress,
+  matcher: matcherAddressLike = ZeroAddress,
+  feeToken: feeTokenAddressLike = ZeroAddress,
   fee = 0,
   exchangeContractAddress,
   wethAddress: wethAddressLike,
@@ -123,6 +123,8 @@ export async function generateSwapCalldata({
   const wethAddress = await addressLikeToString(wethAddressLike);
   const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
+  const feeToken = await addressLikeToString(feeTokenAddressLike);
+  const matcher = await addressLikeToString(matcherAddressLike);
   let path = SafeArray.from(arrayLikePath);
 
   const { assetIn: srcToken } = path.first();
@@ -333,13 +335,14 @@ async function processMultiFactorySwaps(
 }
 
 async function payFeeToMatcher(
-  matcher: AddressLike,
-  feeToken: AddressLike,
+  matcher: string,
+  feeToken: string,
   feeAmount: BigNumberish,
   calls: BytesLike[],
   swapDescription: LibValidator.SwapDescriptionStruct,
 ) {
-  if (feeAmount !== 0n && feeToken === swapDescription.dstToken) {
+
+  if (BigInt(feeAmount) !== 0n && feeToken === swapDescription.dstToken) {
     const feePaymentCall = generateFeePaymentCall(matcher, feeToken, feeAmount)
     calls.push(feePaymentCall)
   }
