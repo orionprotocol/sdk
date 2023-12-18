@@ -79,8 +79,10 @@ export async function generateSwapCalldataWithUnit({
   let path = SafeArray.from(arrayLikePathCopy);
 
   path = SafeArray.from(arrayLikePathCopy).map((swapInfo) => {
-    swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn.toLowerCase();
-    swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut.toLowerCase();
+    swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn
+    swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut
+    swapInfo.assetIn = swapInfo.assetIn.toLowerCase()
+    swapInfo.assetOut = swapInfo.assetOut.toLowerCase()
     return swapInfo;
   });
 
