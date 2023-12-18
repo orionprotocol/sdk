@@ -127,7 +127,11 @@ export async function generateSwapCalldata({
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
   const feeToken = await addressLikeToString(feeTokenAddressLike);
   const matcher = await addressLikeToString(matcherAddressLike);
-  let path = SafeArray.from(arrayLikePath);
+  let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
+    swapInfo.assetIn = swapInfo.assetIn.toLowerCase()
+    swapInfo.assetOut = swapInfo.assetOut.toLowerCase()
+    return swapInfo;
+  });
 
   const { assetIn: srcToken } = path.first();
   const { assetOut: dstToken } = path.last();
