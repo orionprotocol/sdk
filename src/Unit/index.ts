@@ -8,7 +8,6 @@ import type {
   VerboseUnitConfig,
 } from '../types.js';
 import Exchange from './Exchange/index.js';
-import FarmingManager from './FarmingManager/index.js';
 import { chains, envs } from '../config/index.js';
 import type { networkCodes } from '../constants/index.js';
 import { IndexerService } from '../services/Indexer/index.js';
@@ -34,8 +33,6 @@ export default class Unit {
   public readonly priceFeed: PriceFeed;
 
   public readonly exchange: Exchange;
-
-  public readonly farmingManager: FarmingManager;
 
   public readonly config: VerboseUnitConfig;
 
@@ -123,6 +120,5 @@ export default class Unit {
       this.config.basicAuth
     );
     this.exchange = new Exchange(this);
-    this.farmingManager = new FarmingManager(this);
   }
 }
