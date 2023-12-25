@@ -384,7 +384,6 @@ export default async function swapMarket({
     walletAddress,
     matcherAddress,
     feeAssetAddress,
-    false,
     signer,
     chainId,
   );

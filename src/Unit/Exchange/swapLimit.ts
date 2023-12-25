@@ -426,7 +426,6 @@ export default async function swapLimit({
     walletAddress,
     matcherAddress,
     feeAssetAddress,
-    false,
     signer,
     chainId,
   );
