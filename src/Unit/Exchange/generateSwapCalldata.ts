@@ -28,11 +28,11 @@ export type GenerateSwapCalldataWithUnitParams = {
   minReturnAmount: BigNumberish
   initiatorAddress: string
   receiverAddress: string
-  matcher: AddressLike
-  feeToken: AddressLike
-  fee: BigNumberish
   path: ArrayLike<SingleSwap>
   unit: Unit
+  matcher?: AddressLike
+  feeToken?: AddressLike
+  fee?: BigNumberish
 };
 
 export type GenerateSwapCalldataParams = {
