@@ -198,6 +198,7 @@ class Aggregator {
     partnerId?: string,
     fromWidget?: boolean,
     source?: string,
+    rawExchangeRestrictions?: string | undefined,
   ) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -228,7 +229,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify(signedOrder),
+        body: JSON.stringify({ signedOrder, rawExchangeRestrictions }),
       },
       errorSchema,
     );
