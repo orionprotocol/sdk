@@ -24,6 +24,7 @@ export const signOrder = async (
   serviceFeeAssetAddr: string,
   signer: ethers.Signer,
   chainId: SupportedChainId,
+  logger = console
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
@@ -53,19 +54,23 @@ export const signOrder = async (
     expiration,
     buySide: side === 'BUY' ? 1 : 0,
   };
+  logger.log('✅ order', order)
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
+  logger.log('✅ typedDataSigner', typedDataSigner)
 
   const signature = await typedDataSigner.signTypedData(
     getDomainData(chainId),
     ORDER_TYPES,
     order,
   );
+  logger.log('✅ signature', signature)
 
   // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
   // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
   const fixedSignature = ethers.Signature.from(signature).serialized;
+  logger.log('✅ fixedSignature', fixedSignature)
 
   // if (!fixedSignature) throw new Error("Can't sign order");
 
@@ -74,6 +79,7 @@ export const signOrder = async (
     id: hashOrder(order),
     signature: fixedSignature,
   };
+  logger.log('✅ signedOrder', signedOrder)
   return signedOrder;
 };
 
