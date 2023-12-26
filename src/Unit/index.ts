@@ -83,7 +83,7 @@ export default class Unit {
             api: networkConfig.api + networkConfig.services.priceFeed.all,
           },
           indexer: {
-            api: networkConfig.api + networkConfig.services.indexer.http,
+            api: networkConfig.api + networkConfig.services.indexer?.http,
           },
         },
       };
@@ -106,10 +106,12 @@ export default class Unit {
       this.config.services.blockchainService.http,
       this.config.basicAuth
     );
-    this.indexer = this.config.services.indexer ? new IndexerService(
-      this.config.services.indexer.api,
-      intNetwork
-    ) : undefined;
+    this.indexer = this.config.services.indexer
+      ? new IndexerService(
+        this.config.services.indexer.api,
+        intNetwork
+      )
+      : undefined;
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,
