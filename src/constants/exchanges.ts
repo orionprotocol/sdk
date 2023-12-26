@@ -23,4 +23,5 @@ export default [
   'OKXSWAP',
   'CURVE',
   'CURVE_FACTORY',
+  'THENA',
 ] as const;
