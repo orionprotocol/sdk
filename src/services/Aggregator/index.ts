@@ -229,7 +229,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify({ signedOrder, rawExchangeRestrictions }),
+        body: JSON.stringify({ ...signedOrder, rawExchangeRestrictions }),
       },
       errorSchema,
     );
