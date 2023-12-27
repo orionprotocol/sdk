@@ -1,4 +1,3 @@
-import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { INTERNAL_PROTOCOL_PRECISION } from '../constants/index.js';
@@ -9,8 +8,6 @@ import getDomainData from './getDomainData.js';
 import hashOrder from './hashOrder.js';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
-
-type SignerWithTypedDataSign = ethers.Signer & TypedDataSigner;
 
 export const signOrder = async (
   baseAssetAddr: string,
@@ -57,10 +54,11 @@ export const signOrder = async (
   logger.log('✅ order', order)
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const typedDataSigner = signer as SignerWithTypedDataSign;
-  logger.log('✅ typedDataSigner', typedDataSigner)
+  logger.log('✅ signer', signer, getDomainData(chainId),
+    ORDER_TYPES,
+    order,)
 
-  const signature = await typedDataSigner.signTypedData(
+  const signature = await signer.signTypedData(
     getDomainData(chainId),
     ORDER_TYPES,
     order,
