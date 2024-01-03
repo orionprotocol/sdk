@@ -11,6 +11,7 @@ import {
   type PairStatusEnum,
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
+  referralDataSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -257,6 +258,12 @@ class BlockchainService {
       { headers: this.basicAuthHeaders }
     )
   };
+
+  getReferralData = (walletAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/api/referral-data/${walletAddress}`,
+    referralDataSchema,
+    { headers: this.basicAuthHeaders }
+  );
 
   getGasPriceWei = () => fetchWithValidation(
     `${this.apiUrl}/api/gasPrice`,
