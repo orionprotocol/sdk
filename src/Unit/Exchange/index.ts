@@ -1,8 +1,12 @@
 import type Unit from '../index.js';
 import deposit, { type DepositParams } from './deposit.js';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
-import {generateSwapCalldataWithUnit, type GenerateSwapCalldataWithUnitParams } from './generateSwapCalldata.js';
+import { generateSwapCalldataWithUnit, type GenerateSwapCalldataWithUnitParams } from './generateSwapCalldata.js';
 import withdraw, { type WithdrawParams } from './withdraw.js';
+import type { SwapLimitParams } from './swapLimit.js';
+import swapLimit from './swapLimit.js';
+import swapMarket from './swapMarket.js';
+import type { SwapMarketParams } from './swapMarket.js';
 
 type PureDepositParams = Omit<DepositParams, 'unit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'unit'>
@@ -43,5 +47,13 @@ export default class Exchange {
       ...params,
       unit: this.unit
     })
+  }
+
+  public swapLimit(params: SwapLimitParams) {
+    return swapLimit(params);
+  }
+
+  public swapMarket(params: SwapMarketParams) {
+    return swapMarket(params);
   }
 }
