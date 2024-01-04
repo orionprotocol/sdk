@@ -7,6 +7,13 @@ const orderInfoSchema = z.object({
   safePrice: z.number(),
 }).nullable();
 
+const exchangeContractStep = z.object({
+  pool: z.string(),
+  assetIn: z.string(),
+  assetOut: z.string(),
+  factory: z.string(),
+});
+
 const swapInfoBase = z.object({
   id: z.string(),
   amountIn: z.number(),
@@ -22,12 +29,7 @@ const swapInfoBase = z.object({
   minAmountOut: z.number(),
   minAmountIn: z.number(),
   marketPrice: z.number().nullable(), // spending asset market price
-  exchangeContractPath: z.array(z.object({
-    pool: z.string(),
-    assetIn: z.string(),
-    assetOut: z.string(),
-    factory: z.string(),
-  })),
+  exchangeContractPath: z.array(exchangeContractStep),
   alternatives: z.object({ // execution alternatives
     exchanges: z.array(z.string()),
     path: z.array(z.string()),
