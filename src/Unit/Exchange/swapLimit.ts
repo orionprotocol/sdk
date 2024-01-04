@@ -334,7 +334,7 @@ export default async function swapLimit({
     options?.logger?.(`Transaction sent. Tx hash: ${swapThroughOrionPoolTxResponse.hash}`);
     return {
       amountOut: swapInfo.amountOut,
-      wait: swapThroughOrionPoolTxResponse.wait,
+      wait: swapThroughOrionPoolTxResponse.wait.bind(swapThroughOrionPoolTxResponse),
       through: 'pool',
       txHash: swapThroughOrionPoolTxResponse.hash,
     };
@@ -426,7 +426,6 @@ export default async function swapLimit({
     walletAddress,
     matcherAddress,
     feeAssetAddress,
-    false,
     signer,
     chainId,
   );
