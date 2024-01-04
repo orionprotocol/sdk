@@ -12,6 +12,8 @@ type PureDepositParams = Omit<DepositParams, 'unit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'unit'>
 type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'blockchainService' | 'aggregator'>
 type PureGenerateSwapCalldataParams = Omit<GenerateSwapCalldataWithUnitParams, 'unit'>
+type PureSwapLimitParams = Omit<SwapLimitParams, 'unit'>
+type PureSwapMarketParams = Omit<SwapMarketParams, 'unit'>
 
 export default class Exchange {
   private readonly unit: Unit;
@@ -49,11 +51,17 @@ export default class Exchange {
     })
   }
 
-  public swapLimit(params: SwapLimitParams) {
-    return swapLimit(params);
+  public swapLimit(params: PureSwapLimitParams) {
+    return swapLimit({
+      ...params,
+      unit: this.unit,
+    });
   }
 
-  public swapMarket(params: SwapMarketParams) {
-    return swapMarket(params);
+  public swapMarket(params: PureSwapMarketParams) {
+    return swapMarket({
+      ...params,
+      unit: this.unit,
+    });
   }
 }
