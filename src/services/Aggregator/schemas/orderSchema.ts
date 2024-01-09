@@ -43,8 +43,6 @@ const tradeInfoSchema = z.object({
   updateTime: z.number(),
   matchedBlockchainOrder: blockchainOrderSchema.optional(),
   matchedSubOrderId: z.number().int().nonnegative().optional(),
-  exchangeTradeInfo: z.boolean(),
-  poolTradeInfo: z.boolean(),
 });
 
 const baseOrderSchema = z.object({
