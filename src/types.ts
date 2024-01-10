@@ -99,23 +99,6 @@ export enum SupportedChainId {
   // BROKEN = '0',
 }
 
-export enum SupportedChainShortNames {
-  MAINNET = 'ETH',
-  ROPSTEN = 'ETH-Ropsten',
-  GOERLI = 'ETH-Goerli',
-  ARBITRUM_GOERLI = 'Arbitrum Goerli',
-  FANTOM_OPERA = 'FTM',
-  POLYGON = 'Polygon',
-  OKC = 'OKC',
-
-  POLYGON_TESTNET = 'Polygon Mumbai',
-  FANTOM_TESTNET = 'FTM-Testnet',
-  BSC = 'BSC',
-  BSC_TESTNET = 'BSC-Testnet',
-  OKC_TESTNET = 'OKC-Testnet',
-  DRIP_TESTNET = 'DRIP Chain',
-}
-
 const balanceTypes = ['exchange', 'wallet'] as const;
 
 export type Source = typeof balanceTypes[number];

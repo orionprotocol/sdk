@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder, SupportedChainShortNames } from '../../types.js';
+import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
@@ -291,7 +291,7 @@ class Aggregator {
     );
   };
 
-  getCrossChainAssetsByNetwork = (sourceChain: SupportedChainShortNames) => {
+  getCrossChainAssetsByNetwork = (sourceChain: Uppercase<typeof networkCodes[number]>) => {
     const url = new URL(`${this.apiUrl}/api/v1/cross-chain/assets`);
     url.searchParams.append('sourceChain', sourceChain);
 
