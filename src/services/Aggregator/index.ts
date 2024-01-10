@@ -297,7 +297,7 @@ class Aggregator {
 
     return fetchWithValidation(
       url.toString(),
-      z.array(z.number()),
+      z.array(z.string()),
       { headers: this.basicAuthHeaders },
       errorSchema,
     )
