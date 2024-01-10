@@ -6,9 +6,9 @@ import cancelOrderSchema from './schemas/cancelOrderSchema.js';
 import orderBenefitsSchema from './schemas/orderBenefitsSchema.js';
 import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
-import { AggregatorWS } from './ws/index.js';
+import { AggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder, SupportedChainShortNames } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
@@ -51,6 +51,7 @@ class Aggregator {
     this.getPairConfigs = this.getPairConfigs.bind(this);
     this.getPairsList = this.getPairsList.bind(this);
     this.getSwapInfo = this.getSwapInfo.bind(this);
+    this.getCrossChainAssetsByNetwork = this.getCrossChainAssetsByNetwork.bind(this);
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
@@ -289,6 +290,18 @@ class Aggregator {
       errorSchema,
     );
   };
+
+  getCrossChainAssetsByNetwork = (sourceChain: SupportedChainShortNames) => {
+    const url = new URL(`${this.apiUrl}/api/v1/cross-chain/assets`);
+    url.searchParams.append('sourceChain', sourceChain);
+
+    return fetchWithValidation(
+      url.toString(),
+      z.array(z.number()),
+      { headers: this.basicAuthHeaders },
+      errorSchema,
+    )
+  }
 
   getPrices = (assetPair: string, includePools: boolean) => {
     const url = new URL(`${this.apiUrl}/api/v1/prices/`);
