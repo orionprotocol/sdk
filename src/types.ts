@@ -83,10 +83,11 @@ export enum SupportedChainId {
   MAINNET = '1',
   ROPSTEN = '3',
   GOERLI = '5',
-  ARBITRUM_GOERLI = '421613',
+  ARBITRUM = '42161',
   FANTOM_OPERA = '250',
   POLYGON = '137',
   OKC = '66',
+  OPBNB = '204',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
@@ -94,6 +95,7 @@ export enum SupportedChainId {
   BSC_TESTNET = '97',
   OKC_TESTNET = '65',
   DRIP_TESTNET = '56303',
+  ARBITRUM_GOERLI = '421613',
 
   // For testing and debug purpose
   // BROKEN = '0',
