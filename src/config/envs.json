@@ -15,6 +15,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
@@ -31,6 +34,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -46,6 +52,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -61,6 +70,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -76,6 +88,45 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "42161": {
+        "api": "https://trade.orion.xyz/arbitrum-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "204": {
+        "api": "https://trade.orion.xyz/opbnb-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       }
@@ -97,6 +148,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         },
         "liquidityMigratorAddress": "0x01b10dds12478C88A5E18e2707E729906bC25CfF6"
@@ -113,6 +167,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -128,6 +185,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -143,6 +203,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -158,6 +221,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -173,6 +239,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       }
@@ -194,6 +263,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -209,6 +281,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -224,6 +299,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -239,6 +317,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -254,6 +335,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       }
@@ -275,6 +359,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -290,6 +377,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       }
@@ -311,6 +401,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
@@ -327,6 +420,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -342,6 +438,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -357,6 +456,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       },
@@ -372,6 +474,9 @@
           },
           "priceFeed": {
             "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
           }
         }
       }

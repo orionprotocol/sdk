@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
-import factories from './constants/factories.js';
+import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
@@ -48,7 +48,6 @@ export type Order = {
   nonce: number // uint64
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
-  isPersonalSign: boolean // bool
 }
 
 export type SignedOrder = {
@@ -60,7 +59,6 @@ export type SignedOrder = {
 export type CancelOrderRequest = {
   id: number | string
   senderAddress: string
-  isPersonalSign: boolean
 }
 
 export type SignedCancelOrderRequest = {
@@ -85,10 +83,11 @@ export enum SupportedChainId {
   MAINNET = '1',
   ROPSTEN = '3',
   GOERLI = '5',
-  ARBITRUM_GOERLI = '421613',
+  ARBITRUM = '42161',
   FANTOM_OPERA = '250',
   POLYGON = '137',
   OKC = '66',
+  OPBNB = '204',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
@@ -96,6 +95,7 @@ export enum SupportedChainId {
   BSC_TESTNET = '97',
   OKC_TESTNET = '65',
   DRIP_TESTNET = '56303',
+  ARBITRUM_GOERLI = '421613',
 
   // For testing and debug purpose
   // BROKEN = '0',
@@ -199,6 +199,13 @@ export type SwapInfoBase = {
   } | undefined
   alternatives: SwapInfoAlternative[]
   assetsNameMapping?: Partial<Record<string, string>> | undefined
+  usdInfo: {
+    availableAmountIn: number | undefined
+    availableAmountOut: number | undefined
+    marketAmountOut: number | undefined
+    marketAmountIn: number | undefined
+    difference: string | undefined
+  } | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
@@ -254,6 +261,12 @@ export type VerboseUnitConfig = {
       // http://localhost:3003/,
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
+    }
+    indexer: {
+      api: string
+      // For example:
+      // http://localhost:3004/,
+      // http://
     }
   }
   basicAuth?: BasicAuthCredentials

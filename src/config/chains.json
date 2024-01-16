@@ -18,7 +18,7 @@
     "label": "BNB Chain",
     "shortName": "BSC",
     "code": "bsc",
-    "rpc": "https://bsc-dataseed.binance.org/",
+    "rpc": "https://bsc-dataseed.bnbchain.org/",
     "baseCurrencyName": "BNB",
     "contracts": {
       "WETH": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -35,7 +35,19 @@
     "baseCurrencyName": "BNB",
     "contracts": {
       "WETH": "0x23eE96bEaAB62abE126AA192e677c52bB7d274F0",
-      "curveRegistry": "0x8845b36C3DE93379F468590FFa102D4aF8C49A6c"
+      "curveRegistry": "0x93461072c00b2740c474a3d52c70be6249c802d8"
+    }
+  },
+  "204": {
+    "chainId": "204",
+    "explorer": "http://opbnbscan.com/",
+    "label": "opBNB Chain",
+    "shortName": "opBNB",
+    "code": "opbnb",
+    "rpc": "https://opbnb-mainnet-rpc.bnbchain.org",
+    "baseCurrencyName": "BNB",
+    "contracts": {
+      "WETH": "0x4200000000000000000000000000000000000006"
     }
   },
   "3": {
@@ -77,6 +89,19 @@
       "curveRegistry": ""
     }
   },
+  "42161": {
+    "chainId": "42161",
+    "explorer": "https://arbiscan.io/",
+    "label": "Arbitrum",
+    "shortName": "Arbitrum",
+    "code": "arb",
+    "rpc": "https://arb1.arbitrum.io/rpc",
+    "baseCurrencyName": "ARB",
+    "contracts": {
+      "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "curveRegistiry": "0x445FE580eF8d70FF569aB36e80c647af338db351"
+    }
+  },
   "4002": {
     "chainId": "4002",
     "explorer": "https://testnet.ftmscan.com/",
@@ -99,8 +124,8 @@
     "rpc": "https://rpcapi.fantom.network/",
     "baseCurrencyName": "FTM",
     "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
+      "WETH": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+      "curveRegistry": "0x0f854EA9F38ceA4B1c2FC79047E9D0134419D5d6"
     }
   },
   "137": {
@@ -112,8 +137,8 @@
     "rpc": "https://polygon-rpc.com/",
     "explorer": "https://polygonscan.com/",
     "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
+      "WETH": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      "curveRegistry": "0x094d12e5b541784701FD8d65F11fc0598FBC6332"
     }
   },
   "80001": {
@@ -138,7 +163,7 @@
     "rpc": "https://exchainrpc.okex.org/",
     "baseCurrencyName": "OKT",
     "contracts": {
-      "WETH": "",
+      "WETH": "0x843340759bFCa4a3776F401cD2E03fE9bc0d838f",
       "curveRegistry": ""
     }
   },
@@ -161,7 +186,7 @@
     "shortName": "DRIP Chain",
     "code": "drip",
     "baseCurrencyName": "DRIP",
-    "rpc": "testnet.1d.rip",
+    "rpc": "https://testnet.1d.rip/",
     "explorer": "https://explorer-testnet.1d.rip/",
     "contracts": {
       "WETH": "",
