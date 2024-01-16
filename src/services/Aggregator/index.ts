@@ -198,7 +198,7 @@ class Aggregator {
     isReversedOrder?: boolean,
     partnerId?: string,
     fromWidget?: boolean,
-    source?: string,
+    source?: 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI',
     rawExchangeRestrictions?: string | undefined,
   ) => {
     const headers = {
