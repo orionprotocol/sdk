@@ -4,7 +4,7 @@ import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
-import { INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants/index.js';
+import { INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import { signOrder } from '../../crypt/index.js';
@@ -36,7 +36,6 @@ type PoolSwap = {
 }
 
 export type Swap = AggregatorOrder | PoolSwap;
-
 
 const isValidSingleSwap = (singleSwap: Omit<SingleSwap, 'factory'> & { factory: string }): singleSwap is SingleSwap => {
   return isValidFactory(singleSwap.factory);

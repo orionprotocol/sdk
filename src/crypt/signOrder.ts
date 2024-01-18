@@ -1,12 +1,13 @@
 import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { INTERNAL_PROTOCOL_PRECISION } from '../constants/index.js';
+import { INTERNAL_PROTOCOL_PRECISION } from '../constants';
 import ORDER_TYPES from '../constants/orderTypes.js';
 import type { Order, SignedOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
 import hashOrder from './hashOrder.js';
+import generateSecret from '../utils/generateSecret';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
@@ -24,9 +25,12 @@ export const signOrder = async (
   serviceFeeAssetAddr: string,
   signer: ethers.Signer,
   chainId: SupportedChainId,
+  targetChainId?: ethers.BigNumberish,
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
+  const secret = generateSecret();
+  const secretHash = ethers.keccak256(secret);
 
   const order: Order = {
     senderAddress,
@@ -51,6 +55,8 @@ export const signOrder = async (
     )),
     nonce,
     expiration,
+    secretHash,
+    targetChainId,
     buySide: side === 'BUY' ? 1 : 0,
   };
 
@@ -73,6 +79,7 @@ export const signOrder = async (
     ...order,
     id: hashOrder(order),
     signature: fixedSignature,
+    secret
   };
   return signedOrder;
 };

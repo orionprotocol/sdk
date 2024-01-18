@@ -8,12 +8,17 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type {
+  BasicAuthCredentials,
+  NetworkShortName,
+  SignedCancelOrderRequest,
+  SignedLockOrder,
+  SignedOrder
+} from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
 } from './schemas/index.js';
-import type networkCodes from '../../constants/networkCodes.js';
 import toUpperCase from '../../utils/toUpperCase.js';
 import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
@@ -55,6 +60,7 @@ class Aggregator {
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
+    this.placeLockOrder = this.placeLockOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
     this.checkWhitelisted = this.checkWhitelisted.bind(this);
     this.getLockedBalance = this.getLockedBalance.bind(this);
@@ -236,6 +242,39 @@ class Aggregator {
     );
   };
 
+  placeLockOrder = (
+    signedLockOrder: SignedLockOrder,
+    rawExchangeRestrictions?: string | undefined,
+  ) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...this.basicAuthHeaders,
+    };
+
+    const url = new URL(`${this.apiUrl}/api/v1/cross-chain`);
+
+    return fetchWithValidation(
+      url.toString(),
+      z.object({
+        orderId: z.string(),
+        placementRequests: z.array(
+          z.object({
+            amount: z.number(),
+            brokerAddress: z.string(),
+            exchange: z.string(),
+          }),
+        ).optional(),
+      }),
+      {
+        headers,
+        method: 'POST',
+        body: JSON.stringify({ ...signedLockOrder, rawExchangeRestrictions }),
+      },
+      errorSchema,
+    );
+  };
+
   cancelOrder = (signedCancelOrderRequest: SignedCancelOrderRequest) => fetchWithValidation(
     `${this.apiUrl}/api/v1/order`,
     cancelOrderSchema,
@@ -291,7 +330,7 @@ class Aggregator {
     );
   };
 
-  getCrossChainAssetsByNetwork = (sourceChain: Uppercase<typeof networkCodes[number]>) => {
+  getCrossChainAssetsByNetwork = (sourceChain: NetworkShortName) => {
     const url = new URL(`${this.apiUrl}/api/v1/cross-chain/assets`);
     url.searchParams.append('sourceChain', sourceChain);
 
@@ -354,7 +393,7 @@ class Aggregator {
    */
   placeAtomicSwap = (
     secretHash: string,
-    sourceNetworkCode: Uppercase<typeof networkCodes[number]>,
+    sourceNetworkCode: NetworkShortName,
   ) => fetchWithValidation(
     `${this.apiUrl}/api/v1/atomic-swap`,
     placeAtomicSwapSchema,
@@ -376,6 +415,7 @@ class Aggregator {
   /**
    * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Aggregator
    * @param sender Sender address
+   * @param limit
    * @returns Fetch promise
    */
   getHistoryAtomicSwaps = (sender: string, limit = 1000) => {

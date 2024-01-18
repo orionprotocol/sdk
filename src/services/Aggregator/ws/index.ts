@@ -82,22 +82,22 @@ type SwapInfoSubscription = {
 type AddressUpdateUpdate = {
   kind: 'update'
   balances: Partial<
-    Record<
-      string,
-      Balance
+        Record<
+            string,
+            Balance
+        >
     >
-  >
   order?: z.infer<typeof orderUpdateSchema> | z.infer<typeof fullOrderSchema> | undefined
 }
 
 type AddressUpdateInitial = {
   kind: 'initial'
   balances: Partial<
-    Record<
-      string,
-      Balance
+        Record<
+            string,
+            Balance
+        >
     >
-  >
   orders?: Array<z.infer<typeof fullOrderSchema>> | undefined // The field is not defined if the user has no orders
 }
 
@@ -122,22 +122,22 @@ const exclusiveSubscriptions = [
 ] as const;
 
 type BufferLike =
-  | string
-  | Buffer
-  | DataView
-  | number
-  | ArrayBufferView
-  | Uint8Array
-  | ArrayBuffer
-  | SharedArrayBuffer
-  | readonly unknown[]
-  | readonly number[]
-  | { valueOf: () => ArrayBuffer }
-  | { valueOf: () => SharedArrayBuffer }
-  | { valueOf: () => Uint8Array }
-  | { valueOf: () => readonly number[] }
-  | { valueOf: () => string }
-  | { [Symbol.toPrimitive]: (hint: string) => string };
+    | string
+    | Buffer
+    | DataView
+    | number
+    | ArrayBufferView
+    | Uint8Array
+    | ArrayBuffer
+    | SharedArrayBuffer
+    | readonly unknown[]
+    | readonly number[]
+    | { valueOf: () => ArrayBuffer }
+    | { valueOf: () => SharedArrayBuffer }
+    | { valueOf: () => Uint8Array }
+    | { valueOf: () => readonly number[] }
+    | { valueOf: () => string }
+    | { [Symbol.toPrimitive]: (hint: string) => string };
 
 const isSubType = (subType: string): subType is keyof Subscription => Object.values(SubscriptionType).some((t) => t === subType);
 
@@ -201,6 +201,7 @@ class AggregatorWS {
   }
 
   private messageQueue: BufferLike[] = [];
+
   private sendWsMessage(message: BufferLike) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(message);
@@ -228,6 +229,7 @@ class AggregatorWS {
   }
 
   private hearbeatIntervalId: ReturnType<typeof setInterval> | undefined;
+
   private setupHeartbeat() {
     const heartbeat = () => {
       if (this.isAlive) {
@@ -328,11 +330,11 @@ class AggregatorWS {
   }
 
   /**
-   * Returns newest subscription id for given id. Subscription id can be changed during resubscription.
-   * This function ensure that old subscription id will be replaced with newest one.
-   * @param id Id of subscription
-   * @returns Newest subscription id
-   */
+     * Returns newest subscription id for given id. Subscription id can be changed during resubscription.
+     * This function ensure that old subscription id will be replaced with newest one.
+     * @param id Id of subscription
+     * @returns Newest subscription id
+     */
   getNewestSubscriptionId(id: string): string {
     const newId = this.subIdReplacements[id];
     if (newId !== undefined && newId !== id) {

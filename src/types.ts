@@ -3,8 +3,10 @@ import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
-import type { knownEnvs } from './config/schemas/index.js';
+import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
+import type { ethers } from 'ethers';
+import type { networkCodes } from './constants';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -47,14 +49,33 @@ export type Order = {
   matcherFee: number // uint64
   nonce: number // uint64
   expiration: number // uint64
+  secretHash: string // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
+  targetChainId: ethers.BigNumberish | undefined // uint64
 }
 
-export type SignedOrder = {
-  id: string // hash of Order (it's not part of order structure in smart-contract)
+export type LockOrder = {
+  user: string // address // адрес юзера который хочет сделать лок
+  sender: string // address // broker
+  expiration: ethers.BigNumberish // uint64
+  asset: string // address(?)
+  amount: ethers.BigNumberish // uint64
+  targetChainId: ethers.BigNumberish // uint64
+  secretHash: string // uint64
+  sign: string // uint64 // подпись юзера
+}
+
+type SignedOrderAdditionalProps = {
   signature: string // bytes
+  secret: string
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
-} & Order
+}
+
+export type SignedOrder = SignedOrderAdditionalProps & Order & {
+  id: string // hash of Order (it's not part of order structure in smart-contract)
+}
+
+export type SignedLockOrder = SignedOrderAdditionalProps & LockOrder
 
 export type CancelOrderRequest = {
   id: number | string
@@ -98,6 +119,8 @@ export enum SupportedChainId {
   // For testing and debug purpose
   // BROKEN = '0',
 }
+
+export type NetworkShortName = Uppercase<typeof networkCodes[number]>;
 
 const balanceTypes = ['exchange', 'wallet'] as const;
 
@@ -278,22 +301,22 @@ export type EnvConfig = {
   analyticsAPI: string
   referralAPI: string
   networks: Partial<
-    Record<
-      SupportedChainId,
-      VerboseUnitConfig
+        Record<
+            SupportedChainId,
+            VerboseUnitConfig
+        >
     >
-  >
 }
 export type AggregatedAssets = Partial<
-  Record<
-    string,
-    Partial<
-      Record<SupportedChainId, {
-        address: string
-      }>
+    Record<
+        string,
+        Partial<
+            Record<SupportedChainId, {
+              address: string
+            }>
+        >
     >
-  >
-  >;
+>;
 
 export type RedeemOrder = {
   sender: string
@@ -433,9 +456,9 @@ type BridgeHistory = Awaited<ReturnType<typeof getHistory>>;
 type BridgeHistoryItem = NonNullable<BridgeHistory[string]>;
 
 export type AtomicSwap = Partial<
-  Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
+    Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
 > & Partial<
-  Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
+    Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
 > & {
   sourceChainId: SupportedChainId
   targetChainId: SupportedChainId
