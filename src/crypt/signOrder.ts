@@ -3,7 +3,7 @@ import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import { INTERNAL_PROTOCOL_PRECISION } from '../constants';
 import ORDER_TYPES from '../constants/orderTypes.js';
-import type { Order, SignedOrder, SupportedChainId } from '../types.js';
+import type { CrossOrder, Order, SignedOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
 import hashOrder from './hashOrder.js';
@@ -34,7 +34,7 @@ export const signOrder = async (
 
   const isCrossChain = targetChainId === undefined || targetChainId === chainId;
 
-  const order: Order = {
+  const order: Order | CrossOrder = {
     senderAddress,
     matcherAddress,
     baseAsset: baseAssetAddr,

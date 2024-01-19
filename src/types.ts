@@ -50,8 +50,10 @@ export type Order = {
   nonce: number // uint64
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
-  secretHash?: string // uint64
-  targetChainId?: SupportedChainId // uint64
+}
+export type CrossOrder = Order & {
+  secretHash: string // uint64
+  targetChainId: SupportedChainId // uint64
 }
 
 export type LockOrder = {
@@ -71,7 +73,7 @@ type SignedOrderAdditionalProps = {
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
 }
 
-export type SignedOrder = SignedOrderAdditionalProps & Order & {
+export type SignedOrder = SignedOrderAdditionalProps & (Order | CrossOrder) & {
   id: string // hash of Order (it's not part of order structure in smart-contract)
 }
 
