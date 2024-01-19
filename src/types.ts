@@ -51,7 +51,7 @@ export type Order = {
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
   secretHash?: string // uint64
-  targetChainId?: ethers.BigNumberish // uint64
+  targetChainId?: SupportedChainId // uint64
 }
 
 export type LockOrder = {
@@ -60,14 +60,14 @@ export type LockOrder = {
   expiration: ethers.BigNumberish // uint64
   asset: string // address(?)
   amount: ethers.BigNumberish // uint64
-  targetChainId: ethers.BigNumberish // uint64
+  targetChainId: SupportedChainId // uint64
   secretHash: string // uint64
   sign: string // uint64 // подпись юзера
 }
 
 type SignedOrderAdditionalProps = {
   signature: string // bytes
-  secret: string
+  secret?: string
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
 }
 

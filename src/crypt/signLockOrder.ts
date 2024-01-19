@@ -14,10 +14,10 @@ export type LockOrderProps = {
   senderAddress: string // broker
   asset: string
   amount: ethers.BigNumberish
-  targetChainId: ethers.BigNumberish
   sign: string // подпись юзера
   signer: ethers.Signer
   chainId: SupportedChainId
+  targetChainId: SupportedChainId
 }
 
 export const signLockOrder = async ({

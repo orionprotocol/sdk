@@ -25,12 +25,14 @@ export const signOrder = async (
   serviceFeeAssetAddr: string,
   signer: ethers.Signer,
   chainId: SupportedChainId,
-  targetChainId?: ethers.BigNumberish,
+  targetChainId?: SupportedChainId,
 ) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
   const secret = generateSecret();
   const secretHash = ethers.keccak256(secret);
+
+  const isCrossChain = targetChainId === undefined || targetChainId === chainId;
 
   const order: Order = {
     senderAddress,
@@ -55,7 +57,7 @@ export const signOrder = async (
     )),
     nonce,
     expiration,
-    ...(targetChainId !== undefined
+    ...(isCrossChain
       ? {
         secretHash,
         targetChainId
@@ -83,7 +85,7 @@ export const signOrder = async (
     ...order,
     id: hashOrder(order),
     signature: fixedSignature,
-    secret
+    ...(isCrossChain ? { secret } : {})
   };
   return signedOrder;
 };
