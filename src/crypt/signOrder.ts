@@ -55,8 +55,12 @@ export const signOrder = async (
     )),
     nonce,
     expiration,
-    secretHash,
-    targetChainId,
+    ...(targetChainId !== undefined
+      ? {
+        secretHash,
+        targetChainId
+      }
+      : {}),
     buySide: side === 'BUY' ? 1 : 0,
   };
 

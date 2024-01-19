@@ -49,9 +49,9 @@ export type Order = {
   matcherFee: number // uint64
   nonce: number // uint64
   expiration: number // uint64
-  secretHash: string // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
-  targetChainId: ethers.BigNumberish | undefined // uint64
+  secretHash?: string // uint64
+  targetChainId?: ethers.BigNumberish // uint64
 }
 
 export type LockOrder = {
