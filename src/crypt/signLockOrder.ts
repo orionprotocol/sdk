@@ -4,6 +4,9 @@ import ORDER_TYPES from '../constants/orderTypes.js';
 import type { LockOrder, SignedLockOrder, SupportedChainId } from '../types.js';
 import getDomainData from './getDomainData.js';
 import generateSecret from '../utils/generateSecret';
+import { BigNumber } from 'bignumber.js';
+import normalizeNumber from '../utils/normalizeNumber';
+import { INTERNAL_PROTOCOL_PRECISION } from '../constants';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
@@ -13,7 +16,7 @@ export type LockOrderProps = {
   userAddress: string // адрес юзера который хочет сделать лок
   senderAddress: string // broker
   asset: string
-  amount: ethers.BigNumberish
+  amount: BigNumber.Value
   signer: ethers.Signer
   chainId: SupportedChainId
   targetChainId: SupportedChainId
@@ -38,7 +41,11 @@ export const signLockOrder = async ({
     sender: senderAddress,
     expiration,
     asset,
-    amount,
+    amount: Number(normalizeNumber(
+      amount,
+      INTERNAL_PROTOCOL_PRECISION,
+      BigNumber.ROUND_FLOOR,
+    )),
     targetChainId,
     secretHash,
   };

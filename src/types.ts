@@ -5,7 +5,6 @@ import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
-import type { ethers } from 'ethers';
 import type { networkCodes } from './constants';
 
 export type DeepPartial<T> = T extends object ? {
@@ -59,9 +58,9 @@ export type CrossOrder = Order & {
 export type LockOrder = {
   user: string // address // адрес юзера который хочет сделать лок
   sender: string // address // broker
-  expiration: ethers.BigNumberish // uint64
+  expiration: number // uint64
   asset: string // address(?)
-  amount: ethers.BigNumberish // uint64
+  amount: number // uint64
   targetChainId: SupportedChainId // uint64
   secretHash: string // uint64
 }
