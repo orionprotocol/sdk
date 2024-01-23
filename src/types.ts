@@ -64,7 +64,6 @@ export type LockOrder = {
   amount: ethers.BigNumberish // uint64
   targetChainId: SupportedChainId // uint64
   secretHash: string // uint64
-  sign: string // uint64 // подпись юзера
 }
 
 type SignedOrderAdditionalProps = {

@@ -14,7 +14,6 @@ export type LockOrderProps = {
   senderAddress: string // broker
   asset: string
   amount: ethers.BigNumberish
-  sign: string // подпись юзера
   signer: ethers.Signer
   chainId: SupportedChainId
   targetChainId: SupportedChainId
@@ -23,11 +22,10 @@ export type LockOrderProps = {
 export const signLockOrder = async ({
   userAddress,
   senderAddress,
-  sign,
   amount,
+  chainId,
   targetChainId,
   asset,
-  chainId,
   signer
 }: LockOrderProps) => {
   const nonce = Date.now();
@@ -43,7 +41,6 @@ export const signLockOrder = async ({
     amount,
     targetChainId,
     secretHash,
-    sign
   };
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

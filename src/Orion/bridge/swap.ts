@@ -10,7 +10,7 @@ import {
   LOCKATOMIC_GAS_LIMIT,
   REDEEMATOMIC_GAS_LIMIT,
   WITHDRAW_GAS_LIMIT
-} from '../../constants/index.js';
+} from '../../constants';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { denormalizeNumber, generateSecret, normalizeNumber, toUpperCase } from '../../utils/index.js';
 import type { SupportedChainId } from '../../types.js';
