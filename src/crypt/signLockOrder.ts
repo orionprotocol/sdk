@@ -20,6 +20,7 @@ export type LockOrderProps = {
   signer: ethers.Signer
   chainId: SupportedChainId
   targetChainId: SupportedChainId
+  logger?: (message: string) => void
 }
 
 export const signLockOrder = async ({
@@ -29,7 +30,8 @@ export const signLockOrder = async ({
   chainId,
   targetChainId,
   asset,
-  signer
+  signer,
+  logger
 }: LockOrderProps) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
@@ -49,19 +51,23 @@ export const signLockOrder = async ({
     targetChainId,
     secretHash,
   };
+  logger?.('❌ test1');
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const typedDataSigner = signer as SignerWithTypedDataSign;
+  logger?.('❌ test2');
 
   const signature = await typedDataSigner.signTypedData(
     getDomainData(chainId),
     ORDER_TYPES,
     order,
   );
+  logger?.('❌ test3');
 
   // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
   // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
   const fixedSignature = ethers.Signature.from(signature).serialized;
+  logger?.('❌ test4');
 
   // if (!fixedSignature) throw new Error("Can't sign order");
 
