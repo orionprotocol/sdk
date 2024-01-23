@@ -342,7 +342,7 @@
         }
       },
       "42161": {
-        "api": "https://trade.orion.xyz/arbitrum-one",
+        "api": "https://staging.orion.xyz/arbitrum-one",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -360,7 +360,7 @@
         }
       },
       "204": {
-        "api": "https://trade.orion.xyz/opbnb-mainnet",
+        "api": "https://staging.orion.xyz/opbnb-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
