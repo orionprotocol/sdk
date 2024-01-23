@@ -95,7 +95,7 @@
         }
       },
       "42161": {
-        "api": "https://trade.orion.xyz/arbitrum-mainnet",
+        "api": "https://trade.orion.xyz/arbitrum-one",
         "services": {
           "aggregator": {
             "http": "/backend",
