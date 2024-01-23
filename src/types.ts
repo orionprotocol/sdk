@@ -454,3 +454,5 @@ export type AtomicSwap = Partial<
   refundTx?: TransactionInfo | undefined
   liquidityMigrationTx?: TransactionInfo | undefined
 }
+
+export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WIDGET';
