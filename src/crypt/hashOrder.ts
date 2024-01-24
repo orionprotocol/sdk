@@ -14,8 +14,6 @@ const hashOrder = (order: Order) => ethers.solidityPackedKeccak256(
     'uint64',
     'uint64',
     'uint64',
-    'uint64',
-    'uint64',
     'uint8',
   ],
   [
@@ -26,12 +24,10 @@ const hashOrder = (order: Order) => ethers.solidityPackedKeccak256(
     order.quoteAsset,
     order.matcherFeeAsset,
     order.amount,
-    order.targetChainId,
     order.price,
     order.matcherFee,
     order.nonce,
     order.expiration,
-    order.secretHash,
     order.buySide === 1 ? '0x01' : '0x00',
   ],
 );
