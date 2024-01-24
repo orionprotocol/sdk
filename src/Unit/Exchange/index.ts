@@ -1,37 +1,25 @@
 import type Unit from '../index.js';
 import deposit, { type DepositParams } from './deposit.js';
 import getSwapInfo, { type GetSwapInfoParams } from './getSwapInfo.js';
-import generateSwapCalldata, { type GenerateSwapCalldataParams } from './generateSwapCalldata.js';
-import swapLimit, {type SwapLimitParams} from './swapLimit.js';
-import swapMarket, { type SwapMarketParams } from './swapMarket.js';
+import { generateSwapCalldataWithUnit, type GenerateSwapCalldataWithUnitParams } from './generateSwapCalldata.js';
 import withdraw, { type WithdrawParams } from './withdraw.js';
+import type { SwapLimitParams } from './swapLimit.js';
+import swapLimit from './swapLimit.js';
+import swapMarket from './swapMarket.js';
+import type { SwapMarketParams } from './swapMarket.js';
 
-type PureSwapMarketParams = Omit<SwapMarketParams, 'unit'>
-type PureSwapLimitParams = Omit<SwapLimitParams, 'unit'>
 type PureDepositParams = Omit<DepositParams, 'unit'>
 type PureWithdrawParams = Omit<WithdrawParams, 'unit'>
 type PureGetSwapMarketInfoParams = Omit<GetSwapInfoParams, 'blockchainService' | 'aggregator'>
-type PureGenerateSwapCalldataParams = Omit<GenerateSwapCalldataParams, 'unit'>
+type PureGenerateSwapCalldataParams = Omit<GenerateSwapCalldataWithUnitParams, 'unit'>
+type PureSwapLimitParams = Omit<SwapLimitParams, 'unit'>
+type PureSwapMarketParams = Omit<SwapMarketParams, 'unit'>
 
 export default class Exchange {
   private readonly unit: Unit;
 
   constructor(unit: Unit) {
     this.unit = unit;
-  }
-
-  public swapLimit(params: PureSwapLimitParams) {
-    return swapLimit({
-      ...params,
-      unit: this.unit,
-    });
-  }
-
-  public swapMarket(params: PureSwapMarketParams) {
-    return swapMarket({
-      ...params,
-      unit: this.unit,
-    });
   }
 
   public getSwapInfo(params: PureGetSwapMarketInfoParams) {
@@ -57,9 +45,23 @@ export default class Exchange {
   }
 
   public generateSwapCalldata(params: PureGenerateSwapCalldataParams) {
-    return generateSwapCalldata({
+    return generateSwapCalldataWithUnit({
       ...params,
       unit: this.unit
     })
+  }
+
+  public swapLimit(params: PureSwapLimitParams) {
+    return swapLimit({
+      ...params,
+      unit: this.unit,
+    });
+  }
+
+  public swapMarket(params: PureSwapMarketParams) {
+    return swapMarket({
+      ...params,
+      unit: this.unit,
+    });
   }
 }
