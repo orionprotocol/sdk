@@ -40,7 +40,7 @@ type SwapInfoSubscriptionPayload = {
   i: string // asset in
   o: string // asset out
   a: number // amount IN/OUT
-  es?: string[] | 'cex' | 'pools' // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
+  es?: string // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
   e?: boolean // is amount IN? Value `false` means a = amount OUT, `true` if omitted
   is?: boolean // instant settlement
 }
@@ -526,6 +526,13 @@ class AggregatorWS {
               availableAmountOut: item.aao,
             })),
             assetsNameMapping: json.anm,
+            usdInfo: json.usd && {
+              availableAmountIn: json.usd.aa,
+              availableAmountOut: json.usd.aao,
+              marketAmountOut: json.usd.mo,
+              marketAmountIn: json.usd.mi,
+              difference: json.usd.d,
+            },
           };
 
           switch (json.k) { // kind

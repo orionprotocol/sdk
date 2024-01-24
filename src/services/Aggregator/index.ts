@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, OrderSource, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
@@ -74,13 +74,13 @@ class Aggregator {
   }
 
   getOrder = (orderId: string, owner?: string) => {
-    if (!ethers.utils.isHexString(orderId)) {
+    if (!ethers.isHexString(orderId)) {
       throw new Error(`Invalid order id: ${orderId}. Must be a hex string`);
     }
     const url = new URL(`${this.apiUrl}/api/v1/order`);
     url.searchParams.append('orderId', orderId);
     if (owner !== undefined) {
-      if (!ethers.utils.isAddress(owner)) {
+      if (!ethers.isAddress(owner)) {
         throw new Error(`Invalid owner address: ${owner}`);
       }
       url.searchParams.append('owner', owner);
@@ -196,7 +196,8 @@ class Aggregator {
     isCreateInternalOrder: boolean,
     isReversedOrder?: boolean,
     partnerId?: string,
-    fromWidget?: boolean,
+    source?: OrderSource,
+    rawExchangeRestrictions?: string | undefined,
   ) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -205,7 +206,7 @@ class Aggregator {
         'X-Reverse-Order': isReversedOrder ? 'true' : 'false',
       },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
-      ...(fromWidget !== undefined) && { 'X-From-Widget': fromWidget ? 'true' : 'false' },
+      ...(source !== undefined) && { 'X-Source': source },
       ...this.basicAuthHeaders,
     };
 
@@ -226,7 +227,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify(signedOrder),
+        body: JSON.stringify({ ...signedOrder, rawExchangeRestrictions }),
       },
       errorSchema,
     );

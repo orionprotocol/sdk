@@ -51,7 +51,7 @@ export default async function getSwapInfo({
   const allPrices = await simpleFetch(blockchainService.getPricesWithQuoteAsset)();
   const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
 
-  const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
+  const gasPriceGwei = ethers.formatUnits(gasPriceWei, 'gwei').toString();
 
   const assetInAddress = assetToAddress[assetIn];
   if (assetInAddress === undefined) throw new Error(`Asset '${assetIn}' not found`);
@@ -101,15 +101,15 @@ export default async function getSwapInfo({
   }
 
   if (route === 'pool') {
-    const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const transactionCost = BigInt(SWAP_THROUGH_ORION_POOL_GAS_LIMIT) * BigInt(gasPriceWei);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
     return {
       route,
       swapInfo,
       fee: {
         assetName: nativeCryptocurrencyName,
-        assetAddress: ethers.constants.AddressZero,
+        assetAddress: ethers.ZeroAddress,
         networkFeeInFeeAsset: denormalizedTransactionCost.toString(),
         protocolFeeInFeeAsset: undefined,
       },
@@ -134,7 +134,7 @@ export default async function getSwapInfo({
       gasPriceGwei,
       feePercent,
       baseAssetAddress,
-      ethers.constants.AddressZero,
+      ethers.ZeroAddress,
       feeAssetAddress,
       allPrices.prices
     );

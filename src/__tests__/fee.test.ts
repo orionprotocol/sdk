@@ -83,7 +83,7 @@ describe('Fee calculation', () => {
     const gasPriceGwei = 3;
     const feePercent = 0.2;
     const baseAssetAddress = '0xcb2951e90d8dcf16e1fa84ac0c83f48906d6a744';
-    const baseCurrencyAddress = ethers.constants.AddressZero;
+    const baseCurrencyAddress = ethers.ZeroAddress;
     const feeAssetAddress = '0xf223eca06261145b3287a0fefd8cfad371c7eb34';
     const { totalFeeInFeeAsset: ornTotalFee } = calculateFeeInFeeAsset(
       amount,

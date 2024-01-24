@@ -48,7 +48,6 @@ export type Order = {
   nonce: number // uint64
   expiration: number // uint64
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
-  isPersonalSign: boolean // bool
 }
 
 export type SignedOrder = {
@@ -60,7 +59,6 @@ export type SignedOrder = {
 export type CancelOrderRequest = {
   id: number | string
   senderAddress: string
-  isPersonalSign: boolean
 }
 
 export type SignedCancelOrderRequest = {
@@ -201,6 +199,13 @@ export type SwapInfoBase = {
   } | undefined
   alternatives: SwapInfoAlternative[]
   assetsNameMapping?: Partial<Record<string, string>> | undefined
+  usdInfo: {
+    availableAmountIn: number | undefined
+    availableAmountOut: number | undefined
+    marketAmountOut: number | undefined
+    marketAmountIn: number | undefined
+    difference: string | undefined
+  } | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
@@ -256,6 +261,12 @@ export type VerboseUnitConfig = {
       // http://localhost:3003/,
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
+    }
+    indexer: {
+      api: string
+      // For example:
+      // http://localhost:3004/,
+      // http://
     }
   }
   basicAuth?: BasicAuthCredentials
@@ -443,3 +454,5 @@ export type AtomicSwap = Partial<
   refundTx?: TransactionInfo | undefined
   liquidityMigrationTx?: TransactionInfo | undefined
 }
+
+export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WIDGET';

@@ -11,7 +11,7 @@ const getNativeCryptocurrencyName = (assetToAddress: Partial<Record<string, stri
       };
     }, {});
 
-  const nativeCryptocurrencyName = addressToAssetName[ethers.constants.AddressZero];
+  const nativeCryptocurrencyName = addressToAssetName[ethers.ZeroAddress];
   if (nativeCryptocurrencyName === undefined) {
     throw new Error('Native cryptocurrency asset name is not found');
   }

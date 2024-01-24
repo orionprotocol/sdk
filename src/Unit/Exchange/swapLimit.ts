@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
@@ -12,6 +12,10 @@ import { signOrder } from '../../crypt/index.js';
 import type orderSchema from '../../services/Aggregator/schemas/orderSchema.js';
 import type { z } from 'zod';
 import { simpleFetch } from 'simple-typed-fetch';
+import { generateSwapCalldata } from './generateSwapCalldata.js';
+import isValidFactory from '../../utils/isValidFactory.js';
+import type { SingleSwap } from '../../types.js';
+import { must, safeGet } from '../../utils/safeGetters.js';
 
 export type SwapLimitParams = {
   type: 'exactSpend' | 'exactReceive'
@@ -44,10 +48,14 @@ type PoolSwap = {
   amountOut: number
   through: 'pool'
   txHash: string
-  wait: (confirmations?: number | undefined) => Promise<ethers.providers.TransactionReceipt>
+  wait: (confirmations?: number | undefined) => Promise<ethers.TransactionReceipt | null>
 }
 
 export type Swap = AggregatorOrder | PoolSwap;
+
+const isValidSingleSwap = (singleSwap: Omit<SingleSwap, 'factory'> & { factory: string }): singleSwap is SingleSwap => {
+  return isValidFactory(singleSwap.factory);
+}
 
 export default async function swapLimit({
   type,
@@ -85,6 +93,7 @@ export default async function swapLimit({
     exchangeContractAddress,
     matcherAddress,
     assetToAddress,
+    swapExecutorContractAddress,
   } = await simpleFetch(blockchainService.getInfo)();
   const nativeCryptocurrency = getNativeCryptocurrencyName(assetToAddress);
 
@@ -92,10 +101,11 @@ export default async function swapLimit({
   const feeAssets = await simpleFetch(blockchainService.getPlatformFees)({ walletAddress, assetIn, assetOut });
   const allPrices = await simpleFetch(blockchainService.getPricesWithQuoteAsset)();
   const gasPriceWei = await simpleFetch(blockchainService.getGasPriceWei)();
-  const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();
+  const { factories, WETHAddress } = await simpleFetch(blockchainService.getPoolsConfig)();
+  must(WETHAddress, 'WETHAddress is not defined');
   const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
 
-  const gasPriceGwei = ethers.utils.formatUnits(gasPriceWei, 'gwei').toString();
+  const gasPriceGwei = ethers.formatUnits(gasPriceWei, 'gwei').toString();
 
   const assetInAddress = assetToAddress[assetIn];
   if (assetInAddress === undefined) throw new Error(`Asset '${assetIn}' not found`);
@@ -108,7 +118,7 @@ export default async function swapLimit({
     {
       [assetIn]: assetInAddress,
       [feeAsset]: feeAssetAddress,
-      [nativeCryptocurrency]: ethers.constants.AddressZero,
+      [nativeCryptocurrency]: ethers.ZeroAddress,
     },
     aggregator,
     walletAddress,
@@ -120,7 +130,7 @@ export default async function swapLimit({
     balances,
     {
       name: nativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     provider,
     signer,
@@ -138,7 +148,7 @@ export default async function swapLimit({
       : undefined,
   );
 
-  const { exchanges: swapExchanges } = swapInfo;
+  const { exchanges: swapExchanges, exchangeContractPath } = swapInfo;
 
   const [firstSwapExchange] = swapExchanges;
 
@@ -236,12 +246,6 @@ export default async function swapLimit({
       if (factoryAddress !== undefined) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
     }
 
-    const pathAddresses = swapInfo.path.map((name) => {
-      const assetAddress = assetToAddress[name];
-      if (assetAddress === undefined) throw new Error(`No asset address for ${name}`);
-      return assetAddress;
-    });
-
     const amountSpend = swapInfo.type === 'exactSpend'
       ? swapInfo.amountIn
       : new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
@@ -271,45 +275,64 @@ export default async function swapLimit({
       BigNumber.ROUND_FLOOR,
     );
 
-    const unsignedSwapThroughOrionPoolTx = await exchangeContract.populateTransaction.swapThroughOrionPool(
-      amountSpendBlockchainParam,
-      amountReceiveBlockchainParam,
-      factoryAddress !== undefined
-        ? [factoryAddress, ...pathAddresses]
-        : pathAddresses,
-      type === 'exactSpend',
+    const { calldata, swapDescription, value } = await generateSwapCalldata({
+      amount: amountSpendBlockchainParam,
+      minReturnAmount: amountReceiveBlockchainParam,
+      path: exchangeContractPath.filter(isValidSingleSwap),
+      initiatorAddress: walletAddress,
+      receiverAddress: walletAddress,
+      provider,
+
+      matcher: matcherAddress,
+      feeToken: feeAssetAddress,
+      fee: 0,
+      exchangeContractAddress,
+      swapExecutorContractAddress,
+      wethAddress: WETHAddress,
+
+      curveRegistryAddress: safeGet(unit.contracts, 'curveRegistry'),
+    })
+
+    const unsignedSwapThroughPoolsTx = await exchangeContract.swap.populateTransaction(
+      swapExecutorContractAddress,
+      swapDescription,
+      new Uint8Array(0),
+      calldata,
+      {
+        value
+      }
     );
 
-    unsignedSwapThroughOrionPoolTx.chainId = parseInt(chainId, 10);
-    unsignedSwapThroughOrionPoolTx.gasPrice = ethers.BigNumber.from(gasPriceWei);
+    unsignedSwapThroughPoolsTx.chainId = BigInt(parseInt(chainId, 10));
+    unsignedSwapThroughPoolsTx.gasPrice = BigInt(gasPriceWei);
 
-    unsignedSwapThroughOrionPoolTx.from = walletAddress;
+    unsignedSwapThroughPoolsTx.from = walletAddress;
     const amountSpendBN = new BigNumber(amountSpend);
 
-    let value = new BigNumber(0);
+    let txValue = new BigNumber(0);
     const denormalizedAssetInExchangeBalance = balances[assetIn]?.exchange;
     if (denormalizedAssetInExchangeBalance === undefined) throw new Error(`Asset '${assetIn}' exchange balance is not found`);
     if (assetIn === nativeCryptocurrency && amountSpendBN.gt(denormalizedAssetInExchangeBalance)) {
-      value = amountSpendBN.minus(denormalizedAssetInExchangeBalance);
+      txValue = amountSpendBN.minus(denormalizedAssetInExchangeBalance);
     }
-    unsignedSwapThroughOrionPoolTx.value = normalizeNumber(
-      value.dp(INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_CEIL),
+    unsignedSwapThroughPoolsTx.value = normalizeNumber(
+      txValue.dp(INTERNAL_PROTOCOL_PRECISION, BigNumber.ROUND_CEIL),
       NATIVE_CURRENCY_PRECISION,
       BigNumber.ROUND_CEIL,
     );
-    unsignedSwapThroughOrionPoolTx.gasLimit = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
+    unsignedSwapThroughPoolsTx.gasLimit = BigInt(SWAP_THROUGH_ORION_POOL_GAS_LIMIT);
 
-    const transactionCost = ethers.BigNumber.from(SWAP_THROUGH_ORION_POOL_GAS_LIMIT).mul(gasPriceWei);
-    const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+    const transactionCost = BigInt(SWAP_THROUGH_ORION_POOL_GAS_LIMIT) * BigInt(gasPriceWei);
+    const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
     balanceGuard.registerRequirement({
       reason: 'Network fee',
       asset: {
         name: nativeCryptocurrency,
-        address: ethers.constants.AddressZero,
+        address: ethers.ZeroAddress,
       },
       amount: denormalizedTransactionCost.toString(),
-      sources: getAvailableSources('network_fee', ethers.constants.AddressZero, 'pool'),
+      sources: getAvailableSources('network_fee', ethers.ZeroAddress, 'pool'),
     });
 
     // if (value.gt(0)) {
@@ -317,24 +340,24 @@ export default async function swapLimit({
     //     reason: 'Transaction value (extra amount)',
     //     asset: {
     //       name: nativeCryptocurrency,
-    //       address: ethers.constants.AddressZero,
+    //       address: ethers.ZeroAddress,
     //     },
     //     amount: value.toString(),
-    //     sources: getAvailableSources('amount', ethers.constants.AddressZero, 'pool'),
+    //     sources: getAvailableSources('amount', ethers.ZeroAddress, 'pool'),
     //   });
     // }
 
     await balanceGuard.check(options?.autoApprove);
 
     const nonce = await provider.getTransactionCount(walletAddress, 'pending');
-    unsignedSwapThroughOrionPoolTx.nonce = nonce;
+    unsignedSwapThroughPoolsTx.nonce = nonce;
 
     options?.logger?.('Signing transaction...');
-    const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughOrionPoolTx);
+    const swapThroughOrionPoolTxResponse = await signer.sendTransaction(unsignedSwapThroughPoolsTx);
     options?.logger?.(`Transaction sent. Tx hash: ${swapThroughOrionPoolTxResponse.hash}`);
     return {
       amountOut: swapInfo.amountOut,
-      wait: swapThroughOrionPoolTxResponse.wait,
+      wait: swapThroughOrionPoolTxResponse.wait.bind(swapThroughOrionPoolTxResponse),
       through: 'pool',
       txHash: swapThroughOrionPoolTxResponse.hash,
     };
@@ -380,7 +403,7 @@ export default async function swapLimit({
     gasPriceGwei,
     feePercent,
     baseAssetAddress,
-    ethers.constants.AddressZero,
+    ethers.ZeroAddress,
     feeAssetAddress,
     allPrices.prices,
   );
@@ -426,7 +449,6 @@ export default async function swapLimit({
     walletAddress,
     matcherAddress,
     feeAssetAddress,
-    false,
     signer,
     chainId,
   );
