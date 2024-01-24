@@ -62,12 +62,12 @@ export type LockOrder = {
   asset: string // address(?)
   amount: number // uint64
   targetChainId: SupportedChainId // uint64
-  secretHash: string // uint64
 }
 
 type SignedOrderAdditionalProps = {
   signature: string // bytes
   secret?: string
+  secretHash?: string // bytes32
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
 }
 

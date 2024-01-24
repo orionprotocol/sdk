@@ -267,7 +267,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify(signedLockOrder),
+        body: JSON.stringify({ ...signedLockOrder, sign: '' }), // TODO: remove field sign when api updated
       },
       errorSchema,
     );
