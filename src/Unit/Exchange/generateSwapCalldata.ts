@@ -23,27 +23,22 @@ import { generateFeePaymentCall } from "./callGenerators/feePayment.js";
 
 export type Factory = "UniswapV2" | "UniswapV3" | "Curve" | "OrionV2" | "OrionV3";
 
-export type GenerateSwapCalldataWithUnitParams = {
+type BaseGenerateSwapCalldataParams = {
   amount: BigNumberish;
   minReturnAmount: BigNumberish;
   initiatorAddress: string;
   receiverAddress: string;
-  matcher: AddressLike,
-  feeToken: AddressLike,
-  fee: BigNumberish;
   path: ArrayLike<SingleSwap>;
+  matcher?: AddressLike,
+  feeToken?: AddressLike,
+  fee?: BigNumberish;
+}
+
+export type GenerateSwapCalldataWithUnitParams = BaseGenerateSwapCalldataParams & {
   unit: Unit;
 };
 
-export type GenerateSwapCalldataParams = {
-  amount: BigNumberish;
-  minReturnAmount: BigNumberish;
-  initiatorAddress: string;
-  receiverAddress: string;
-  path: ArrayLike<SingleSwap>;
-  matcher: AddressLike,
-  feeToken: AddressLike,
-  fee: BigNumberish;
+export type GenerateSwapCalldataParams = BaseGenerateSwapCalldataParams & {
   exchangeContractAddress: AddressLike;
   wethAddress: AddressLike;
   curveRegistryAddress: AddressLike;
@@ -347,10 +342,6 @@ async function payFeeToMatcher(
   calls: BytesLike[],
   swapDescription: LibValidator.SwapDescriptionStruct,
 ) {
-  console.log(matcher)
-  console.log(feeAmount)
-  console.log(feeToken)
-  console.log(swapDescription.dstToken)
   if (BigInt(feeAmount) !== 0n && feeToken === swapDescription.dstToken) {
     const feePaymentCall = generateFeePaymentCall(matcher, feeToken, feeAmount)
     calls.push(feePaymentCall)

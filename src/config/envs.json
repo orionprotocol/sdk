@@ -93,6 +93,42 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "42161": {
+        "api": "https://trade.orion.xyz/arbitrum-one",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "204": {
+        "api": "https://trade.orion.xyz/opbnb-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
@@ -289,6 +325,42 @@
       },
       "66": {
         "api": "https://staging.orion.xyz/okc-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "42161": {
+        "api": "https://staging.orion.xyz/arbitrum-one",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "204": {
+        "api": "https://staging.orion.xyz/opbnb-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",

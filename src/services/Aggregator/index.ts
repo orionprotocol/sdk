@@ -8,7 +8,7 @@ import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
 import { AggregatorWS } from './ws/index.js';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type { BasicAuthCredentials, OrderSource, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
@@ -196,8 +196,8 @@ class Aggregator {
     isCreateInternalOrder: boolean,
     isReversedOrder?: boolean,
     partnerId?: string,
-    fromWidget?: boolean,
-    source?: string,
+    source?: OrderSource,
+    rawExchangeRestrictions?: string | undefined,
   ) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -206,7 +206,6 @@ class Aggregator {
         'X-Reverse-Order': isReversedOrder ? 'true' : 'false',
       },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
-      ...(fromWidget !== undefined) && { 'X-From-Widget': fromWidget ? 'true' : 'false' },
       ...(source !== undefined) && { 'X-Source': source },
       ...this.basicAuthHeaders,
     };
@@ -228,7 +227,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify(signedOrder),
+        body: JSON.stringify({ ...signedOrder, rawExchangeRestrictions }),
       },
       errorSchema,
     );

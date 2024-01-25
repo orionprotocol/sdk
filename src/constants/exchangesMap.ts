@@ -19,7 +19,7 @@ const mapping: Record<string, string> = {
   OKXSWAP: 'OKXSwap',
   CURVE: 'Curve',
   CURVE_FACTORY: 'Curve Factory',
-  THENA: 'Thena',
+  THENA_ALGEBRA_V1: 'Thena',
 };
 
 export default mapping;

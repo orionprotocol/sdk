@@ -18,7 +18,7 @@
     "label": "BNB Chain",
     "shortName": "BSC",
     "code": "bsc",
-    "rpc": " https://bsc-dataseed.bnbchain.org/",
+    "rpc": "https://bsc-dataseed.bnbchain.org/",
     "baseCurrencyName": "BNB",
     "contracts": {
       "WETH": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -36,6 +36,18 @@
     "contracts": {
       "WETH": "0x23eE96bEaAB62abE126AA192e677c52bB7d274F0",
       "curveRegistry": "0x93461072c00b2740c474a3d52c70be6249c802d8"
+    }
+  },
+  "204": {
+    "chainId": "204",
+    "explorer": "http://opbnbscan.com/",
+    "label": "opBNB Chain",
+    "shortName": "opBNB",
+    "code": "opbnb",
+    "rpc": "https://opbnb-mainnet-rpc.bnbchain.org",
+    "baseCurrencyName": "BNB",
+    "contracts": {
+      "WETH": "0x4200000000000000000000000000000000000006"
     }
   },
   "3": {
@@ -75,6 +87,19 @@
     "contracts": {
       "WETH": "",
       "curveRegistry": ""
+    }
+  },
+  "42161": {
+    "chainId": "42161",
+    "explorer": "https://arbiscan.io/",
+    "label": "Arbitrum",
+    "shortName": "Arbitrum",
+    "code": "arb",
+    "rpc": "https://arb1.arbitrum.io/rpc",
+    "baseCurrencyName": "ARB",
+    "contracts": {
+      "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "curveRegistiry": "0x445FE580eF8d70FF569aB36e80c647af338db351"
     }
   },
   "4002": {
