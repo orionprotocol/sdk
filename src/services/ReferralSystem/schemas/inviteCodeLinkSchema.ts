@@ -3,8 +3,8 @@ import { z } from 'zod';
 const inviteCodeLinkSchema = z.object({
   link: z
     .object({
-      status: z.string(),
       referer: z.string(),
+      ref_link: z.string(),
     })
     .nullable(),
   invite: z
