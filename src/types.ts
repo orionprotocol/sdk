@@ -262,12 +262,12 @@ export type VerboseUnitConfig = {
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
     }
-    indexer: {
+    indexer?: {
       api: string
       // For example:
       // http://localhost:3004/,
       // http://
-    }
+    } | undefined
   }
   basicAuth?: BasicAuthCredentials
 }

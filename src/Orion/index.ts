@@ -59,7 +59,7 @@ export default class Orion {
                 api: networkConfig.api + networkConfig.services.priceFeed.all,
               },
               indexer: {
-                api: networkConfig.api + networkConfig.services.indexer.http,
+                api: networkConfig.api + networkConfig.services.indexer?.http,
               }
             },
           };
