@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.20.54",
+  "version": "0.20.55",
   "description": "Orion Protocol SDK",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -88,7 +88,7 @@
     "@babel/runtime": "^7.21.0",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@orionprotocol/contracts": "1.22.8",
+    "@orionprotocol/contracts": "1.22.9",
     "@types/lodash.clonedeep": "^4.5.9",
     "bignumber.js": "^9.1.1",
     "bson-objectid": "^2.0.4",
