@@ -96,7 +96,7 @@
     "shortName": "Arbitrum",
     "code": "arb",
     "rpc": "https://arb1.arbitrum.io/rpc",
-    "baseCurrencyName": "ARB",
+    "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
       "curveRegistiry": "0x445FE580eF8d70FF569aB36e80c647af338db351"
