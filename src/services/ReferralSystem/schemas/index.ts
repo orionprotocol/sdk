@@ -10,3 +10,4 @@ export { default as claimInfoSchema } from './claimInfoSchema.js';
 export { default as aggregatedHistorySchema } from './aggregatedHistorySchema.js';
 export { default as contractsAddressesSchema } from './contractsAddressesSchema.js';
 export { default as inviteCodeLinkSchema } from './inviteCodeLinkSchema.js';
+export { default as allTimeLeadersSchema } from './allTimeLeadersSchema.js';
