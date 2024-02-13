@@ -236,14 +236,14 @@ class ReferralSystem {
   getAllTimeLeaders = (refererAddress: string | undefined) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/ve/leaderboard-lifetime`,
-      ratingSchema,
+      allTimeLeadersSchema,
       {
         headers:
           refererAddress !== undefined
             ? { 'referer-address': refererAddress }
             : {},
       },
-      allTimeLeadersSchema
+      errorSchema
     );
 
   getContractsAddresses = () =>
