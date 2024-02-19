@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { string, z } from 'zod';
 import WebSocket from 'isomorphic-ws';
 import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
 import MessageType from './MessageType.js';
@@ -268,13 +268,18 @@ class AggregatorWS {
 
       if ('payload' in subscription) {
         if (typeof subscription.payload === 'string') {
+          console.log('subscription.payload === string', subscription.payload);
           subRequest['S'] = subscription.payload;
         } else {
+          console.log('subscription.payload === object', subscription.payload);
           for (const [key, value] of Object.entries(subscription.payload)) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            subRequest[key] = value;
+            console.log('for in', key, value);
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            subRequest[key] = value as Json;
           }
         }
+
+        console.log('subRequest', subRequest);
 
         // Crutch for SwapInfoSubscriptionPayload
         if (
@@ -283,11 +288,14 @@ class AggregatorWS {
           'o' in subscription.payload &&
           'a' in subscription.payload
         ) {
+          console.log('SwapInfoSubscriptionPayload', subscription.payload);
           subRequest['S'] = {
             d: id,
             ...subscription.payload,
           };
         }
+
+        console.log('subRequest', subRequest);
       }
 
       const subKey = isExclusive ? 'default' : id;
