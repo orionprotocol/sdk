@@ -1,4 +1,4 @@
-import { string, z } from 'zod';
+import { z } from 'zod';
 import WebSocket from 'isomorphic-ws';
 import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
 import MessageType from './MessageType.js';
