@@ -374,7 +374,7 @@ class AggregatorWS {
     if (newestSubId.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       const auSubscriptions = this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
       if (auSubscriptions) {
-        const targetAuSub = Object.entries(auSubscriptions).find(([, value]) => value?.payload === newestSubId);
+        const targetAuSub = Object.entries(auSubscriptions).find(([, value]) => value?.payload.S === newestSubId);
         if (targetAuSub) {
           const [key] = targetAuSub;
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
