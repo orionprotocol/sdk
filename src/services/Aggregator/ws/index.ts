@@ -102,7 +102,11 @@ type AddressUpdateInitial = {
 }
 
 type AddressUpdateSubscription = {
-  payload: string
+  payload: {
+    S: string
+    pa?: string[]
+  }
+  // payload: string
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
   errorCb?: (message: string) => void
 }
@@ -265,7 +269,20 @@ class AggregatorWS {
       if ('payload' in subscription) {
         if (typeof subscription.payload === 'string') {
           subRequest['S'] = subscription.payload;
-        } else { // SwapInfoSubscriptionPayload
+        } else {
+          for (const [key, value] of Object.entries(subscription.payload)) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            subRequest[key] = value;
+          }
+        }
+
+        // Crutch for SwapInfoSubscriptionPayload
+        if (
+          typeof subscription.payload !== 'string' &&
+          'i' in subscription.payload &&
+          'o' in subscription.payload &&
+          'a' in subscription.payload
+        ) {
           subRequest['S'] = {
             d: id,
             ...subscription.payload,
