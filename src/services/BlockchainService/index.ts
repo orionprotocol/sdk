@@ -487,7 +487,7 @@ class BlockchainService {
   );
 
   getGasLimits = () => fetchWithValidation(
-    `${this.apiUrl}api/baseLimits`,
+    `${this.apiUrl}/api/baseLimits`,
     z.record(z.number()),
     { headers: this.basicAuthHeaders }
   );
