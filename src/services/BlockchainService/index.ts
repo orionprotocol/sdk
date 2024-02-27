@@ -111,6 +111,7 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
+    this.getGasLimits = this.getGasLimits.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -483,6 +484,12 @@ class BlockchainService {
       method: 'POST',
       body: JSON.stringify(secretHashes),
     },
+  );
+
+  getGasLimits = () => fetchWithValidation(
+    `${this.apiUrl}api/baseLimits`,
+    z.record(z.number()),
+    { headers: this.basicAuthHeaders }
   );
 }
 
