@@ -129,6 +129,42 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "2525": {
+        "api": "https://trade.orion.xyz/inevm-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "59144": {
+        "api": "https://trade.orion.xyz/linea-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
@@ -361,6 +397,42 @@
       },
       "204": {
         "api": "https://staging.orion.xyz/opbnb-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "2525": {
+        "api": "https://trade.orion.xyz/inevm-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "59144": {
+        "api": "https://trade.orion.xyz/linea-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
