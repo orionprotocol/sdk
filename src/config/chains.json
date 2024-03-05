@@ -47,7 +47,8 @@
     "rpc": "https://opbnb-mainnet-rpc.bnbchain.org",
     "baseCurrencyName": "BNB",
     "contracts": {
-      "WETH": "0x4200000000000000000000000000000000000006"
+      "WETH": "0x4200000000000000000000000000000000000006",
+      "curveRegistry": ""
     }
   },
   "3": {
