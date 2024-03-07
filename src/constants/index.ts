@@ -9,5 +9,6 @@ export { default as exchangesMap } from './exchangesMap.js';
 export * from './chains.js';
 export * from './precisions.js';
 export * from './gasLimits.js';
+export * from './timings.js';
 
 export const SERVICE_TOKEN = 'ORN';

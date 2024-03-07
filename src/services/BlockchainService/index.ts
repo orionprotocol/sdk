@@ -10,15 +10,12 @@ import {
   userEarnedSchema,
   type PairStatusEnum,
   pairStatusSchema,
-  governanceContractsSchema,
-  governancePoolsSchema,
-  governancePoolSchema,
-  governanceChainsInfoSchema,
   pricesWithQuoteAssetSchema,
+  referralDataSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
-import { makePartial } from '../../utils/index.js';
+import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials } from '../../types.js';
@@ -59,6 +56,14 @@ type AtomicSwapHistoryTargetQuery = AtomicSwapHistoryBaseQuery & {
   expiredRedeem?: 0 | 1
   state?: 'REDEEMED' | 'BEFORE-REDEEM'
 }
+
+type PlatformFees = {
+  assetIn: string
+  assetOut: string
+  walletAddress?: string | undefined
+  fromWidget?: string | undefined
+}
+
 class BlockchainService {
   private readonly apiUrl: string;
 
@@ -106,10 +111,7 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
-    this.getGovernanceContracts = this.getGovernanceContracts.bind(this);
-    this.getGovernancePools = this.getGovernancePools.bind(this);
-    this.getGovernancePool = this.getGovernancePool.bind(this);
-    this.getGovernanceChainsInfo = this.getGovernanceChainsInfo.bind(this);
+    this.getGasLimits = this.getGasLimits.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -223,31 +225,25 @@ class BlockchainService {
   );
 
   /**
-   * @deprecated In favor of getPlatformFees
-   */
+     * @deprecated In favor of getPlatformFees
+     */
   getTokensFee = () => fetchWithValidation(
     `${this.apiUrl}/api/tokensFee`,
     z.record(z.string()).transform(makePartial),
     { headers: this.basicAuthHeaders }
   );
 
-  getPlatformFees = (
-    { assetIn, assetOut, walletAddress, fromWidget }: {
-      assetIn?: string | undefined,
-      assetOut?: string | undefined,
-      walletAddress?: string | undefined,
-      fromWidget?: string | undefined
-    }
+  getPlatformFees = ({
+    assetIn,
+    assetOut,
+    walletAddress,
+    fromWidget
+  }: PlatformFees
   ) => {
     const url = new URL(`${this.apiUrl}/api/platform-fees`);
 
-    if (assetIn !== undefined) {
-      url.searchParams.append('assetIn', assetIn);
-    }
-
-    if (assetOut !== undefined) {
-      url.searchParams.append('assetOut', assetOut);
-    }
+    url.searchParams.append('assetIn', assetIn);
+    url.searchParams.append('assetOut', assetOut);
 
     if (walletAddress !== undefined) {
       url.searchParams.append('walletAddress', walletAddress);
@@ -263,6 +259,12 @@ class BlockchainService {
       { headers: this.basicAuthHeaders }
     )
   };
+
+  getReferralData = (walletAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/api/referral-data/${walletAddress}`,
+    referralDataSchema,
+    { headers: this.basicAuthHeaders }
+  );
 
   getGasPriceWei = () => fetchWithValidation(
     `${this.apiUrl}/api/gasPrice`,
@@ -427,9 +429,9 @@ class BlockchainService {
   );
 
   /**
-   * Sender is user address in source BlockchainService instance \
-   * Receiver is user address in target BlockchainService instance
-   */
+     * Sender is user address in source BlockchainService instance \
+     * Receiver is user address in target BlockchainService instance
+     */
   getAtomicSwapHistory = (query: AtomicSwapHistorySourceQuery | AtomicSwapHistoryTargetQuery) => {
     const url = new URL(`${this.apiUrl}/api/atomic/history/`);
 
@@ -484,28 +486,10 @@ class BlockchainService {
     },
   );
 
-  getGovernanceContracts = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/info`,
-    governanceContractsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernancePools = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/pools`,
-    governancePoolsSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernancePool = (address: string) => fetchWithValidation(
-    `${this.apiUrl}/api/governance/pools/${address}`,
-    governancePoolSchema,
-    { headers: this.basicAuthHeaders },
-  );
-
-  getGovernanceChainsInfo = () => fetchWithValidation(
-    `${this.apiUrl}/api/governance/chains-info`,
-    governanceChainsInfoSchema,
-    { headers: this.basicAuthHeaders },
+  getGasLimits = () => fetchWithValidation(
+    `${this.apiUrl}/api/baseLimits`,
+    z.record(z.number()),
+    { headers: this.basicAuthHeaders }
   );
 }
 

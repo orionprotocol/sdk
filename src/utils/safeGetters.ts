@@ -1,5 +1,4 @@
 export class SafeArray<T> extends Array<T> {
-  
   public static override from<T>(array: ArrayLike<T>): SafeArray<T> {
     return new SafeArray(array);
   }
@@ -9,9 +8,10 @@ export class SafeArray<T> extends Array<T> {
     for (const index in array) {
       const value = array[index]
       if (value === undefined) {
-        throw new Error("Array passed to constructor has undefined values")
+        throw new Error('Array passed to constructor has undefined values')
       }
-      this[index] = value
+
+      this[index] = value;
     }
   }
 
@@ -19,11 +19,11 @@ export class SafeArray<T> extends Array<T> {
     return [...this];
   }
 
-  public override map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): SafeArray<U> {
+  public override map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: unknown): SafeArray<U> {
     return new SafeArray(super.map(callbackfn, thisArg));
   }
 
-  public override filter(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): SafeArray<T> {
+  public override filter(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: unknown): SafeArray<T> {
     return new SafeArray(super.filter(callbackfn, thisArg));
   }
 
@@ -53,8 +53,8 @@ export function safeGet<V>(obj: Partial<Record<string, V>>, key: string, errorMe
 const prefix = 'Requirement not met';
 
 export function must(condition: unknown, message?: string | (() => string)): asserts condition {
-    if (condition) return;
-    const provided = typeof message === 'function' ? message() : message;
-    const value = provided ? `${prefix}: ${provided}` : prefix;
-    throw new Error(value);
+  if (condition) return;
+  const provided = typeof message === 'function' ? message() : message;
+  const value = provided ? `${prefix}: ${provided}` : prefix;
+  throw new Error(value);
 }

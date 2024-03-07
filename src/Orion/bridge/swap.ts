@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
@@ -123,7 +123,7 @@ export default async function swap({
   const sourceChainBalances = await getBalances(
     {
       [assetName]: sourceChainAssetAddress,
-      [sourceChainNativeCryptocurrency]: ethers.constants.AddressZero,
+      [sourceChainNativeCryptocurrency]: ethers.ZeroAddress,
     },
     sourceAggregator,
     walletAddress,
@@ -134,7 +134,7 @@ export default async function swap({
   const targetChainBalances = await getBalances(
     {
       [assetName]: targetChainAssetAddress,
-      [targetChainNativeCryptocurrency]: ethers.constants.AddressZero,
+      [targetChainNativeCryptocurrency]: ethers.ZeroAddress,
     },
     targetAggregator,
     walletAddress,
@@ -146,7 +146,7 @@ export default async function swap({
     sourceChainBalances,
     {
       name: sourceChainNativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     sourceProvider,
     signer,
@@ -157,7 +157,7 @@ export default async function swap({
     targetChainBalances,
     {
       name: targetChainNativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     targetProvider,
     signer,
@@ -181,33 +181,33 @@ export default async function swap({
     BigNumber.ROUND_FLOOR,
   );
   const secret = generateSecret();
-  const secretHash = ethers.utils.keccak256(secret);
+  const secretHash = ethers.keccak256(secret);
   options?.logger?.(`Secret is ${secret}`);
   options?.logger?.(`Secret hash is ${secretHash}`);
 
   const secondsInDay = 60 * 60 * 24;
   const expirationDays = 4;
-  const expirationEtherBN = ethers.BigNumber.from(
+  const expirationEtherBN = BigInt(
     Date.now() + (secondsInDay * expirationDays * 1000),
   );
 
-  const unsignedLockAtomicTx = await sourceExchangeContract.populateTransaction.lockAtomic({
+  const unsignedLockAtomicTx = await sourceExchangeContract.lockAtomic.populateTransaction({
     amount: amountBlockchainParam,
     asset: sourceChainAssetAddress,
     expiration: expirationEtherBN,
     secretHash,
     sender: walletAddress,
-    targetChainId: ethers.BigNumber.from(targetChain),
+    targetChainId: BigInt(targetChain),
   });
 
-  let sourceChainGasPrice: ethers.BigNumber;
+  let sourceChainGasPrice: bigint;
   const sourceChainFeeData = await sourceChainUnit.provider.getFeeData();
-  if (ethers.BigNumber.isBigNumber(sourceChainFeeData.gasPrice)) { //
+  if (sourceChainFeeData.gasPrice !== null) { //
     unsignedLockAtomicTx.gasPrice = sourceChainFeeData.gasPrice;
     sourceChainGasPrice = sourceChainFeeData.gasPrice;
   } else if (
-    ethers.BigNumber.isBigNumber(sourceChainFeeData.maxFeePerGas) &&
-    ethers.BigNumber.isBigNumber(sourceChainFeeData.maxPriorityFeePerGas)
+    sourceChainFeeData.maxFeePerGas !== null &&
+    sourceChainFeeData.maxPriorityFeePerGas !== null
   ) { // EIP-1559
     unsignedLockAtomicTx.maxFeePerGas = sourceChainFeeData.maxFeePerGas;
     unsignedLockAtomicTx.maxPriorityFeePerGas = sourceChainFeeData.maxPriorityFeePerGas;
@@ -216,7 +216,7 @@ export default async function swap({
     throw new Error('Can\'t get gas price');
   }
 
-  unsignedLockAtomicTx.chainId = parseInt(chainId, 10);
+  unsignedLockAtomicTx.chainId = BigInt(chainId);
   unsignedLockAtomicTx.from = walletAddress;
 
   let value = new BigNumber(0);
@@ -230,16 +230,16 @@ export default async function swap({
     NATIVE_CURRENCY_PRECISION,
     BigNumber.ROUND_CEIL,
   );
-  unsignedLockAtomicTx.gasLimit = ethers.BigNumber.from(LOCKATOMIC_GAS_LIMIT);
+  unsignedLockAtomicTx.gasLimit = BigInt(LOCKATOMIC_GAS_LIMIT);
 
-  const transactionCost = ethers.BigNumber.from(LOCKATOMIC_GAS_LIMIT).mul(sourceChainGasPrice);
-  const denormalizedTransactionCost = denormalizeNumber(transactionCost, NATIVE_CURRENCY_PRECISION);
+  const transactionCost = BigInt(LOCKATOMIC_GAS_LIMIT) * sourceChainGasPrice;
+  const denormalizedTransactionCost = denormalizeNumber(transactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
   sourceChainBalanceGuard.registerRequirement({
     reason: 'Network fee',
     asset: {
       name: sourceChainNativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     amount: denormalizedTransactionCost.toString(),
     sources: ['wallet']
@@ -252,7 +252,7 @@ export default async function swap({
 
   options?.logger?.('Signing lock tx transaction...');
   const signedTransaction = await signer.signTransaction(unsignedLockAtomicTx);
-  const lockAtomicTxResponse = await sourceChainUnit.provider.sendTransaction(signedTransaction);
+  const lockAtomicTxResponse = await sourceChainUnit.provider.broadcastTransaction(signedTransaction);
   options?.logger?.(`Lock tx sent. Tx hash: ${lockAtomicTxResponse.hash}. Waiting for tx to be mined...`);
   await lockAtomicTxResponse.wait();
   options?.logger?.('Lock tx mined.');
@@ -280,7 +280,7 @@ export default async function swap({
   options?.logger?.('Atomic swap placed.');
 
   // const targetChainGasPriceWei = await simpleFetch(targetBlockchainService.getGasPriceWei)();
-  const unsignedRedeemAtomicTx = await targetExchangeContract.populateTransaction.redeemAtomic(
+  const unsignedRedeemAtomicTx = await targetExchangeContract.redeemAtomic.populateTransaction(
     {
       amount: amountBlockchainParam,
       asset: targetChainAssetAddress,
@@ -294,14 +294,14 @@ export default async function swap({
     secret
   )
 
-  let targetChainGasPrice: ethers.BigNumber;
+  let targetChainGasPrice: bigint;
   const targetChainFeeData = await targetChainUnit.provider.getFeeData();
-  if (ethers.BigNumber.isBigNumber(targetChainFeeData.gasPrice)) { //
+  if (targetChainFeeData.gasPrice !== null) { //
     unsignedRedeemAtomicTx.gasPrice = targetChainFeeData.gasPrice;
     targetChainGasPrice = targetChainFeeData.gasPrice;
   } else if (
-    ethers.BigNumber.isBigNumber(targetChainFeeData.maxFeePerGas) &&
-      ethers.BigNumber.isBigNumber(targetChainFeeData.maxPriorityFeePerGas)
+    targetChainFeeData.maxFeePerGas !== null &&
+      targetChainFeeData.maxPriorityFeePerGas !== null
   ) { // EIP-1559
     unsignedRedeemAtomicTx.maxFeePerGas = targetChainFeeData.maxFeePerGas;
     unsignedRedeemAtomicTx.maxPriorityFeePerGas = targetChainFeeData.maxPriorityFeePerGas;
@@ -310,18 +310,18 @@ export default async function swap({
     throw new Error('Can\'t get gas price');
   }
 
-  unsignedRedeemAtomicTx.chainId = parseInt(targetChain, 10);
+  unsignedRedeemAtomicTx.chainId = BigInt(parseInt(targetChain, 10));
   unsignedRedeemAtomicTx.from = walletAddress;
-  unsignedRedeemAtomicTx.gasLimit = ethers.BigNumber.from(REDEEMATOMIC_GAS_LIMIT);
+  unsignedRedeemAtomicTx.gasLimit = BigInt(REDEEMATOMIC_GAS_LIMIT);
 
-  const redeemAtomicTransactionCost = ethers.BigNumber.from(REDEEMATOMIC_GAS_LIMIT).mul(targetChainGasPrice);
-  const targetDenormalizedTransactionCost = denormalizeNumber(redeemAtomicTransactionCost, NATIVE_CURRENCY_PRECISION);
+  const redeemAtomicTransactionCost = BigInt(REDEEMATOMIC_GAS_LIMIT) * targetChainGasPrice;
+  const targetDenormalizedTransactionCost = denormalizeNumber(redeemAtomicTransactionCost, BigInt(NATIVE_CURRENCY_PRECISION));
 
   targetChainBalanceGuard.registerRequirement({
     reason: 'Network fee',
     asset: {
       name: targetChainNativeCryptocurrency,
-      address: ethers.constants.AddressZero,
+      address: ethers.ZeroAddress,
     },
     amount: targetDenormalizedTransactionCost.toString(),
     sources: ['wallet']
@@ -334,7 +334,7 @@ export default async function swap({
   options?.logger?.('Signing redeem tx transaction...');
 
   const targetSignedTransaction = await signer.signTransaction(unsignedRedeemAtomicTx);
-  const targetLockAtomicTxResponse = await targetChainUnit.provider.sendTransaction(targetSignedTransaction);
+  const targetLockAtomicTxResponse = await targetChainUnit.provider.broadcastTransaction(targetSignedTransaction);
   options?.logger?.(`Redeem tx sent. Tx hash: ${targetLockAtomicTxResponse.hash}. Waiting for tx to be mined...`);
 
   await targetLockAtomicTxResponse.wait();
@@ -343,16 +343,16 @@ export default async function swap({
 
   if (options?.withdrawToWallet !== undefined && options.withdrawToWallet) {
     options.logger?.('Withdrawing to wallet...');
-    const unsignedWithdrawTx = await targetExchangeContract.populateTransaction.withdraw(
+    const unsignedWithdrawTx = await targetExchangeContract.withdraw.populateTransaction(
       targetChainAssetAddress,
       amountBlockchainParam,
     );
-    if (ethers.BigNumber.isBigNumber(targetChainFeeData.gasPrice)) { //
+    if (targetChainFeeData.gasPrice !== null) { //
       unsignedWithdrawTx.gasPrice = targetChainFeeData.gasPrice;
       targetChainGasPrice = targetChainFeeData.gasPrice;
     } else if (
-      ethers.BigNumber.isBigNumber(targetChainFeeData.maxFeePerGas) &&
-      ethers.BigNumber.isBigNumber(targetChainFeeData.maxPriorityFeePerGas)
+      targetChainFeeData.maxFeePerGas !== null &&
+      targetChainFeeData.maxPriorityFeePerGas !== null
     ) { // EIP-1559
       unsignedWithdrawTx.maxFeePerGas = targetChainFeeData.maxFeePerGas;
       unsignedWithdrawTx.maxPriorityFeePerGas = targetChainFeeData.maxPriorityFeePerGas;
@@ -360,12 +360,12 @@ export default async function swap({
     } else {
       throw new Error('Can\'t get gas price');
     }
-    unsignedWithdrawTx.chainId = parseInt(targetChain, 10);
-    unsignedWithdrawTx.gasLimit = ethers.BigNumber.from(WITHDRAW_GAS_LIMIT);
+    unsignedWithdrawTx.chainId = BigInt(parseInt(targetChain, 10));
+    unsignedWithdrawTx.gasLimit = BigInt(WITHDRAW_GAS_LIMIT);
     unsignedWithdrawTx.from = walletAddress;
     unsignedWithdrawTx.nonce = await targetProvider.getTransactionCount(walletAddress, 'pending');
     const signedTx = await signer.signTransaction(unsignedWithdrawTx);
-    const withdrawTx = await targetProvider.sendTransaction(signedTx);
+    const withdrawTx = await targetProvider.broadcastTransaction(signedTx);
     options.logger?.(`Withdraw tx sent. Tx hash: ${withdrawTx.hash}. Waiting for tx to be mined...`);
     await withdrawTx.wait();
     options.logger?.('Withdraw tx mined.');

@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import clone from 'just-clone';
-import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v5/index.js';
+import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants/index.js';
 import type {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,
@@ -9,6 +9,8 @@ import type {
 import { denormalizeNumber } from './utils/index.js';
 import arrayEquals from './utils/arrayEquals.js';
 
+// BalanceGuard helps to check if there is enough balance to perform a swap
+// Also it can fix some balance issues (e.g. approve tokens)
 export default class BalanceGuard {
   private readonly balances: Partial<
     Record<
@@ -24,7 +26,7 @@ export default class BalanceGuard {
 
   private readonly nativeCryptocurrency: Asset;
 
-  private readonly provider: ethers.providers.Provider;
+  private readonly provider: ethers.Provider;
 
   private readonly signer: ethers.Signer;
 
@@ -33,7 +35,7 @@ export default class BalanceGuard {
   constructor(
     balances: Partial<Record<string, Record<'exchange' | 'wallet', BigNumber>>>,
     nativeCryptocurrency: Asset,
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     signer: ethers.Signer,
     logger?: (message: string) => void,
   ) {
@@ -55,6 +57,8 @@ export default class BalanceGuard {
     assetBalance[source] = assetBalance[source].plus(amount);
   }
 
+  // Reset is approve some token to zero
+  // This operation may be required by some tokens, e.g. USDT
   private async checkResetRequired(
     assetAddress: string,
     spenderAddress: string,
@@ -62,10 +66,10 @@ export default class BalanceGuard {
     const walletAddress = await this.signer.getAddress();
     const tokenContract = ERC20__factory
       .connect(assetAddress, this.provider);
-    const unsignedTx = await tokenContract.populateTransaction
-      .approve(
+    const unsignedTx = await tokenContract.approve
+      .populateTransaction(
         spenderAddress,
-        ethers.constants.MaxUint256,
+        ethers.MaxUint256,
       );
     unsignedTx.from = walletAddress;
     let resetRequired = false;
@@ -109,6 +113,7 @@ export default class BalanceGuard {
       }, []);
   }
 
+  // This method can fix some balance issues (e.g. approve tokens)
   private readonly fixAllAutofixableBalanceIssues = async (
     balanceIssues: BalanceIssue[],
   ) => {
@@ -117,21 +122,23 @@ export default class BalanceGuard {
       const approve = async ({ spenderAddress, targetAmount }: ApproveFix) => {
         const bnTargetAmount = new BigNumber(targetAmount);
         const unsignedApproveTx = await tokenContract
-          .populateTransaction
-          .approve(
+          .approve.populateTransaction(
             spenderAddress,
             bnTargetAmount.isZero()
               ? '0' // Reset
-              : ethers.constants.MaxUint256, // Infinite approve
+              : ethers.MaxUint256, // Infinite approve
           );
 
         const walletAddress = await this.signer.getAddress();
         const nonce = await this.provider.getTransactionCount(walletAddress, 'pending');
-        const gasPrice = await this.provider.getGasPrice();
+        const { gasPrice, maxFeePerGas } = await this.provider.getFeeData();
         const network = await this.provider.getNetwork();
 
+        if (gasPrice !== null && maxFeePerGas !== null) {
+          unsignedApproveTx.gasPrice = gasPrice;
+          unsignedApproveTx.maxFeePerGas = maxFeePerGas;
+        }
         unsignedApproveTx.chainId = network.chainId;
-        unsignedApproveTx.gasPrice = gasPrice;
         unsignedApproveTx.nonce = nonce;
         unsignedApproveTx.from = walletAddress;
         const gasLimit = await this.provider.estimateGas(unsignedApproveTx);
@@ -139,7 +146,7 @@ export default class BalanceGuard {
 
         this.logger?.('Approve transaction signing...');
         const signedTx = await this.signer.signTransaction(unsignedApproveTx);
-        const txResponse = await this.provider.sendTransaction(signedTx);
+        const txResponse = await this.provider.broadcastTransaction(signedTx);
         this.logger?.(`${issue.asset.name} approve transaction sent ${txResponse.hash}. Waiting for confirmation...`);
         await txResponse.wait();
         this.logger?.(`${issue.asset.name} approve transaction confirmed.`);
@@ -161,6 +168,7 @@ export default class BalanceGuard {
     return balanceIssues.filter((item) => !autofixableBalanceIssues.includes(item));
   };
 
+  // Check that all balance requirements are fulfilled
   async check(fixAutofixable?: boolean) {
     this.logger?.(`Balance requirements: ${this.requirements
       .map((requirement) => `${requirement.amount} ${requirement.asset.name} ` +
@@ -171,6 +179,7 @@ export default class BalanceGuard {
     const remainingBalances = clone(this.balances);
     const aggregatedRequirements = BalanceGuard.aggregateBalanceRequirements(this.requirements);
 
+    // DO NOT IGNORE THIS COMMENT. THIS IS VERY IMPORTANT TO UNDERSTAND THIS CODE
     // Balance absorption order is important!
     // 1. Exchange-contract only
     // 2. Exchange + wallet (can produce approves requirements)
@@ -230,7 +239,7 @@ export default class BalanceGuard {
           const lackAmount = remainingBalance.exchange.abs(); // e.g. -435.234234 to 434.234234
 
           let denormalizedAllowance: BigNumber;
-          if (asset.address === ethers.constants.AddressZero) {
+          if (asset.address === ethers.ZeroAddress) {
             denormalizedAllowance = remainingBalance.wallet;
           } else {
             if (spenderAddress === undefined) throw new Error(`Spender address is required for ${asset.name}`);
@@ -272,13 +281,11 @@ export default class BalanceGuard {
                 asset.address,
                 spenderAddress,
               );
-              const gasPriceWei = await this.provider.getGasPrice();
-              const approveTransactionCost = ethers.BigNumber
-                .from(APPROVE_ERC20_GAS_LIMIT)
-                .mul(gasPriceWei);
+              const { gasPrice: gasPriceWei } = await this.provider.getFeeData();
+              const approveTransactionCost = BigInt(APPROVE_ERC20_GAS_LIMIT) * (gasPriceWei ?? 0n);
               const denormalizedApproveTransactionCost = denormalizeNumber(
                 approveTransactionCost,
-                NATIVE_CURRENCY_PRECISION
+                BigInt(NATIVE_CURRENCY_PRECISION)
               );
 
               requiredApproves.items = {
@@ -321,6 +328,7 @@ export default class BalanceGuard {
     const walletTokensAggregatedRequirements = flattedAggregatedRequirements
       .filter(({ sources, asset }) => sources[0] === 'wallet' && asset.name !== this.nativeCryptocurrency.name);
 
+    // This requirements can be fulfilled by wallet
     await Promise.all(walletTokensAggregatedRequirements
       .map(async ({ asset, spenderAddress, items }) => {
         const remainingBalance = remainingBalances[asset.name];
@@ -329,7 +337,7 @@ export default class BalanceGuard {
           .reduce<BigNumber>((p, c) => (c !== undefined ? p.plus(c) : p), new BigNumber(0));
 
         let denormalizedAllowance: BigNumber;
-        if (asset.address === ethers.constants.AddressZero) {
+        if (asset.address === ethers.ZeroAddress) {
           denormalizedAllowance = remainingBalance.wallet;
         } else {
           if (spenderAddress === undefined) throw new Error(`Spender address is required for ${asset.name}`);
@@ -365,13 +373,11 @@ export default class BalanceGuard {
               asset.address,
               spenderAddress,
             );
-            const gasPriceWei = await this.provider.getGasPrice();
-            const approveTransactionCost = ethers.BigNumber
-              .from(APPROVE_ERC20_GAS_LIMIT)
-              .mul(gasPriceWei);
+            const { gasPrice: gasPriceWei } = await this.provider.getFeeData();
+            const approveTransactionCost = BigInt(APPROVE_ERC20_GAS_LIMIT) * (gasPriceWei ?? 0n);
             const denormalizedApproveTransactionCost = denormalizeNumber(
               approveTransactionCost,
-              NATIVE_CURRENCY_PRECISION
+              BigInt(NATIVE_CURRENCY_PRECISION)
             );
 
             requiredApproves.items = {

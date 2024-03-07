@@ -13,6 +13,7 @@ import {
   aggregatedHistorySchema,
   inviteCodeLinkSchema,
   contractsAddressesSchema,
+  allTimeLeadersSchema,
 } from './schemas/index.js';
 import type { SupportedChainId } from '../../types.js';
 
@@ -69,8 +70,9 @@ class ReferralSystem {
     this.getMiniStats = this.getMiniStats.bind(this);
     this.getRewardsMapping = this.getRewardsMapping.bind(this);
     this.claimRewards = this.claimRewards.bind(this);
-    this.getRating = this.getRating.bind(this);
-    this.getRating = this.getRating.bind(this);
+    this.getLeaderboard = this.getLeaderboard.bind(this);
+    this.getLeaderboardSingleChain = this.getLeaderboardSingleChain.bind(this);
+    this.getAllTimeLeaders = this.getAllTimeLeaders.bind(this);
     this.getContractsAddresses = this.getContractsAddresses.bind(this);
     this.getClaimInfo = this.getClaimInfo.bind(this);
     this.getAggregatedHistory = this.getAggregatedHistory.bind(this);
@@ -205,10 +207,36 @@ class ReferralSystem {
       errorSchema
     );
 
-  getRating = (refererAddress: string | undefined, chainId: SupportedChainId) =>
+  getLeaderboard = (refererAddress: string | undefined) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/ve/rating-table-leaderboard?tag=aggregated`,
+      ratingSchema,
+      {
+        headers:
+          refererAddress !== undefined
+            ? { 'referer-address': refererAddress }
+            : {},
+      },
+      errorSchema
+    );
+
+  getLeaderboardSingleChain = (refererAddress: string | undefined, chainId: SupportedChainId) =>
     fetchWithValidation(
       `${this.apiUrl}/referer/ve/rating-table-leaderboard?chain_id=${chainId}`,
       ratingSchema,
+      {
+        headers:
+          refererAddress !== undefined
+            ? { 'referer-address': refererAddress }
+            : {},
+      },
+      errorSchema
+    );
+
+  getAllTimeLeaders = (refererAddress: string | undefined) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/ve/leaderboard-lifetime`,
+      allTimeLeadersSchema,
       {
         headers:
           refererAddress !== undefined

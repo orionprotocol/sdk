@@ -12,17 +12,14 @@ const mapping: Record<string, string> = {
   PANCAKESWAP: 'PancakeSwap',
   UNISWAP: 'Uniswap',
   QUICKSWAP: 'QuickSwap',
-  ORION_POOL: 'Orion Pool',
-  INTERNAL_POOL_V2: 'Orion Pool V2',
-  INTERNAL_POOL_V3: 'Orion Pool V3',
-  INTERNAL_POOL_V3_0_01: 'Orion Pool V3',
-  INTERNAL_POOL_V3_0_05: 'Orion Pool V3',
-  INTERNAL_POOL_V3_0_3: 'Orion Pool V3',
-  INTERNAL_POOL_V3_1_0: 'Orion Pool V3',
+  ORION_POOL: 'Internal Pool',
+  INTERNAL_POOL_V2: 'Internal Pool V2',
+  INTERNAL_POOL_V3: 'Internal Pool V3',
   CHERRYSWAP: 'CherrySwap',
   OKXSWAP: 'OKXSwap',
   CURVE: 'Curve',
   CURVE_FACTORY: 'Curve Factory',
+  THENA_ALGEBRA_V1: 'Thena',
 };
 
 export default mapping;

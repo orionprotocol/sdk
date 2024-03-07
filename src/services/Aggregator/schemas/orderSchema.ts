@@ -3,22 +3,22 @@ import { z } from 'zod';
 import { exchanges, orderStatuses, subOrderStatuses } from '../../../constants/index.js';
 
 const blockchainOrderSchema = z.object({
-  id: z.string().refine(ethers.utils.isHexString, (value) => ({
+  id: z.string().refine(ethers.isHexString, (value) => ({
     message: `blockchainOrder.id must be a hex string, got ${value}`,
   })),
-  senderAddress: z.string().refine(ethers.utils.isAddress, (value) => ({
+  senderAddress: z.string().refine(ethers.isAddress, (value) => ({
     message: `blockchainOrder.senderAddress must be an address, got ${value}`,
   })),
-  matcherAddress: z.string().refine(ethers.utils.isAddress, (value) => ({
+  matcherAddress: z.string().refine(ethers.isAddress, (value) => ({
     message: `blockchainOrder.matcherAddress must be an address, got ${value}`,
   })),
-  baseAsset: z.string().refine(ethers.utils.isAddress, (value) => ({
+  baseAsset: z.string().refine(ethers.isAddress, (value) => ({
     message: `blockchainOrder.baseAsset must be an address, got ${value}`,
   })),
-  quoteAsset: z.string().refine(ethers.utils.isAddress, (value) => ({
+  quoteAsset: z.string().refine(ethers.isAddress, (value) => ({
     message: `blockchainOrder.quoteAsset must be an address, got ${value}`,
   })),
-  matcherFeeAsset: z.string().refine(ethers.utils.isAddress, (value) => ({
+  matcherFeeAsset: z.string().refine(ethers.isAddress, (value) => ({
     message: `blockchainOrder.matcherFeeAsset must be an address, got ${value}`,
   })),
   amount: z.number().int().nonnegative(),
@@ -27,7 +27,7 @@ const blockchainOrderSchema = z.object({
   nonce: z.number(),
   expiration: z.number(),
   buySide: z.union([z.literal(1), z.literal(0)]),
-  signature: z.string().refine(ethers.utils.isHexString, (value) => ({
+  signature: z.string().refine(ethers.isHexString, (value) => ({
     message: `blockchainOrder.signature must be a hex string, got ${value}`,
   })).nullable(),
   isPersonalSign: z.boolean(),
@@ -43,8 +43,6 @@ const tradeInfoSchema = z.object({
   updateTime: z.number(),
   matchedBlockchainOrder: blockchainOrderSchema.optional(),
   matchedSubOrderId: z.number().int().nonnegative().optional(),
-  exchangeTradeInfo: z.boolean(),
-  poolTradeInfo: z.boolean(),
 });
 
 const baseOrderSchema = z.object({
@@ -53,7 +51,7 @@ const baseOrderSchema = z.object({
   amount: z.number().nonnegative(),
   remainingAmount: z.number().nonnegative(),
   price: z.number().nonnegative(),
-  sender: z.string().refine(ethers.utils.isAddress, (value) => ({
+  sender: z.string().refine(ethers.isAddress, (value) => ({
     message: `order.sender must be an address, got ${value}`,
   })),
   filledAmount: z.number().nonnegative(),
@@ -77,16 +75,17 @@ const brokerAddressSchema = z.enum([
   'SELF_BROKER'
 ])
   .or(selfBrokerSchema)
-  .or(z.string().refine(ethers.utils.isAddress, (value) => ({
+  .or(z.string().refine(ethers.isAddress, (value) => ({
     message: `subOrder.subOrders.[n].brokerAddress must be an address, got ${value}`,
   })));
 const subOrderSchema = baseOrderSchema.extend({
   price: z.number(),
   id: z.number(),
-  parentOrderId: z.string().refine(ethers.utils.isHexString, (value) => ({
+  parentOrderId: z.string().refine(ethers.isHexString, (value) => ({
     message: `subOrder.parentOrderId must be a hex string, got ${value}`,
   })),
   exchange: z.string(),
+  exchanges: z.string().array().optional(),
   brokerAddress: brokerAddressSchema,
   tradesInfo: z.record(
     z.string().uuid(),
@@ -97,11 +96,11 @@ const subOrderSchema = baseOrderSchema.extend({
 });
 
 const orderSchema = z.object({
-  orderId: z.string().refine(ethers.utils.isHexString, (value) => ({
+  orderId: z.string().refine(ethers.isHexString, (value) => ({
     message: `orderId must be a hex string, got ${value}`,
   })),
   order: baseOrderSchema.extend({
-    id: z.string().refine(ethers.utils.isHexString, (value) => ({
+    id: z.string().refine(ethers.isHexString, (value) => ({
       message: `order.id must be a hex string, got ${value}`,
     })),
     fee: z.number().nonnegative(),

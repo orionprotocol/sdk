@@ -14,6 +14,9 @@ export const pureEnvNetworksSchema = z.object({
     priceFeed: z.object({
       all: z.string(),
     }),
+    indexer: z.object({
+      http: z.string(),
+    }).optional(),
   }),
   rpc: z.string().optional(),
   liquidityMigratorAddress: z.string().optional(),
