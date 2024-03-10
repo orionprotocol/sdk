@@ -19,6 +19,9 @@ import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
+import hmacSHA256 from "crypto-js/hmac-sha256";
+import Hex from "crypto-js/enc-hex";
+import {pmmOrderSchema} from "../../Unit/Pmm/schemas/order";
 
 class Aggregator {
   private readonly apiUrl: string;
@@ -369,6 +372,106 @@ class Aggregator {
     url.searchParams.append('limit', limit.toString());
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema, { headers: this.basicAuthHeaders });
   };
+
+
+  private encode_utf8(s : string) {
+    return unescape(encodeURIComponent(s));
+  }
+
+  private sign(message : string, key: string) {
+    return hmacSHA256(
+        this.encode_utf8(message),
+        this.encode_utf8(key)
+    ).toString(Hex);
+  }
+
+  private generateHeaders(body : any, method : string, path : string, timestamp : number, apiKey : string, secretKey : string) {
+    const sortedBody = Object.keys(body)
+        .sort()
+        .map((key) => (
+            `${key}=${body[key]}`
+        )).join('&');
+
+    const payload = timestamp + method.toUpperCase() + path + sortedBody;
+
+    const signature = this.sign(payload, secretKey);
+
+    const httpOptions = {
+      headers: {
+        'API-KEY': apiKey,
+        'ACCESS-TIMESTAMP': timestamp.toString(),
+        'ACCESS-SIGN': signature
+      }
+    };
+    return httpOptions;
+  }
+
+  public async RFQOrder(
+      tokenFrom: string,
+      tokenTo: string,
+      fromTokenAmount: string,
+      apiKey: string, //
+      secretKey: string,
+      wallet: string
+  ) : Promise<z.infer<typeof pmmOrderSchema>> {
+
+    //  Making the order structure
+    const
+        path = '/rfq'
+        , url = `${this.apiUrl}/api/v1/integration/pmm`+path
+        , headers = {
+          'Content-Type': 'application/json',
+        }
+        , data = {
+          "baseToken":tokenFrom, // USDT
+          "quoteToken":tokenTo, // ORN
+          "amount": fromTokenAmount, // 100
+          "taker": wallet,
+          "feeBps": 0
+        }
+        , method = 'POST'
+        , timestamp = Date.now()
+        , signatureHeaders = this.generateHeaders(data, method, path, timestamp, apiKey, secretKey)
+        , compiledHeaders = {...headers, ...signatureHeaders.headers, }
+        , body = JSON.stringify(data)
+    ;
+
+
+    let res  = pmmOrderSchema.parse({});
+
+    try {
+      const result = await fetch(url,{
+        headers: compiledHeaders,
+        method,
+        body
+      });
+
+      const json = await result.json();
+      const parseResult = pmmOrderSchema.safeParse(json);
+
+      if(!parseResult.success) {
+        //  Try to parse error answer
+        const errorSchema = z.object({error: z.object({code: z.number(), reason: z.string()})});
+
+        const errorParseResult = errorSchema.safeParse(json);
+
+        if(!errorParseResult.success)
+          throw Error(`Unrecognized answer from aggregator: ${json}`);
+
+        throw Error(errorParseResult.data.error.reason);
+      }
+
+      res.quotation = parseResult.data.quotation;
+      res.signature = parseResult.data.signature;
+      res.error = '';
+      res.success = true;
+      //  return result;
+    }
+    catch(err) {
+      res.error = `${err}`;
+    }
+    return res;
+  }
 }
 export * as schemas from './schemas/index.js';
 export * as ws from './ws/index.js';
