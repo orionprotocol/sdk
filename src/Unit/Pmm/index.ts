@@ -16,6 +16,7 @@ export default class Pmm {
         this.unit = unit;
         this.provider = unit.provider;
         this.contractAddress = '';
+        //  this.contractAddress = '0x89357522c0ed6e557d39dc75290859246077bdfc';
     }
 
     private isInitialized() : boolean {
@@ -27,6 +28,11 @@ export default class Pmm {
             return;
         const { orionPMMRouterContractAddress } = await simpleFetch(this.unit.blockchainService.getPmmInfo)();
         this.contractAddress = orionPMMRouterContractAddress;
+    }
+
+    public async getContractAddress() {
+        await this.init();
+        return this.contractAddress;
     }
 
     public async setAllowance(token: string, amount: string, signer: Wallet) {
@@ -64,7 +70,7 @@ export default class Pmm {
         await txResponse.wait();
     }
 
-    public async FillRFQOrder(order : z.infer<typeof pmmOrderSchema>, signer: Wallet) {
+    public async fillRFQOrder(order : z.infer<typeof pmmOrderSchema>, signer: Wallet) {
         await this.init();
 
         if(!order.success)

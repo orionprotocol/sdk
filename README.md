@@ -744,7 +744,7 @@ import {simpleFetch} from "simple-typed-fetch";
     const secretKey = 'secretKey';
     const yourWalletPrivateKey = '0x...';
     
-    const orion = new Orion('testing');   //  Leave empty for test environment
+    const orion = new Orion('testing');   //  Leave empty for PROD environment
     const bsc = orion.getUnit('bsc');
     const wallet = new Wallet(yourWalletPrivateKey, bsc.provider);
     
@@ -755,6 +755,9 @@ import {simpleFetch} from "simple-typed-fetch";
     //  Also you need to allow FRQ contract to spend tokens from your address.
     //      This also can be done only once.
     await bsc.pmm.setAllowance(assetToAddress.ORN, '1000000000000000000', wallet);
+    
+    //  Just output the PMM router contract address
+    console.log('Router contract address: ', await bsc.pmm.getContractAddress());
 
     const rfqOrder = await bsc.aggregator.RFQOrder(
           assetToAddress.ORN,   //  Spending asset
@@ -774,7 +777,7 @@ import {simpleFetch} from "simple-typed-fetch";
     
     //  Send order to blockchain
     try {
-      const tx = await bsc.pmm.FillRFQOrder(rfqOrder, wallet);
+      const tx = await bsc.pmm.fillRFQOrder(rfqOrder, wallet);
       
       // If tx.hash is not empty - then transaction was sent to blockchain 
       console.log(tx.hash);
@@ -787,7 +790,7 @@ import {simpleFetch} from "simple-typed-fetch";
 
 RFQ order response example description (`rfqOrder` from example above):
 
-```json
+```
     {
       quotation: {
         info: '31545611720730315633520017429',
