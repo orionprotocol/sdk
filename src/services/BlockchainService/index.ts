@@ -12,6 +12,7 @@ import {
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
   referralDataSchema,
+  pmmSchema
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -82,6 +83,7 @@ class BlockchainService {
     this.getAuthToken = this.getAuthToken.bind(this);
     this.getCirculatingSupply = this.getCirculatingSupply.bind(this);
     this.getInfo = this.getInfo.bind(this);
+    this.getPmmInfo = this.getPmmInfo.bind(this);
     this.getPoolsConfig = this.getPoolsConfig.bind(this);
     this.getPoolsInfo = this.getPoolsInfo.bind(this);
     this.getPoolsLpAndStaked = this.getPoolsLpAndStaked.bind(this);
@@ -175,6 +177,8 @@ class BlockchainService {
   );
 
   getInfo = () => fetchWithValidation(`${this.apiUrl}/api/info`, infoSchema);
+
+  getPmmInfo = () => fetchWithValidation(`${this.apiUrl}/api/pmm-info`, pmmSchema);
 
   getPoolsConfig = () => fetchWithValidation(
     `${this.apiUrl}/api/pools/config`,

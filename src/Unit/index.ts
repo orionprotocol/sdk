@@ -11,6 +11,7 @@ import Exchange from './Exchange/index.js';
 import { chains, envs } from '../config';
 import type { networkCodes } from '../constants/index.js';
 import { IndexerService } from '../services/Indexer';
+import Pmm from "./Pmm";
 
 type KnownConfig = {
   env: KnownEnv
@@ -29,6 +30,8 @@ export default class Unit {
   public readonly indexer: IndexerService | undefined;
 
   public readonly aggregator: Aggregator;
+
+  public readonly pmm: Pmm;
 
   public readonly priceFeed: PriceFeed;
 
@@ -122,5 +125,6 @@ export default class Unit {
       this.config.basicAuth
     );
     this.exchange = new Exchange(this);
+    this.pmm = new Pmm(this);
   }
 }

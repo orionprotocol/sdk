@@ -60,6 +60,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 - [Using contracts](#using-contracts)
 - [Utils](#utils)
   - [Parsing trade transactions](#parsing-trade-transactions)
+- [PMM](#pmm)
 
 ## Install
 
@@ -719,3 +720,98 @@ switch (data.type) {
     break;
 }
 ```
+## PMM
+
+PMM allows institutional traders to request RFQ orders from Orion and then fill them.
+
+RFQ order allows trader to fix the price for a certain time interval (up to 90 seconds, including the order settlement time interval on blockchain). 
+
+After receiving the order (if the price of the order is satisfactory to the trader) the trader must immediately submit the transaction on behalf of his address or contract.
+
+For requesting RFQ-orders institutional trader should have API key and secret key.
+
+Please take look at code example below.
+
+Simple example:
+
+```ts
+import Orion from '../Orion';
+import {Wallet} from "ethers";
+import {simpleFetch} from "simple-typed-fetch";
+
+(async() => {
+    const apiKey = '958153f1-b8b9-3ec4-84eb-2147429105d9';
+    const secretKey = 'secretKey';
+    const yourWalletPrivateKey = '0x...';
+    
+    const orion = new Orion('testing');   //  Leave empty for PROD environment
+    const bsc = orion.getUnit('bsc');
+    const wallet = new Wallet(yourWalletPrivateKey, bsc.provider);
+    
+    //  This can be done only once, no need to repeat this every time
+    //      assetToDecimals can also be useful for calculations        
+    const {assetToAddress, assetToDecimals} = await simpleFetch(bsc.blockchainService.getInfo)();
+    
+    //  Also you need to allow FRQ contract to spend tokens from your address.
+    //      This also can be done only once.
+    await bsc.pmm.setAllowance(assetToAddress.ORN, '1000000000000000000', wallet);
+    
+    //  Just output the PMM router contract address
+    console.log('Router contract address: ', await bsc.pmm.getContractAddress());
+
+    const rfqOrder = await bsc.aggregator.RFQOrder(
+          assetToAddress.ORN,   //  Spending asset
+          assetToAddress.USDT,  //  Receiving asset
+          '10000000000',        //  Amount in "satoshi" of spending asset
+          apiKey,
+          secretKey,
+          '0x61Eed69c0d112C690fD6f44bB621357B89fBE67F'  //  Can be any address, ignored for now
+    );
+    
+    if(!rfqOrder.success) {
+        console.log(rfqOrder.error);
+        return;
+    }
+    
+    //  ... here you can check order prices, etc.
+    
+    //  Send order to blockchain
+    try {
+      const tx = await bsc.pmm.fillRFQOrder(rfqOrder, wallet);
+      
+      // If tx.hash is not empty - then transaction was sent to blockchain 
+      console.log(tx.hash);
+    }
+    catch(err) {
+      console.log(err);
+    }  
+})();
+```
+
+RFQ order response example description (`rfqOrder` from example above):
+
+```
+    {
+      quotation: {
+        info: '31545611720730315633520017429',
+        makerAsset: '0xcb2951e90d8dcf16e1fa84ac0c83f48906d6a744',
+        takerAsset: '0xf223eca06261145b3287a0fefd8cfad371c7eb34',
+        maker: '0x1ff516e5ce789085cff86d37fc27747df852a80a',
+        allowedSender: '0x0000000000000000000000000000000000000000',
+        makingAmount: '193596929',
+        takingAmount: '10000000000'
+      },
+      signature: '0x8a2f9140a3c3a5734eda763a19c54c5ac909d8a03db37d9804af9115641fd1d35896b66ca6e136c1c89e0478fb7382a4b875d0f74529c1e83601f9383d310dde1b',
+      success: true,
+      error: ''
+    }
+```
+
+
+* info - can be ignored
+* makerAsset - your RECEIVING asset (what you expect to receive from contract, in this case USDT)
+* takerAsset - your SPENDING asset (what you're giving to contract, in this case ORN)
+* maker - can be ignored for now;
+* allowedSender - can be ignored for now;
+* makingAmount - how much you will RECEIVE (in receiving asset's precision)
+* takingAmount - how much you should SPEND (in spending asset's precision)

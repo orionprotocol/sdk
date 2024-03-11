@@ -13,7 +13,7 @@ export default {
       'ts-jest',
       {
         isolatedModules: true,
-        // tsconfig: 'tsconfig.json',
+        //  tsconfig: 'tsconfig.json',
         useESM: true,
       },
     ],
