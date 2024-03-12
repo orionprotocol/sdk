@@ -119,10 +119,10 @@ class IndexerService {
   };
 
   readonly getAmountAt = (amount: number, timestamp?: number): BigNumber => {
-    const currentTime = Date.now() / 1000;
+    const finalTimestamp = timestamp !== undefined ? timestamp / 1000 : Date.now() / 1000;
 
     // sqrt
-    return BigNumber(amount).dividedBy(this.getK(timestamp ?? currentTime));
+    return BigNumber(amount).dividedBy(this.getK(finalTimestamp));
   };
 
   /**
