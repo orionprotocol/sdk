@@ -735,56 +735,63 @@ Please take look at code example below.
 Simple example:
 
 ```ts
-import Orion from '../Orion';
+// Node.js
+
+import  { Orion } from '@orionprotocol/sdk'
 import {Wallet} from "ethers";
-import {simpleFetch} from "simple-typed-fetch";
 
 (async() => {
     const apiKey = '958153f1-b8b9-3ec4-84eb-2147429105d9';
     const secretKey = 'secretKey';
     const yourWalletPrivateKey = '0x...';
-    
+
     const orion = new Orion('testing');   //  Leave empty for PROD environment
     const bsc = orion.getUnit('bsc');
     const wallet = new Wallet(yourWalletPrivateKey, bsc.provider);
-    
+
     //  This can be done only once, no need to repeat this every time
-    //      assetToDecimals can also be useful for calculations        
-    const {assetToAddress, assetToDecimals} = await simpleFetch(bsc.blockchainService.getInfo)();
-    
+    //      assetToDecimals can also be useful for calculations
+    //  const {assetToAddress, assetToDecimals} = await bsc.blockchainService.getInfo();
+    const info = await bsc.blockchainService.getInfo();
+
+    if(!info.isOk())
+        return;
+
+    const {assetToAddress, assetToDecimals} = info.value.data;
+
     //  Also you need to allow FRQ contract to spend tokens from your address.
     //      This also can be done only once.
     await bsc.pmm.setAllowance(assetToAddress.ORN, '1000000000000000000', wallet);
-    
+
     //  Just output the PMM router contract address
     console.log('Router contract address: ', await bsc.pmm.getContractAddress());
 
     const rfqOrder = await bsc.aggregator.RFQOrder(
-          assetToAddress.ORN,   //  Spending asset
-          assetToAddress.USDT,  //  Receiving asset
-          '10000000000',        //  Amount in "satoshi" of spending asset
-          apiKey,
-          secretKey,
-          '0x61Eed69c0d112C690fD6f44bB621357B89fBE67F'  //  Can be any address, ignored for now
+        assetToAddress.ORN,   //  Spending asset
+        assetToAddress.USDT,  //  Receiving asset
+        '1000000000',        //  Amount in "satoshi" of spending asset
+        apiKey,
+        secretKey,
+        '0x61Eed69c0d112C690fD6f44bB621357B89fBE67F'  //  Can be any address, ignored for now
     );
-    
+
     if(!rfqOrder.success) {
         console.log(rfqOrder.error);
         return;
     }
-    
+
     //  ... here you can check order prices, etc.
-    
+
     //  Send order to blockchain
     try {
-      const tx = await bsc.pmm.fillRFQOrder(rfqOrder, wallet);
-      
-      // If tx.hash is not empty - then transaction was sent to blockchain 
-      console.log(tx.hash);
+        const tx = await bsc.pmm.fillRFQOrder(rfqOrder, wallet);
+
+        // If tx.hash is not empty - then transaction was sent to blockchain
+        console.log(tx.hash);
     }
     catch(err) {
-      console.log(err);
-    }  
+        console.log(err);
+    }
 })();
 ```
 
