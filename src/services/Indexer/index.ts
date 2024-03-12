@@ -94,6 +94,7 @@ class IndexerService {
     this.veORNInfo = this.veORNInfo.bind(this);
     this.listAmount = this.listAmount.bind(this);
     this.getAmountByORN = this.getAmountByORN.bind(this);
+    this.getAmountAt = this.getAmountAt.bind(this);
     this.getAmountAtCurrent = this.getAmountAtCurrent.bind(this);
     this.getVotingInfo = this.getVotingInfo.bind(this);
   }
@@ -117,6 +118,16 @@ class IndexerService {
     });
   };
 
+  readonly getAmountAt = (amount: number, timestamp?: number): BigNumber => {
+    const currentTime = Date.now() / 1000;
+
+    // sqrt
+    return BigNumber(amount).dividedBy(this.getK(timestamp ?? currentTime));
+  };
+
+  /**
+     * @deprecated In favor of getAmountAt
+  */
   readonly getAmountAtCurrent = (amount: number): BigNumber => {
     const timestamp = Date.now() / 1000;
 
