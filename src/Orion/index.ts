@@ -33,7 +33,6 @@ export default class Orion {
       }
       this.env = envOrConfig;
       config = {
-        analyticsAPI: envConfig.analyticsAPI,
         referralAPI: envConfig.referralAPI,
         networks: Object.entries(envConfig.networks).map(([chainId, networkConfig]) => {
           if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);

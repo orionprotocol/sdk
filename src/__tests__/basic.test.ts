@@ -159,7 +159,6 @@ describe('Orion', () => {
     const orionPriceFeedAPI = `http://localhost:${server2.port}`;
 
     const orion = new Orion({
-      analyticsAPI: 'https://analytics-api.orionprotocol.io',
       referralAPI: 'https://referral-api.orionprotocol.io',
       networks: {
         1: {
@@ -239,7 +238,6 @@ describe('Orion', () => {
 
   test('Init Orion testing with overrides', () => {
     const orion = new Orion('testing', {
-      analyticsAPI: 'https://asdasd.orionprotocol.io',
       referralAPI: 'https://zxczxc.orionprotocol.io',
       networks: {
         [SupportedChainId.BSC_TESTNET]: {

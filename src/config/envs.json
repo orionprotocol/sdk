@@ -1,6 +1,5 @@
 {
   "production": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://trade.orion.xyz/referral-api",
     "networks": {
       "1": {
@@ -169,7 +168,6 @@
     }
   },
   "testing": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://testing.orion.xyz/referral-api",
     "networks": {
       "97": {
@@ -284,7 +282,6 @@
     }
   },
   "staging": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://staging.orion.xyz/referral-api",
     "networks": {
       "1": {
@@ -452,7 +449,6 @@
     }
   },
   "experimental": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://testing.orion.xyz/referral-api",
     "networks": {
       "97": {
@@ -494,7 +490,6 @@
     }
   },
   "kucoin-production": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://trade.orion.xyz/referral-api",
     "networks": {
       "1": {

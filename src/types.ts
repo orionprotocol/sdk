@@ -279,7 +279,6 @@ export type KnownEnv = typeof knownEnvs[number];
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
 export type EnvConfig = {
-  analyticsAPI: string
   referralAPI: string
   networks: Partial<
     Record<
