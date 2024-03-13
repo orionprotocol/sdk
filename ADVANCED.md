@@ -2,6 +2,7 @@
 
 ```ts
 const orion = new Orion({
+  analyticsAPI: "https://analytics-api.orionprotocol.io",
   referralAPI: "https://referral-api.orionprotocol.io",
   networks: {
     1: {
@@ -25,6 +26,7 @@ const orion = new Orion({
 
 // Also you can set some config as default and override it for some params
 const orion = new Orion("testing", {
+  analyticsAPI: "https://analytics-api.orionprotocol.io",
   networks: {
     [SupportedChainId.BSC_TESTNET]: {
       nodeJsonRpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
