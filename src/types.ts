@@ -264,6 +264,9 @@ export type VerboseUnitConfig = {
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
     }
+    frontage: {
+      api: string
+    }
     indexer?: {
       api: string
       // For example:
