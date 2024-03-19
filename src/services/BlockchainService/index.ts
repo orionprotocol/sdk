@@ -114,6 +114,7 @@ class BlockchainService {
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
     this.getGasLimits = this.getGasLimits.bind(this);
+    this.getExchangeContractWalletBalance = this.getExchangeContractWalletBalance.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -493,6 +494,12 @@ class BlockchainService {
   getGasLimits = () => fetchWithValidation(
     `${this.apiUrl}/api/baseLimits`,
     z.record(z.number()),
+    { headers: this.basicAuthHeaders }
+  );
+
+  getExchangeContractWalletBalance = (exchangeContractAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/api/broker/getWalletBalance/${exchangeContractAddress}`,
+    z.record(z.string()),
     { headers: this.basicAuthHeaders }
   );
 }
