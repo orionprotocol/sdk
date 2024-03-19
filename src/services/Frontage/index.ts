@@ -11,7 +11,7 @@ export class FrontageService {
   }
 
   readonly getAggregatedMetrics = () => {
-    const url = new URL(`${this.apiUrl}/api/v1/metrics/aggregated`);
+    const url = new URL(`${this.apiUrl}api/v1/metrics/aggregated`);
     return fetchWithValidation(
       url.toString(),
       aggregatedMetricsSchema,
