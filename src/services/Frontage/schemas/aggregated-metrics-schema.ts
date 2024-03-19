@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { networkCodes } from '../../../constants';
+import uppercasedNetworkCodes from '../../../constants/uppercasedNetworkCodes';
 
 const volumeInfoSchema = z.object({
   volume24: z.number(),
   volume7d: z.number(),
   volumeAllTime: z.number(),
-  networks: z.array(z.enum(networkCodes)),
+  networks: z.array(z.enum(uppercasedNetworkCodes)),
 })
 
 const supplyMetricsSchema = z.object({
@@ -19,7 +19,7 @@ const governanceMetricsSchema = z.object({
   totalVeLumia: z.number(),
   totalVeLumiaInVoting: z.number(),
   weeklyLumiaReward: z.number(),
-  networks: z.array(z.enum(networkCodes)),
+  networks: z.array(z.enum(uppercasedNetworkCodes)),
 })
 
 export const aggregatedMetricsSchema = z.object({
