@@ -281,6 +281,7 @@ export type Json = string | number | boolean | null | Json[] | { [key: string]: 
 export type EnvConfig = {
   analyticsAPI: string | undefined
   referralAPI: string
+  frontageAPI: string
   networks: Partial<
     Record<
       SupportedChainId,

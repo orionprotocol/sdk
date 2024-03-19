@@ -1,6 +1,7 @@
 {
   "production": {
     "referralAPI": "https://trade.orion.xyz/referral-api",
+    "frontageAPI": "https://trade.orion.xyz/frontage",
     "networks": {
       "1": {
         "api": "https://trade.orion.xyz/eth-mainnet",
@@ -169,6 +170,7 @@
   },
   "testing": {
     "referralAPI": "https://testing.orion.xyz/referral-api",
+    "frontageAPI": "https://testing.orion.xyz/frontage",
     "networks": {
       "97": {
         "api": "https://testing.orion.xyz/bsc-testnet",
@@ -283,6 +285,7 @@
   },
   "staging": {
     "referralAPI": "https://staging.orion.xyz/referral-api",
+    "frontageAPI": "https://staging.orion.xyz/frontage",
     "networks": {
       "1": {
         "api": "https://staging.orion.xyz/eth-mainnet",
@@ -450,6 +453,7 @@
   },
   "experimental": {
     "referralAPI": "https://testing.orion.xyz/referral-api",
+    "frontageAPI": "https://testing.orion.xyz/frontage",
     "networks": {
       "97": {
         "api": "https://dn-dev.orion.xyz/bsc-testnet",
@@ -491,6 +495,7 @@
   },
   "kucoin-production": {
     "referralAPI": "https://trade.orion.xyz/referral-api",
+    "frontageAPI": "https://trade.orion.xyz/frontage",
     "networks": {
       "1": {
         "api": "https://trade.orion.xyz/eth-mainnet",

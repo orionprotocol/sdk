@@ -1,12 +1,20 @@
 import { merge } from 'merge-anything';
-import { chains, envs } from '../config/index.js';
+import { chains, envs } from '../config';
 import type { networkCodes } from '../constants/index.js';
 import Unit from '../Unit/index.js';
-import { ReferralSystem } from '../services/ReferralSystem/index.js';
-import type { SupportedChainId, DeepPartial, VerboseUnitConfig, KnownEnv, EnvConfig, AggregatedAssets } from '../types.js';
+import { ReferralSystem } from '../services/ReferralSystem';
+import type {
+  SupportedChainId,
+  DeepPartial,
+  VerboseUnitConfig,
+  KnownEnv,
+  EnvConfig,
+  AggregatedAssets
+} from '../types.js';
 import { isValidChainId } from '../utils/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 import Bridge from './bridge/index.js';
+import { FrontageService } from '../services/Frontage';
 
 export default class Orion {
   public readonly env?: string;
@@ -14,6 +22,8 @@ export default class Orion {
   public readonly units: Partial<Record<SupportedChainId, Unit>>;
 
   public readonly referralSystem: ReferralSystem;
+
+  public readonly frontage: FrontageService;
 
   public readonly bridge: Bridge;
 
@@ -35,6 +45,7 @@ export default class Orion {
       config = {
         analyticsAPI: envConfig?.analyticsAPI,
         referralAPI: envConfig.referralAPI,
+        frontageAPI: envConfig.frontageAPI,
         networks: Object.entries(envConfig.networks).map(([chainId, networkConfig]) => {
           if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
           const chainConfig = chains[chainId];
@@ -79,6 +90,7 @@ export default class Orion {
     }
 
     this.referralSystem = new ReferralSystem(config.referralAPI);
+    this.frontage = new FrontageService(config.frontageAPI);
 
     this.units = Object.entries(config.networks)
       .reduce<Partial<Record<SupportedChainId, Unit>>>((acc, [chainId, networkConfig]) => {
@@ -118,7 +130,7 @@ export default class Orion {
     if (!unit) {
       throw new Error(
         `Invalid network code: ${networkCodeOrChainId}. ` +
-        `Available network codes: ${this.unitsArray.map((u) => u.networkCode).join(', ')}`);
+                `Available network codes: ${this.unitsArray.map((u) => u.networkCode).join(', ')}`);
     }
     return unit;
   }
@@ -156,7 +168,7 @@ export default class Orion {
           const networks = chainIds.map((chainId) => chains[chainId]?.label).join(', ');
           console.error(
             `Asset found in Aggregator, but not in BlockchainService (base): ${baseAsset} (${pair}).` +
-            ` Networks: ${networks}`
+                        ` Networks: ${networks}`
           );
         } else {
           tradableAggregatedAssets[baseAsset] = aggregatedBaseAsset;
@@ -166,7 +178,7 @@ export default class Orion {
           const networks = chainIds.map((chainId) => chains[chainId]?.label).join(', ');
           console.error(
             `Asset found in Aggregator, but not in BlockchainService (quote): ${quoteAsset} (${pair}).` +
-            ` Networks: ${networks}`
+                        ` Networks: ${networks}`
           );
         } else {
           tradableAggregatedAssets[quoteAsset] = aggregatedQuoteAsset;
@@ -178,11 +190,11 @@ export default class Orion {
 
   async getPairs(...params: Parameters<Unit['aggregator']['getPairsList']>) {
     const result: Partial<
-      Record<
-        string,
-        SupportedChainId[]
-      >
-    > = {};
+            Record<
+                string,
+                SupportedChainId[]
+            >
+        > = {};
 
     await Promise.all(this.unitsArray.map(async (unit) => {
       const pairs = await simpleFetch(unit.aggregator.getPairsList)(...params);
