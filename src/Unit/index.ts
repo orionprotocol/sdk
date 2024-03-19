@@ -3,7 +3,6 @@ import { Aggregator } from '../services/Aggregator';
 import { BlockchainService } from '../services/BlockchainService';
 import { PriceFeed } from '../services/PriceFeed';
 import { IndexerService } from '../services/Indexer';
-import { FrontageService } from '../services/Frontage';
 import type {
   KnownEnv,
   SupportedChainId,
@@ -29,8 +28,6 @@ export default class Unit {
   public readonly blockchainService: BlockchainService;
 
   public readonly indexer: IndexerService | undefined;
-
-  public readonly frontage: FrontageService;
 
   public readonly aggregator: Aggregator;
 
@@ -90,10 +87,7 @@ export default class Unit {
           },
           indexer: {
             api: networkConfig.api + networkConfig.services.indexer?.http,
-          },
-          frontage: {
-            api: networkConfig.api + networkConfig.services.frontage?.http,
-          },
+          }
         },
       };
     } else {
@@ -121,9 +115,6 @@ export default class Unit {
         intNetwork
       )
       : undefined;
-    this.frontage = new FrontageService(
-      this.config.services.frontage.api,
-    );
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,

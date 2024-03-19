@@ -264,9 +264,6 @@ export type VerboseUnitConfig = {
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
     }
-    frontage: {
-      api: string
-    }
     indexer?: {
       api: string
       // For example:
@@ -284,6 +281,7 @@ export type Json = string | number | boolean | null | Json[] | { [key: string]: 
 export type EnvConfig = {
   analyticsAPI: string | undefined
   referralAPI: string
+  frontageAPI: string
   networks: Partial<
     Record<
       SupportedChainId,
