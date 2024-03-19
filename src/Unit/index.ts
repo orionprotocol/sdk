@@ -30,7 +30,7 @@ export default class Unit {
 
   public readonly indexer: IndexerService | undefined;
 
-  public readonly frontage: FrontageService | undefined;
+  public readonly frontage: FrontageService;
 
   public readonly aggregator: Aggregator;
 

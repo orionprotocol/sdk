@@ -4,10 +4,6 @@ import { aggregatedMetricsSchema } from './schemas';
 export class FrontageService {
   private readonly apiUrl: string;
 
-  get api() {
-    return this.apiUrl;
-  }
-
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
 
