@@ -118,15 +118,21 @@ export async function generateSwapCalldata({
   value: bigint;
 }> {
   const wethAddress = await addressLikeToString(wethAddressLike);
+  console.log('wethAddress', wethAddress);
   const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
+  console.log('curveRegistryAddress', curveRegistryAddress);
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
+  console.log('swapExecutorContractAddress', swapExecutorContractAddress);
   const feeToken = await addressLikeToString(feeTokenAddressLike);
+  console.log('feeToken', feeToken);
   const matcher = await addressLikeToString(matcherAddressLike);
+  console.log('matcher', matcher);
   let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
     swapInfo.assetIn = swapInfo.assetIn.toLowerCase()
     swapInfo.assetOut = swapInfo.assetOut.toLowerCase()
     return swapInfo;
   });
+  console.log('path', path);
 
   const { assetIn: srcToken } = path.first();
   const { assetOut: dstToken } = path.last();
@@ -140,14 +146,18 @@ export async function generateSwapCalldata({
     minReturnAmount,
     flags: 0,
   };
+  console.log('swapDescription', swapDescription);
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
+  console.log('amountNativeDecimals', amountNativeDecimals);
   const feeNativeDecimals = await exchangeToNativeDecimals(feeToken, fee, provider)
+  console.log('feeNativeDecimals', feeNativeDecimals);
 
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
     return singleSwap;
   });
+  calldata
 
   let calls: BytesLike[];
   ({ swapDescription, calls } = await processSwaps(
@@ -162,7 +172,10 @@ export async function generateSwapCalldata({
     curveRegistryAddress,
     provider
   ));
+  console.log('swapDescription', swapDescription);
+  console.log('calls', calls);
   const calldata = generateCalls(calls);
+  console.log('calldata', calldata);
 
   const { useExchangeBalance, additionalTransferAmount } = await shouldUseExchangeBalance(
     srcToken,
@@ -171,10 +184,13 @@ export async function generateSwapCalldata({
     amountNativeDecimals,
     provider
   );
+  console.log('useExchangeBalance', useExchangeBalance);
+  console.log('additionalTransferAmount', additionalTransferAmount);
   if (useExchangeBalance) {
     swapDescription.flags = 1n << 255n;
   }
   const value = srcToken == ZeroAddress ? additionalTransferAmount : 0n;
+  console.log('value', value);
   return { swapDescription, calldata, value };
 }
 
