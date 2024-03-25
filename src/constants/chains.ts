@@ -19,4 +19,5 @@ export const productionChains = [
   SupportedChainId.OPBNB,
   SupportedChainId.INEVM,
   SupportedChainId.LINEA,
+  SupportedChainId.AVAX,
 ];

@@ -165,6 +165,24 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "43114": {
+        "api": "https://trade.orion.xyz/avax-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
@@ -433,6 +451,24 @@
       },
       "59144": {
         "api": "https://trade.orion.xyz/linea-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "43114": {
+        "api": "https://trade.orion.xyz/avax-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
