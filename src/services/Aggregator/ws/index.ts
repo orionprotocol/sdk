@@ -506,6 +506,8 @@ class AggregatorWS {
               assetIn: path.ai,
               assetOut: path.ao,
               factory: path.f,
+              assetAddressIn: path.aai,
+              assetAddressOut: path.aao,
             })),
             poolOptimal: json.po,
             ...(json.oi) && {
