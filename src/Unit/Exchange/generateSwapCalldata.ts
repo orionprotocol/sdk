@@ -157,7 +157,7 @@ export async function generateSwapCalldata({
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
     return singleSwap;
   });
-  calldata
+  console.log('path2', path);
 
   let calls: BytesLike[];
   ({ swapDescription, calls } = await processSwaps(
