@@ -66,20 +66,18 @@ export async function generateSwapCalldataWithUnit({
   }
   const wethAddress = safeGet(unit.contracts, "WETH");
   const curveRegistryAddress = safeGet(unit.contracts, "curveRegistry");
-  const { assetToAddress, swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
+  const { swapExecutorContractAddress, exchangeContractAddress } = await simpleFetch(
     unit.blockchainService.getInfo
   )();
 
   const arrayLikePathCopy = cloneDeep(arrayLikePath);
   let path = SafeArray.from(arrayLikePathCopy);
 
-  path = SafeArray.from(arrayLikePathCopy).map((swapInfo) => {
-    swapInfo.assetIn = assetToAddress[swapInfo.assetIn] ?? swapInfo.assetIn
-    swapInfo.assetOut = assetToAddress[swapInfo.assetOut] ?? swapInfo.assetOut
-    swapInfo.assetIn = swapInfo.assetIn.toLowerCase()
-    swapInfo.assetOut = swapInfo.assetOut.toLowerCase()
-    return swapInfo;
-  });
+  path = SafeArray.from(arrayLikePathCopy).map((swapInfo) => ({
+    ...swapInfo,
+    assetIn: swapInfo.assetAddressIn.toLowerCase(),
+    assetOut: swapInfo.assetAddressOut.toLowerCase(),
+  }));
 
   return await generateSwapCalldata({
     amount,

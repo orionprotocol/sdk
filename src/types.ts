@@ -176,6 +176,8 @@ export type SingleSwap = {
   assetIn: string
   assetOut: string
   factory: Factory
+  assetAddressIn: string
+  assetAddressOut: string
 }
 
 export type SwapInfoBase = {
