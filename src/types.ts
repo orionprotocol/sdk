@@ -90,6 +90,7 @@ export enum SupportedChainId {
   OPBNB = '204',
   INEVM = '2525',
   LINEA = '59144',
+  AVAX = '43114',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
