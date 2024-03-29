@@ -273,7 +273,7 @@ export type VerboseUnitConfig = {
       // http://
     } | undefined
     frontage: {
-      api: string
+      http: string
       // For example:
       // http://localhost:3004/,
       // http://

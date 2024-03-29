@@ -92,7 +92,7 @@ export default class Unit {
             api: networkConfig.api + networkConfig.services.indexer?.http,
           },
           frontage: {
-            api: networkConfig.api + networkConfig.services.frontage.http,
+            http: networkConfig.api + networkConfig.services.frontage.http,
           },
         },
       };
@@ -131,7 +131,7 @@ export default class Unit {
       this.config.basicAuth
     );
     this.frontage = new Frontage(
-      this.config.services.frontage.api
+      this.config.services.frontage.http
     );
     this.exchange = new Exchange(this);
     this.pmm = new Pmm(this);
