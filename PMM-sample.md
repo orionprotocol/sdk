@@ -258,31 +258,3 @@ async function RFQOrder(
   await transactionResponse.wait();
 })();
 ```
-
-RFQ order response example description (`rfqOrder` from example above):
-
-```
-    {
-      quotation: {
-        info: '31545611720730315633520017429',
-        makerAsset: '0xcb2951e90d8dcf16e1fa84ac0c83f48906d6a744',
-        takerAsset: '0xf223eca06261145b3287a0fefd8cfad371c7eb34',
-        maker: '0x1ff516e5ce789085cff86d37fc27747df852a80a',
-        allowedSender: '0x0000000000000000000000000000000000000000',
-        makingAmount: '193596929',
-        takingAmount: '10000000000'
-      },
-      signature: '0x8a2f9140a3c3a5734eda763a19c54c5ac909d8a03db37d9804af9115641fd1d35896b66ca6e136c1c89e0478fb7382a4b875d0f74529c1e83601f9383d310dde1b',
-      success: true,
-      error: ''
-    }
-```
-
-
-* info - can be ignored
-* makerAsset - your RECEIVING asset (what you expect to receive from contract, in this case USDT)
-* takerAsset - your SPENDING asset (what you're giving to contract, in this case ORN)
-* maker - can be ignored for now;
-* allowedSender - can be ignored for now;
-* makingAmount - how much you will RECEIVE (in receiving asset's precision)
-* takingAmount - how much you should SPEND (in spending asset's precision)
