@@ -7,6 +7,7 @@ import type { SupportedChainId, DeepPartial, VerboseUnitConfig, KnownEnv, EnvCon
 import { isValidChainId } from '../utils/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 import Bridge from './bridge/index.js';
+import type { Frontage } from '../services/Frontage';
 
 export default class Orion {
   public readonly env?: string;
@@ -62,7 +63,7 @@ export default class Orion {
                 api: networkConfig.api + networkConfig.services.indexer?.http,
               },
               frontage: {
-                api: networkConfig.api + networkConfig.services.frontage.http,
+                http: networkConfig.api + networkConfig.services.frontage.http,
               },
             },
           };
