@@ -1,1 +1,1 @@
-export * from './search-tickers-schema';
+export * from './tickers-schema';

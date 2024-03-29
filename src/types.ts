@@ -3,8 +3,9 @@ import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
-import type { knownEnvs } from './config/schemas/index.js';
+import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
+import type uppercasedNetworkCodes from './constants/uppercasedNetworkCodes';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -465,3 +466,21 @@ export type AtomicSwap = Partial<
 }
 
 export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WIDGET';
+
+// Frontage
+export type NetworkCode = typeof uppercasedNetworkCodes[number];
+
+export type tickersCategories = 'USD' | 'ORN' | 'BNB' | 'ALTS';
+
+export type tickersSortBy = 'PRICE' | 'CHANGE' | 'VOLUME';
+
+export type tickersSortType = 'ASCENDING' | 'DESCENDING';
+
+export type tickersBaseSearchParams = {
+  currentNetwork?: NetworkCode
+  targetNetwork?: NetworkCode
+  sortBy?: tickersSortBy
+  sortType?: tickersSortType
+  offset?: number
+  limit?: number
+}
