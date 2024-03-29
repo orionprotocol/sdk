@@ -60,7 +60,10 @@ export default class Orion {
               },
               indexer: {
                 api: networkConfig.api + networkConfig.services.indexer?.http,
-              }
+              },
+              frontage: {
+                api: networkConfig.api + networkConfig.services.frontage.http,
+              },
             },
           };
         })

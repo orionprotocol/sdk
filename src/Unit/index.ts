@@ -11,7 +11,7 @@ import Exchange from './Exchange/index.js';
 import { chains, envs } from '../config';
 import type { networkCodes } from '../constants/index.js';
 import { IndexerService } from '../services/Indexer';
-import Pmm from "./Pmm";
+import Pmm from './Pmm';
 
 type KnownConfig = {
   env: KnownEnv
@@ -87,6 +87,9 @@ export default class Unit {
           },
           indexer: {
             api: networkConfig.api + networkConfig.services.indexer?.http,
+          },
+          frontage: {
+            api: networkConfig.api + networkConfig.services.frontage.http,
           },
         },
       };

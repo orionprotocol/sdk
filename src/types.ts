@@ -271,6 +271,12 @@ export type VerboseUnitConfig = {
       // http://localhost:3004/,
       // http://
     } | undefined
+    frontage: {
+      api: string
+      // For example:
+      // http://localhost:3004/,
+      // http://
+    }
   }
   basicAuth?: BasicAuthCredentials
 }
