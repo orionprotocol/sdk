@@ -470,17 +470,17 @@ export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WI
 // Frontage
 export type NetworkCode = typeof uppercasedNetworkCodes[number];
 
-export type tickersCategories = 'USD' | 'ORN' | 'BNB' | 'ALTS';
+export type TickersCategories = 'USD' | 'ORN' | 'BNB' | 'ALTS';
 
-export type tickersSortBy = 'PRICE' | 'CHANGE' | 'VOLUME';
+export type TickersSortBy = 'PRICE' | 'CHANGE' | 'VOLUME';
 
-export type tickersSortType = 'ASCENDING' | 'DESCENDING';
+export type TickersSortType = 'ASCENDING' | 'DESCENDING';
 
-export type tickersBaseSearchParams = {
+export type TickersBaseSearchParams = {
   currentNetwork?: NetworkCode
   targetNetwork?: NetworkCode
-  sortBy?: tickersSortBy
-  sortType?: tickersSortType
+  sortBy?: TickersSortBy
+  sortType?: TickersSortType
   offset?: number
   limit?: number
 }

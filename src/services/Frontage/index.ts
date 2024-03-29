@@ -1,6 +1,6 @@
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { tickersSchema } from './schemas';
-import type { tickersBaseSearchParams, tickersCategories } from '../../types';
+import type { TickersBaseSearchParams, TickersCategories } from '../../types';
 
 export class Frontage {
   private readonly apiUrl: string;
@@ -20,7 +20,7 @@ export class Frontage {
     sortType,
     offset,
     limit,
-  }: { searchValue: string } & tickersBaseSearchParams) => {
+  }: { searchValue: string } & TickersBaseSearchParams) => {
     const queryParams = [
       `searchValue=${encodeURIComponent(searchValue)}`,
       currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork)}` : '',
@@ -45,7 +45,7 @@ export class Frontage {
     sortType,
     offset,
     limit,
-  }: { category: tickersCategories } & tickersBaseSearchParams) => {
+  }: { category: TickersCategories } & TickersBaseSearchParams) => {
     const queryParams = [
       `category=${encodeURIComponent(category)}`,
       currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork)}` : '',
