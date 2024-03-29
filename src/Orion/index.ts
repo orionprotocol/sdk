@@ -1,12 +1,13 @@
 import { merge } from 'merge-anything';
-import { chains, envs } from '../config/index.js';
+import { chains, envs } from '../config';
 import type { networkCodes } from '../constants/index.js';
 import Unit from '../Unit/index.js';
-import { ReferralSystem } from '../services/ReferralSystem/index.js';
+import { ReferralSystem } from '../services/ReferralSystem';
 import type { SupportedChainId, DeepPartial, VerboseUnitConfig, KnownEnv, EnvConfig, AggregatedAssets } from '../types.js';
 import { isValidChainId } from '../utils/index.js';
 import { simpleFetch } from 'simple-typed-fetch';
 import Bridge from './bridge/index.js';
+import { Frontage } from '../services/Frontage';
 
 export default class Orion {
   public readonly env?: string;
@@ -16,6 +17,8 @@ export default class Orion {
   public readonly referralSystem: ReferralSystem;
 
   public readonly bridge: Bridge;
+
+  public readonly frontage: Frontage;
 
   // TODO: get tradable assets (aggregated)
 
@@ -35,6 +38,7 @@ export default class Orion {
       config = {
         analyticsAPI: envConfig?.analyticsAPI,
         referralAPI: envConfig.referralAPI,
+        frontageAPI: envConfig.frontageAPI,
         networks: Object.entries(envConfig.networks).map(([chainId, networkConfig]) => {
           if (!isValidChainId(chainId)) throw new Error(`Invalid chainId: ${chainId}`);
           const chainConfig = chains[chainId];
@@ -60,10 +64,7 @@ export default class Orion {
               },
               indexer: {
                 api: networkConfig.api + networkConfig.services.indexer?.http,
-              },
-              frontage: {
-                http: networkConfig.api + networkConfig.services.frontage.http,
-              },
+              }
             },
           };
         })
@@ -105,6 +106,8 @@ export default class Orion {
     this.bridge = new Bridge(
       this.unitsArray,
     );
+
+    this.frontage = new Frontage(config.frontageAPI);
   }
 
   get unitsArray() {

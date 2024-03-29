@@ -272,12 +272,6 @@ export type VerboseUnitConfig = {
       // http://localhost:3004/,
       // http://
     } | undefined
-    frontage: {
-      http: string
-      // For example:
-      // http://localhost:3004/,
-      // http://
-    }
   }
   basicAuth?: BasicAuthCredentials
 }
@@ -289,6 +283,7 @@ export type Json = string | number | boolean | null | Json[] | { [key: string]: 
 export type EnvConfig = {
   analyticsAPI: string | undefined
   referralAPI: string
+  frontageAPI: string
   networks: Partial<
     Record<
       SupportedChainId,

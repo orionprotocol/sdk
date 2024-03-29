@@ -1,6 +1,7 @@
 {
   "production": {
     "referralAPI": "https://trade.orion.xyz/referral-api",
+    "frontageAPI": "https://trade.orion.xyz/frontage",
     "networks": {
       "1": {
         "api": "https://trade.orion.xyz/eth-mainnet",
@@ -17,9 +18,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
@@ -39,9 +37,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -60,9 +55,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -81,9 +73,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -102,9 +91,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -123,9 +109,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -144,9 +127,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -165,9 +145,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -186,9 +163,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -207,9 +181,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       }
@@ -217,6 +188,7 @@
   },
   "testing": {
     "referralAPI": "https://testing.orion.xyz/referral-api",
+    "frontageAPI": "https://testing.orion.xyz/frontage",
     "networks": {
       "97": {
         "api": "https://testing.orion.xyz/bsc-testnet",
@@ -233,9 +205,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         },
         "liquidityMigratorAddress": "0x01b10dds12478C88A5E18e2707E729906bC25CfF6"
@@ -255,9 +224,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -276,9 +242,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -297,9 +260,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -318,9 +278,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -339,9 +296,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       }
@@ -349,6 +303,7 @@
   },
   "staging": {
     "referralAPI": "https://staging.orion.xyz/referral-api",
+    "frontageAPI": "https://staging.orion.xyz/frontage",
     "networks": {
       "1": {
         "api": "https://staging.orion.xyz/eth-mainnet",
@@ -365,9 +320,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -386,9 +338,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -407,9 +356,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -428,9 +374,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -449,9 +392,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -470,9 +410,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -491,9 +428,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -512,9 +446,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -533,9 +464,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -554,9 +482,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       }
@@ -564,6 +489,7 @@
   },
   "experimental": {
     "referralAPI": "https://testing.orion.xyz/referral-api",
+    "frontageAPI": "https://testing.orion.xyz/frontage",
     "networks": {
       "97": {
         "api": "https://dn-dev.orion.xyz/bsc-testnet",
@@ -580,9 +506,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -601,9 +524,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       }
@@ -611,6 +531,7 @@
   },
   "kucoin-production": {
     "referralAPI": "https://trade.orion.xyz/referral-api",
+    "frontageAPI": "https://trade.orion.xyz/frontage",
     "networks": {
       "1": {
         "api": "https://trade.orion.xyz/eth-mainnet",
@@ -627,9 +548,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         },
         "liquidityMigratorAddress": "0x23a1820a47BcD022E29f6058a5FD224242F50D1A"
@@ -649,9 +567,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -670,9 +585,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -691,9 +603,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       },
@@ -712,9 +621,6 @@
           },
           "indexer": {
             "http": "/orion-indexer/"
-          },
-          "frontage": {
-            "http": "/frontage"
           }
         }
       }

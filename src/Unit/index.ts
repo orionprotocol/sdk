@@ -2,7 +2,6 @@ import { JsonRpcProvider } from 'ethers';
 import { Aggregator } from '../services/Aggregator';
 import { BlockchainService } from '../services/BlockchainService';
 import { PriceFeed } from '../services/PriceFeed';
-import { Frontage } from '../services/Frontage';
 import type {
   KnownEnv,
   SupportedChainId,
@@ -35,8 +34,6 @@ export default class Unit {
   public readonly pmm: Pmm;
 
   public readonly priceFeed: PriceFeed;
-
-  public readonly frontage: Frontage;
 
   public readonly exchange: Exchange;
 
@@ -90,10 +87,7 @@ export default class Unit {
           },
           indexer: {
             api: networkConfig.api + networkConfig.services.indexer?.http,
-          },
-          frontage: {
-            http: networkConfig.api + networkConfig.services.frontage.http,
-          },
+          }
         },
       };
     } else {
@@ -129,9 +123,6 @@ export default class Unit {
     this.priceFeed = new PriceFeed(
       this.config.services.priceFeed.api,
       this.config.basicAuth
-    );
-    this.frontage = new Frontage(
-      this.config.services.frontage.http
     );
     this.exchange = new Exchange(this);
     this.pmm = new Pmm(this);
