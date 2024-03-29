@@ -461,11 +461,10 @@ class Aggregator {
         throw Error(errorParseResult.data.error.reason);
       }
 
-      res.quotation = parseResult.data.quotation;
+      res.order = parseResult.data.order;
       res.signature = parseResult.data.signature;
       res.error = '';
       res.success = true;
-      //  return result;
     }
     catch(err) {
       res.error = `${err}`;
