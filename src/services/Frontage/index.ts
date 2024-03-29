@@ -57,7 +57,7 @@ export class Frontage {
     ].filter(Boolean).join('&');
 
     return fetchWithValidation(
-      `/api/v1/tickers/get?${queryParams}`,
+      `${this.apiUrl}/api/v1/tickers/get?${queryParams}`,
       tickersSchema
     );
   };
