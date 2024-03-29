@@ -23,8 +23,8 @@ export class Frontage {
   }: { searchValue: string } & TickersBaseSearchParams) => {
     const queryParams = [
       `searchValue=${encodeURIComponent(searchValue)}`,
-      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork)}` : '',
-      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork)}` : '',
+      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
+      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
       sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
       sortType !== undefined ? `&sortType=${encodeURIComponent(sortType)}` : '',
       offset !== undefined ? `&offset=${offset}` : '',
@@ -48,8 +48,8 @@ export class Frontage {
   }: { category: TickersCategories } & TickersBaseSearchParams) => {
     const queryParams = [
       `category=${encodeURIComponent(category)}`,
-      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork)}` : '',
-      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork)}` : '',
+      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
+      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
       sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
       sortType !== undefined ? `&sortType=${encodeURIComponent(sortType)}` : '',
       offset !== undefined ? `&offset=${offset}` : '',

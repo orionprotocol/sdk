@@ -5,7 +5,7 @@ import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
-import type uppercasedNetworkCodes from './constants/uppercasedNetworkCodes';
+import type { networkCodes } from './constants';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -468,7 +468,7 @@ export type AtomicSwap = Partial<
 export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WIDGET';
 
 // Frontage
-export type NetworkCode = typeof uppercasedNetworkCodes[number];
+export type NetworkCode = typeof networkCodes[number];
 
 export type TickersCategories = 'USD' | 'ORN' | 'BNB' | 'ALTS';
 
