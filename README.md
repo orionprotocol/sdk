@@ -1,12 +1,8 @@
 <!-- Insert logo -->
+[//]: # (    <img src="./logo.svg" width="300" alt="Orion Protocol SDK logo"/>)
 
 <div align="center">
-    <img 
-        src="./logo.svg"
-        width="300"
-        alt="Orion Protocol SDK logo"
-     />
-    <h1>Orion Protocol SDK</h1>
+    <h1>Lumia Stream SDK</h1>
     <p>Use CEX and DEX liquidity without KYC.</p>
 </div>
 
@@ -14,16 +10,15 @@
 ![npm bundle size (version)](https://img.shields.io/bundlephobia/minzip/@orionprotocol/sdk)
 [![Downloads](https://img.shields.io/npm/dm/@orionprotocol/sdk.svg)](https://www.npmjs.com/package/@orionprotocol/sdk)
 
-Do you want to integrate the Orion protocol into your application? See [integration guide](./docs/INTEGRATION.md)
+Do you want to integrate the Lumia Stream protocol into your application? See [integration guide](./docs/INTEGRATION.md)
 
 ## Overview
 
-Orion Software Developer Kit is a set of functions and methods that allow dApp developers connect to the superior aggregated liquidity of Orion Protocol which combines orderbooks of centralized exchanges as well decentralized automatic market makers such as Uniswap or Spookyswap across several supported blockchains.
-Through this connection, developers using the SDK can perform a wide range of actions, including swapping selected tokens using Orion’s aggregated liquidity, obtaining relevant market information through subscriptions, add and remove liquidity to Orion’s pools.
+Lumia Stream Developer Kit, natively built into Lumia, is a set of functions and methods that allow dApp developers to connect to the superior aggregated liquidity of Lumia Stream which combines orderbooks of centralized exchanges as well as decentralized Automatic Market Makers (AMMs) such as Uniswap, PancakeSwap, and Curve, across several supported blockchains. Through this connection, developers using the SDK can perform a wide range of actions, including swapping selected tokens, obtaining relevant market information through subscriptions, and more.
 
 ## API Key
 
-Orion’s SDK is free to use and does not require an API key or registration. Refer to integration examples for more detailed information.
+Lumia Stream’s SDK is free to use and does not require an API key or registration. Refer to integration examples for more detailed information.
 
 - [Overview](#overview)
 - [API Key](#api-key)
@@ -33,7 +28,7 @@ Orion’s SDK is free to use and does not require an API key or registration. Re
 - [High level methods](#high-level-methods)
   - [Get assets](#get-assets)
   - [Get pairs](#get-pairs)
-  - [Get Orion Bridge history](#get-orion-bridge-history)
+  - [Get Lumia Stream Bridge history](#get-lumia-stream-bridge-history)
   - [Bridge swap](#bridge-swap)
   - [Withdraw](#withdraw)
   - [Deposit](#deposit)
@@ -145,7 +140,7 @@ const pairs = await orion.getPairs("spot"); // 'spot'
 // }
 ```
 
-### Get Orion Bridge history
+### Get Lumia Stream Bridge history
 
 ```ts
 const bridgeHistory = await orion.bridge.getHistory(
@@ -722,7 +717,7 @@ switch (data.type) {
 ```
 ## PMM
 
-PMM allows institutional traders to request RFQ orders from Orion and then fill them.
+PMM allows institutional traders to request RFQ orders from Lumia Stream and then fill them.
 
 RFQ order allows trader to fix the price for a certain time interval (up to 90 seconds, including the order settlement time interval on blockchain). 
 
