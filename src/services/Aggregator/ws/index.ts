@@ -263,6 +263,7 @@ class AggregatorWS {
       const subRequest: Json = {};
       subRequest['T'] = type;
       subRequest['id'] = id;
+
       if ('dc' in subscription) {
         if (typeof subscription.dc === 'number') {
           subRequest['dc'] = subscription.dc;
