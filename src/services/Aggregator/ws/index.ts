@@ -263,14 +263,11 @@ class AggregatorWS {
       const subRequest: Json = {};
       subRequest['T'] = type;
       subRequest['id'] = id;
-      // test
       if ('dc' in subscription) {
         if (typeof subscription.dc === 'number') {
           subRequest['dc'] = subscription.dc;
         }
       }
-
-      this.logger?.('test');
 
       if ('payload' in subscription) {
         if (typeof subscription.payload === 'string') {
