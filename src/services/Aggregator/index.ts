@@ -35,11 +35,16 @@ class Aggregator {
     return this.apiUrl;
   }
 
+  public logger: ((message: string) => void) | undefined;
+
   constructor(
     httpAPIUrl: string,
     wsAPIUrl: string,
-    basicAuth?: BasicAuthCredentials
+    basicAuth?: BasicAuthCredentials,
+    logger?: ((message: string) => void) | undefined
   ) {
+    this.logger = logger;
+
     // const oaUrl = new URL(apiUrl);
     // const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
     // const aggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/'
@@ -47,7 +52,7 @@ class Aggregator {
     //   : oaUrl.pathname)}/v1`;
 
     this.apiUrl = httpAPIUrl;
-    this.ws = new AggregatorWS(httpToWS(wsAPIUrl));
+    this.ws = new AggregatorWS(httpToWS(wsAPIUrl), undefined, logger);
     this.basicAuth = basicAuth;
 
     this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
@@ -374,8 +379,7 @@ class Aggregator {
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema, { headers: this.basicAuthHeaders });
   };
 
-
-  private encode_utf8(s : string) {
+  private encode_utf8(s: string) {
     return unescape(encodeURIComponent(s));
   }
 
@@ -385,12 +389,12 @@ class Aggregator {
         .digest('hex');
   }
 
-  private generateHeaders(body : any, method : string, path : string, timestamp : number, apiKey : string, secretKey : string) {
+  private generateHeaders(body: any, method: string, path: string, timestamp: number, apiKey: string, secretKey: string) {
     const sortedBody = Object.keys(body)
-        .sort()
-        .map((key) => (
-            `${key}=${body[key]}`
-        )).join('&');
+      .sort()
+      .map((key) => (
+        `${key}=${body[key]}`
+      )).join('&');
 
     const payload = timestamp + method.toUpperCase() + path + sortedBody;
 
@@ -407,40 +411,38 @@ class Aggregator {
   }
 
   public async RFQOrder(
-      tokenFrom: string,
-      tokenTo: string,
-      fromTokenAmount: string,
-      apiKey: string, //
-      secretKey: string,
-      wallet: string
-  ) : Promise<z.infer<typeof pmmOrderSchema>> {
-
+    tokenFrom: string,
+    tokenTo: string,
+    fromTokenAmount: string,
+    apiKey: string, //
+    secretKey: string,
+    wallet: string
+  ): Promise<z.infer<typeof pmmOrderSchema>> {
     //  Making the order structure
     const
-        path = '/rfq'
-        , url = `${this.apiUrl}/api/v1/integration/pmm`+path
-        , headers = {
-          'Content-Type': 'application/json',
-        }
-        , data = {
-          "baseToken":tokenFrom, // USDT
-          "quoteToken":tokenTo, // ORN
-          "amount": fromTokenAmount, // 100
-          "taker": wallet,
-          "feeBps": 0
-        }
-        , method = 'POST'
-        , timestamp = Date.now()
-        , signatureHeaders = this.generateHeaders(data, method, path, timestamp, apiKey, secretKey)
-        , compiledHeaders = {...headers, ...signatureHeaders.headers, }
-        , body = JSON.stringify(data)
+      path = '/rfq';
+    const url = `${this.apiUrl}/api/v1/integration/pmm` + path;
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const data = {
+      baseToken: tokenFrom, // USDT
+      quoteToken: tokenTo, // ORN
+      amount: fromTokenAmount, // 100
+      taker: wallet,
+      feeBps: 0
+    };
+    const method = 'POST';
+    const timestamp = Date.now();
+    const signatureHeaders = this.generateHeaders(data, method, path, timestamp, apiKey, secretKey);
+    const compiledHeaders = { ...headers, ...signatureHeaders.headers, };
+    const body = JSON.stringify(data)
     ;
 
-
-    let res  = pmmOrderSchema.parse({});
+    const res = pmmOrderSchema.parse({});
 
     try {
-      const result = await fetch(url,{
+      const result = await fetch(url, {
         headers: compiledHeaders,
         method,
         body
@@ -449,14 +451,13 @@ class Aggregator {
       const json = await result.json();
       const parseResult = pmmOrderSchema.safeParse(json);
 
-      if(!parseResult.success) {
+      if (!parseResult.success) {
         //  Try to parse error answer
-        const errorSchema = z.object({error: z.object({code: z.number(), reason: z.string()})});
+        const errorSchema = z.object({ error: z.object({ code: z.number(), reason: z.string() }) });
 
         const errorParseResult = errorSchema.safeParse(json);
 
-        if(!errorParseResult.success)
-          throw Error(`Unrecognized answer from aggregator: ${json}`);
+        if (!errorParseResult.success) { throw Error(`Unrecognized answer from aggregator: ${json}`); }
 
         throw Error(errorParseResult.data.error.reason);
       }
@@ -465,8 +466,8 @@ class Aggregator {
       res.signature = parseResult.data.signature;
       res.error = '';
       res.success = true;
-    }
-    catch(err) {
+      //  return result;
+    } catch (err) {
       res.error = `${err}`;
     }
     return res;

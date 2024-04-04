@@ -26,7 +26,7 @@ const orion = new Orion({
 
 // Also you can set some config as default and override it for some params
 const orion = new Orion("testing", {
-  analyticsAPI: "https://asdasd.orionprotocol.io",
+  analyticsAPI: "https://analytics-api.orionprotocol.io",
   networks: {
     [SupportedChainId.BSC_TESTNET]: {
       nodeJsonRpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",

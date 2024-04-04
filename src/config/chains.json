@@ -219,5 +219,18 @@
       "WETH": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
       "curveRegistry": ""
     }
+  },
+  "43114": {
+    "chainId": "43114",
+    "label": "Avalanche Network",
+    "shortName": "Avax",
+    "code": "avax",
+    "baseCurrencyName": "AVAX",
+    "rpc": "https://api.avax.network/ext/bc/C/rpc/",
+    "explorer": "https://snowtrace.io/",
+    "contracts": {
+      "WETH": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      "curveRegistry": ""
+    }
   }
 }

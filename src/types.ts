@@ -90,6 +90,7 @@ export enum SupportedChainId {
   OPBNB = '204',
   INEVM = '2525',
   LINEA = '59144',
+  AVAX = '43114',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
@@ -279,7 +280,7 @@ export type KnownEnv = typeof knownEnvs[number];
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
 export type EnvConfig = {
-  analyticsAPI: string
+  analyticsAPI: string | undefined
   referralAPI: string
   networks: Partial<
     Record<

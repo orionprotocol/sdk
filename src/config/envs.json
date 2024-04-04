@@ -1,6 +1,5 @@
 {
   "production": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://trade.orion.xyz/referral-api",
     "networks": {
       "1": {
@@ -165,11 +164,28 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "43114": {
+        "api": "https://trade.orion.xyz/avalanche-c-chain",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
   "testing": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://testing.orion.xyz/referral-api",
     "networks": {
       "97": {
@@ -284,7 +300,6 @@
     }
   },
   "staging": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://staging.orion.xyz/referral-api",
     "networks": {
       "1": {
@@ -448,11 +463,28 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "43114": {
+        "api": "https://trade.orion.xyz/avalanche-c-chain",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
   "experimental": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://testing.orion.xyz/referral-api",
     "networks": {
       "97": {
@@ -494,7 +526,6 @@
     }
   },
   "kucoin-production": {
-    "analyticsAPI": "https://trade.orion.xyz/api/stats",
     "referralAPI": "https://trade.orion.xyz/referral-api",
     "networks": {
       "1": {
