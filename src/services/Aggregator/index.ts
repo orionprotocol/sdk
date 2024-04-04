@@ -19,8 +19,9 @@ import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
-import hmacSHA256 from "crypto-js/hmac-sha256";
-import Hex from "crypto-js/enc-hex";
+//  import hmacSHA256 from "crypto-js/hmac-sha256";
+//  import Hex from "crypto-js/enc-hex";
+const crypto = require('crypto')
 import {pmmOrderSchema} from "../../Unit/Pmm/schemas/order";
 
 class Aggregator {
@@ -379,10 +380,9 @@ class Aggregator {
   }
 
   private sign(message : string, key: string) {
-    return hmacSHA256(
-        this.encode_utf8(message),
-        this.encode_utf8(key)
-    ).toString(Hex);
+    return crypto.createHmac('sha256', this.encode_utf8(key))
+        .update(this.encode_utf8(message))
+        .digest('hex');
   }
 
   private generateHeaders(body : any, method : string, path : string, timestamp : number, apiKey : string, secretKey : string) {
