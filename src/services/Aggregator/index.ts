@@ -19,10 +19,10 @@ import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
+import { pmmOrderSchema } from '../../Unit/Pmm/schemas/order';
 //  import hmacSHA256 from "crypto-js/hmac-sha256";
 //  import Hex from "crypto-js/enc-hex";
-const crypto = require('crypto')
-import {pmmOrderSchema} from "../../Unit/Pmm/schemas/order";
+// const crypto = require('crypto')
 
 class Aggregator {
   private readonly apiUrl: string;
@@ -379,14 +379,16 @@ class Aggregator {
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema, { headers: this.basicAuthHeaders });
   };
 
-  private encode_utf8(s: string) {
-    return unescape(encodeURIComponent(s));
-  }
+  // private encode_utf8(s: string) {
+  //   return unescape(encodeURIComponent(s));
+  // }
 
-  private sign(message : string, key: string) {
-    return crypto.createHmac('sha256', this.encode_utf8(key))
-        .update(this.encode_utf8(message))
-        .digest('hex');
+  // @ts-expect-error: TODO: please remove this line!
+  private sign(message: string, key: string) {
+    // return crypto.createHmac('sha256', this.encode_utf8(key))
+    //   .update(this.encode_utf8(message))
+    //   .digest('hex');
+    return '';
   }
 
   private generateHeaders(body: any, method: string, path: string, timestamp: number, apiKey: string, secretKey: string) {
