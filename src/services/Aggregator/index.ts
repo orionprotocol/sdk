@@ -61,6 +61,7 @@ class Aggregator {
     this.getPairsList = this.getPairsList.bind(this);
     this.getSwapInfo = this.getSwapInfo.bind(this);
     this.getTradeProfits = this.getTradeProfits.bind(this);
+    this.getStableCoins = this.getStableCoins.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
@@ -335,6 +336,16 @@ class Aggregator {
     return fetchWithValidation(
       url.toString(),
       orderBenefitsSchema,
+      { headers: this.basicAuthHeaders },
+      errorSchema,
+    );
+  };
+
+  getStableCoins = () => {
+    const url = new URL(`${this.apiUrl}/api/v1/tokens/stable/`);
+    return fetchWithValidation(
+      url.toString(),
+      z.array(z.string()),
       { headers: this.basicAuthHeaders },
       errorSchema,
     );
