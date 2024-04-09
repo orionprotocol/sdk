@@ -79,6 +79,6 @@ export default class Pmm {
         const contract = new ethers.Contract(this.contractAddress, orionRFQContractABI, signer);
 
         // @ts-ignore
-        return contract.fillOrderRFQ(order.quotation, order.signature, BigInt(0));
+        return contract.fillOrderRFQ(order.order, order.signature, BigInt(0));
     }
 }
