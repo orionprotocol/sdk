@@ -11,7 +11,6 @@ import {
   type PairStatusEnum,
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
-  referralDataSchema,
   pmmSchema,
   dueLiabilityEstimateSchema
 } from './schemas/index.js';
