@@ -273,7 +273,7 @@ class BlockchainService {
 
   getReferralData = (walletAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/referral-data/${walletAddress}`,
-    referralDataSchema,
+    z.number().nonnegative(),
     { headers: this.basicAuthHeaders }
   );
 
