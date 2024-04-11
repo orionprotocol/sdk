@@ -20,6 +20,7 @@ import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials } from '../../types.js';
+import { dueLiabilityEstimateSchema } from './schemas/dueLiabilityEstimateSchema';
 
 type IAdminAuthHeaders = {
   auth: string
@@ -63,6 +64,10 @@ type PlatformFees = {
   assetOut: string
   walletAddress?: string | undefined
   fromWidget?: string | undefined
+}
+type DueLiabilityEstimateProps = {
+  asset: string
+  amount: number
 }
 
 class BlockchainService {
@@ -115,6 +120,7 @@ class BlockchainService {
     this.claimOrder = this.claimOrder.bind(this);
     this.getGasLimits = this.getGasLimits.bind(this);
     this.getExchangeContractWalletBalance = this.getExchangeContractWalletBalance.bind(this);
+    this.getDueLiabilityEstimate = this.getDueLiabilityEstimate.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -268,6 +274,12 @@ class BlockchainService {
   getReferralData = (walletAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/referral-data/${walletAddress}`,
     referralDataSchema,
+    { headers: this.basicAuthHeaders }
+  );
+
+  getDueLiabilityEstimate = ({ asset, amount }: DueLiabilityEstimateProps) => fetchWithValidation(
+    `${this.apiUrl}/api/due-liability-esstimate/${asset}/${amount}`,
+    dueLiabilityEstimateSchema,
     { headers: this.basicAuthHeaders }
   );
 
