@@ -11,8 +11,8 @@ import {
   type PairStatusEnum,
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
+  referralDataSchema,
   pmmSchema,
-  dueLiabilityEstimateSchema
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -272,13 +272,13 @@ class BlockchainService {
 
   getReferralData = (walletAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/referral-data/${walletAddress}`,
-    z.number().nonnegative(),
+    referralDataSchema,
     { headers: this.basicAuthHeaders }
   );
 
   getDueLiabilityEstimate = ({ asset, amount }: DueLiabilityEstimateProps) => fetchWithValidation(
     `${this.apiUrl}/api/due-liability-estimate/${asset}/${amount}`,
-    dueLiabilityEstimateSchema,
+    z.number().nonnegative(),
     { headers: this.basicAuthHeaders }
   );
 
