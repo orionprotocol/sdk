@@ -12,7 +12,7 @@ import {
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
   referralDataSchema,
-  pmmSchema
+  pmmSchema,
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -63,6 +63,10 @@ type PlatformFees = {
   assetOut: string
   walletAddress?: string | undefined
   fromWidget?: string | undefined
+}
+type DueLiabilityEstimateProps = {
+  asset: string
+  amount: number
 }
 
 class BlockchainService {
@@ -115,6 +119,7 @@ class BlockchainService {
     this.claimOrder = this.claimOrder.bind(this);
     this.getGasLimits = this.getGasLimits.bind(this);
     this.getExchangeContractWalletBalance = this.getExchangeContractWalletBalance.bind(this);
+    this.getDueLiabilityEstimate = this.getDueLiabilityEstimate.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -268,6 +273,12 @@ class BlockchainService {
   getReferralData = (walletAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/referral-data/${walletAddress}`,
     referralDataSchema,
+    { headers: this.basicAuthHeaders }
+  );
+
+  getDueLiabilityEstimate = ({ asset, amount }: DueLiabilityEstimateProps) => fetchWithValidation(
+    `${this.apiUrl}/api/due-liability-estimate/${asset}/${amount}`,
+    z.number().nonnegative(),
     { headers: this.basicAuthHeaders }
   );
 
