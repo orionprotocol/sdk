@@ -12,7 +12,8 @@ import {
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
   referralDataSchema,
-  pmmSchema
+  pmmSchema,
+  dueLiabilityEstimateSchema
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -20,7 +21,6 @@ import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials } from '../../types.js';
-import { dueLiabilityEstimateSchema } from './schemas/dueLiabilityEstimateSchema';
 
 type IAdminAuthHeaders = {
   auth: string
@@ -278,7 +278,7 @@ class BlockchainService {
   );
 
   getDueLiabilityEstimate = ({ asset, amount }: DueLiabilityEstimateProps) => fetchWithValidation(
-    `${this.apiUrl}/api/due-liability-esstimate/${asset}/${amount}`,
+    `${this.apiUrl}/api/due-liability-estimate/${asset}/${amount}`,
     dueLiabilityEstimateSchema,
     { headers: this.basicAuthHeaders }
   );
