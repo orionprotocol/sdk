@@ -36,7 +36,6 @@ type BaseGenerateSwapCalldataParams = {
 
 export type GenerateSwapCalldataWithUnitParams = BaseGenerateSwapCalldataParams & {
   unit: Unit
-  logger?: ((message: string) => void) | undefined
 };
 
 export type GenerateSwapCalldataParams = BaseGenerateSwapCalldataParams & {
@@ -95,6 +94,7 @@ export async function generateSwapCalldataWithUnit({
     curveRegistryAddress,
     swapExecutorContractAddress,
     provider: unit.provider,
+    logger: unit.logger,
   });
 }
 
@@ -119,7 +119,7 @@ export async function generateSwapCalldata({
   value: bigint
 }> {
   const wethAddress = await addressLikeToString(wethAddressLike);
-  console.log('wethAddress', wethAddress);
+  logger?.(`wethAddress: ${wethAddress}`);
   const curveRegistryAddress = await addressLikeToString(curveRegistryAddressLike);
   logger?.(`curveRegistryAddress: ${curveRegistryAddress}`);
   const swapExecutorContractAddress = await addressLikeToString(swapExecutorContractAddressLike);
@@ -130,7 +130,7 @@ export async function generateSwapCalldata({
   logger?.(`matcher: ${matcher}`);
   logger?.(`arrayLikePath: ${arrayLikePath}`);
   let path = SafeArray.from(arrayLikePath).map((swapInfo) => {
-    console.log('swapInfo', swapInfo);
+    logger?.(`swapInfo: ${swapInfo}`);
     swapInfo.assetIn = swapInfo.assetIn.toLowerCase()
     swapInfo.assetOut = swapInfo.assetOut.toLowerCase()
     return swapInfo;
@@ -149,18 +149,18 @@ export async function generateSwapCalldata({
     minReturnAmount,
     flags: 0,
   };
-  console.log('swapDescription', swapDescription);
+  logger?.(`swapDescription: ${swapDescription}`);
   const amountNativeDecimals = await exchangeToNativeDecimals(srcToken, amount, provider);
-  console.log('amountNativeDecimals', amountNativeDecimals);
+  logger?.(`amountNativeDecimals: ${amountNativeDecimals}`);
   const feeNativeDecimals = await exchangeToNativeDecimals(feeToken, fee, provider)
-  console.log('feeNativeDecimals', feeNativeDecimals);
+  logger?.(`feeNativeDecimals: ${feeNativeDecimals}`);
 
   path = SafeArray.from(arrayLikePath).map((singleSwap) => {
     if (singleSwap.assetIn == ethers.ZeroAddress) singleSwap.assetIn = wethAddress;
     if (singleSwap.assetOut == ethers.ZeroAddress) singleSwap.assetOut = wethAddress;
     return singleSwap;
   });
-  console.log('path2', path);
+  logger?.(`path2: ${path}`);
 
   let calls: BytesLike[];
   ({ swapDescription, calls } = await processSwaps(
@@ -175,25 +175,26 @@ export async function generateSwapCalldata({
     curveRegistryAddress,
     provider
   ));
-  console.log('swapDescription', swapDescription);
-  console.log('calls', calls);
+  logger?.(`swapDescription: ${swapDescription}`);
+  logger?.(`calls: ${calls}`);
   const calldata = generateCalls(calls);
-  console.log('calldata', calldata);
+  logger?.(`calldata: ${calldata}`);
 
   const { useExchangeBalance, additionalTransferAmount } = await shouldUseExchangeBalance(
     srcToken,
     initiatorAddress,
     exchangeContractAddress,
     amountNativeDecimals,
-    provider
+    provider,
+    logger
   );
-  console.log('useExchangeBalance', useExchangeBalance);
-  console.log('additionalTransferAmount', additionalTransferAmount);
+  logger?.(`useExchangeBalance: ${useExchangeBalance}`);
+  logger?.(`additionalTransferAmount: ${additionalTransferAmount}`);
   if (useExchangeBalance) {
     swapDescription.flags = 1n << 255n;
   }
   const value = srcToken == ZeroAddress ? additionalTransferAmount : 0n;
-  console.log('value', value);
+  logger?.(`value: ${value}`);
   return { swapDescription, calldata, value };
 }
 
@@ -398,7 +399,8 @@ async function shouldUseExchangeBalance(
   initiatorAddress: AddressLike,
   exchangeContractAddress: AddressLike,
   amount: bigint,
-  provider: JsonRpcProvider
+  provider: JsonRpcProvider,
+  logger?: ((message: string) => void) | undefined
 ) {
   const { walletBalance, exchangeBalance } = await getTotalBalance(
     srcToken,
@@ -408,6 +410,7 @@ async function shouldUseExchangeBalance(
   );
 
   const exchangeAllowance = await getExchangeAllowance(srcToken, initiatorAddress, exchangeContractAddress, provider);
+  logger?.('test_123');
 
   if (walletBalance + exchangeBalance < amount) {
     throw new Error(

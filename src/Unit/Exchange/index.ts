@@ -18,11 +18,8 @@ type PureSwapMarketParams = Omit<SwapMarketParams, 'unit'>
 export default class Exchange {
   private readonly unit: Unit;
 
-  public logger: ((message: string) => void) | undefined
-
-  constructor(unit: Unit, logger?: ((message: string) => void) | undefined) {
+  constructor(unit: Unit) {
     this.unit = unit;
-    this.logger = logger;
   }
 
   public getSwapInfo(params: PureGetSwapMarketInfoParams) {
@@ -51,7 +48,6 @@ export default class Exchange {
     return generateSwapCalldataWithUnit({
       ...params,
       unit: this.unit,
-      logger: this.logger
     })
   }
 
