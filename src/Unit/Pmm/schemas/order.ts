@@ -11,7 +11,7 @@ export const pmmOrderQuotationSchema = z.object({
 });
 
 export const pmmOrderSchema = z.object({
-    quotation: pmmOrderQuotationSchema.default({}),
+    order: pmmOrderQuotationSchema.default({}),
     signature: z.string().default(''),
     success: z.boolean().default(false),
     error: z.string().default(''),
