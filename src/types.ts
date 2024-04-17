@@ -465,7 +465,7 @@ export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WI
 // Frontage
 export type NetworkCode = typeof networkCodes[number];
 
-export type TickersCategories = 'USD' | 'ORN' | 'BNB' | 'ALTS';
+export type TickersCategories = 'USD' | 'ORN' | 'NATIVE' | 'ALTS';
 
 export type TickersSortBy = 'PRICE' | 'CHANGE' | 'VOLUME';
 

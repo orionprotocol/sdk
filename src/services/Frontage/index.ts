@@ -10,6 +10,7 @@ export class Frontage {
 
     this.searchTickers = this.searchTickers.bind(this);
     this.getTickers = this.getTickers.bind(this);
+    this.getFavorites = this.getFavorites.bind(this);
   }
 
   searchTickers = ({
@@ -57,7 +58,32 @@ export class Frontage {
     ].filter(Boolean).join('&');
 
     return fetchWithValidation(
-      `${this.apiUrl}/api/v1/tickers/get?${queryParams}`,
+      `${this.apiUrl}/api/v1/tickers/get/category?${queryParams}`,
+      tickersSchema
+    );
+  };
+
+  getFavorites = ({
+    tickers,
+    currentNetwork,
+    targetNetwork,
+    sortBy,
+    sortType,
+    offset,
+    limit,
+  }: { tickers: string } & TickersBaseSearchParams) => {
+    const queryParams = [
+      `tickers=${encodeURIComponent(tickers)}`,
+      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
+      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
+      sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
+      sortType !== undefined ? `&sortType=${encodeURIComponent(sortType)}` : '',
+      offset !== undefined ? `&offset=${offset}` : '',
+      limit !== undefined ? `&limit=${limit}` : '',
+    ].filter(Boolean).join('&');
+
+    return fetchWithValidation(
+      `${this.apiUrl}/api/v1/tickers/get/favourites?${queryParams}`,
       tickersSchema
     );
   };
