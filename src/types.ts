@@ -210,6 +210,7 @@ export type SwapInfoBase = {
     marketAmountIn: number | undefined
     difference: string | undefined
   } | undefined
+  autoSlippage: number | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {

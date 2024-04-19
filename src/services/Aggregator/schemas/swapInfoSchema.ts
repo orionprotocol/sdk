@@ -49,6 +49,7 @@ const swapInfoBase = z.object({
     mi: z.number().optional(), // market amount in, USD
     d: z.string().optional(), // difference in available amount in/out (USD) and market amount out/in (USD) in percentage
   }).optional(),
+  autoSlippage: z.number().optional(),
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({
