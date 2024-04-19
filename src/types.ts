@@ -3,7 +3,7 @@ import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
-import type { knownEnvs } from './config/schemas/index.js';
+import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
 
 export type DeepPartial<T> = T extends object ? {
@@ -91,6 +91,7 @@ export enum SupportedChainId {
   INEVM = '2525',
   LINEA = '59144',
   AVAX = '43114',
+  BASE = '8453',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
