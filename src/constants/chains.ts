@@ -20,4 +20,5 @@ export const productionChains = [
   SupportedChainId.INEVM,
   SupportedChainId.LINEA,
   SupportedChainId.AVAX,
+  SupportedChainId.BASE,
 ];
