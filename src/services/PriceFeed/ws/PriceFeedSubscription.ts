@@ -2,7 +2,7 @@ import WebSocket from 'isomorphic-ws';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import priceFeedSubscriptions from './priceFeedSubscriptions.js';
-import { tickerInfoSchema, candleSchema } from './schemas/index.js';
+import { tickerInfoSchema, candleSchema, cexPricesSchema } from './schemas/index.js';
 import priceSchema from './schemas/priceSchema.js';
 import type { Json } from '../../../types.js';
 import allTickersSchema from './schemas/allTickersSchema.js';
@@ -23,6 +23,10 @@ export const subscriptions = {
   [priceFeedSubscriptions.CANDLE]: {
     schema: candleSchema,
     payload: true as const,
+  },
+  [priceFeedSubscriptions.CEX]: {
+    schema: cexPricesSchema,
+    payload: false as const,
   },
 };
 

@@ -19,6 +19,10 @@ import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
+import { pmmOrderSchema } from '../../Unit/Pmm/schemas/order';
+//  import hmacSHA256 from "crypto-js/hmac-sha256";
+//  import Hex from "crypto-js/enc-hex";
+// const crypto = require('crypto')
 
 class Aggregator {
   private readonly apiUrl: string;
@@ -31,11 +35,16 @@ class Aggregator {
     return this.apiUrl;
   }
 
+  public logger: ((message: string) => void) | undefined;
+
   constructor(
     httpAPIUrl: string,
     wsAPIUrl: string,
-    basicAuth?: BasicAuthCredentials
+    basicAuth?: BasicAuthCredentials,
+    logger?: ((message: string) => void) | undefined
   ) {
+    this.logger = logger;
+
     // const oaUrl = new URL(apiUrl);
     // const oaWsProtocol = oaUrl.protocol === 'https:' ? 'wss' : 'ws';
     // const aggregatorWsUrl = `${oaWsProtocol}://${oaUrl.host + (oaUrl.pathname === '/'
@@ -43,7 +52,7 @@ class Aggregator {
     //   : oaUrl.pathname)}/v1`;
 
     this.apiUrl = httpAPIUrl;
-    this.ws = new AggregatorWS(httpToWS(wsAPIUrl));
+    this.ws = new AggregatorWS(httpToWS(wsAPIUrl), undefined, logger);
     this.basicAuth = basicAuth;
 
     this.getHistoryAtomicSwaps = this.getHistoryAtomicSwaps.bind(this);
@@ -52,6 +61,7 @@ class Aggregator {
     this.getPairsList = this.getPairsList.bind(this);
     this.getSwapInfo = this.getSwapInfo.bind(this);
     this.getTradeProfits = this.getTradeProfits.bind(this);
+    this.getStableCoins = this.getStableCoins.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
@@ -331,6 +341,16 @@ class Aggregator {
     );
   };
 
+  getStableCoins = () => {
+    const url = new URL(`${this.apiUrl}/api/v1/tokens/stable/`);
+    return fetchWithValidation(
+      url.toString(),
+      z.array(z.string()),
+      { headers: this.basicAuthHeaders },
+      errorSchema,
+    );
+  };
+
   /**
    * Placing atomic swap. Placement must take place on the target chain.
    * @param secretHash Secret hash
@@ -369,6 +389,102 @@ class Aggregator {
     url.searchParams.append('limit', limit.toString());
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema, { headers: this.basicAuthHeaders });
   };
+
+  // private encode_utf8(s: string) {
+  //   return unescape(encodeURIComponent(s));
+  // }
+
+  // @ts-expect-error: TODO: please remove this line!
+  private sign(message: string, key: string) {
+    // return crypto.createHmac('sha256', this.encode_utf8(key))
+    //   .update(this.encode_utf8(message))
+    //   .digest('hex');
+    return '';
+  }
+
+  private generateHeaders(body: any, method: string, path: string, timestamp: number, apiKey: string, secretKey: string) {
+    const sortedBody = Object.keys(body)
+      .sort()
+      .map((key) => (
+        `${key}=${body[key]}`
+      )).join('&');
+
+    const payload = timestamp + method.toUpperCase() + path + sortedBody;
+
+    const signature = this.sign(payload, secretKey);
+
+    const httpOptions = {
+      headers: {
+        'API-KEY': apiKey,
+        'ACCESS-TIMESTAMP': timestamp.toString(),
+        'ACCESS-SIGN': signature
+      }
+    };
+    return httpOptions;
+  }
+
+  public async RFQOrder(
+    tokenFrom: string,
+    tokenTo: string,
+    fromTokenAmount: string,
+    apiKey: string, //
+    secretKey: string,
+    wallet: string
+  ): Promise<z.infer<typeof pmmOrderSchema>> {
+    //  Making the order structure
+    const
+      path = '/rfq';
+    const url = `${this.apiUrl}/api/v1/integration/pmm` + path;
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const data = {
+      baseToken: tokenFrom, // USDT
+      quoteToken: tokenTo, // ORN
+      amount: fromTokenAmount, // 100
+      taker: wallet,
+      feeBps: 0
+    };
+    const method = 'POST';
+    const timestamp = Date.now();
+    const signatureHeaders = this.generateHeaders(data, method, path, timestamp, apiKey, secretKey);
+    const compiledHeaders = { ...headers, ...signatureHeaders.headers, };
+    const body = JSON.stringify(data)
+    ;
+
+    const res = pmmOrderSchema.parse({});
+
+    try {
+      const result = await fetch(url, {
+        headers: compiledHeaders,
+        method,
+        body
+      });
+
+      const json = await result.json();
+      const parseResult = pmmOrderSchema.safeParse(json);
+
+      if (!parseResult.success) {
+        //  Try to parse error answer
+        const errorSchema = z.object({ error: z.object({ code: z.number(), reason: z.string() }) });
+
+        const errorParseResult = errorSchema.safeParse(json);
+
+        if (!errorParseResult.success) { throw Error(`Unrecognized answer from aggregator: ${json}`); }
+
+        throw Error(errorParseResult.data.error.reason);
+      }
+
+      res.order = parseResult.data.order;
+      res.signature = parseResult.data.signature;
+      res.error = '';
+      res.success = true;
+      //  return result;
+    } catch (err) {
+      res.error = `${err}`;
+    }
+    return res;
+  }
 }
 export * as schemas from './schemas/index.js';
 export * as ws from './ws/index.js';

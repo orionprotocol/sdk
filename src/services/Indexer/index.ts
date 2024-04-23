@@ -9,7 +9,7 @@ import {
   PoolV2InfoResponseSchema,
   testIncrementorSchema,
   veORNInfoResponseSchema,
-  votingInfoResponseSchema
+  votingInfoResponseSchema,
 } from './schemas';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { BigNumber } from 'bignumber.js';
@@ -94,6 +94,7 @@ class IndexerService {
     this.veORNInfo = this.veORNInfo.bind(this);
     this.listAmount = this.listAmount.bind(this);
     this.getAmountByORN = this.getAmountByORN.bind(this);
+    this.getAmountAt = this.getAmountAt.bind(this);
     this.getAmountAtCurrent = this.getAmountAtCurrent.bind(this);
     this.getVotingInfo = this.getVotingInfo.bind(this);
   }
@@ -117,6 +118,23 @@ class IndexerService {
     });
   };
 
+  /**
+   * @param {number} amount - amount
+   * @param {number} [timestamp = Date.now()] - timestamp, defaults to current time
+   */
+  readonly getAmountAt = (
+    amount: number,
+    timestamp = Date.now()
+  ): BigNumber => {
+    const finalTimestamp = timestamp / 1000;
+
+    // sqrt
+    return BigNumber(amount).dividedBy(this.getK(finalTimestamp));
+  };
+
+  /**
+   * @deprecated since version 69 in favor of getAmountAt
+   */
   readonly getAmountAtCurrent = (amount: number): BigNumber => {
     const timestamp = Date.now() / 1000;
 
@@ -134,8 +152,7 @@ class IndexerService {
     const multSQRT = deltaDaysBN.dividedBy(WEEK_DAYS).sqrt();
     const multCUBE = deltaDaysBN.dividedBy(alpha).pow(3);
 
-    return BigNumber(amountToken)
-      .multipliedBy(multSQRT.plus(multCUBE));
+    return BigNumber(amountToken).multipliedBy(multSQRT.plus(multCUBE));
   };
 
   readonly getVotingInfo = (userAddress?: string) => {
@@ -208,7 +225,11 @@ class IndexerService {
     });
   };
 
-  readonly poolV2Info = (token0: string, token1: string, address: string | undefined) => {
+  readonly poolV2Info = (
+    token0: string,
+    token1: string,
+    address: string | undefined
+  ) => {
     return fetchWithValidation(this.apiUrl, PoolV2InfoResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({

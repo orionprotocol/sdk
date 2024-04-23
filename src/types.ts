@@ -3,7 +3,7 @@ import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
-import type { knownEnvs } from './config/schemas/index.js';
+import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
 
 export type DeepPartial<T> = T extends object ? {
@@ -88,6 +88,10 @@ export enum SupportedChainId {
   POLYGON = '137',
   OKC = '66',
   OPBNB = '204',
+  INEVM = '2525',
+  LINEA = '59144',
+  AVAX = '43114',
+  BASE = '8453',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
@@ -206,6 +210,7 @@ export type SwapInfoBase = {
     marketAmountIn: number | undefined
     difference: string | undefined
   } | undefined
+  autoSlippage: number | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
@@ -277,7 +282,7 @@ export type KnownEnv = typeof knownEnvs[number];
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
 export type EnvConfig = {
-  analyticsAPI: string
+  analyticsAPI: string | undefined
   referralAPI: string
   networks: Partial<
     Record<

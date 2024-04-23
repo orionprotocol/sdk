@@ -397,7 +397,7 @@ async function shouldUseExchangeBalance(
   let useExchangeBalance = true;
   let additionalTransferAmount = 0n;
 
-  if (exchangeBalance == 0n) {
+  if (walletBalance >= amount || exchangeBalance == 0n) {
     useExchangeBalance = false;
     additionalTransferAmount = amount;
   } else {
