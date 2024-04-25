@@ -5,7 +5,7 @@ export const tickerSchema = z.object({
   volume24: z.number(),
   change24: z.number(),
   lastPrice: z.number(),
-  networks: z.array(z.string()),
+  networks: z.array(z.number()),
 });
 
 export const tickersSchema = z.array(tickerSchema);
