@@ -46,9 +46,10 @@ export class Frontage {
     sortType,
     offset,
     limit,
-  }: { category: TickersCategories } & TickersBaseSearchParams) => {
+    tickers,
+  }: { category: TickersCategories, tickers?: string } & TickersBaseSearchParams) => {
     const queryParams = [
-      `category=${encodeURIComponent(category)}`,
+      category === 'FAVORITES' && tickers !== undefined ? `tickers=${encodeURIComponent(tickers)}` : `category=${encodeURIComponent(category)}`,
       currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
       targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
       sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
@@ -57,8 +58,12 @@ export class Frontage {
       limit !== undefined ? `&limit=${limit}` : '',
     ].filter(Boolean).join('&');
 
+    const url = category === 'FAVORITES' && tickers !== undefined
+      ? `${this.apiUrl}/api/v1/tickers/get/favourites?${queryParams}`
+      : `${this.apiUrl}/api/v1/tickers/get/category?${queryParams}`;
+
     return fetchWithValidation(
-      `${this.apiUrl}/api/v1/tickers/get/category?${queryParams}`,
+      url,
       tickersSchema
     );
   };
