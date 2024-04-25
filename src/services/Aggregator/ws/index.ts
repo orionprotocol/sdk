@@ -543,6 +543,7 @@ class AggregatorWS {
               marketAmountIn: json.usd.mi,
               difference: json.usd.d,
             },
+            autoSlippage: json.sl,
           };
 
           switch (json.k) { // kind

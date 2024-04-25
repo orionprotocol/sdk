@@ -182,6 +182,24 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "8453": {
+        "api": "https://trade.orion.xyz/base-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
@@ -429,7 +447,7 @@
         }
       },
       "2525": {
-        "api": "https://trade.orion.xyz/inevm-mainnet",
+        "api": "https://staging.orion.xyz/inevm-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -447,7 +465,7 @@
         }
       },
       "59144": {
-        "api": "https://trade.orion.xyz/linea-mainnet",
+        "api": "https://staging.orion.xyz/linea-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -465,7 +483,25 @@
         }
       },
       "43114": {
-        "api": "https://trade.orion.xyz/avalanche-c-chain",
+        "api": "https://staging.orion.xyz/avalanche-c-chain",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "8453": {
+        "api": "https://staging.orion.xyz/base-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
