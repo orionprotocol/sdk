@@ -199,6 +199,7 @@ export default class Bridge {
           redeemTx: atomicInMap.redeemTx ?? redeemTx,
           refundTx: atomicInMap.refundTx ?? secretHashTxs?.refundTx,
           liquidityMigrationTx: atomicInMap.liquidityMigrationTx ?? liquidityMigrationTx,
+          secret: atomicInMap.secret ?? atomic.secret,
         });
       } else {
         invariant(atomic.targetChainId, 'Target chain id is not defined');
