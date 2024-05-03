@@ -72,6 +72,7 @@ class Aggregator {
     this.getPoolReserves = this.getPoolReserves.bind(this);
     this.getVersion = this.getVersion.bind(this);
     this.getPrices = this.getPrices.bind(this);
+    this.getIsCexLiquidityAvailable = this.getIsCexLiquidityAvailable.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -388,6 +389,20 @@ class Aggregator {
     url.searchParams.append('sender', sender);
     url.searchParams.append('limit', limit.toString());
     return fetchWithValidation(url.toString(), atomicSwapHistorySchema, { headers: this.basicAuthHeaders });
+  };
+
+  getIsCexLiquidityAvailable = (
+    assetIn: string,
+    assetOut: string,
+  ) => {
+    const url = new URL(`${this.apiUrl}/api/v1/pairs/cex/liquidity/${assetIn}/${assetOut}`);
+
+    return fetchWithValidation(
+      url.toString(),
+      z.boolean(),
+      { headers: this.basicAuthHeaders },
+      errorSchema,
+    );
   };
 
   // private encode_utf8(s: string) {
