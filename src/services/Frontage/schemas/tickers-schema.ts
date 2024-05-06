@@ -6,6 +6,7 @@ export const tickerSchema = z.object({
   volume24: z.number(),
   change24: z.number(),
   lastPrice: z.number(),
+  pricePrecision: z.number(),
   networks: z.array(z.nativeEnum(SupportedChainId)),
 });
 
