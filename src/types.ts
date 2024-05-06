@@ -92,6 +92,7 @@ export enum SupportedChainId {
   INEVM = '2525',
   LINEA = '59144',
   AVAX = '43114',
+  BASE = '8453',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
@@ -210,6 +211,7 @@ export type SwapInfoBase = {
     marketAmountIn: number | undefined
     difference: string | undefined
   } | undefined
+  autoSlippage: number | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
