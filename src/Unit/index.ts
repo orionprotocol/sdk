@@ -1,16 +1,17 @@
 import { JsonRpcProvider } from 'ethers';
-import { Aggregator } from '../services/Aggregator/index.js';
-import { BlockchainService } from '../services/BlockchainService/index.js';
-import { PriceFeed } from '../services/PriceFeed/index.js';
+import { Aggregator } from '../services/Aggregator';
+import { BlockchainService } from '../services/BlockchainService';
+import { PriceFeed } from '../services/PriceFeed';
 import type {
   KnownEnv,
   SupportedChainId,
   VerboseUnitConfig,
 } from '../types.js';
 import Exchange from './Exchange/index.js';
-import { chains, envs } from '../config/index.js';
+import { chains, envs } from '../config';
 import type { networkCodes } from '../constants/index.js';
-import { IndexerService } from '../services/Indexer/index.js';
+import { IndexerService } from '../services/Indexer';
+import Pmm from "./Pmm";
 
 type KnownConfig = {
   env: KnownEnv
@@ -26,9 +27,11 @@ export default class Unit {
 
   public readonly blockchainService: BlockchainService;
 
-  public readonly indexer: IndexerService;
+  public readonly indexer: IndexerService | undefined;
 
   public readonly aggregator: Aggregator;
+
+  public readonly pmm: Pmm;
 
   public readonly priceFeed: PriceFeed;
 
@@ -38,7 +41,10 @@ export default class Unit {
 
   public readonly contracts: Record<string, string>;
 
-  constructor(config: KnownConfig | VerboseUnitConfig) {
+  public logger: ((message: string) => void) | undefined;
+
+  constructor(config: KnownConfig | VerboseUnitConfig, logger?: ((message: string) => void) | undefined) {
+    this.logger = logger;
     if ('env' in config) {
       const staticConfig = envs[config.env];
       if (!staticConfig) {
@@ -83,7 +89,7 @@ export default class Unit {
             api: networkConfig.api + networkConfig.services.priceFeed.all,
           },
           indexer: {
-            api: networkConfig.api + networkConfig.services.indexer.http,
+            api: networkConfig.api + networkConfig.services.indexer?.http,
           },
         },
       };
@@ -106,19 +112,23 @@ export default class Unit {
       this.config.services.blockchainService.http,
       this.config.basicAuth
     );
-    this.indexer = new IndexerService(
-      this.config.services.indexer.api,
-      intNetwork
-    );
+    this.indexer = this.config.services.indexer
+      ? new IndexerService(
+        this.config.services.indexer.api,
+        intNetwork
+      )
+      : undefined;
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,
-      this.config.basicAuth
+      this.config.basicAuth,
+      logger,
     );
     this.priceFeed = new PriceFeed(
       this.config.services.priceFeed.api,
       this.config.basicAuth
     );
     this.exchange = new Exchange(this);
+    this.pmm = new Pmm(this);
   }
 }

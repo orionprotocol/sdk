@@ -12,6 +12,7 @@ import {
   pairStatusSchema,
   pricesWithQuoteAssetSchema,
   referralDataSchema,
+  pmmSchema
 } from './schemas/index.js';
 import type redeemOrderSchema from '../Aggregator/schemas/redeemOrderSchema.js';
 import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/atomicHistorySchema.js';
@@ -82,6 +83,7 @@ class BlockchainService {
     this.getAuthToken = this.getAuthToken.bind(this);
     this.getCirculatingSupply = this.getCirculatingSupply.bind(this);
     this.getInfo = this.getInfo.bind(this);
+    this.getPmmInfo = this.getPmmInfo.bind(this);
     this.getPoolsConfig = this.getPoolsConfig.bind(this);
     this.getPoolsInfo = this.getPoolsInfo.bind(this);
     this.getPoolsLpAndStaked = this.getPoolsLpAndStaked.bind(this);
@@ -111,6 +113,8 @@ class BlockchainService {
     this.getBlockNumber = this.getBlockNumber.bind(this);
     this.getRedeemOrderBySecretHash = this.getRedeemOrderBySecretHash.bind(this);
     this.claimOrder = this.claimOrder.bind(this);
+    this.getGasLimits = this.getGasLimits.bind(this);
+    this.getExchangeContractWalletBalance = this.getExchangeContractWalletBalance.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -174,6 +178,8 @@ class BlockchainService {
   );
 
   getInfo = () => fetchWithValidation(`${this.apiUrl}/api/info`, infoSchema);
+
+  getPmmInfo = () => fetchWithValidation(`${this.apiUrl}/api/pmm-info`, pmmSchema);
 
   getPoolsConfig = () => fetchWithValidation(
     `${this.apiUrl}/api/pools/config`,
@@ -483,6 +489,18 @@ class BlockchainService {
       method: 'POST',
       body: JSON.stringify(secretHashes),
     },
+  );
+
+  getGasLimits = () => fetchWithValidation(
+    `${this.apiUrl}/api/baseLimits`,
+    z.record(z.number()),
+    { headers: this.basicAuthHeaders }
+  );
+
+  getExchangeContractWalletBalance = (exchangeContractAddress: string) => fetchWithValidation(
+    `${this.apiUrl}/api/broker/getWalletBalance/${exchangeContractAddress}`,
+    z.record(z.string()),
+    { headers: this.basicAuthHeaders }
   );
 }
 

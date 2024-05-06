@@ -66,10 +66,11 @@ type PairConfigSubscription = {
 
 type AggregatedOrderbookSubscription = {
   payload: string
+  dc?: number
   callback: (
     asks: OrderbookItem[],
     bids: OrderbookItem[],
-    pair: string
+    pair: string,
   ) => void
   errorCb?: (message: string) => void
 }
@@ -195,9 +196,10 @@ class AggregatorWS {
 
   readonly basicAuth?: BasicAuthCredentials | undefined;
 
-  constructor(wsUrl: string, basicAuth?: BasicAuthCredentials) {
+  constructor(wsUrl: string, basicAuth?: BasicAuthCredentials, logger?: ((message: string) => void) | undefined) {
     this.wsUrl = wsUrl;
     this.basicAuth = basicAuth;
+    this.logger = logger;
   }
 
   private messageQueue: BufferLike[] = [];
@@ -254,7 +256,7 @@ class AggregatorWS {
     subscription: Subscription[T],
     prevSubscriptionId?: string
   ) {
-    const id = type === 'aobus'
+    const id = type === SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE
       ? ((subscription as any).payload as string) // TODO: Refactor!!!
       : uuidv4();
 
@@ -263,6 +265,12 @@ class AggregatorWS {
       const subRequest: Json = {};
       subRequest['T'] = type;
       subRequest['id'] = id;
+
+      if ('dc' in subscription) {
+        if (typeof subscription.dc === 'number') {
+          subRequest['dc'] = subscription.dc;
+        }
+      }
 
       if ('payload' in subscription) {
         if (typeof subscription.payload === 'string') {
@@ -371,11 +379,11 @@ class AggregatorWS {
       delete this.subscriptions[SubscriptionType.ASSET_PAIR_CONFIG_UPDATES_SUBSCRIBE]?.[newestSubId];
       // !!! swap info subscription is uuid that contains hyphen
     } else if (isOrderBooksSubscription(newestSubId)) { // is pair name(AGGREGATED_ORDER_BOOK_UPDATE)
-      const aobSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
-      if (aobSubscriptions) {
-        const targetAobSub = Object.entries(aobSubscriptions).find(([, value]) => value?.payload === newestSubId);
-        if (targetAobSub) {
-          const [key] = targetAobSub;
+      const aobusSubscriptions = this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE];
+      if (aobusSubscriptions) {
+        const targetAobusSub = Object.entries(aobusSubscriptions).find(([, value]) => value?.payload === newestSubId);
+        if (targetAobusSub) {
+          const [key] = targetAobusSub;
           delete this.subscriptions[SubscriptionType.AGGREGATED_ORDER_BOOK_UPDATES_SUBSCRIBE]?.[key];
         }
       }
@@ -535,6 +543,7 @@ class AggregatorWS {
               marketAmountIn: json.usd.mi,
               difference: json.usd.d,
             },
+            autoSlippage: json.sl,
           };
 
           switch (json.k) { // kind

@@ -13,6 +13,7 @@ import {
   aggregatedHistorySchema,
   inviteCodeLinkSchema,
   contractsAddressesSchema,
+  allTimeLeadersSchema,
 } from './schemas/index.js';
 import type { SupportedChainId } from '../../types.js';
 
@@ -71,6 +72,7 @@ class ReferralSystem {
     this.claimRewards = this.claimRewards.bind(this);
     this.getLeaderboard = this.getLeaderboard.bind(this);
     this.getLeaderboardSingleChain = this.getLeaderboardSingleChain.bind(this);
+    this.getAllTimeLeaders = this.getAllTimeLeaders.bind(this);
     this.getContractsAddresses = this.getContractsAddresses.bind(this);
     this.getClaimInfo = this.getClaimInfo.bind(this);
     this.getAggregatedHistory = this.getAggregatedHistory.bind(this);
@@ -222,6 +224,19 @@ class ReferralSystem {
     fetchWithValidation(
       `${this.apiUrl}/referer/ve/rating-table-leaderboard?chain_id=${chainId}`,
       ratingSchema,
+      {
+        headers:
+          refererAddress !== undefined
+            ? { 'referer-address': refererAddress }
+            : {},
+      },
+      errorSchema
+    );
+
+  getAllTimeLeaders = (refererAddress: string | undefined) =>
+    fetchWithValidation(
+      `${this.apiUrl}/referer/ve/leaderboard-lifetime`,
+      allTimeLeadersSchema,
       {
         headers:
           refererAddress !== undefined

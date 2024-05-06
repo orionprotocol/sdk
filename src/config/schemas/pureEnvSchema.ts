@@ -16,14 +16,14 @@ export const pureEnvNetworksSchema = z.object({
     }),
     indexer: z.object({
       http: z.string(),
-    }),
+    }).optional(),
   }),
   rpc: z.string().optional(),
   liquidityMigratorAddress: z.string().optional(),
 });
 
 export const pureEnvPayloadSchema = z.object({
-  analyticsAPI: z.string().url(),
+  analyticsAPI: z.string().url().optional(),
   referralAPI: z.string().url(),
   networks: z.record(
     z.nativeEnum(SupportedChainId),

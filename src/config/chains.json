@@ -47,7 +47,8 @@
     "rpc": "https://opbnb-mainnet-rpc.bnbchain.org",
     "baseCurrencyName": "BNB",
     "contracts": {
-      "WETH": "0x4200000000000000000000000000000000000006"
+      "WETH": "0x4200000000000000000000000000000000000006",
+      "curveRegistry": ""
     }
   },
   "3": {
@@ -96,10 +97,10 @@
     "shortName": "Arbitrum",
     "code": "arb",
     "rpc": "https://arb1.arbitrum.io/rpc",
-    "baseCurrencyName": "ARB",
+    "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-      "curveRegistiry": "0x445FE580eF8d70FF569aB36e80c647af338db351"
+      "curveRegistry": "0x445FE580eF8d70FF569aB36e80c647af338db351"
     }
   },
   "4002": {
@@ -190,6 +191,58 @@
     "explorer": "https://explorer-testnet.1d.rip/",
     "contracts": {
       "WETH": "",
+      "curveRegistry": ""
+    }
+  },
+  "2525": {
+    "chainId": "2525",
+    "label": "inEVM",
+    "shortName": "inEVM",
+    "code": "inevm",
+    "baseCurrencyName": "INJ",
+    "rpc": "https://inevm.calderachain.xyz/http/",
+    "explorer": "https://explorer.injective.network/",
+    "contracts": {
+      "WETH": "0x4C3A213bd5e8c4BD70a8396d6F3C8302571598Cd",
+      "curveRegistry": ""
+    }
+  },
+  "59144": {
+    "chainId": "59144",
+    "label": "Linea",
+    "shortName": "Linea",
+    "code": "linea",
+    "baseCurrencyName": "ETH",
+    "rpc": "https://rpc.linea.build/",
+    "explorer": "https://lineascan.build/",
+    "contracts": {
+      "WETH": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+      "curveRegistry": ""
+    }
+  },
+  "43114": {
+    "chainId": "43114",
+    "label": "Avalanche Network",
+    "shortName": "Avax",
+    "code": "avax",
+    "baseCurrencyName": "AVAX",
+    "rpc": "https://api.avax.network/ext/bc/C/rpc/",
+    "explorer": "https://snowtrace.io/",
+    "contracts": {
+      "WETH": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      "curveRegistry": ""
+    }
+  },
+  "8453": {
+    "chainId": "8453",
+    "label": "Base",
+    "shortName": "BASE",
+    "code": "base",
+    "baseCurrencyName": "ETH",
+    "rpc": "https://mainnet.base.org/",
+    "explorer": "https://basescan.org/",
+    "contracts": {
+      "WETH": "0x4200000000000000000000000000000000000006",
       "curveRegistry": ""
     }
   }

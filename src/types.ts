@@ -109,6 +109,10 @@ export enum SupportedChainId {
   POLYGON = '137',
   OKC = '66',
   OPBNB = '204',
+  INEVM = '2525',
+  LINEA = '59144',
+  AVAX = '43114',
+  BASE = '8453',
 
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
@@ -229,6 +233,7 @@ export type SwapInfoBase = {
     marketAmountIn: number | undefined
     difference: string | undefined
   } | undefined
+  autoSlippage: number | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
@@ -285,12 +290,12 @@ export type VerboseUnitConfig = {
       // http://10.23.5.11:3003/,
       // https://price-feed:3003/
     }
-    indexer: {
+    indexer?: {
       api: string
       // For example:
       // http://localhost:3004/,
       // http://
-    }
+    } | undefined
   }
   basicAuth?: BasicAuthCredentials
 }
@@ -300,7 +305,7 @@ export type KnownEnv = typeof knownEnvs[number];
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
 export type EnvConfig = {
-  analyticsAPI: string
+  analyticsAPI: string | undefined
   referralAPI: string
   networks: Partial<
         Record<
