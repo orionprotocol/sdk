@@ -1,6 +1,6 @@
 {
   "name": "@orionprotocol/sdk",
-  "version": "0.20.61-rc2",
+  "version": "0.20.61-rc3",
   "description": "Orion Protocol SDK",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -94,7 +94,7 @@
     "bson-objectid": "^2.0.4",
     "buffer": "^6.0.3",
     "crypto-js": "^4.2.0",
-    "ethers": "^6.7.1",
+    "ethers": "^6.12.0",
     "express": "^4.18.2",
     "isomorphic-ws": "^5.0.0",
     "just-clone": "^6.2.0",
