@@ -7,10 +7,6 @@ export class Frontage {
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
-
-    this.searchTickers = this.searchTickers.bind(this);
-    this.getTickers = this.getTickers.bind(this);
-    this.getFavorites = this.getFavorites.bind(this);
   }
 
   searchTickers = ({
