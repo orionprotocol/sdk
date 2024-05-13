@@ -18,15 +18,15 @@ export class Frontage {
     offset,
     limit,
   }: { searchValue: string } & TickersBaseSearchParams) => {
-    const queryParams = [
-      `searchValue=${encodeURIComponent(searchValue)}`,
-      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
-      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
-      sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
-      sortType !== undefined ? `&sortType=${encodeURIComponent(sortType)}` : '',
-      offset !== undefined ? `&offset=${offset}` : '',
-      limit !== undefined ? `&limit=${limit}` : '',
-    ].filter(Boolean).join('&');
+    const queryParams = new URLSearchParams({
+      searchValue: encodeURIComponent(searchValue),
+      currentNetwork: currentNetwork !== undefined ? encodeURIComponent(currentNetwork).toUpperCase() : '',
+      targetNetwork: targetNetwork !== undefined ? encodeURIComponent(targetNetwork).toUpperCase() : '',
+      sortBy: sortBy !== undefined ? encodeURIComponent(sortBy) : '',
+      sortType: sortType !== undefined ? encodeURIComponent(sortType) : '',
+      offset: offset !== undefined ? offset.toString() : '',
+      limit: limit !== undefined ? limit.toString() : '',
+    }).toString();
 
     return fetchWithValidation(
       `${this.apiUrl}/api/v1/tickers/search?${queryParams}`,
@@ -44,15 +44,15 @@ export class Frontage {
     limit,
     tickers,
   }: { category: TickersCategories, tickers?: string } & TickersBaseSearchParams) => {
-    const queryParams = [
-      category === 'FAVORITES' && tickers !== undefined ? `tickers=${encodeURIComponent(tickers)}` : `category=${encodeURIComponent(category)}`,
-      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
-      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
-      sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
-      sortType !== undefined ? `&sortType=${encodeURIComponent(sortType)}` : '',
-      offset !== undefined ? `&offset=${offset}` : '',
-      limit !== undefined ? `&limit=${limit}` : '',
-    ].filter(Boolean).join('&');
+    const queryParams = new URLSearchParams({
+      category: category === 'FAVORITES' && tickers !== undefined ? `tickers=${encodeURIComponent(tickers)}` : `category=${encodeURIComponent(category)}`,
+      currentNetwork: currentNetwork !== undefined ? encodeURIComponent(currentNetwork).toUpperCase() : '',
+      targetNetwork: targetNetwork !== undefined ? encodeURIComponent(targetNetwork).toUpperCase() : '',
+      sortBy: sortBy !== undefined ? encodeURIComponent(sortBy) : '',
+      sortType: sortType !== undefined ? encodeURIComponent(sortType) : '',
+      offset: offset !== undefined ? offset.toString() : '',
+      limit: limit !== undefined ? limit.toString() : '',
+    }).toString();
 
     const url = category === 'FAVORITES' && tickers !== undefined
       ? `${this.apiUrl}/api/v1/tickers/get/favourites?${queryParams}`
@@ -60,31 +60,6 @@ export class Frontage {
 
     return fetchWithValidation(
       url,
-      tickersSchema
-    );
-  };
-
-  getFavorites = ({
-    tickers,
-    currentNetwork,
-    targetNetwork,
-    sortBy,
-    sortType,
-    offset,
-    limit,
-  }: { tickers: string } & TickersBaseSearchParams) => {
-    const queryParams = [
-      `tickers=${encodeURIComponent(tickers)}`,
-      currentNetwork !== undefined ? `&currentNetwork=${encodeURIComponent(currentNetwork).toUpperCase()}` : '',
-      targetNetwork !== undefined ? `&targetNetwork=${encodeURIComponent(targetNetwork).toUpperCase()}` : '',
-      sortBy !== undefined ? `&sortBy=${encodeURIComponent(sortBy)}` : '',
-      sortType !== undefined ? `&sortType=${encodeURIComponent(sortType)}` : '',
-      offset !== undefined ? `&offset=${offset}` : '',
-      limit !== undefined ? `&limit=${limit}` : '',
-    ].filter(Boolean).join('&');
-
-    return fetchWithValidation(
-      `${this.apiUrl}/api/v1/tickers/get/favourites?${queryParams}`,
       tickersSchema
     );
   };
