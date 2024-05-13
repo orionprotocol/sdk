@@ -43,6 +43,8 @@ type SwapInfoSubscriptionPayload = {
   es?: string // exchange list of all cex or all pools (ORION_POOL, UNISWAP, PANCAKESWAP etc)
   e?: boolean // is amount IN? Value `false` means a = amount OUT, `true` if omitted
   is?: boolean // instant settlement
+  sc?: string // CS sourceChain
+  tc?: string // CS targetChain
 }
 
 type BrokerTradableAtomicSwapBalanceSubscription = {
