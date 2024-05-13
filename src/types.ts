@@ -214,18 +214,11 @@ export type SwapInfoBase = {
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
-  kind: 'exactSpend'
   availableAmountIn?: number | undefined
   marketAmountOut?: number | undefined
 }
 
-export type SwapInfoByAmountOut = SwapInfoBase & {
-  kind: 'exactReceive'
-  marketAmountIn?: number | undefined
-  availableAmountOut?: number | undefined
-}
-
-export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
+export type SwapInfo = SwapInfoByAmountIn;
 
 export enum HistoryTransactionStatus {
   PENDING = 'Pending',

@@ -18,7 +18,6 @@ import type { SingleSwap } from '../../types.js';
 import { must, safeGet } from '../../utils/safeGetters.js';
 
 export type SwapLimitParams = {
-  type: 'exactSpend' | 'exactReceive'
   assetIn: string
   assetOut: string
   price: BigNumber.Value
@@ -58,7 +57,6 @@ const isValidSingleSwap = (singleSwap: Omit<SingleSwap, 'factory'> & { factory: 
 }
 
 export default async function swapLimit({
-  type,
   assetIn,
   assetOut,
   price,
@@ -138,7 +136,6 @@ export default async function swapLimit({
   );
 
   const swapInfo = await simpleFetch(aggregator.getSwapInfo)(
-    type,
     assetIn,
     assetOut,
     amountBN.toString(),
@@ -154,11 +151,7 @@ export default async function swapLimit({
 
   if (swapExchanges.length > 0) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
 
-  if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
-    throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
-  }
-
-  if (swapInfo.type === 'exactSpend' && amountBN.lt(swapInfo.minAmountIn)) {
+  if (amountBN.lt(swapInfo.minAmountIn)) {
     throw new Error(`Amount is too low. Min amountIn is ${swapInfo.minAmountIn} ${assetIn}`);
   }
 
@@ -200,9 +193,7 @@ export default async function swapLimit({
 
   options?.logger?.(`Safe price is ${swapInfo.orderInfo.safePrice} ${quoteAssetName}`);
   // BTEMP — better than or equal market price
-  const priceIsBTEMP = type === 'exactSpend'
-    ? priceBN.lte(swapInfo.orderInfo.safePrice)
-    : priceBN.gte(swapInfo.orderInfo.safePrice);
+  const priceIsBTEMP = priceBN.lte(swapInfo.orderInfo.safePrice);
 
   options?.logger?.(`Your price ${priceBN.toString()} is ${priceIsBTEMP ? 'better than or equal' : 'worse than'} market price ${swapInfo.orderInfo.safePrice}`);
 
@@ -246,9 +237,7 @@ export default async function swapLimit({
       if (factoryAddress !== undefined) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
     }
 
-    const amountSpend = swapInfo.type === 'exactSpend'
-      ? swapInfo.amountIn
-      : new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
+    const amountSpend = swapInfo.amountIn;
 
     balanceGuard.registerRequirement({
       reason: 'Amount spend',
@@ -261,9 +250,7 @@ export default async function swapLimit({
       sources: getAvailableSources('amount', assetInAddress, 'pool'),
     });
 
-    const amountReceive = swapInfo.type === 'exactReceive'
-      ? swapInfo.amountOut
-      : new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
+    const amountReceive = new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
     const amountSpendBlockchainParam = normalizeNumber(
       amountSpend,
       INTERNAL_PROTOCOL_PRECISION,

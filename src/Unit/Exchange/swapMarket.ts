@@ -43,7 +43,6 @@ const isValidSingleSwap = (singleSwap: Omit<SingleSwap, 'factory'> & { factory: 
 }
 
 export default async function swapMarket({
-  type,
   assetIn,
   assetOut,
   amount,
@@ -125,7 +124,6 @@ export default async function swapMarket({
   );
 
   const swapInfo = await simpleFetch(aggregator.getSwapInfo)(
-    type,
     assetIn,
     assetOut,
     amountBN.toString(),
@@ -141,11 +139,7 @@ export default async function swapMarket({
 
   if (swapExchanges.length > 0) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
 
-  if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
-    throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
-  }
-
-  if (swapInfo.type === 'exactSpend' && amountBN.lt(swapInfo.minAmountIn)) {
+  if (amountBN.lt(swapInfo.minAmountIn)) {
     throw new Error(`Amount is too low. Min amountIn is ${swapInfo.minAmountIn} ${assetIn}`);
   }
 
@@ -199,11 +193,8 @@ export default async function swapMarket({
     const amountOutWithSlippage = new BigNumber(swapInfo.amountOut)
       .multipliedBy(new BigNumber(1).minus(percent))
       .toString();
-    const amountInWithSlippage = new BigNumber(swapInfo.amountIn)
-      .multipliedBy(new BigNumber(1).plus(percent))
-      .toString();
 
-    const amountSpend = swapInfo.type === 'exactSpend' ? swapInfo.amountIn : amountInWithSlippage;
+    const amountSpend = swapInfo.amountIn;
 
     balanceGuard.registerRequirement({
       reason: 'Amount spend',
@@ -216,14 +207,13 @@ export default async function swapMarket({
       sources: getAvailableSources('amount', assetInAddress, 'pool'),
     });
 
-    const amountReceive = swapInfo.type === 'exactReceive' ? swapInfo.amountOut : amountOutWithSlippage;
     const amountSpendBlockchainParam = normalizeNumber(
       amountSpend,
       INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_CEIL,
     );
     const amountReceiveBlockchainParam = normalizeNumber(
-      amountReceive,
+      amountOutWithSlippage,
       INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     );

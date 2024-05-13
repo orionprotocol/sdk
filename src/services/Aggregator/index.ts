@@ -263,7 +263,6 @@ class Aggregator {
   );
 
   getSwapInfo = (
-    type: 'exactSpend' | 'exactReceive',
     assetIn: string,
     assetOut: string,
     amount: string,
@@ -273,11 +272,8 @@ class Aggregator {
     const url = new URL(`${this.apiUrl}/api/v1/swap`);
     url.searchParams.append('assetIn', assetIn);
     url.searchParams.append('assetOut', assetOut);
-    if (type === 'exactSpend') {
-      url.searchParams.append('amountIn', amount);
-    } else {
-      url.searchParams.append('amountOut', amount);
-    }
+    url.searchParams.append('amountIn', amount);
+
     if (exchanges !== undefined) {
       if (Array.isArray(exchanges)) {
         exchanges.forEach((exchange) => {
