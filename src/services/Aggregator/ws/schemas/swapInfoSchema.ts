@@ -51,12 +51,9 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
   sl: z.number().optional(),
 });
 
-const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
+const swapInfoSchema = swapInfoSchemaBase.extend({
   mo: z.number().optional(), // market amount out
   aa: z.number(), // available amount in
 });
-
-
-const swapInfoSchema = swapInfoSchemaByAmountIn;
 
 export default swapInfoSchema;
