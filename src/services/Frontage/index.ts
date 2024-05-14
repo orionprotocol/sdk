@@ -18,18 +18,22 @@ export class Frontage {
     offset,
     limit,
   }: { searchValue: string } & TickersBaseSearchParams) => {
-    const queryParams = new URLSearchParams({
-      searchValue: encodeURIComponent(searchValue),
-      currentNetwork: currentNetwork !== undefined ? encodeURIComponent(currentNetwork).toUpperCase() : '',
-      targetNetwork: targetNetwork !== undefined ? encodeURIComponent(targetNetwork).toUpperCase() : '',
-      sortBy: sortBy !== undefined ? encodeURIComponent(sortBy) : '',
-      sortType: sortType !== undefined ? encodeURIComponent(sortType) : '',
-      offset: offset !== undefined ? offset.toString() : '',
-      limit: limit !== undefined ? limit.toString() : '',
-    }).toString();
+    const url = new URL(this.apiUrl);
+    const params = new URLSearchParams();
+
+    params.set('searchValue', encodeURIComponent(searchValue));
+    if (currentNetwork !== undefined) params.set('currentNetwork', encodeURIComponent(currentNetwork).toUpperCase());
+    if (targetNetwork !== undefined) params.set('targetNetwork', encodeURIComponent(targetNetwork).toUpperCase());
+    if (sortBy !== undefined) params.set('sortBy', encodeURIComponent(sortBy));
+    if (sortType !== undefined) params.set('sortType', encodeURIComponent(sortType));
+    if (offset !== undefined) params.set('offset', offset.toString());
+    if (limit !== undefined) params.set('limit', limit.toString());
+
+    url.pathname = '/api/v1/tickers/search';
+    url.search = params.toString();
 
     return fetchWithValidation(
-      `${this.apiUrl}/api/v1/tickers/search?${queryParams}`,
+      url.toString(),
       tickersSchema
     );
   };
@@ -44,23 +48,28 @@ export class Frontage {
     limit,
     tickers,
   }: { category: TickersCategories, tickers?: string } & TickersBaseSearchParams) => {
-    const queryParams = new URLSearchParams({
-      tickers: category === 'FAVORITES' && tickers !== undefined ? tickers : '',
-      category: category !== 'FAVORITES' ? encodeURIComponent(category) : '',
-      currentNetwork: currentNetwork !== undefined ? encodeURIComponent(currentNetwork).toUpperCase() : '',
-      targetNetwork: targetNetwork !== undefined ? encodeURIComponent(targetNetwork).toUpperCase() : '',
-      sortBy: sortBy !== undefined ? encodeURIComponent(sortBy) : '',
-      sortType: sortType !== undefined ? encodeURIComponent(sortType) : '',
-      offset: offset !== undefined ? offset.toString() : '',
-      limit: limit !== undefined ? limit.toString() : '',
-    }).toString();
+    const url = new URL(this.apiUrl);
+    const params = new URLSearchParams();
 
-    const url = category === 'FAVORITES' && tickers !== undefined
-      ? `${this.apiUrl}/api/v1/tickers/get/favourites?${queryParams}`
-      : `${this.apiUrl}/api/v1/tickers/get/category?${queryParams}`;
+    if (category === 'FAVORITES' && tickers !== undefined) params.set('tickers', tickers);
+    if (category !== 'FAVORITES') params.set('category', category);
+    if (currentNetwork !== undefined) params.set('currentNetwork', encodeURIComponent(currentNetwork).toUpperCase());
+    if (targetNetwork !== undefined) params.set('targetNetwork', encodeURIComponent(targetNetwork).toUpperCase());
+    if (sortBy !== undefined) params.set('sortBy', encodeURIComponent(sortBy));
+    if (sortType !== undefined) params.set('sortType', encodeURIComponent(sortType));
+    if (offset !== undefined) params.set('offset', offset.toString());
+    if (limit !== undefined) params.set('limit', limit.toString());
+
+    if (category === 'FAVORITES' && tickers !== undefined) {
+      url.pathname = '/api/v1/tickers/get/favourites';
+    } else {
+      url.pathname = '/api/v1/tickers/get/category';
+    }
+
+    url.search = params.toString();
 
     return fetchWithValidation(
-      url,
+      url.toString(),
       tickersSchema
     );
   };
