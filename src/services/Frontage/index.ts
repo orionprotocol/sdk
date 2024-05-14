@@ -29,7 +29,7 @@ export class Frontage {
     if (offset !== undefined) params.set('offset', offset.toString());
     if (limit !== undefined) params.set('limit', limit.toString());
 
-    url.pathname += 'api/v1/tickers/search';
+    url.pathname += '/api/v1/tickers/search';
     url.search = params.toString();
 
     return fetchWithValidation(
@@ -61,9 +61,9 @@ export class Frontage {
     if (limit !== undefined) params.set('limit', limit.toString());
 
     if (category === 'FAVORITES' && tickers !== undefined) {
-      url.pathname += 'api/v1/tickers/get/favourites';
+      url.pathname += '/api/v1/tickers/get/favourites';
     } else {
-      url.pathname += 'api/v1/tickers/get/category';
+      url.pathname += '/api/v1/tickers/get/category';
     }
 
     url.search = params.toString();
