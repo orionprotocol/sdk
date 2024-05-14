@@ -45,7 +45,7 @@ export class Frontage {
     tickers,
   }: { category: TickersCategories, tickers?: string } & TickersBaseSearchParams) => {
     const queryParams = new URLSearchParams({
-      tickers: category === 'FAVORITES' && tickers !== undefined ? encodeURIComponent(tickers) : '',
+      tickers: category === 'FAVORITES' && tickers !== undefined ? tickers : '',
       category: category !== 'FAVORITES' ? encodeURIComponent(category) : '',
       currentNetwork: currentNetwork !== undefined ? encodeURIComponent(currentNetwork).toUpperCase() : '',
       targetNetwork: targetNetwork !== undefined ? encodeURIComponent(targetNetwork).toUpperCase() : '',
