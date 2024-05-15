@@ -5,6 +5,7 @@ import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
 import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
+import type { networkCodes } from './constants';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -286,6 +287,7 @@ export type Json = string | number | boolean | null | Json[] | { [key: string]: 
 export type EnvConfig = {
   analyticsAPI: string | undefined
   referralAPI: string
+  frontageAPI: string
   networks: Partial<
     Record<
       SupportedChainId,
@@ -463,3 +465,21 @@ export type AtomicSwap = Partial<
 }
 
 export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WIDGET';
+
+// Frontage
+export type NetworkCode = typeof networkCodes[number];
+
+export type TickersCategories = 'FAVORITES' | 'USD' | 'ORN' | 'NATIVE' | 'ALTS';
+
+export type TickersSortBy = 'PRICE' | 'CHANGE' | 'VOLUME';
+
+export type TickersSortType = 'ASCENDING' | 'DESCENDING';
+
+export type TickersBaseSearchParams = {
+  currentNetwork?: NetworkCode
+  targetNetwork?: NetworkCode
+  sortBy?: TickersSortBy
+  sortType?: TickersSortType
+  offset?: number
+  limit?: number
+}
