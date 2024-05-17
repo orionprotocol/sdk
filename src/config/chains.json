@@ -77,6 +77,19 @@
       "curveRegistry": ""
     }
   },
+  "11155111": {
+    "chainId": "11155111",
+    "explorer": "https://sepolia.etherscan.io/",
+    "label": "Sepolia",
+    "shortName": "ETH-Sepolia",
+    "code": "eth",
+    "rpc": "https://gateway.tenderly.co/public/sepolia",
+    "baseCurrencyName": "ETH",
+    "contracts": {
+      "WETH": "",
+      "curveRegistry": ""
+    }
+  },
   "421613": {
     "chainId": "421613",
     "explorer": "https://goerli.arbiscan.io/",
