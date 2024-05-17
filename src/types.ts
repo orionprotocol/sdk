@@ -83,8 +83,6 @@ export type Pair = {
 
 export enum SupportedChainId {
   MAINNET = '1',
-  ROPSTEN = '3',
-  GOERLI = '5',
   ARBITRUM = '42161',
   FANTOM_OPERA = '250',
   POLYGON = '137',
@@ -95,6 +93,9 @@ export enum SupportedChainId {
   AVAX = '43114',
   BASE = '8453',
 
+  ROPSTEN = '3',
+  GOERLI = '5',
+  SEPOLIA = '11155111',
   POLYGON_TESTNET = '80001',
   FANTOM_TESTNET = '4002',
   BSC = '56',
