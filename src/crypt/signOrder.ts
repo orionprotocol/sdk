@@ -10,7 +10,7 @@ import generateSecret from '../utils/generateSecret';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
-type SignOrderProps = {
+export type SignOrderProps = {
   baseAssetAddress: string
   quoteAssetAddress: string
   side: 'BUY' | 'SELL'

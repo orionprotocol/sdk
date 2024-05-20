@@ -9,7 +9,7 @@ import { LOCK_ORDER_TYPES } from '../constants/lockOrderTypes';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
-export type LockOrderProps = {
+export type SignLockOrderProps = {
   userAddress: string // адрес юзера который хочет сделать лок
   senderAddress: string // broker
   asset: string
@@ -27,7 +27,7 @@ export const signLockOrder = async ({
   targetChainId,
   asset,
   signer,
-}: LockOrderProps) => {
+}: SignLockOrderProps) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
   const secret = generateSecret();

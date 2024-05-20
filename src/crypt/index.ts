@@ -1,3 +1,3 @@
 export { default as signCancelOrder } from './signCancelOrder.js';
-export { default as signOrder } from './signOrder.js';
-export { signLockOrder } from './signLockOrder.js';
+export { signOrder, type SignOrderProps } from './signOrder.js';
+export { signLockOrder, type SignLockOrderProps } from './signLockOrder.js';
