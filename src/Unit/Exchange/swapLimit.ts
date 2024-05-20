@@ -5,7 +5,11 @@ import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
 import type Unit from '../index.js';
-import { INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants/index.js';
+import {
+  INTERNAL_PROTOCOL_PRECISION,
+  NATIVE_CURRENCY_PRECISION,
+  SWAP_THROUGH_ORION_POOL_GAS_LIMIT
+} from '../../constants/index.js';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import { signOrder } from '../../crypt/index.js';
@@ -212,7 +216,7 @@ export default async function swapLimit({
     if (options.developer.route === 'pool' && !priceIsBTEMP) {
       throw new Error(
         'CONFLICT: Pool execution is not available for this swap.' +
-        ' Price is worse than market price. Please unset "route" option or set it to "aggregator"'
+                ' Price is worse than market price. Please unset "route" option or set it to "aggregator"'
       );
     }
     route = options.developer.route;
@@ -221,17 +225,17 @@ export default async function swapLimit({
     if (!priceIsBTEMP) {
       throw new Error(
         'CONFLICT: Pool execution is not available for this swap.' +
-        ' Price is worse than market price. Please disable "poolOnly" option'
+                ' Price is worse than market price. Please disable "poolOnly" option'
       );
     }
     options.logger?.('Swap is through pool (because "poolOnly" option is true)');
     route = 'pool';
   } else if (
     poolExchangesList.length > 0 &&
-    swapExchanges.length === 1 &&
-    firstSwapExchange !== undefined &&
-    poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange) &&
-    priceIsBTEMP
+        swapExchanges.length === 1 &&
+        firstSwapExchange !== undefined &&
+        poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange) &&
+        priceIsBTEMP
   ) {
     options?.logger?.(`Swap is through pool [via ${firstSwapExchange}] (detected by "exchanges" field)`);
     route = 'pool';
@@ -439,19 +443,19 @@ export default async function swapLimit({
 
   await balanceGuard.check(options?.autoApprove);
 
-  const signedOrder = await signOrder(
+  const signedOrder = await signOrder({
     baseAssetAddress,
     quoteAssetAddress,
-    swapInfo.orderInfo.side,
-    safePriceWithAppliedPrecision.toString(),
-    swapInfo.orderInfo.amount,
-    totalFeeInFeeAsset,
-    walletAddress,
+    side: swapInfo.orderInfo.side,
+    price: safePriceWithAppliedPrecision.toString(),
+    amount: swapInfo.orderInfo.amount,
+    matcherFee: totalFeeInFeeAsset,
+    senderAddress: walletAddress,
     matcherAddress,
-    feeAssetAddress,
+    serviceFeeAssetAddress: feeAssetAddress,
     signer,
     chainId,
-  );
+  });
   const orderIsOk = await exchangeContract.validateOrder(signedOrder);
   if (!orderIsOk) throw new Error('Order is not valid');
 

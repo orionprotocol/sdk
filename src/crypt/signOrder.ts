@@ -10,20 +10,35 @@ import generateSecret from '../utils/generateSecret';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
-export const signOrder = async (
-  baseAssetAddr: string,
-  quoteAssetAddr: string,
-  side: 'BUY' | 'SELL',
-  price: BigNumber.Value,
-  amount: BigNumber.Value,
-  matcherFee: BigNumber.Value,
-  senderAddress: string,
-  matcherAddress: string,
-  serviceFeeAssetAddr: string,
-  signer: ethers.Signer,
-  chainId: SupportedChainId,
-  targetChainId?: SupportedChainId,
-) => {
+type SignOrderProps = {
+  baseAssetAddress: string
+  quoteAssetAddress: string
+  side: 'BUY' | 'SELL'
+  price: BigNumber.Value
+  amount: BigNumber.Value
+  matcherFee: BigNumber.Value
+  senderAddress: string
+  matcherAddress: string
+  serviceFeeAssetAddress: string
+  signer: ethers.Signer
+  chainId: SupportedChainId
+  targetChainId?: SupportedChainId
+}
+
+export const signOrder = async ({
+  amount,
+  signer,
+  side,
+  baseAssetAddress,
+  quoteAssetAddress,
+  serviceFeeAssetAddress,
+  matcherFee,
+  matcherAddress,
+  senderAddress,
+  targetChainId,
+  chainId,
+  price
+}: SignOrderProps) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
   const secret = generateSecret();
@@ -34,9 +49,9 @@ export const signOrder = async (
   const order: Order | CrossOrder = {
     senderAddress,
     matcherAddress,
-    baseAsset: baseAssetAddr,
-    quoteAsset: quoteAssetAddr,
-    matcherFeeAsset: serviceFeeAssetAddr,
+    baseAsset: baseAssetAddress,
+    quoteAsset: quoteAssetAddress,
+    matcherFeeAsset: serviceFeeAssetAddress,
     amount: Number(normalizeNumber(
       amount,
       INTERNAL_PROTOCOL_PRECISION,

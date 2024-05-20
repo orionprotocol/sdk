@@ -4,7 +4,11 @@ import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
-import { INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION, SWAP_THROUGH_ORION_POOL_GAS_LIMIT } from '../../constants';
+import {
+  INTERNAL_PROTOCOL_PRECISION,
+  NATIVE_CURRENCY_PRECISION,
+  SWAP_THROUGH_ORION_POOL_GAS_LIMIT
+} from '../../constants';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
 import { signOrder } from '../../crypt/index.js';
@@ -178,9 +182,9 @@ export default async function swapMarket({
     route = 'pool';
   } else if (
     poolExchangesList.length > 0 &&
-    swapExchanges.length === 1 &&
-    firstSwapExchange !== undefined &&
-    poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
+        swapExchanges.length === 1 &&
+        firstSwapExchange !== undefined &&
+        poolExchangesList.some((poolExchange) => poolExchange === firstSwapExchange)
   ) {
     options?.logger?.(`Swap is through pool [via ${firstSwapExchange}] (detected by "exchanges" field)`);
     route = 'pool';
@@ -398,19 +402,19 @@ export default async function swapMarket({
 
   await balanceGuard.check(options?.autoApprove);
 
-  const signedOrder = await signOrder(
+  const signedOrder = await signOrder({
     baseAssetAddress,
     quoteAssetAddress,
-    swapInfo.orderInfo.side,
-    safePriceWithAppliedPrecision.toString(),
-    swapInfo.orderInfo.amount,
-    totalFeeInFeeAsset,
-    walletAddress,
+    side: swapInfo.orderInfo.side,
+    price: safePriceWithAppliedPrecision.toString(),
+    amount: swapInfo.orderInfo.amount,
+    matcherFee: totalFeeInFeeAsset,
+    senderAddress: walletAddress,
     matcherAddress,
-    feeAssetAddress,
+    serviceFeeAssetAddress: feeAssetAddress,
     signer,
     chainId,
-  );
+  });
   const orderIsOk = await exchangeContract.validateOrder(signedOrder);
   if (!orderIsOk) throw new Error('Order is not valid');
 
