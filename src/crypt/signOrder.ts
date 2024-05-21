@@ -44,7 +44,7 @@ export const signOrder = async ({
   const secret = generateSecret();
   const secretHash = ethers.keccak256(secret);
 
-  const isCrossChain = targetChainId === undefined || targetChainId === chainId;
+  const isCrossChain = targetChainId === undefined || targetChainId !== chainId;
 
   const order: Order | CrossOrder = {
     senderAddress,
