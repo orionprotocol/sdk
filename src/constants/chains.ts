@@ -4,6 +4,7 @@ export const developmentChains = [
   SupportedChainId.BSC_TESTNET,
   SupportedChainId.ROPSTEN,
   SupportedChainId.GOERLI,
+  SupportedChainId.SEPOLIA,
   SupportedChainId.ARBITRUM_GOERLI,
   SupportedChainId.FANTOM_TESTNET,
   SupportedChainId.POLYGON_TESTNET,
