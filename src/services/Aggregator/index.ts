@@ -263,6 +263,18 @@ class Aggregator {
 
     const url = new URL(`${this.apiUrl}/api/v1/cross-chain`);
 
+    const body = {
+      secretHash: signedLockOrder.secretHash,
+      user: signedLockOrder.user,
+      sender: signedLockOrder.sender,
+      expiration: signedLockOrder.expiration,
+      asset: signedLockOrder.asset,
+      amount: signedLockOrder.amount,
+      targetChainId: signedLockOrder.targetChainId,
+      sign: signedLockOrder.signature,
+      secret: signedLockOrder.secretHash,
+    }
+
     return fetchWithValidation(
       url.toString(),
       z.object({
@@ -278,7 +290,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify({ ...signedLockOrder, sign: '' }), // TODO: remove field sign when api updated
+        body: JSON.stringify(body), // TODO: add field sign when api updated
       },
       errorSchema,
     );
