@@ -62,6 +62,7 @@ export type LockOrder = {
   asset: string // address(?)
   amount: number // uint64
   targetChainId: SupportedChainId // uint64
+  secretHash: string // bytes32
 }
 
 type SignedOrderAdditionalProps = {

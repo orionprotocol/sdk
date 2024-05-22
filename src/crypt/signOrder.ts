@@ -69,11 +69,11 @@ export const signOrder = async ({
     )),
     nonce,
     expiration,
-    // ...(isCrossChain
-    //   ? {
-    //     targetChainId
-    //   }
-    //   : {}),
+    ...(isCrossChain
+      ? {
+        targetChainId
+      }
+      : {}),
     buySide: side === 'BUY' ? 1 : 0,
   };
 

@@ -44,6 +44,7 @@ export const signLockOrder = async ({
       BigNumber.ROUND_FLOOR,
     )),
     targetChainId,
+    secretHash
   };
 
   const signature = await signer.signTypedData(

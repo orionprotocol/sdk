@@ -6,5 +6,6 @@ export const LOCK_ORDER_TYPES = {
     { name: 'asset', type: 'string' },
     { name: 'amount', type: 'uint64' },
     { name: 'targetChainId', type: 'uint64' },
+    { name: 'secretHash', type: 'bytes32' },
   ],
 };
