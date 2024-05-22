@@ -52,11 +52,26 @@ const swapInfoBase = z.object({
   autoSlippage: z.number().optional(),
 });
 
-const swapInfoSchema = swapInfoBase.extend({
+const swapInfoByAmountIn = swapInfoBase.extend({
   availableAmountOut: z.null(),
   availableAmountIn: z.number(),
   marketAmountOut: z.number().nullable(),
   marketAmountIn: z.null(),
-});
+}).transform((val) => ({
+  ...val,
+  isExactReceive: false as const,
+}));
+
+const swapInfoByAmountOut = swapInfoBase.extend({
+  availableAmountOut: z.number(),
+  availableAmountIn: z.null(),
+  marketAmountOut: z.null(),
+  marketAmountIn: z.number().nullable(),
+}).transform((val) => ({
+  ...val,
+  isExactReceive: true as const,
+}));
+
+const swapInfoSchema = swapInfoByAmountIn.or(swapInfoByAmountOut);
 
 export default swapInfoSchema;

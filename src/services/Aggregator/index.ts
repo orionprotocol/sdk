@@ -268,11 +268,16 @@ class Aggregator {
     amount: string,
     instantSettlement?: boolean,
     exchanges?: string[] | 'cex' | 'pools',
+    isExactReceive?: boolean,
   ) => {
     const url = new URL(`${this.apiUrl}/api/v1/swap`);
     url.searchParams.append('assetIn', assetIn);
     url.searchParams.append('assetOut', assetOut);
-    url.searchParams.append('amountIn', amount);
+    if (isExactReceive !== true) {
+      url.searchParams.append('amountIn', amount);
+    } else {
+      url.searchParams.append('amountOut', amount);
+    }
 
     if (exchanges !== undefined) {
       if (Array.isArray(exchanges)) {

@@ -19,6 +19,7 @@ export type GetSwapInfoParams = {
     poolOnly?: boolean
   }
   walletAddress?: string
+  isExactReceive?: boolean
 }
 
 export default async function getSwapInfo({
@@ -30,6 +31,7 @@ export default async function getSwapInfo({
   aggregator,
   options,
   walletAddress,
+  isExactReceive = false,
 }: GetSwapInfoParams) {
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
@@ -66,6 +68,7 @@ export default async function getSwapInfo({
     options?.poolOnly !== undefined && options.poolOnly
       ? 'pools'
       : undefined,
+    isExactReceive,
   );
 
   const { exchanges: swapExchanges } = swapInfo;

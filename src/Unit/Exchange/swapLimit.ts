@@ -34,6 +34,7 @@ export type SwapLimitParams = {
       route?: 'aggregator' | 'pool'
     }
   }
+  isExactReceive?: boolean
 }
 
 type AggregatorOrder = {
@@ -65,6 +66,7 @@ export default async function swapLimit({
   signer,
   unit,
   options,
+  isExactReceive = false,
 }: SwapLimitParams): Promise<Swap> {
   if (options?.developer) options.logger?.('YOU SPECIFIED A DEVELOPER OPTIONS. BE CAREFUL!');
   if (amount === '') throw new Error('Amount can not be empty');
@@ -143,6 +145,7 @@ export default async function swapLimit({
     options?.poolOnly !== undefined && options.poolOnly
       ? 'pools'
       : undefined,
+    isExactReceive,
   );
 
   const { exchanges: swapExchanges, exchangeContractPath } = swapInfo;
@@ -151,7 +154,11 @@ export default async function swapLimit({
 
   if (swapExchanges.length > 0) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
 
-  if (amountBN.lt(swapInfo.minAmountIn)) {
+  if (swapInfo?.isExactReceive && amountBN.lt(swapInfo.minAmountOut)) {
+    throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
+  }
+
+  if (!(swapInfo?.isExactReceive) && amountBN.lt(swapInfo.minAmountIn)) {
     throw new Error(`Amount is too low. Min amountIn is ${swapInfo.minAmountIn} ${assetIn}`);
   }
 
@@ -193,7 +200,9 @@ export default async function swapLimit({
 
   options?.logger?.(`Safe price is ${swapInfo.orderInfo.safePrice} ${quoteAssetName}`);
   // BTEMP — better than or equal market price
-  const priceIsBTEMP = priceBN.lte(swapInfo.orderInfo.safePrice);
+  const priceIsBTEMP = isExactReceive
+    ? priceBN.gte(swapInfo.orderInfo.safePrice)
+    : priceBN.lte(swapInfo.orderInfo.safePrice);
 
   options?.logger?.(`Your price ${priceBN.toString()} is ${priceIsBTEMP ? 'better than or equal' : 'worse than'} market price ${swapInfo.orderInfo.safePrice}`);
 
@@ -237,7 +246,9 @@ export default async function swapLimit({
       if (factoryAddress !== undefined) options?.logger?.(`Factory address is ${factoryAddress}. Exchange is ${firstSwapExchange}`);
     }
 
-    const amountSpend = swapInfo.amountIn;
+    const amountSpend = !(swapInfo?.isExactReceive)
+      ? swapInfo.amountIn
+      : new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
 
     balanceGuard.registerRequirement({
       reason: 'Amount spend',
@@ -250,7 +261,9 @@ export default async function swapLimit({
       sources: getAvailableSources('amount', assetInAddress, 'pool'),
     });
 
-    const amountReceive = new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
+    const amountReceive = swapInfo?.isExactReceive
+      ? swapInfo.amountOut
+      : new BigNumber(swapInfo.orderInfo.amount).multipliedBy(swapInfo.orderInfo.safePrice)
     const amountSpendBlockchainParam = normalizeNumber(
       amountSpend,
       INTERNAL_PROTOCOL_PRECISION,

@@ -215,10 +215,19 @@ export type SwapInfoBase = {
   autoSlippage: number | undefined
 }
 
-export type SwapInfo = SwapInfoBase & {
+export type SwapInfoByAmountIn = SwapInfoBase & {
+  isExactReceive: false
   availableAmountIn?: number | undefined
   marketAmountOut?: number | undefined
 }
+
+export type SwapInfoByAmountOut = SwapInfoBase & {
+  isExactReceive: true
+  marketAmountIn?: number | undefined
+  availableAmountOut?: number | undefined
+}
+
+export type SwapInfo = SwapInfoByAmountIn | SwapInfoByAmountOut;
 
 export enum HistoryTransactionStatus {
   PENDING = 'Pending',

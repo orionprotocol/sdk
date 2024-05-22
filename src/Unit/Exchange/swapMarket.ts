@@ -37,7 +37,6 @@ type PoolSwap = {
 
 export type Swap = AggregatorOrder | PoolSwap;
 
-
 const isValidSingleSwap = (singleSwap: Omit<SingleSwap, 'factory'> & { factory: string }): singleSwap is SingleSwap => {
   return isValidFactory(singleSwap.factory);
 }
@@ -51,6 +50,7 @@ export default async function swapMarket({
   signer,
   unit,
   options,
+  isExactReceive = false,
 }: SwapMarketParams): Promise<Swap> {
   if (options?.developer) options.logger?.('YOU SPECIFIED A DEVELOPER OPTIONS. BE CAREFUL!');
 
@@ -131,6 +131,7 @@ export default async function swapMarket({
     options?.poolOnly !== undefined && options.poolOnly
       ? 'pools'
       : undefined,
+    isExactReceive,
   );
 
   const { exchanges: swapExchanges, exchangeContractPath } = swapInfo;
@@ -139,7 +140,11 @@ export default async function swapMarket({
 
   if (swapExchanges.length > 0) options?.logger?.(`Swap exchanges: ${swapExchanges.join(', ')}`);
 
-  if (amountBN.lt(swapInfo.minAmountIn)) {
+  if (swapInfo?.isExactReceive && amountBN.lt(swapInfo.minAmountOut)) {
+    throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
+  }
+
+  if (!(swapInfo?.isExactReceive) && amountBN.lt(swapInfo.minAmountIn)) {
     throw new Error(`Amount is too low. Min amountIn is ${swapInfo.minAmountIn} ${assetIn}`);
   }
 
@@ -193,8 +198,11 @@ export default async function swapMarket({
     const amountOutWithSlippage = new BigNumber(swapInfo.amountOut)
       .multipliedBy(new BigNumber(1).minus(percent))
       .toString();
+    const amountInWithSlippage = new BigNumber(swapInfo.amountIn)
+      .multipliedBy(new BigNumber(1).plus(percent))
+      .toString();
 
-    const amountSpend = swapInfo.amountIn;
+    const amountSpend = swapInfo?.isExactReceive ? amountInWithSlippage : swapInfo.amountIn;
 
     balanceGuard.registerRequirement({
       reason: 'Amount spend',
@@ -207,13 +215,14 @@ export default async function swapMarket({
       sources: getAvailableSources('amount', assetInAddress, 'pool'),
     });
 
+    const amountReceive = swapInfo?.isExactReceive ? amountOutWithSlippage : swapInfo.amountOut;
     const amountSpendBlockchainParam = normalizeNumber(
       amountSpend,
       INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_CEIL,
     );
     const amountReceiveBlockchainParam = normalizeNumber(
-      amountOutWithSlippage,
+      amountReceive,
       INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     );
