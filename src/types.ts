@@ -216,13 +216,13 @@ export type SwapInfoBase = {
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
-  isExactReceive: false
+  isTradeBuy: false
   availableAmountIn?: number | undefined
   marketAmountOut?: number | undefined
 }
 
 export type SwapInfoByAmountOut = SwapInfoBase & {
-  isExactReceive: true
+  isTradeBuy: true
   marketAmountIn?: number | undefined
   availableAmountOut?: number | undefined
 }

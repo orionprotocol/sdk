@@ -56,7 +56,7 @@ const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
   aa: z.number(), // available amount in
 }).transform((content) => ({
   ...content,
-  er: false as const,
+  tb: false as const, // isTradeBuy
 }));
 
 const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
@@ -64,7 +64,7 @@ const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
   aao: z.number(), // available amount out
 }).transform((content) => ({
   ...content,
-  er: true as const,
+  tb: true as const, // isTradeBuy
 }));
 
 const swapInfoSchema = z.union([
