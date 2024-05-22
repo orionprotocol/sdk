@@ -69,11 +69,11 @@ export const signOrder = async ({
     )),
     nonce,
     expiration,
-    ...(isCrossChain
-      ? {
-        targetChainId
-      }
-      : {}),
+    // ...(isCrossChain
+    //   ? {
+    //     targetChainId
+    //   }
+    //   : {}),
     buySide: side === 'BUY' ? 1 : 0,
   };
 
@@ -93,7 +93,7 @@ export const signOrder = async ({
     ...order,
     id: hashOrder(order),
     signature: fixedSignature,
-    ...(isCrossChain ? { secret, secretHash } : {})
+    ...(isCrossChain ? { secret, secretHash, targetChainId } : {})
   };
   return signedOrder;
 };
