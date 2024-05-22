@@ -265,7 +265,6 @@ class Aggregator {
 
     const body = {
       secretHash: signedLockOrder.secretHash,
-      user: signedLockOrder.user,
       sender: signedLockOrder.sender,
       expiration: signedLockOrder.expiration,
       asset: signedLockOrder.asset,
@@ -530,7 +529,7 @@ class Aggregator {
     const signatureHeaders = this.generateHeaders(data, method, path, timestamp, apiKey, secretKey);
     const compiledHeaders = { ...headers, ...signatureHeaders.headers, };
     const body = JSON.stringify(data)
-    ;
+        ;
 
     const res = pmmOrderSchema.parse({});
 
@@ -550,7 +549,9 @@ class Aggregator {
 
         const errorParseResult = errorSchema.safeParse(json);
 
-        if (!errorParseResult.success) { throw Error(`Unrecognized answer from aggregator: ${json}`); }
+        if (!errorParseResult.success) {
+          throw Error(`Unrecognized answer from aggregator: ${json}`);
+        }
 
         throw Error(errorParseResult.data.error.reason);
       }

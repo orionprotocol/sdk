@@ -56,8 +56,7 @@ export type CrossOrder = Order & {
 }
 
 export type LockOrder = {
-  user: string // address // адрес юзера который хочет сделать лок
-  sender: string // address // broker
+  sender: string // user address
   expiration: number // uint64
   asset: string // address(?)
   amount: number // uint64

@@ -10,8 +10,7 @@ import { LOCK_ORDER_TYPES } from '../constants/lockOrderTypes';
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
 export type SignLockOrderProps = {
-  userAddress: string // адрес юзера который хочет сделать лок
-  senderAddress: string // broker
+  senderAddress: string // user
   asset: string
   amount: BigNumber.Value
   signer: ethers.Signer
@@ -20,7 +19,6 @@ export type SignLockOrderProps = {
 }
 
 export const signLockOrder = async ({
-  userAddress,
   senderAddress,
   amount,
   chainId,
@@ -34,7 +32,6 @@ export const signLockOrder = async ({
   const secretHash = ethers.keccak256(secret);
 
   const order: LockOrder = {
-    user: userAddress,
     sender: senderAddress,
     expiration,
     asset,

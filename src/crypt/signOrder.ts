@@ -41,8 +41,7 @@ export const signOrder = async ({
 }: SignOrderProps) => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
-  const secret = generateSecret();
-  const secretHash = ethers.keccak256(secret);
+  // const secretHash = ethers.keccak256(secret);
 
   const isCrossChain = targetChainId === undefined || targetChainId !== chainId;
 
@@ -75,7 +74,69 @@ export const signOrder = async ({
       }
       : {}),
     buySide: side === 'BUY' ? 1 : 0,
+    // chainId,
+    // secretHash,
+    // lockOrderExpiration: expiration
   };
+
+  const limitOrder = {
+    senderAddress,
+    matcherAddress,
+    baseAsset: baseAssetAddress,
+    quoteAsset: quoteAssetAddress,
+    matcherFeeAsset: serviceFeeAssetAddress,
+    amount: normalizeNumber(
+      amount,
+      INTERNAL_PROTOCOL_PRECISION,
+      BigNumber.ROUND_FLOOR,
+    ),
+    price: normalizeNumber(
+      price,
+      INTERNAL_PROTOCOL_PRECISION,
+      BigNumber.ROUND_FLOOR,
+    ),
+    matcherFee: normalizeNumber(
+      matcherFee,
+      INTERNAL_PROTOCOL_PRECISION,
+      BigNumber.ROUND_CEIL, // ROUND_CEIL because we don't want get "not enough fee" error
+    ),
+    nonce: BigInt(nonce),
+    expiration: BigInt(expiration),
+    buySide: side === 'BUY' ? 1 : 0,
+  };
+
+  // const limitOrderHash = ethers.keccak256(ethers.toUtf8Bytes(JSON.stringify(limitOrder)));
+  // Generate the orderParamsHash
+  const orderParamsHash = ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
+    ['address', 'address', 'address', 'address', 'address', 'uint64', 'uint64', 'uint64', 'uint64', 'uint64', 'uint8'],
+    [
+      limitOrder.senderAddress,
+      limitOrder.matcherAddress,
+      limitOrder.baseAsset,
+      limitOrder.quoteAsset,
+      limitOrder.matcherFeeAsset,
+      limitOrder.amount,
+      limitOrder.price,
+      limitOrder.matcherFee,
+      limitOrder.nonce,
+      limitOrder.expiration,
+      limitOrder.buySide
+    ]
+  ));
+
+  const secret = generateSecret();
+  const secretHash = ethers.keccak256(secret);
+
+  console.log(limitOrder, chainId, secretHash, expiration);
+
+  // Type hash from Solidity contract
+  const CROSS_CHAIN_ORDER_TYPEHASH = ethers.keccak256(ethers.toUtf8Bytes('Order(address senderAddress,address matcherAddress,address baseAsset,address quoteAsset,address matcherFeeAsset,uint64 amount,uint64 price,uint64 matcherFee,uint64 nonce,uint64 expiration,uint8 buySide,uint24 chainId,bytes32 secretHash,uint64 lockOrderExpiration)'))
+
+  // Generate the full crossChainOrder hash
+  const crossChainOrderHash = ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
+    ['bytes32', 'bytes32', 'uint24', 'bytes32', 'uint64'],
+    [CROSS_CHAIN_ORDER_TYPEHASH, orderParamsHash, Number(chainId), secretHash, BigInt(expiration)]
+  ));
 
   const signature = await signer.signTypedData(
     getDomainData(chainId),
@@ -93,7 +154,7 @@ export const signOrder = async ({
     ...order,
     id: hashOrder(order),
     signature: fixedSignature,
-    ...(isCrossChain ? { secret, secretHash, targetChainId } : {})
+    ...(isCrossChain ? { secret, secretHash: crossChainOrderHash, targetChainId } : {})
   };
   return signedOrder;
 };
