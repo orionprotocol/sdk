@@ -6,7 +6,7 @@ import cancelOrderSchema from './schemas/cancelOrderSchema.js';
 import orderBenefitsSchema from './schemas/orderBenefitsSchema.js';
 import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
-import { AggregatorWS } from './ws/index.js';
+import { AggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
 import type { BasicAuthCredentials, OrderSource, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
 import {
@@ -209,6 +209,7 @@ class Aggregator {
     partnerId?: string,
     source?: OrderSource,
     rawExchangeRestrictions?: string | undefined,
+    widgetOwner?: string,
   ) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -218,6 +219,7 @@ class Aggregator {
       },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
       ...(source !== undefined) && { 'X-Source': source },
+      ...(widgetOwner !== undefined) && { 'X-Widget-Owner': widgetOwner },
       ...this.basicAuthHeaders,
     };
 
