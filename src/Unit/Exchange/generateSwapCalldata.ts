@@ -311,14 +311,14 @@ async function processMultiFactorySwaps(
       case 'OrionV2': {
         let transferCall = generateTransferCall(swap.assetIn, swap.pool, 0);
         transferCall = pathCallWithBalance(transferCall, swap.assetIn);
-        const uni2Call = generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress);
+        const uni2Call = generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress, swap.fee);
         calls.push(transferCall, uni2Call);
         break;
       }
       case 'UniswapV2': {
         let transferCall = generateTransferCall(swap.assetIn, swap.pool, 0);
         transferCall = pathCallWithBalance(transferCall, swap.assetIn);
-        const uni2Call = generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress);
+        const uni2Call = generateUni2Call(swap.pool, swap.assetIn, swap.assetOut, swapExecutorContractAddress, swap.fee);
         calls.push(transferCall, uni2Call);
         break;
       }

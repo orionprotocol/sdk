@@ -19,7 +19,8 @@ export async function generateUni2Calls(
         currentSwap.pool,
         currentSwap.assetIn,
         currentSwap.assetOut,
-        nextSwap.pool
+        nextSwap.pool,
+        nextSwap.fee
       )
       calls.push(call)
     }
