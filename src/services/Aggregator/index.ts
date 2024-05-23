@@ -269,7 +269,7 @@ class Aggregator {
       expiration: signedLockOrder.expiration,
       asset: signedLockOrder.asset,
       amount: signedLockOrder.amount,
-      targetChainId: signedLockOrder.targetChainId,
+      targetChainId: Number(signedLockOrder.targetChainId),
       sign: signedLockOrder.signature,
       secret: signedLockOrder.secretHash,
     }
