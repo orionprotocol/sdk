@@ -181,7 +181,7 @@ export type SingleSwap = {
   factory: Factory
   assetAddressIn: string
   assetAddressOut: string
-  fee?: number
+  fee?: number | undefined
 }
 
 export type SwapInfoBase = {
