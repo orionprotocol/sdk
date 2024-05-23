@@ -289,7 +289,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify(body), // TODO: add field sign when api updated
+        body: JSON.stringify(body),
       },
       errorSchema,
     );
