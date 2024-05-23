@@ -42,6 +42,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     f: factorySchema, // factory
     aai: z.string(), // asset address in
     aao: z.string(), // asset address out
+    fee: z.number(), // fee
   })),
   usd: z.object({ // USD info of this swap, nullable
     aa: z.number().optional(), // available amount in, USD
