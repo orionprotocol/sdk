@@ -1,5 +1,5 @@
 export const LOCK_ORDER_TYPES = {
-  Order: [
+  LockOrder: [
     { name: 'sender', type: 'address' },
     { name: 'expiration', type: 'uint64' },
     { name: 'asset', type: 'address' },

@@ -19,7 +19,7 @@ function removeUndefined<T>(obj: Record<string, T | undefined>) {
  */
 const getDomainData = (chainId: SupportedChainId) => ({
   ...removeUndefined(EIP712Domain),
-  chainId,
+  chainId: Number(chainId), // check if it broke
 });
 
 export default getDomainData;

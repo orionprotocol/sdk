@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import type { LockOrder, SignedLockOrder, SupportedChainId } from '../types.js';
+import type { SupportedChainId, LockOrder, SignedLockOrder } from '../types.js';
 import getDomainData from './getDomainData.js';
 import generateSecret from '../utils/generateSecret';
 import { BigNumber } from 'bignumber.js';
