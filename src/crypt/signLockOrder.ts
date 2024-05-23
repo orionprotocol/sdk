@@ -40,7 +40,7 @@ export const signLockOrder = async ({
       INTERNAL_PROTOCOL_PRECISION,
       BigNumber.ROUND_FLOOR,
     )),
-    targetChainId,
+    targetChainId: Number(targetChainId),
     secretHash
   };
 

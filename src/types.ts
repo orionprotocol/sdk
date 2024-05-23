@@ -60,7 +60,7 @@ export type LockOrder = {
   expiration: number // uint64
   asset: string // address(?)
   amount: number // uint64
-  targetChainId: SupportedChainId // uint64
+  targetChainId: number // uint64
   secretHash: string // bytes32
 }
 
