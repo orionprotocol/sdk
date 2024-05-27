@@ -135,7 +135,7 @@ export async function generateSwapCalldata({
     swapInfo.assetOut = swapInfo.assetOut.toLowerCase()
     return swapInfo;
   });
-  console.log('path', path);
+  logger?.(`path: ${path}`);
 
   const { assetIn: srcToken } = path.first();
   const { assetOut: dstToken } = path.last();
