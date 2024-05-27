@@ -13,6 +13,8 @@ const exchangeContractStep = z.object({
   assetIn: z.string(),
   assetOut: z.string(),
   factory: z.string(),
+  assetAddressIn: z.string(),
+  assetAddressOut: z.string(),
 });
 
 const swapInfoBase = z.object({
