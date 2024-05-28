@@ -1,3 +1,5 @@
+import { ethers } from 'ethers';
+
 class XorShift128Plus {
   private x: number;
   private y: number;
@@ -41,13 +43,11 @@ function isomorphicCryptoRandomBytes(size: number): Uint8Array {
   return generateRandomBytes(size, rng);
 }
 
-function decodeToString(uint8Array: Uint8Array): string {
-  return new TextDecoder('utf-8').decode(uint8Array);
-}
-
-const generateSecret = (): string => {
+const generateSecret = () => {
   const RANDOM_BITS = 256;
-  return decodeToString(isomorphicCryptoRandomBytes(RANDOM_BITS));
+  const rand = isomorphicCryptoRandomBytes(RANDOM_BITS);
+  const secret = ethers.keccak256(rand);
+  return secret;
 };
 
 export default generateSecret;
