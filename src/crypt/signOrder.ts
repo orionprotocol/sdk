@@ -101,7 +101,7 @@ export const signOrder = async ({
     limitOrder: limitOrderHash,
     chainId: Number(chainId),
     secretHash,
-    lockOrderExpiration: expiration
+    lockOrderExpiration: expiration // TODO: change to fillAndLockAtomic data
   }
 
   // Generate the full crossChainOrder hash
@@ -131,7 +131,7 @@ export const signOrder = async ({
     ...order,
     id: limitOrderHash, // TODO: change to orderHash
     signature: fixedSignature,
-    ...(isCrossChain ? { secret, secretHash, targetChainId: Number(targetChainId) } : {})
+    ...(isCrossChain ? { secret, secretHash, targetChainId: Number(targetChainId), lockOrderExpiration: expiration } : {})
   };
   return signedOrder;
 };

@@ -51,8 +51,9 @@ export type Order = {
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
 }
 export type CrossOrder = Order & {
-  secretHash: string // uint64
-  targetChainId: SupportedChainId // uint64
+  secretHash: string // bytes32
+  targetChainId: number // uint24
+  lockOrderExpiration: number // uint64
 }
 
 export type LockOrder = {
