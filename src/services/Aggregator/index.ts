@@ -271,7 +271,7 @@ class Aggregator {
       amount: signedLockOrder.amount,
       targetChainId: Number(signedLockOrder.targetChainId),
       sign: signedLockOrder.signature,
-      secret: signedLockOrder.secretHash,
+      secret: signedLockOrder.secret,
     }
 
     return fetchWithValidation(
