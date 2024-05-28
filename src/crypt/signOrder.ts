@@ -99,7 +99,7 @@ export const signOrder = async ({
 
   const crossChainOrder = {
     limitOrder: limitOrderHash,
-    chainId,
+    chainId: Number(chainId),
     secretHash,
     lockOrderExpiration: expiration
   }
@@ -114,7 +114,10 @@ export const signOrder = async ({
   const signature = await signer.signTypedData(
     getDomainData(chainId),
     ORDER_TYPES,
-    crossChainOrder,
+    {
+      order,
+      ...crossChainOrder,
+    }
   );
 
   // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
@@ -128,7 +131,7 @@ export const signOrder = async ({
     ...order,
     id: limitOrderHash, // TODO: change to orderHash
     signature: fixedSignature,
-    ...(isCrossChain ? { secret, secretHash, targetChainId } : {})
+    ...(isCrossChain ? { secret, secretHash, targetChainId: Number(targetChainId) } : {})
   };
   return signedOrder;
 };

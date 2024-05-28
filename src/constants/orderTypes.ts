@@ -1,5 +1,5 @@
 const ORDER_TYPES = {
-  Order: [
+  CrossChainOrder: [
     { name: 'limitOrder', type: 'bytes32' },
     { name: 'chainId', type: 'uint24' },
     { name: 'secretHash', type: 'bytes32' },
