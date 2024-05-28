@@ -37,7 +37,7 @@ export const signOrder = async ({
   targetChainId,
   chainId,
   price
-}: SignOrderProps) => {
+}: SignOrderProps): Promise<SignedOrder> => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
 
@@ -131,7 +131,14 @@ export const signOrder = async ({
     ...order,
     id: limitOrderHash, // TODO: change to orderHash
     signature: fixedSignature,
-    ...(isCrossChain ? { secret, secretHash, targetChainId: Number(targetChainId), lockOrderExpiration: expiration } : {})
+    ...(isCrossChain
+      ? {
+        secret,
+        secretHash,
+        targetChainId: Number(targetChainId),
+        lockOrderExpiration: expiration
+      }
+      : {})
   };
   return signedOrder;
 };
