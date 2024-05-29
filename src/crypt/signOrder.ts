@@ -98,7 +98,7 @@ export const signOrder = async ({
   )));
 
   const crossChainOrder = {
-    limitOrder: limitOrderHash,
+    limitOrder: order,
     chainId: Number(chainId),
     secretHash,
     lockOrderExpiration: expiration // TODO: change to fillAndLockAtomic data
@@ -115,8 +115,7 @@ export const signOrder = async ({
     getDomainData(chainId),
     ORDER_TYPES,
     {
-      order,
-      ...crossChainOrder,
+      crossChainOrder,
     }
   );
 
