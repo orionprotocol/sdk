@@ -36,7 +36,7 @@ export async function generateUni2Calls(
   }
 
   const lastSwap = path.last();
-  const fee = lastSwap.fee ?? 3;
+  const fee = lastSwap.fee ?? 30;
   const scaledFee = countScaledFee(fee.toString());
   const calldata = executorInterface.encodeFunctionData('swapUniV2Scaled', [
     lastSwap.pool,
@@ -54,7 +54,7 @@ export function generateUni2Call(
   assetIn: string,
   assetOut: string,
   recipient: string,
-  fee: BigNumberish = 3,
+  fee: BigNumberish = 30,
 ) {
   const executorInterface = SwapExecutor__factory.createInterface()
   const scaledFee = countScaledFee(fee.toString());
