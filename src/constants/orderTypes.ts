@@ -1,10 +1,4 @@
 export const ORDER_TYPES = {
-  CrossChainOrder: [
-    { name: 'limitOrder', type: 'Order' },
-    { name: 'chainId', type: 'uint24' },
-    { name: 'secretHash', type: 'bytes32' },
-    { name: 'lockOrderExpiration', type: 'uint64' },
-  ],
   Order: [
     { name: 'senderAddress', type: 'address' },
     { name: 'matcherAddress', type: 'address' },
@@ -17,6 +11,12 @@ export const ORDER_TYPES = {
     { name: 'nonce', type: 'uint64' },
     { name: 'expiration', type: 'uint64' },
     { name: 'buySide', type: 'uint8' },
+  ],
+  CrossChainOrder: [
+    { name: 'limitOrder', type: 'Order' },
+    { name: 'chainId', type: 'uint24' },
+    { name: 'secretHash', type: 'bytes32' },
+    { name: 'lockOrderExpiration', type: 'uint64' },
   ]
 }
 

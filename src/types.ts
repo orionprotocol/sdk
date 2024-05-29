@@ -70,6 +70,7 @@ type SignedOrderAdditionalProps = {
   secret?: string
   secretHash?: string // bytes32
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
+  lockOrderExpiration?: number
 }
 
 export type SignedOrder = SignedOrderAdditionalProps & (Order | CrossOrder) & {

@@ -6,6 +6,7 @@ import type { Order, SignedOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
 import generateSecret from '../utils/generateSecret';
+import { getOrderHash } from './hashOrder';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
@@ -68,7 +69,7 @@ export const signOrder = async ({
     expiration,
     ...(isCrossChain
       ? {
-        targetChainId
+        targetChainId: Number(targetChainId)
       }
       : {}),
     buySide: side === 'BUY' ? 1 : 0
@@ -77,26 +78,6 @@ export const signOrder = async ({
   const secret = generateSecret();
   const secretHash = keccak256(secret);
 
-  const abiCoder = ethers.AbiCoder.defaultAbiCoder();
-
-  // Generate the orderParamsHash
-  const limitOrderHash = keccak256((abiCoder.encode(
-    ['address', 'address', 'address', 'address', 'address', 'uint64', 'uint64', 'uint64', 'uint64', 'uint64', 'uint8'],
-    [
-      order.senderAddress,
-      order.matcherAddress,
-      order.baseAsset,
-      order.quoteAsset,
-      order.matcherFeeAsset,
-      order.amount,
-      order.price,
-      order.matcherFee,
-      order.nonce,
-      order.expiration,
-      order.buySide
-    ]
-  )));
-
   const crossChainOrder = {
     limitOrder: order,
     chainId: Number(chainId),
@@ -104,19 +85,11 @@ export const signOrder = async ({
     lockOrderExpiration: expiration // TODO: change to fillAndLockAtomic data
   }
 
-  // Generate the full crossChainOrder hash
-  // const orderHash = ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
-  //     ['bytes32', 'bytes32', 'uint24', 'bytes32', 'uint64'],
-  //     [CROSS_CHAIN_ORDER_TYPEHASH, orderParamsHash, 97, '0x74a00e5cceb68d791486ddb9ea83bb8245eca22f67cb0ea81342f6eff8bf6e51', 1718955340461]
-  // ));
-
   // TODO: change what to show
   const signature = await signer.signTypedData(
     getDomainData(chainId),
     ORDER_TYPES,
-    {
-      crossChainOrder,
-    }
+    crossChainOrder
   );
 
   // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
@@ -124,20 +97,23 @@ export const signOrder = async ({
   const fixedSignature = ethers.Signature.from(signature).serialized;
 
   // if (!fixedSignature) throw new Error("Can't sign order");
-  // const { orderHash, secret, secretHash } = hashOrder(limitOrder, chainId);
-
-  const signedOrder: SignedOrder = {
+  const signedOrderWithoutId: Omit<SignedOrder, 'id'> = {
     ...order,
-    id: limitOrderHash, // TODO: change to orderHash
     signature: fixedSignature,
+    secret,
+    secretHash,
     ...(isCrossChain
       ? {
-        secret,
-        secretHash,
-        targetChainId: Number(targetChainId),
-        lockOrderExpiration: expiration
+        targetChainId: Number(targetChainId)
       }
-      : {})
+      : {}),
+    lockOrderExpiration: expiration
+  }
+  const orderHash = getOrderHash(signedOrderWithoutId, chainId);
+
+  const signedOrder: SignedOrder = {
+    ...signedOrderWithoutId,
+    id: orderHash
   };
   return signedOrder;
 };
