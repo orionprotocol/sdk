@@ -47,7 +47,7 @@ export default class Exchange {
   public generateSwapCalldata(params: PureGenerateSwapCalldataParams) {
     return generateSwapCalldataWithUnit({
       ...params,
-      unit: this.unit
+      unit: this.unit,
     })
   }
 
