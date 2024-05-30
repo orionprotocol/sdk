@@ -1,14 +1,18 @@
 import { BigNumber } from 'bignumber.js';
-import { ethers } from 'ethers';
-import { INTERNAL_PROTOCOL_PRECISION, ORDER_TYPES } from '../constants';
-import type { Order, SignedOrder, SupportedChainId } from '../types.js';
+import { ethers, keccak256 } from 'ethers';
+import { INTERNAL_PROTOCOL_PRECISION } from '../constants';
+import { CROSS_CHAIN_ORDER_TYPES } from '../constants/orderTypes/orderTypes';
+import type { Order, SignedCrossChainOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
-import hashOrder from './hashOrders/hashOrder';
+import generateSecret from '../utils/generateSecret';
+import { getOrderHash } from './hashOrders';
 
-const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
+const DAY = 24 * 60 * 60 * 1000;
+const LOCK_ORDER_EXPIRATION = 4 * DAY;
+const DEFAULT_EXPIRATION = 29 * DAY;
 
-export type SignOrderProps = {
+export type SignCrossChainOrderProps = {
   baseAssetAddress: string
   quoteAssetAddress: string
   side: 'BUY' | 'SELL'
@@ -20,23 +24,26 @@ export type SignOrderProps = {
   serviceFeeAssetAddress: string
   signer: ethers.Signer
   chainId: SupportedChainId
+  targetChainId?: SupportedChainId
 }
 
-export const signOrder = async ({
-  senderAddress,
-  serviceFeeAssetAddress,
-  baseAssetAddress,
-  quoteAssetAddress,
-  matcherFee,
-  matcherAddress,
-  chainId,
+export const signCrossChainOrder = async ({
+  amount,
   signer,
   side,
-  amount,
+  baseAssetAddress,
+  quoteAssetAddress,
+  serviceFeeAssetAddress,
+  matcherFee,
+  matcherAddress,
+  senderAddress,
+  targetChainId,
+  chainId,
   price
-}: SignOrderProps) => {
+}: SignCrossChainOrderProps): Promise<SignedCrossChainOrder> => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
+  const lockOrderExpiration = nonce + LOCK_ORDER_EXPIRATION;
 
   const order: Order = {
     senderAddress,
@@ -61,13 +68,23 @@ export const signOrder = async ({
     )),
     nonce,
     expiration,
-    buySide: side === 'BUY' ? 1 : 0,
+    buySide: side === 'BUY' ? 1 : 0
   };
+
+  const secret = generateSecret();
+  const secretHash = keccak256(secret);
+
+  const crossChainOrder = {
+    limitOrder: order,
+    chainId: Number(chainId),
+    secretHash,
+    lockOrderExpiration
+  }
 
   const signature = await signer.signTypedData(
     getDomainData(chainId),
-    ORDER_TYPES,
-    order,
+    CROSS_CHAIN_ORDER_TYPES,
+    crossChainOrder
   );
 
   // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
@@ -75,11 +92,20 @@ export const signOrder = async ({
   const fixedSignature = ethers.Signature.from(signature).serialized;
 
   // if (!fixedSignature) throw new Error("Can't sign order");
-
-  const signedOrder: SignedOrder = {
+  const signedOrderWithoutId: Omit<SignedCrossChainOrder, 'id'> = {
     ...order,
-    id: hashOrder(order),
     signature: fixedSignature,
+    secret,
+    secretHash,
+    targetChainId: Number(targetChainId),
+    lockOrderExpiration
+  }
+  const orderHash = getOrderHash(signedOrderWithoutId, chainId);
+
+  const signedCrossChainOrder: SignedCrossChainOrder = {
+    ...signedOrderWithoutId,
+    id: orderHash
   };
-  return signedOrder;
+
+  return signedCrossChainOrder;
 };

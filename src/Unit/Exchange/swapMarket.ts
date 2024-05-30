@@ -11,7 +11,7 @@ import {
 } from '../../constants';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
-import { signOrder } from '../../crypt/index.js';
+import { signOrder } from '../../crypt';
 import type orderSchema from '../../services/Aggregator/schemas/orderSchema.js';
 import type { z } from 'zod';
 import type { SwapLimitParams } from './swapLimit.js';

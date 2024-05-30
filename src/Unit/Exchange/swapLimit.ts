@@ -9,10 +9,10 @@ import {
   INTERNAL_PROTOCOL_PRECISION,
   NATIVE_CURRENCY_PRECISION,
   SWAP_THROUGH_ORION_POOL_GAS_LIMIT
-} from '../../constants/index.js';
+} from '../../constants';
 import getNativeCryptocurrencyName from '../../utils/getNativeCryptocurrencyName.js';
 import { calculateFeeInFeeAsset, denormalizeNumber, normalizeNumber } from '../../utils/index.js';
-import { signOrder } from '../../crypt/index.js';
+import { signOrder } from '../../crypt';
 import type orderSchema from '../../services/Aggregator/schemas/orderSchema.js';
 import type { z } from 'zod';
 import { simpleFetch } from 'simple-typed-fetch';

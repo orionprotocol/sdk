@@ -4,8 +4,7 @@ import getDomainData from './getDomainData.js';
 import generateSecret from '../utils/generateSecret';
 import { BigNumber } from 'bignumber.js';
 import normalizeNumber from '../utils/normalizeNumber';
-import { INTERNAL_PROTOCOL_PRECISION } from '../constants';
-import { LOCK_ORDER_TYPES } from '../constants/lockOrderTypes';
+import { INTERNAL_PROTOCOL_PRECISION, LOCK_ORDER_TYPES } from '../constants';
 
 const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
@@ -41,6 +40,7 @@ export const signLockOrder = async ({
       BigNumber.ROUND_FLOOR,
     )),
     targetChainId: Number(targetChainId),
+    secret,
     secretHash
   };
 

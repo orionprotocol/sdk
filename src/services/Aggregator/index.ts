@@ -14,7 +14,8 @@ import type {
   NetworkShortName,
   SignedLockOrder,
   SignedCancelOrderRequest,
-  SignedOrder
+  SignedOrder,
+  SignedCrossChainOrder
 } from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
@@ -211,7 +212,7 @@ class Aggregator {
   );
 
   placeOrder = (
-    signedOrder: SignedOrder,
+    signedOrder: SignedOrder | SignedCrossChainOrder,
     isCreateInternalOrder: boolean,
     isReversedOrder?: boolean,
     partnerId?: string,
