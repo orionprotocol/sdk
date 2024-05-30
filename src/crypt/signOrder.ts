@@ -8,7 +8,9 @@ import getDomainData from './getDomainData.js';
 import generateSecret from '../utils/generateSecret';
 import { getOrderHash } from './hashOrder';
 
-const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
+const DAY = 24 * 60 * 60 * 1000;
+const LOCK_ORDER_EXPIRATION = 4 * DAY;
+const DEFAULT_EXPIRATION = 29 * DAY;
 
 export type SignOrderProps = {
   baseAssetAddress: string
@@ -82,7 +84,7 @@ export const signOrder = async ({
     limitOrder: order,
     chainId: Number(chainId),
     secretHash,
-    lockOrderExpiration: expiration // TODO: change to fillAndLockAtomic data
+    lockOrderExpiration: LOCK_ORDER_EXPIRATION
   }
 
   // TODO: change what to show
@@ -107,7 +109,7 @@ export const signOrder = async ({
         targetChainId: Number(targetChainId)
       }
       : {}),
-    lockOrderExpiration: expiration
+    lockOrderExpiration: LOCK_ORDER_EXPIRATION
   }
   const orderHash = getOrderHash(signedOrderWithoutId, chainId);
 
