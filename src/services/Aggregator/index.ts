@@ -231,14 +231,6 @@ class Aggregator {
 
     const url = new URL(`${this.apiUrl}/api/v1/order/${isCreateInternalOrder ? 'internal' : ''}`);
 
-    const body = {
-      ...signedOrder,
-      lockExpiration: signedOrder.lockOrderExpiration,
-      rawExchangeRestrictions
-    }
-
-    delete body.lockOrderExpiration;
-
     return fetchWithValidation(
       url.toString(),
       z.object({
@@ -254,7 +246,7 @@ class Aggregator {
       {
         headers,
         method: 'POST',
-        body: JSON.stringify(body),
+        body: JSON.stringify({ ...signedOrder, rawExchangeRestrictions }),
       },
       errorSchema,
     );
