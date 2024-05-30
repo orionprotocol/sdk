@@ -84,6 +84,8 @@ export const fullOrderSchema = z.object({
   E: z.enum(executionTypes).optional(),
   C: z.string().optional(), // trigger condition
   ro: z.boolean().optional(), // is reversed order
+  sc: z.boolean().optional(), // source chain
+  tc: z.boolean().optional(), // target chain
 }).transform((val) => ({
   ...val,
   k: 'full' as const,
@@ -105,6 +107,8 @@ export const fullOrderSchema = z.object({
   executionType: o.E,
   triggerCondition: o.C,
   isReversedOrder: o.ro,
+  sorceChain: o.sc,
+  targetChain: o.tc,
   subOrders: o.c.map((so) => ({
     pair: so.P,
     exchange: so.e,
