@@ -76,7 +76,7 @@ export const signCrossChainOrder = async ({
 
   const crossChainOrder = {
     limitOrder: order,
-    chainId: Number(chainId),
+    chainId: Number(targetChainId),
     secretHash,
     lockOrderExpiration
   }
