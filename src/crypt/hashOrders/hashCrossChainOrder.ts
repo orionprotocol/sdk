@@ -4,9 +4,9 @@ import type { SupportedChainId, CrossChainOrder } from '../../types';
 const ORDER_TYPEHASH =
     '0xb5132db62dfceb466f2f8aee7a039db36a99772e5a9771d28388a5f9baad7c54';
 const CROSS_CHAIN_ORDER_TYPEHASH =
-    '0xc4666edeecc42a94cf6b87f39e1ca967792e6d738224365e54d7d06ec632b05c';
+    '0xb0edab98a08b4f5ce4f349d7cb1622bde999112acf1ac4a30cc9f394bd7809a6';
 
-export function getOrderHash(order: CrossChainOrder, chainId: SupportedChainId) {
+export function getOrderHash(order: CrossChainOrder, targetChainId: SupportedChainId) {
   const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
   // Generate the orderParamsHash
@@ -48,7 +48,7 @@ export function getOrderHash(order: CrossChainOrder, chainId: SupportedChainId) 
       [
         CROSS_CHAIN_ORDER_TYPEHASH,
         limitOrderHash,
-        Number(chainId),
+        Number(targetChainId),
         order.secretHash,
         order.lockOrderExpiration,
       ]

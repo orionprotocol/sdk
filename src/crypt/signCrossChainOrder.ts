@@ -24,7 +24,7 @@ export type SignCrossChainOrderProps = {
   serviceFeeAssetAddress: string
   signer: ethers.Signer
   chainId: SupportedChainId
-  targetChainId?: SupportedChainId
+  targetChainId: SupportedChainId
 }
 
 export const signCrossChainOrder = async ({
@@ -76,7 +76,7 @@ export const signCrossChainOrder = async ({
 
   const crossChainOrder = {
     limitOrder: order,
-    chainId: Number(targetChainId),
+    targetChainId: Number(targetChainId),
     secretHash,
     lockOrderExpiration
   }
@@ -100,7 +100,7 @@ export const signCrossChainOrder = async ({
     targetChainId: Number(targetChainId),
     lockOrderExpiration
   }
-  const orderHash = getOrderHash(signedOrderWithoutId, chainId);
+  const orderHash = getOrderHash(signedOrderWithoutId, targetChainId);
 
   const signedCrossChainOrder: SignedCrossChainOrder = {
     ...signedOrderWithoutId,
