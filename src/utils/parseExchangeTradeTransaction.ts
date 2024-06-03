@@ -8,7 +8,6 @@ const swapThroughOrionPoolSchema = z.object({
     z.bigint(), // amount_spend
     z.bigint(), // amount_receive
     z.string().refine(ethers.isAddress).array().nonempty(), // path
-    z.boolean(), // is_exact_spend
   ]),
 }).transform((data) => ({
   name: data.name,
@@ -16,7 +15,6 @@ const swapThroughOrionPoolSchema = z.object({
     amount_spend: data.args[0],
     amount_receive: data.args[1],
     path: data.args[2],
-    is_exact_spend: data.args[3],
   },
 }));
 
