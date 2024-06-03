@@ -551,19 +551,19 @@ class AggregatorWS {
             autoSlippage: json.sl,
           };
 
-          switch (json.k) { // kind
-            case 'exactSpend':
+          switch (json.tb) { // isTradeBuy
+            case false:
               this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[json.S]?.callback({
-                kind: json.k,
+                isTradeBuy: false,
                 marketAmountOut: json.mo,
                 availableAmountIn: json.aa,
                 ...baseSwapInfo,
               });
 
               break;
-            case 'exactReceive':
+            case true:
               this.subscriptions[SubscriptionType.SWAP_SUBSCRIBE]?.[json.S]?.callback({
-                kind: json.k,
+                isTradeBuy: true,
                 ...baseSwapInfo,
                 marketAmountIn: json.mi,
                 availableAmountOut: json.aao,
