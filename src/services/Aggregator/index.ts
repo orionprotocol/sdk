@@ -16,7 +16,7 @@ import {
 import type networkCodes from '../../constants/networkCodes.js';
 import toUpperCase from '../../utils/toUpperCase.js';
 import httpToWS from '../../utils/httpToWS.js';
-import { ethers } from 'ethers';
+import { ZeroAddress, ethers, isAddress } from 'ethers';
 import orderSchema from './schemas/orderSchema.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import { pmmOrderSchema } from '../../Unit/Pmm/schemas/order';
@@ -219,7 +219,7 @@ class Aggregator {
       },
       ...(partnerId !== undefined) && { 'X-Partner-Id': partnerId },
       ...(source !== undefined) && { 'X-Source': source },
-      ...(widgetOwner !== undefined) && { 'X-Widget-Owner': widgetOwner },
+      ...(widgetOwner !== undefined && widgetOwner !== ZeroAddress && isAddress(widgetOwner)) && { 'X-Widget-Owner': widgetOwner },
       ...this.basicAuthHeaders,
     };
 

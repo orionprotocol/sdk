@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import {
   errorSchema,
@@ -40,6 +41,14 @@ type SignatureType = {
   signature: string
 };
 
+type submitTransactionDataForWidgetPayload = {
+  partner_domain: string
+  sender_address: string
+  tx_hash: string
+  chain_id: number
+  signature: string
+}
+
 class ReferralSystem {
   private readonly apiUrl: string
 
@@ -67,6 +76,7 @@ class ReferralSystem {
     this.getContractsAddresses = this.getContractsAddresses.bind(this);
     this.getClaimInfo = this.getClaimInfo.bind(this);
     this.getAggregatedHistory = this.getAggregatedHistory.bind(this);
+    this.submitTransactionDataForWidget = this.submitTransactionDataForWidget.bind(this);
   }
 
   getLink = (refererAddress: string) =>
@@ -290,6 +300,23 @@ class ReferralSystem {
         },
       },
       errorSchema
+    );
+  };
+
+  /**
+   * @deprecated and should be removed in future versions
+    */
+  submitTransactionDataForWidget = (payload: submitTransactionDataForWidgetPayload) => {
+    return fetchWithValidation(
+      `${this.apiUrl}/referer/widget/submit`,
+      z.unknown(),
+      {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify(payload)
+      }
     );
   };
 }
