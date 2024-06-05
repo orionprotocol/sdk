@@ -10,7 +10,7 @@ const baseAddressUpdate = baseMessageSchema.extend({
   id: z.string(),
   T: z.literal(MessageType.ADDRESS_UPDATE),
   S: z.string(), // subscription
-  uc: z.array(z.enum(['b', 'o'])), // update content
+  uc: z.array(z.enum(['b', 'o']).nullable()), // update content
 });
 
 const subOrderSchema = z.object({
@@ -121,7 +121,7 @@ export const fullOrderSchema = z.object({
 
 const updateMessageSchema = baseAddressUpdate.extend({
   k: z.literal('u'), // kind of message: "u" - updates
-  uc: z.array(z.enum(['b', 'o'])), // update content: "o" - orders updates, "b" - balance updates
+  uc: z.array(z.enum(['b', 'o']).nullable()), // update content: "o" - orders updates, "b" - balance updates
   b: balancesSchema.optional(),
   o: z.tuple([fullOrderSchema.or(orderUpdateSchema)]).optional(),
 });
