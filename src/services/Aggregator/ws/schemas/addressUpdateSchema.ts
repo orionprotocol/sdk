@@ -107,7 +107,7 @@ export const fullOrderSchema = z.object({
   executionType: o.E,
   triggerCondition: o.C,
   isReversedOrder: o.ro,
-  sorceChain: o.sc,
+  sourceChain: o.sc,
   targetChain: o.tc,
   subOrders: o.c.map((so) => ({
     pair: so.P,
