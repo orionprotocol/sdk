@@ -50,15 +50,9 @@ export const signLockOrder = async ({
     order,
   );
 
-  // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
-  // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
-  const fixedSignature = ethers.Signature.from(signature).serialized;
-
-  // if (!fixedSignature) throw new Error("Can't sign order");
-
   const signedOrder: SignedLockOrder = {
     ...order,
-    signature: fixedSignature,
+    signature,
     secret,
     secretHash
   };

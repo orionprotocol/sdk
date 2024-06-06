@@ -1,5 +1,6 @@
 import { BigNumber } from 'bignumber.js';
-import { ethers, keccak256 } from 'ethers';
+import type { ethers } from 'ethers';
+import { keccak256 } from 'ethers';
 import { INTERNAL_PROTOCOL_PRECISION } from '../constants';
 import { CROSS_CHAIN_ORDER_TYPES } from '../constants/orderTypes/orderTypes';
 import type { Order, SignedCrossChainOrder, SupportedChainId } from '../types.js';
@@ -87,14 +88,9 @@ export const signCrossChainOrder = async ({
     crossChainOrder
   );
 
-  // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
-  // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
-  const fixedSignature = ethers.Signature.from(signature).serialized;
-
-  // if (!fixedSignature) throw new Error("Can't sign order");
   const signedOrderWithoutId: Omit<SignedCrossChainOrder, 'id'> = {
     ...order,
-    signature: fixedSignature,
+    signature,
     secret,
     secretHash,
     targetChainId: Number(targetChainId),

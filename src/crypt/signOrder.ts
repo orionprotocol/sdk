@@ -1,5 +1,5 @@
 import { BigNumber } from 'bignumber.js';
-import { ethers } from 'ethers';
+import type { ethers } from 'ethers';
 import { INTERNAL_PROTOCOL_PRECISION, ORDER_TYPES } from '../constants';
 import type { Order, SignedOrder, SupportedChainId } from '../types.js';
 import normalizeNumber from '../utils/normalizeNumber.js';
@@ -70,16 +70,10 @@ export const signOrder = async ({
     order,
   );
 
-  // https://github.com/poap-xyz/poap-fun/pull/62#issue-928290265
-  // "Signature's v was always send as 27 or 28, but from Ledger was 0 or 1"
-  const fixedSignature = ethers.Signature.from(signature).serialized;
-
-  // if (!fixedSignature) throw new Error("Can't sign order");
-
   const signedOrder: SignedOrder = {
     ...order,
     id: hashOrder(order),
-    signature: fixedSignature,
+    signature,
   };
   return signedOrder;
 };
