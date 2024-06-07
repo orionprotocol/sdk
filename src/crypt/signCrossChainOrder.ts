@@ -10,7 +10,10 @@ import generateSecret from '../utils/generateSecret';
 import { getOrderHash } from './hashOrders';
 
 const DAY = 24 * 60 * 60 * 1000;
-const LOCK_ORDER_EXPIRATION = 4 * DAY;
+// TODO: return LOCK_ORDER_EXPIRATION and remove MOCK_LOCK_ORDER_EXPIRATION
+// const LOCK_ORDER_EXPIRATION = 4 * DAY;
+const MOCK_LOCK_ORDER_EXPIRATION = 10 * 60 * 1000; // 10 mins
+
 const DEFAULT_EXPIRATION = 29 * DAY;
 
 export type SignCrossChainOrderProps = {
@@ -44,7 +47,7 @@ export const signCrossChainOrder = async ({
 }: SignCrossChainOrderProps): Promise<SignedCrossChainOrder> => {
   const nonce = Date.now();
   const expiration = nonce + DEFAULT_EXPIRATION;
-  const lockOrderExpiration = nonce + LOCK_ORDER_EXPIRATION;
+  const lockOrderExpiration = nonce + MOCK_LOCK_ORDER_EXPIRATION;
 
   const order: Order = {
     senderAddress,
