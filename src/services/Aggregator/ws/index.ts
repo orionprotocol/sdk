@@ -103,7 +103,11 @@ type AddressUpdateInitial = {
 }
 
 type AddressUpdateSubscription = {
-  payload: string
+  payload: {
+    S: string
+    pa?: string[]
+  }
+  // payload: string
   callback: (data: AddressUpdateUpdate | AddressUpdateInitial) => void
   errorCb?: (message: string) => void
 }
@@ -272,13 +276,34 @@ class AggregatorWS {
 
       if ('payload' in subscription) {
         if (typeof subscription.payload === 'string') {
+          console.log('subscription.payload === string', subscription.payload);
           subRequest['S'] = subscription.payload;
-        } else { // SwapInfoSubscriptionPayload
+        } else {
+          console.log('subscription.payload === object', subscription.payload);
+          for (const [key, value] of Object.entries(subscription.payload)) {
+            console.log('for in', key, value);
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            subRequest[key] = value as Json;
+          }
+        }
+
+        console.log('subRequest', subRequest);
+
+        // Crutch for SwapInfoSubscriptionPayload
+        if (
+          typeof subscription.payload !== 'string' &&
+          'i' in subscription.payload &&
+          'o' in subscription.payload &&
+          'a' in subscription.payload
+        ) {
+          console.log('SwapInfoSubscriptionPayload', subscription.payload);
           subRequest['S'] = {
             d: id,
             ...subscription.payload,
           };
         }
+
+        console.log('subRequest', subRequest);
       }
 
       const subKey = isExclusive ? 'default' : id;
@@ -365,7 +390,7 @@ class AggregatorWS {
     if (newestSubId.includes('0x')) { // is wallet address (ADDRESS_UPDATE)
       const auSubscriptions = this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE];
       if (auSubscriptions) {
-        const targetAuSub = Object.entries(auSubscriptions).find(([, value]) => value?.payload === newestSubId);
+        const targetAuSub = Object.entries(auSubscriptions).find(([, value]) => value?.payload.S === newestSubId);
         if (targetAuSub) {
           const [key] = targetAuSub;
           delete this.subscriptions[SubscriptionType.ADDRESS_UPDATES_SUBSCRIBE]?.[key];
