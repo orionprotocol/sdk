@@ -8,7 +8,6 @@ import type { BlockchainService } from '../../services/BlockchainService/index.j
 import { calculateFeeInFeeAsset, denormalizeNumber, getNativeCryptocurrencyName } from '../../utils/index.js';
 
 export type GetSwapInfoParams = {
-  type: 'exactSpend' | 'exactReceive'
   assetIn: string
   assetOut: string
   amount: BigNumber.Value
@@ -18,12 +17,12 @@ export type GetSwapInfoParams = {
   options?: {
     instantSettlement?: boolean
     poolOnly?: boolean
-  },
-  walletAddress?: string,
+  }
+  walletAddress?: string
+  isTradeBuy?: boolean
 }
 
 export default async function getSwapInfo({
-  type,
   assetIn,
   assetOut,
   amount,
@@ -32,6 +31,7 @@ export default async function getSwapInfo({
   aggregator,
   options,
   walletAddress,
+  isTradeBuy = false,
 }: GetSwapInfoParams) {
   if (amount === '') throw new Error('Amount can not be empty');
   if (assetIn === '') throw new Error('AssetIn can not be empty');
@@ -61,7 +61,6 @@ export default async function getSwapInfo({
   }
 
   const swapInfo = await simpleFetch(aggregator.getSwapInfo)(
-    type,
     assetIn,
     assetOut,
     amountBN.toString(),
@@ -69,22 +68,13 @@ export default async function getSwapInfo({
     options?.poolOnly !== undefined && options.poolOnly
       ? 'pools'
       : undefined,
+    isTradeBuy,
   );
 
   const { exchanges: swapExchanges } = swapInfo;
   const { factories } = await simpleFetch(blockchainService.getPoolsConfig)();
   const poolExchangesList = factories !== undefined ? Object.keys(factories) : [];
   const [firstSwapExchange] = swapExchanges;
-
-  // if (swapInfo.type === 'exactReceive' && amountBN.lt(swapInfo.minAmountOut)) {
-  //   throw new Error(`Amount is too low. Min amountOut is ${swapInfo.minAmountOut} ${assetOut}`);
-  // }
-
-  // if (swapInfo.type === 'exactSpend' && amountBN.lt(swapInfo.minAmountIn)) {
-  //   throw new Error(`Amount is too low. Min amountIn is ${swapInfo.minAmountIn} ${assetIn}`);
-  // }
-
-  // if (swapInfo.orderInfo === null) throw new Error(swapInfo.executionInfo);
 
   let route: 'pool' | 'aggregator';
   if (options?.poolOnly !== undefined && options.poolOnly) {
