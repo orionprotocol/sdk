@@ -1,4 +1,4 @@
-import { SwapExecutor__factory, AeroPool__factory } from "@orionprotocol/contracts/lib/ethers-v6-cjs/index.js"
+import { SwapExecutor__factory, AeroPool__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
 import { type BigNumberish, JsonRpcProvider } from "ethers"
 import { SafeArray } from "../../../utils/safeGetters.js"
 import { addCallParams } from "./utils.js"

@@ -1,4 +1,4 @@
-import type { LibValidator } from '@orionprotocol/contracts/lib/ethers-v6-cjs/Exchange.js';
+import type { LibValidator } from '@orionprotocol/contracts/lib/ethers-v6/Exchange.js';
 import { ethers, ZeroAddress } from 'ethers';
 import type { AddressLike, JsonRpcProvider, BigNumberish, BytesLike } from 'ethers';
 import cloneDeep from 'lodash.clonedeep';

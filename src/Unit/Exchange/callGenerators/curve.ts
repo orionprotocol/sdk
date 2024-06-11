@@ -2,7 +2,7 @@ import {
   SwapExecutor__factory,
   CurveRegistry__factory,
   ERC20__factory,
-} from "@orionprotocol/contracts/lib/ethers-v6-cjs/index.js";
+} from "@orionprotocol/contracts/lib/ethers-v6/index.js";
 import { MaxUint256, type BigNumberish, type JsonRpcProvider } from "ethers";
 import { addCallParams, pathCallWithBalance } from "./utils.js";
 import type { SingleSwap } from "../../../types.js";

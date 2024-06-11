@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
-import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6-cjs/index.js';
+import { Exchange__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import getBalances from '../../utils/getBalances.js';
 import BalanceGuard from '../../BalanceGuard.js';
 import getAvailableSources from '../../utils/getAvailableFundsSources.js';
