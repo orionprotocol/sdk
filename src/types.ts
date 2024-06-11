@@ -82,26 +82,19 @@ export type Pair = {
 
 export enum SupportedChainId {
   MAINNET = '1',
-  ARBITRUM = '42161',
-  FANTOM_OPERA = '250',
-  POLYGON = '137',
-  OKC = '66',
-  OPBNB = '204',
-  INEVM = '2525',
-  LINEA = '59144',
-  AVAX = '43114',
-  BASE = '8453',
-
-  ROPSTEN = '3',
-  GOERLI = '5',
-  SEPOLIA = '11155111',
-  POLYGON_TESTNET = '80001',
-  FANTOM_TESTNET = '4002',
   BSC = '56',
+  OKC = '66',
+  POLYGON = '137',
+  OPBNB = '204',
+  FANTOM_OPERA = '250',
+  INEVM = '2525',
+  BASE = '8453',
+  ARBITRUM = '42161',
+  AVAX = '43114',
+  LINEA = '59144',
+
   BSC_TESTNET = '97',
-  OKC_TESTNET = '65',
-  DRIP_TESTNET = '56303',
-  ARBITRUM_GOERLI = '421613',
+  SEPOLIA = '11155111',
 
   // For testing and debug purpose
   // BROKEN = '0',
@@ -291,22 +284,22 @@ export type EnvConfig = {
   referralAPI: string
   frontageAPI: string
   networks: Partial<
-    Record<
-      SupportedChainId,
-      VerboseUnitConfig
+        Record<
+            SupportedChainId,
+            VerboseUnitConfig
+        >
     >
-  >
 }
 export type AggregatedAssets = Partial<
-  Record<
-    string,
-    Partial<
-      Record<SupportedChainId, {
-        address: string
-      }>
+    Record<
+        string,
+        Partial<
+            Record<SupportedChainId, {
+              address: string
+            }>
+        >
     >
-  >
-  >;
+>;
 
 export type RedeemOrder = {
   sender: string
@@ -446,9 +439,9 @@ type BridgeHistory = Awaited<ReturnType<typeof getHistory>>;
 type BridgeHistoryItem = NonNullable<BridgeHistory[string]>;
 
 export type AtomicSwap = Partial<
-  Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
+    Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
 > & Partial<
-  Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
+    Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
 > & {
   sourceChainId: SupportedChainId
   targetChainId: SupportedChainId

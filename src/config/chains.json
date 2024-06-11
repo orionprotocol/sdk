@@ -51,32 +51,6 @@
       "curveRegistry": ""
     }
   },
-  "3": {
-    "chainId": "3",
-    "explorer": "https://ropsten.etherscan.io/",
-    "label": "Ropsten",
-    "shortName": "ETH-Ropsten",
-    "code": "eth",
-    "rpc": "https://testing.orion.xyz/eth-ropsten/rpc",
-    "baseCurrencyName": "ETH",
-    "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
-    }
-  },
-  "5": {
-    "chainId": "5",
-    "explorer": "https://goerli.etherscan.io/",
-    "label": "Goerli",
-    "shortName": "ETH-Goerli",
-    "code": "eth",
-    "rpc": "https://testing.orion.xyz/eth-goerli/rpc",
-    "baseCurrencyName": "ETH",
-    "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
-    }
-  },
   "11155111": {
     "chainId": "11155111",
     "explorer": "https://sepolia.etherscan.io/",
@@ -84,19 +58,6 @@
     "shortName": "ETH-Sepolia",
     "code": "eth",
     "rpc": "https://gateway.tenderly.co/public/sepolia",
-    "baseCurrencyName": "ETH",
-    "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
-    }
-  },
-  "421613": {
-    "chainId": "421613",
-    "explorer": "https://goerli.arbiscan.io/",
-    "label": "Arbitrum Goerli",
-    "shortName": "Arbitrum Goerli",
-    "code": "arb",
-    "rpc": "https://goerli-rollup.arbitrum.io/rpc",
     "baseCurrencyName": "ETH",
     "contracts": {
       "WETH": "",
@@ -114,19 +75,6 @@
     "contracts": {
       "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
       "curveRegistry": "0x445FE580eF8d70FF569aB36e80c647af338db351"
-    }
-  },
-  "4002": {
-    "chainId": "4002",
-    "explorer": "https://testnet.ftmscan.com/",
-    "label": "Fantom Testnet",
-    "shortName": "FTM-Testnet",
-    "code": "ftm",
-    "rpc": "https://rpc.testnet.fantom.network/",
-    "baseCurrencyName": "FTM",
-    "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
     }
   },
   "250": {
@@ -155,19 +103,6 @@
       "curveRegistry": "0x094d12e5b541784701FD8d65F11fc0598FBC6332"
     }
   },
-  "80001": {
-    "chainId": "80001",
-    "label": "Polygon Mumbai",
-    "shortName": "Polygon Mumbai",
-    "code": "polygon",
-    "baseCurrencyName": "MATIC",
-    "rpc": "https://rpc.ankr.com/polygon_mumbai",
-    "explorer": "https://mumbai.polygonscan.com/",
-    "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
-    }
-  },
   "66": {
     "chainId": "66",
     "explorer": "https://www.oklink.com/okc/",
@@ -178,32 +113,6 @@
     "baseCurrencyName": "OKT",
     "contracts": {
       "WETH": "0x843340759bFCa4a3776F401cD2E03fE9bc0d838f",
-      "curveRegistry": ""
-    }
-  },
-  "65": {
-    "chainId": "65",
-    "explorer": "https://www.oklink.com/okc-test/",
-    "label": "OKC Testnet",
-    "shortName": "OKC-Testnet",
-    "code": "okc",
-    "rpc": "https://exchaintestrpc.okex.org/",
-    "baseCurrencyName": "OKT",
-    "contracts": {
-      "WETH": "",
-      "curveRegistry": ""
-    }
-  },
-  "56303": {
-    "chainId": "56303",
-    "label": "DRIP Chain",
-    "shortName": "DRIP Chain",
-    "code": "drip",
-    "baseCurrencyName": "DRIP",
-    "rpc": "https://testnet.1d.rip/",
-    "explorer": "https://explorer-testnet.1d.rip/",
-    "contracts": {
-      "WETH": "",
       "curveRegistry": ""
     }
   },
