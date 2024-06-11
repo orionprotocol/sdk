@@ -1,4 +1,4 @@
-import type { LibValidator } from '@orionprotocol/contracts/lib/ethers-v6/Exchange.js';
+import type { LibValidator } from '@orionprotocol/contracts/lib/ethers-v6-cjs/Exchange.js';
 import { ethers, ZeroAddress } from 'ethers';
 import type { AddressLike, JsonRpcProvider, BigNumberish, BytesLike } from 'ethers';
 import cloneDeep from 'lodash.clonedeep';
@@ -20,8 +20,9 @@ import { addressLikeToString } from '../../utils/addressLikeToString.js';
 import { generateUnwrapAndTransferCall, generateWrapAndTransferCall } from './callGenerators/weth.js';
 import { getExchangeAllowance, getTotalBalance } from '../../utils/getBalance.js';
 import { generateFeePaymentCall } from './callGenerators/feePayment.js';
+import { generateAeroCalls } from './callGenerators/aero.js';
 
-export type Factory = 'UniswapV2' | 'UniswapV3' | 'Curve' | 'OrionV2' | 'OrionV3';
+export type Factory = 'UniswapV2' | 'UniswapV3' | 'Curve' | 'OrionV2' | 'OrionV3' | 'Aero';
 
 type BaseGenerateSwapCalldataParams = {
   amount: BigNumberish
@@ -274,6 +275,10 @@ async function processSingleFactorySwaps(
     }
     case 'OrionV3': {
       calls = await generateOrion3Calls(path, amount, swapExecutorContractAddress, provider);
+      break;
+    }
+    case "Aero": {
+      calls = await generateAeroCalls(path, amount, swapExecutorContractAddress, provider);
       break;
     }
     case 'Curve': {

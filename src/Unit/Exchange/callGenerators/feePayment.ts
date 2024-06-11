@@ -1,4 +1,4 @@
-import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
+import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6-cjs/index.js"
 import type { BigNumberish, AddressLike } from "ethers"
 import { type CallParams, addCallParams } from "./utils.js"
 
@@ -16,6 +16,6 @@ export function generateFeePaymentCall(
     token,
     amount
   ])
-  
+
   return addCallParams(calldata, callParams)
 }

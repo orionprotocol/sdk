@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { ethers } from 'ethers';
 import clone from 'just-clone';
-import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
+import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6-cjs/index.js';
 import { APPROVE_ERC20_GAS_LIMIT, NATIVE_CURRENCY_PRECISION } from './constants/index.js';
 import type {
   AggregatedBalanceRequirement, ApproveFix, Asset, BalanceIssue, BalanceRequirement, Source,

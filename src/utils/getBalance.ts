@@ -1,4 +1,4 @@
-import { ERC20__factory, Exchange__factory, type Exchange } from "@orionprotocol/contracts/lib/ethers-v6/index.js";
+import { ERC20__factory, Exchange__factory, type Exchange } from "@orionprotocol/contracts/lib/ethers-v6-cjs/index.js";
 import type { BigNumber } from "bignumber.js";
 import { ZeroAddress, ethers } from "ethers";
 import { INTERNAL_PROTOCOL_PRECISION, NATIVE_CURRENCY_PRECISION } from "../constants/index.js";
@@ -195,5 +195,5 @@ export async function getTotalBalance(
     walletBalance,
     exchangeBalance,
     totalBalance: walletBalance + exchangeBalance
-  } 
+  }
 }
