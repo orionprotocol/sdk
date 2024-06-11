@@ -1,4 +1,4 @@
-import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
+import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6-cjs/index.js';
 import { ethers } from 'ethers';
 import invariant from 'tiny-invariant';
 
