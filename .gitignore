@@ -132,3 +132,4 @@ lib
 .pnp.*
 
 src/artifacts/contracts/
+.DS_store
