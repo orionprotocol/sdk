@@ -1,4 +1,4 @@
-import { ERC20__factory, SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6-cjs/index.js"
+import { ERC20__factory, SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
 import type { AddressLike } from "ethers"
 import { type BytesLike, ethers, type BigNumberish } from "ethers"
 

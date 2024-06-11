@@ -1,4 +1,4 @@
-import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6-cjs/index.js"
+import { SwapExecutor__factory } from "@orionprotocol/contracts/lib/ethers-v6/index.js"
 import type { BigNumberish } from "ethers"
 import { type CallParams, addCallParams } from "./utils.js"
 import type { AddressLike } from "ethers"

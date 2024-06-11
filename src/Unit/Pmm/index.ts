@@ -4,7 +4,7 @@ import {pmmOrderSchema} from "./schemas/order";
 import {simpleFetch} from "simple-typed-fetch";
 import {ethers, Wallet} from "ethers";
 import {BigNumber} from "bignumber.js";
-import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6-cjs/index.js';
+import { ERC20__factory } from '@orionprotocol/contracts/lib/ethers-v6/index.js';
 import {orionRFQContractABI} from "./abi/OrionRFQ";
 
 export default class Pmm {
