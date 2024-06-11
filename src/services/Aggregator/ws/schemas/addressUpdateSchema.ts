@@ -86,6 +86,8 @@ export const fullOrderSchema = z.object({
   ro: z.boolean().optional(), // is reversed order
   sc: z.string().optional(), // source chain
   tc: z.string().optional(), // target chain
+  ir: z.string().optional(), // is refundable
+  sh: z.string().optional(), // secret hash
 }).transform((val) => ({
   ...val,
   k: 'full' as const,
@@ -109,6 +111,7 @@ export const fullOrderSchema = z.object({
   isReversedOrder: o.ro,
   sourceChain: o.sc,
   targetChain: o.tc,
+  isRefundable: o.ir,
   subOrders: o.c.map((so) => ({
     pair: so.P,
     exchange: so.e,
