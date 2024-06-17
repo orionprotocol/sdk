@@ -498,7 +498,7 @@ class BlockchainService {
      * @returns Fee in percents
      */
   getAtomicSwapFee = () => fetchWithValidation(
-    `${this.apiUrl}/api/v1/atomic/swap-fee`,
+    `${this.apiUrl}/api/atomic/swap-fee`,
     z.string(),
     { headers: this.basicAuthHeaders },
     errorSchema,
