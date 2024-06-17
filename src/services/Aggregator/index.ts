@@ -71,6 +71,7 @@ class Aggregator {
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.getStableCoins = this.getStableCoins.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
+    this.getAtomicSwapFee = this.getAtomicSwapFee.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
     this.placeLockOrder = this.placeLockOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
@@ -441,6 +442,17 @@ class Aggregator {
         sourceNetworkCode,
       }),
     },
+    errorSchema,
+  );
+
+  /**
+     * Get atomic swap fee in current chain
+     * @returns Fee in percents
+     */
+  getAtomicSwapFee = () => fetchWithValidation(
+    `${this.apiUrl}/api/v1/atomic/swap-fee`,
+    z.string(),
+    { headers: this.basicAuthHeaders },
     errorSchema,
   );
 
