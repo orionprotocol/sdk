@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import uppercasedNetworkCodes from '../../../constants/uppercasedNetworkCodes';
 
 const orderInfoSchema = z.object({
   assetPair: z.string().toUpperCase(),
@@ -52,6 +53,8 @@ const swapInfoBase = z.object({
     d: z.string().optional(), // difference in available amount in/out (USD) and market amount out/in (USD) in percentage
   }).optional(),
   autoSlippage: z.number().optional(),
+  sourceChain: z.enum(uppercasedNetworkCodes).optional(),
+  targetChain: z.enum(uppercasedNetworkCodes).optional(),
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({
