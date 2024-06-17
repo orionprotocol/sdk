@@ -20,6 +20,7 @@ import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
 import type { BasicAuthCredentials } from '../../types.js';
+import errorSchema from '../Aggregator/schemas/errorSchema';
 
 type IAdminAuthHeaders = {
   auth: string
@@ -115,6 +116,7 @@ class BlockchainService {
     this.claimOrder = this.claimOrder.bind(this);
     this.getGasLimits = this.getGasLimits.bind(this);
     this.getExchangeContractWalletBalance = this.getExchangeContractWalletBalance.bind(this);
+    this.getAtomicSwapFee = this.getAtomicSwapFee.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -489,6 +491,17 @@ class BlockchainService {
       method: 'POST',
       body: JSON.stringify(secretHashes),
     },
+  );
+
+  /**
+     * Get atomic swap fee in current chain
+     * @returns Fee in percents
+     */
+  getAtomicSwapFee = () => fetchWithValidation(
+    `${this.apiUrl}/api/v1/atomic/swap-fee`,
+    z.string(),
+    { headers: this.basicAuthHeaders },
+    errorSchema,
   );
 
   getGasLimits = () => fetchWithValidation(
