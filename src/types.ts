@@ -103,7 +103,7 @@ export enum SupportedChainId {
   OKC_TESTNET = '65',
   DRIP_TESTNET = '56303',
   ARBITRUM_GOERLI = '421613',
-  EVENT_HORIZON = '123420000034',
+  EVENT_HORIZON_TESTNET = '123420000034',
 
   // For testing and debug purpose
   // BROKEN = '0',
