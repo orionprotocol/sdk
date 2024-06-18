@@ -245,6 +245,24 @@
           }
         }
       },
+      "123420000034": {
+        "api": "https://testing.orion.xyz/event-horizon",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
       "421613": {
         "api": "https://testing.orion.xyz/arbitrum-goerli",
         "services": {

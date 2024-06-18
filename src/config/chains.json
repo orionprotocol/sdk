@@ -89,6 +89,19 @@
       "curveRegistry": ""
     }
   },
+  "123420000034": {
+    "chainId": "123420000034",
+    "explorer": "https://blockscout-123420000034.raas-testnet.gelato.digital/",
+    "label": "Event Horizon Testnet",
+    "shortName": "EH-Testnet",
+    "code": "eth",
+    "rpc": "https://rpc-123420000034.raas-testnet.gelato.digital/",
+    "baseCurrencyName": "ETH",
+    "contracts": {
+      "WETH": "0x4200000000000000000000000000000000000006",
+      "curveRegistry": ""
+    }
+  },
   "421613": {
     "chainId": "421613",
     "explorer": "https://goerli.arbiscan.io/",

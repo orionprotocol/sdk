@@ -9,6 +9,7 @@ export const developmentChains = [
   SupportedChainId.FANTOM_TESTNET,
   SupportedChainId.POLYGON_TESTNET,
   SupportedChainId.OKC_TESTNET,
+  SupportedChainId.EVENT_HORIZON,
 ];
 export const productionChains = [
   SupportedChainId.MAINNET,
