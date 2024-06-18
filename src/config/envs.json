@@ -246,7 +246,7 @@
         }
       },
       "123420000034": {
-        "api": "https://trade.orion.xyz/event-horizon",
+        "api": "https://testing.orion.xyz/event-horizon",
         "services": {
           "aggregator": {
             "http": "/backend",
