@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js';
 import normalizeNumber from '../utils/normalizeNumber';
 import { INTERNAL_PROTOCOL_PRECISION, LOCK_ORDER_TYPES } from '../constants';
 
-const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
+const DEFAULT_EXPIRATION = 4 * 24 * 60 * 60 * 1000; // 4 days
 
 export type SignLockOrderProps = {
   senderAddress: string // user
