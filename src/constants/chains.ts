@@ -3,7 +3,7 @@ import { SupportedChainId } from '../types.js';
 export const developmentChains = [
   SupportedChainId.BSC_TESTNET,
   SupportedChainId.SEPOLIA,
-  SupportedChainId.EVENT_HORIZON,
+  SupportedChainId.EVENT_HORIZON_TESTNET,
 ];
 export const productionChains = [
   SupportedChainId.MAINNET,
