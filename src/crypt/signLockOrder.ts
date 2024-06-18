@@ -6,9 +6,7 @@ import { BigNumber } from 'bignumber.js';
 import normalizeNumber from '../utils/normalizeNumber';
 import { INTERNAL_PROTOCOL_PRECISION, LOCK_ORDER_TYPES } from '../constants';
 
-// TODO: return LOCK_ORDER_EXPIRATION and remove MOCK_LOCK_ORDER_EXPIRATION
-// const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
-const MOCK_ORDER_EXPIRATION = 10 * 60 * 1000; // 10 mins
+const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
 
 export type SignLockOrderProps = {
   senderAddress: string // user
@@ -28,7 +26,7 @@ export const signLockOrder = async ({
   signer,
 }: SignLockOrderProps) => {
   const nonce = Date.now();
-  const expiration = nonce + MOCK_ORDER_EXPIRATION;
+  const expiration = nonce + DEFAULT_EXPIRATION;
   const secret = generateSecret();
   const secretHash = ethers.keccak256(secret);
 
