@@ -244,6 +244,24 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "123420000034": {
+        "api": "https://trade.orion.xyz/event-horizon",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
