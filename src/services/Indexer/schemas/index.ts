@@ -9,3 +9,5 @@ export { default as veORNInfoResponseSchema } from './veORN-info-schema';
 export { default as listAmountResponseSchema } from './list-amount-schema';
 export { default as votingInfoResponseSchema } from './voting-info-schema';
 export { default as testIncrementorSchema } from './test-incrementor-schema';
+export { default as getPointsInfoResponseSchema } from './get-points-info-schema';
+export { default as getPointsAtResponseSchema } from './get-points-at-schema';
