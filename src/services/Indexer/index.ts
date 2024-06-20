@@ -1,7 +1,6 @@
 import {
   environmentResponseSchema,
   getPointsAtResponseSchema,
-  getPointsInfoResponseSchema,
   getPoolResponseSchema,
   listAmountResponseSchema,
   listNFTOrderResponseSchema,
@@ -53,12 +52,6 @@ type VeORNInfoPayload = BasePayload & {
   params: [string]
 };
 
-type GetPointsInfoPayload = BasePayload & {
-  model: 'veORN'
-  method: 'pointsInfo'
-  params: [string]
-};
-
 type GetPointsAtPayload = BasePayload & {
   model: 'veORN'
   method: 'pointsInfo'
@@ -82,7 +75,6 @@ type Payload =
   | GetPoolInfoPayload
   | ListPoolPayload
   | VeORNInfoPayload
-  | GetPointsInfoPayload
   | GetPointsAtPayload
   | ListAmountPayload
   | GetAmountByORNPayload;
@@ -108,7 +100,6 @@ class IndexerService {
     this.poolV2Info = this.poolV2Info.bind(this);
     this.listPoolV3 = this.listPoolV3.bind(this);
     this.veORNInfo = this.veORNInfo.bind(this);
-    this.getPointsInfo = this.getPointsInfo.bind(this);
     this.getPointsAt = this.getPointsAt.bind(this);
     this.listAmount = this.listAmount.bind(this);
     this.getAmountByORN = this.getAmountByORN.bind(this);
@@ -136,18 +127,7 @@ class IndexerService {
     });
   };
 
-  readonly getPointsInfo = (address: string) => {
-    return fetchWithValidation(this.apiUrl, getPointsInfoResponseSchema, {
-      method: 'POST',
-      body: this.makeRPCPayload({
-        model: 'veORN',
-        method: 'pointsInfo',
-        params: [address],
-      }),
-    });
-  };
-
-  readonly getPointsAt = (timestamp = Date.now(), page?: number, pageSize?: number) => {
+  readonly getPointsAt = (timestamp = Date.now(), page = 1, pageSize = 1000) => {
     return fetchWithValidation(this.apiUrl, getPointsAtResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
