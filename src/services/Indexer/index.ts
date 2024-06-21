@@ -55,7 +55,7 @@ type VeORNInfoPayload = BasePayload & {
 type GetPointsAtPayload = BasePayload & {
   model: 'veORN'
   method: 'pointsInfo'
-  params: [number, number, number]
+  params: [number, number]
 };
 
 type ListAmountPayload = BasePayload & {
@@ -127,13 +127,17 @@ class IndexerService {
     });
   };
 
-  readonly getPointsAt = (timestamp = Date.now(), page = 1, pageSize = 1000) => {
+  /**
+   * @param {number} page - current page
+   * @param {number} [pageSize] - amount of items on one page
+   */
+  readonly getPointsAt = (page = 1, pageSize = 1000) => {
     return fetchWithValidation(this.apiUrl, getPointsAtResponseSchema, {
       method: 'POST',
       body: this.makeRPCPayload({
         model: 'veORN',
         method: 'pointsAt',
-        params: [timestamp, page, pageSize],
+        params: [page, pageSize],
       }),
     });
   };
