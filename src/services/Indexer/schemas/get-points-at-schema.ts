@@ -2,8 +2,8 @@ import { z } from 'zod';
 import infoSchema from './info-schema.js';
 
 const getPointsAtResultSchema = z.object({
-  points: z.record(z.string(), z.number()),
-  pageSize: z.number(),
+  pointsObject: z.record(z.string(), z.number()),
+  currentPage: z.number(),
   totalElements: z.number(),
 });
 
