@@ -1,5 +1,6 @@
 import {
   environmentResponseSchema,
+  getPointsAtResponseSchema,
   getPoolResponseSchema,
   listAmountResponseSchema,
   listNFTOrderResponseSchema,
@@ -51,6 +52,12 @@ type VeORNInfoPayload = BasePayload & {
   params: [string]
 };
 
+type GetPointsAtPayload = BasePayload & {
+  model: 'veORN'
+  method: 'pointsInfo'
+  params: [number, number]
+};
+
 type ListAmountPayload = BasePayload & {
   model: string
   method: 'listAmount'
@@ -68,6 +75,7 @@ type Payload =
   | GetPoolInfoPayload
   | ListPoolPayload
   | VeORNInfoPayload
+  | GetPointsAtPayload
   | ListAmountPayload
   | GetAmountByORNPayload;
 
@@ -92,6 +100,7 @@ class IndexerService {
     this.poolV2Info = this.poolV2Info.bind(this);
     this.listPoolV3 = this.listPoolV3.bind(this);
     this.veORNInfo = this.veORNInfo.bind(this);
+    this.getPointsAt = this.getPointsAt.bind(this);
     this.listAmount = this.listAmount.bind(this);
     this.getAmountByORN = this.getAmountByORN.bind(this);
     this.getAmountAt = this.getAmountAt.bind(this);
@@ -114,6 +123,21 @@ class IndexerService {
         model: 'veORN',
         method: 'info',
         params: [address],
+      }),
+    });
+  };
+
+  /**
+   * @param {number} page - current page
+   * @param {number} [pageSize] - amount of items on one page
+   */
+  readonly getPointsAt = (page = 1, pageSize = 1000) => {
+    return fetchWithValidation(this.apiUrl, getPointsAtResponseSchema, {
+      method: 'POST',
+      body: this.makeRPCPayload({
+        model: 'veORN',
+        method: 'pointsAt',
+        params: [page, pageSize],
       }),
     });
   };
