@@ -11,7 +11,7 @@ const infoSchema = z.object({
   chainId: z.number(),
   chainName: z.string(),
   swapExecutorContractAddress: z.string(),
-  libValidatorContractAddress: z.string(),
+  libValidatorContractAddress: z.string().optional(),
   exchangeContractAddress: z.string(),
   oracleContractAddress: z.string(),
   matcherAddress: z.string(),

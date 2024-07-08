@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { evmAddressSchema } from "./util-schemas.js";
-import infoSchema from "./info-schema.js";
+import { z } from 'zod';
+import { evmAddressSchema } from './util-schemas.js';
+import infoSchema from './info-schema.js';
 
 const veORNResultSchema = z.object({
   avgAPR: z.number(),
@@ -12,14 +12,15 @@ const veORNResultSchema = z.object({
   weeklyReward: z.number(),
   userAPR: z.number(),
   userVeORN: z.number(),
+  userVeORNBalance: z.number(),
   userORNLocked: z.number(),
   userLockEndDate: z.number(),
   userReward: z.number(),
   userWeeklyReward: z.number(),
   userMinLockPeriod: z.number(),
-  dropLock: z.boolean(),
-  pointsReward: z.number(),
-});
+  dropLock: z.boolean().optional(),
+  pointsReward: z.number().optional(),
+}).passthrough();
 
 const veORNInfoSchema = z.object({
   result: veORNResultSchema,
