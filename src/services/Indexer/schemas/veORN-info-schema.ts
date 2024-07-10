@@ -12,12 +12,15 @@ const veORNResultSchema = z.object({
   weeklyReward: z.number(),
   userAPR: z.number(),
   userVeORN: z.number(),
+  userVeORNBalance: z.number(),
   userORNLocked: z.number(),
   userLockEndDate: z.number(),
   userReward: z.number(),
   userWeeklyReward: z.number(),
   userMinLockPeriod: z.number(),
-});
+  dropLock: z.boolean().optional(),
+  pointsReward: z.number().optional(),
+}).passthrough();
 
 const veORNInfoSchema = z.object({
   result: veORNResultSchema,

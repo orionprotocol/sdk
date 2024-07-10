@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { makePartial } from '../../../utils/index.js';
+import { makePartial } from '../../../utils';
 
 const internalFeeAssetSchema = z.object({
   type: z.enum(['percent', 'plain']),
@@ -10,8 +10,9 @@ const internalFeeAssetSchema = z.object({
 const infoSchema = z.object({
   chainId: z.number(),
   chainName: z.string(),
-  exchangeContractAddress: z.string(),
   swapExecutorContractAddress: z.string(),
+  libValidatorContractAddress: z.string().optional(),
+  exchangeContractAddress: z.string(),
   oracleContractAddress: z.string(),
   matcherAddress: z.string(),
   orderFeePercent: z.number(),
