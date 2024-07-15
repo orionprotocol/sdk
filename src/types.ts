@@ -96,6 +96,7 @@ export enum SupportedChainId {
   BSC_TESTNET = '97',
   SEPOLIA = '11155111',
   EVENT_HORIZON_TESTNET = '123420000034',
+  LUMIA_TESTNET = '1952959480',
 
   // For testing and debug purpose
   // BROKEN = '0',
