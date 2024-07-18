@@ -262,6 +262,24 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "1952959480": {
+        "api": "https://testing.orion.xyz/lumia-testnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },

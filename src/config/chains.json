@@ -77,6 +77,19 @@
       "curveRegistry": ""
     }
   },
+  "1952959480": {
+    "chainId": "1952959480",
+    "explorer": "https://testnet-explorer.lumia.org/",
+    "label": "Lumia Testnet",
+    "shortName": "Lumia Testnet",
+    "code": "lumia",
+    "rpc": "https://testnet-rpc.lumia.org",
+    "baseCurrencyName": "LUMIA",
+    "contracts": {
+      "WETH": "0x1a1aF9C78704D3a0Ab9e031C92E7bd808711A582",
+      "curveRegistry": ""
+    }
+  },
   "42161": {
     "chainId": "42161",
     "explorer": "https://arbiscan.io/",
