@@ -523,7 +523,7 @@ class BlockchainService {
     { headers: this.basicAuthHeaders }
   );
 
-  ф = ({ assetIn, assetOut, targetChainId }: MinLockAmount) => fetchWithValidation(
+  getMinLockAmountForCCS = ({ assetIn, assetOut, targetChainId }: MinLockAmount) => fetchWithValidation(
     `${this.apiUrl}/api/atomic/min-lock-amount?assetIn=${assetIn}&assetOut=${assetOut}&targetChainId=${targetChainId}`,
     z.number(),
     { headers: this.basicAuthHeaders }
