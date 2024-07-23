@@ -37,6 +37,8 @@ export const orderUpdateSchema = z.object({
   t: z.number(), // update time
   C: z.string().optional(), // trigger condition
   E: z.enum(executionTypes).optional(),
+  bf: z.number().optional(),
+  bF: z.string().optional(),
   c: subOrderSchema.array(),
 })
   .transform((val) => ({
@@ -49,6 +51,8 @@ export const orderUpdateSchema = z.object({
     status: o.S,
     liquidated: o.l,
     executionType: o.E,
+    bridgeFee: o.bf,
+    bridgeFeeAsset: o.bF,
     triggerCondition: o.C,
     subOrders: o.c.map((so) => ({
       pair: so.P,
@@ -74,6 +78,8 @@ export const fullOrderSchema = z.object({
   p: z.number(), // price
   F: z.string().toUpperCase(), // fee asset
   f: z.number(), // fee
+  bf: z.number().optional(),
+  bF: z.string().optional(),
   l: z.boolean().optional(), // is liquidation order
   L: z.number().optional(), // stop limit price,
   o: z.boolean(), // internal only
@@ -97,6 +103,8 @@ export const fullOrderSchema = z.object({
   settledAmount: o.A,
   feeAsset: o.F,
   fee: o.f,
+  bridgeFee: o.bf,
+  bridgeFeeAsset: o.bF,
   liquidated: o.l,
   stopPrice: o.L,
   status: o.S,
