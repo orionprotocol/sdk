@@ -19,7 +19,8 @@ import { sourceAtomicHistorySchema, targetAtomicHistorySchema } from './schemas/
 import { makePartial } from '../../utils';
 import type { networkCodes } from '../../constants/index.js';
 import { fetchWithValidation } from 'simple-typed-fetch';
-import type { BasicAuthCredentials } from '../../types.js';
+import { type BasicAuthCredentials, SupportedChainId } from '../../types.js';
+import errorSchema from '../Aggregator/schemas/errorSchema';
 
 type IAdminAuthHeaders = {
   auth: string
@@ -63,6 +64,12 @@ type PlatformFees = {
   assetOut: string
   walletAddress?: string | undefined
   fromWidget?: string | undefined
+}
+
+type MinLockAmount = {
+  assetIn: string
+  assetOut: string
+  targetChainId: SupportedChainId
 }
 
 class BlockchainService {
@@ -115,6 +122,8 @@ class BlockchainService {
     this.claimOrder = this.claimOrder.bind(this);
     this.getGasLimits = this.getGasLimits.bind(this);
     this.getExchangeContractWalletBalance = this.getExchangeContractWalletBalance.bind(this);
+    this.getAtomicSwapFee = this.getAtomicSwapFee.bind(this);
+    this.getMinLockAmountForCCS = this.getMinLockAmountForCCS.bind(this);
   }
 
   get basicAuthHeaders() {
@@ -491,6 +500,17 @@ class BlockchainService {
     },
   );
 
+  /**
+     * Get atomic swap fee in current chain
+     * @returns Fee in percents
+     */
+  getAtomicSwapFee = () => fetchWithValidation(
+    `${this.apiUrl}/api/atomic/swap-fee`,
+    z.string(),
+    { headers: this.basicAuthHeaders },
+    errorSchema,
+  );
+
   getGasLimits = () => fetchWithValidation(
     `${this.apiUrl}/api/baseLimits`,
     z.record(z.number()),
@@ -500,6 +520,12 @@ class BlockchainService {
   getExchangeContractWalletBalance = (exchangeContractAddress: string) => fetchWithValidation(
     `${this.apiUrl}/api/broker/getWalletBalance/${exchangeContractAddress}`,
     z.record(z.string()),
+    { headers: this.basicAuthHeaders }
+  );
+
+  getMinLockAmountForCCS = ({ assetIn, assetOut, targetChainId }: MinLockAmount) => fetchWithValidation(
+    `${this.apiUrl}/api/atomic/min-lock-amount?assetIn=${assetIn}&assetOut=${assetOut}&targetChainId=${targetChainId}`,
+    z.number(),
     { headers: this.basicAuthHeaders }
   );
 }

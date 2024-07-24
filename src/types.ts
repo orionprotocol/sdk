@@ -51,11 +51,37 @@ export type Order = {
   buySide: 0 | 1 // uint8, 1=buy, 0=sell
 }
 
-export type SignedOrder = {
-  id: string // hash of Order (it's not part of order structure in smart-contract)
+export type CrossChainOrder = Order & {
+  secret: string
+  secretHash: string // bytes32
+  targetChainId: number // uint24
+  lockOrderExpiration: number // uint64
+}
+
+export type LockOrder = {
+  sender: string // user address
+  expiration: number // uint64
+  asset: string // address(?)
+  amount: number // uint64
+  targetChainId: number // uint64
+  secret: string // bytes32
+  secretHash: string // bytes32
+}
+
+type SignedOrderAdditionalProps = {
   signature: string // bytes
   needWithdraw?: boolean // bool (not supported yet by smart-contract)
-} & Order
+}
+
+export type SignedOrder = SignedOrderAdditionalProps & Order & {
+  id: string // hash of Order (it's not part of order structure in smart-contract)
+}
+
+export type SignedCrossChainOrder = SignedOrderAdditionalProps & CrossChainOrder & {
+  id: string // hash of Order (it's not part of order structure in smart-contract)
+}
+
+export type SignedLockOrder = SignedOrderAdditionalProps & LockOrder
 
 export type CancelOrderRequest = {
   id: number | string
@@ -101,6 +127,8 @@ export enum SupportedChainId {
   // For testing and debug purpose
   // BROKEN = '0',
 }
+
+export type NetworkShortName = Uppercase<typeof networkCodes[number]>;
 
 const balanceTypes = ['exchange', 'wallet'] as const;
 

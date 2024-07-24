@@ -6,14 +6,21 @@ import cancelOrderSchema from './schemas/cancelOrderSchema.js';
 import orderBenefitsSchema from './schemas/orderBenefitsSchema.js';
 import errorSchema from './schemas/errorSchema.js';
 import placeAtomicSwapSchema from './schemas/placeAtomicSwapSchema.js';
-import { AggregatorWS } from './ws/index.js';
+import { AggregatorWS } from './ws';
 import { atomicSwapHistorySchema } from './schemas/atomicSwapHistorySchema.js';
-import type { BasicAuthCredentials, OrderSource, SignedCancelOrderRequest, SignedOrder } from '../../types.js';
+import type {
+  BasicAuthCredentials,
+  OrderSource,
+  NetworkShortName,
+  SignedLockOrder,
+  SignedCancelOrderRequest,
+  SignedOrder,
+  SignedCrossChainOrder
+} from '../../types.js';
 import {
   pairConfigSchema, aggregatedOrderbookSchema,
   exchangeOrderbookSchema, poolReservesSchema,
 } from './schemas/index.js';
-import type networkCodes from '../../constants/networkCodes.js';
 import toUpperCase from '../../utils/toUpperCase.js';
 import httpToWS from '../../utils/httpToWS.js';
 import { ethers } from 'ethers';
@@ -60,10 +67,12 @@ class Aggregator {
     this.getPairConfigs = this.getPairConfigs.bind(this);
     this.getPairsList = this.getPairsList.bind(this);
     this.getSwapInfo = this.getSwapInfo.bind(this);
+    this.getCrossChainAssetsByNetwork = this.getCrossChainAssetsByNetwork.bind(this);
     this.getTradeProfits = this.getTradeProfits.bind(this);
     this.getStableCoins = this.getStableCoins.bind(this);
     this.placeAtomicSwap = this.placeAtomicSwap.bind(this);
     this.placeOrder = this.placeOrder.bind(this);
+    this.placeLockOrder = this.placeLockOrder.bind(this);
     this.cancelOrder = this.cancelOrder.bind(this);
     this.checkWhitelisted = this.checkWhitelisted.bind(this);
     this.getLockedBalance = this.getLockedBalance.bind(this);
@@ -203,7 +212,7 @@ class Aggregator {
   );
 
   placeOrder = (
-    signedOrder: SignedOrder,
+    signedOrder: SignedOrder | SignedCrossChainOrder,
     isCreateInternalOrder: boolean,
     isReversedOrder?: boolean,
     partnerId?: string,
@@ -239,6 +248,49 @@ class Aggregator {
         headers,
         method: 'POST',
         body: JSON.stringify({ ...signedOrder, rawExchangeRestrictions }),
+      },
+      errorSchema,
+    );
+  };
+
+  placeLockOrder = (
+    signedLockOrder: SignedLockOrder,
+  ) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...this.basicAuthHeaders,
+    };
+
+    const url = new URL(`${this.apiUrl}/api/v1/cross-chain`);
+
+    const body = {
+      secretHash: signedLockOrder.secretHash,
+      sender: signedLockOrder.sender,
+      expiration: signedLockOrder.expiration,
+      asset: signedLockOrder.asset,
+      amount: signedLockOrder.amount,
+      targetChainId: Number(signedLockOrder.targetChainId),
+      sign: signedLockOrder.signature,
+      secret: signedLockOrder.secret,
+    }
+
+    return fetchWithValidation(
+      url.toString(),
+      z.object({
+        orderId: z.string(),
+        placementRequests: z.array(
+          z.object({
+            amount: z.number(),
+            brokerAddress: z.string(),
+            exchange: z.string(),
+          }),
+        ).optional(),
+      }),
+      {
+        headers,
+        method: 'POST',
+        body: JSON.stringify(body),
       },
       errorSchema,
     );
@@ -300,6 +352,18 @@ class Aggregator {
     );
   };
 
+  getCrossChainAssetsByNetwork = (sourceChain: NetworkShortName) => {
+    const url = new URL(`${this.apiUrl}/api/v1/cross-chain/assets`);
+    url.searchParams.append('sourceChain', sourceChain);
+
+    return fetchWithValidation(
+      url.toString(),
+      z.array(z.string()),
+      { headers: this.basicAuthHeaders },
+      errorSchema,
+    )
+  }
+
   getPrices = (assetPair: string, includePools: boolean) => {
     const url = new URL(`${this.apiUrl}/api/v1/prices/`);
     url.searchParams.append('assetPair', assetPair);
@@ -354,14 +418,14 @@ class Aggregator {
   };
 
   /**
-   * Placing atomic swap. Placement must take place on the target chain.
-   * @param secretHash Secret hash
-   * @param sourceNetworkCode uppercase, e.g. BSC, ETH
-   * @returns Fetch promise
-   */
+     * Placing atomic swap. Placement must take place on the target chain.
+     * @param secretHash Secret hash
+     * @param sourceNetworkCode uppercase, e.g. BSC, ETH
+     * @returns Fetch promise
+     */
   placeAtomicSwap = (
     secretHash: string,
-    sourceNetworkCode: Uppercase<typeof networkCodes[number]>,
+    sourceNetworkCode: NetworkShortName,
   ) => fetchWithValidation(
     `${this.apiUrl}/api/v1/atomic-swap`,
     placeAtomicSwapSchema,
@@ -381,10 +445,11 @@ class Aggregator {
   );
 
   /**
-   * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Aggregator
-   * @param sender Sender address
-   * @returns Fetch promise
-   */
+     * Get placed atomic swaps. Each atomic swap received from this list has a target chain corresponding to this Aggregator
+     * @param sender Sender address
+     * @param limit
+     * @returns Fetch promise
+     */
   getHistoryAtomicSwaps = (sender: string, limit = 1000) => {
     const url = new URL(`${this.apiUrl}/api/v1/atomic-swap/history/all`);
     url.searchParams.append('sender', sender);
@@ -466,7 +531,7 @@ class Aggregator {
     const signatureHeaders = this.generateHeaders(data, method, path, timestamp, apiKey, secretKey);
     const compiledHeaders = { ...headers, ...signatureHeaders.headers, };
     const body = JSON.stringify(data)
-    ;
+        ;
 
     const res = pmmOrderSchema.parse({});
 
@@ -486,7 +551,9 @@ class Aggregator {
 
         const errorParseResult = errorSchema.safeParse(json);
 
-        if (!errorParseResult.success) { throw Error(`Unrecognized answer from aggregator: ${json}`); }
+        if (!errorParseResult.success) {
+          throw Error(`Unrecognized answer from aggregator: ${json}`);
+        }
 
         throw Error(errorParseResult.data.error.reason);
       }
@@ -502,6 +569,7 @@ class Aggregator {
     return res;
   }
 }
+
 export * as schemas from './schemas/index.js';
 export * as ws from './ws/index.js';
 export { Aggregator };

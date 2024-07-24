@@ -23,7 +23,7 @@
     "noUnusedLocals": true /* Enable error reporting when a local variables aren't read. */,
     "noUnusedParameters": true /* Raise an error when a function parameter isn't read */,
     "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true, /* Skip type checking all .d.ts files. */
   },
   "ts-node": {
     // Tell ts-node CLI to install the --loader automatically, explained below
