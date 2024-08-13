@@ -102,16 +102,16 @@
       "curveRegistry": ""
     }
   },
-  "421613": {
-    "chainId": "421613",
-    "explorer": "https://goerli.arbiscan.io/",
-    "label": "Arbitrum Goerli",
-    "shortName": "Arbitrum Goerli",
-    "code": "arb",
-    "rpc": "https://goerli-rollup.arbitrum.io/rpc",
-    "baseCurrencyName": "ETH",
+  "1952959480": {
+    "chainId": "1952959480",
+    "explorer": "https://testnet-explorer.lumia.org/",
+    "label": "Lumia Testnet",
+    "shortName": "Lumia Testnet",
+    "code": "lumia",
+    "rpc": "https://testnet-rpc.lumia.org",
+    "baseCurrencyName": "LUMIA",
     "contracts": {
-      "WETH": "",
+      "WETH": "0x1a1aF9C78704D3a0Ab9e031C92E7bd808711A582",
       "curveRegistry": ""
     }
   },

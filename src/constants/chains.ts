@@ -10,6 +10,7 @@ export const developmentChains = [
   SupportedChainId.POLYGON_TESTNET,
   SupportedChainId.OKC_TESTNET,
   SupportedChainId.EVENT_HORIZON_TESTNET,
+  SupportedChainId.LUMIA_TESTNET,
 ];
 export const productionChains = [
   SupportedChainId.MAINNET,

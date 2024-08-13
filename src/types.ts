@@ -104,6 +104,7 @@ export enum SupportedChainId {
   DRIP_TESTNET = '56303',
   ARBITRUM_GOERLI = '421613',
   EVENT_HORIZON_TESTNET = '123420000034',
+  LUMIA_TESTNET = '1952959480',
 
   // For testing and debug purpose
   // BROKEN = '0',

@@ -263,62 +263,8 @@
           }
         }
       },
-      "421613": {
-        "api": "https://testing.orion.xyz/arbitrum-goerli",
-        "services": {
-          "aggregator": {
-            "http": "/backend",
-            "ws": "/v1"
-          },
-          "blockchain": {
-            "http": ""
-          },
-          "priceFeed": {
-            "all": "/price-feed"
-          },
-          "indexer": {
-            "http": "/orion-indexer/"
-          }
-        }
-      },
-      "4002": {
-        "api": "https://testing.orion.xyz/ftm-testnet",
-        "services": {
-          "aggregator": {
-            "http": "/backend",
-            "ws": "/v1"
-          },
-          "blockchain": {
-            "http": ""
-          },
-          "priceFeed": {
-            "all": "/price-feed"
-          },
-          "indexer": {
-            "http": "/orion-indexer/"
-          }
-        }
-      },
-      "80001": {
-        "api": "https://testing.orion.xyz/polygon-mumbai",
-        "services": {
-          "aggregator": {
-            "http": "/backend",
-            "ws": "/v1"
-          },
-          "blockchain": {
-            "http": ""
-          },
-          "priceFeed": {
-            "all": "/price-feed"
-          },
-          "indexer": {
-            "http": "/orion-indexer/"
-          }
-        }
-      },
-      "56303": {
-        "api": "https://testing.orion.xyz/drip-testnet",
+      "1952959480": {
+        "api": "https://testing.orion.xyz/lumia-testnet",
         "services": {
           "aggregator": {
             "http": "/backend",
