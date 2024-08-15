@@ -13,6 +13,7 @@ const infoSchema = z.object({
   swapExecutorContractAddress: z.string(),
   libValidatorContractAddress: z.string().optional(),
   exchangeContractAddress: z.string(),
+  spvContractAddress: z.string(),
   oracleContractAddress: z.string(),
   matcherAddress: z.string(),
   orderFeePercent: z.number(),
