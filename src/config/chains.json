@@ -124,7 +124,7 @@
     "rpc": "https://mainnet-rpc.lumia.org/",
     "baseCurrencyName": "LUMIA",
     "contracts": {
-      "WETH": "0x5A77f1443D16ee5761d310e38b62f77f726bC71c",
+      "WETH": "0xE891B5EE2F52E312038710b761EC165792AD25B1",
       "curveRegistry": ""
     }
   },
