@@ -92,6 +92,7 @@ export enum SupportedChainId {
   LINEA = '59144',
   AVAX = '43114',
   BASE = '8453',
+  LUMIA = '994873017',
 
   ROPSTEN = '3',
   GOERLI = '5',
