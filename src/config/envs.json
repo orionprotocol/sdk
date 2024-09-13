@@ -203,7 +203,7 @@
         }
       },
       "994873017": {
-        "api": "https://app.electra.trade/lumia-mainnet",
+        "api": "https://staging.electra.finance/lumia-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
@@ -487,6 +487,24 @@
       },
       "8453": {
         "api": "https://staging.orion.xyz/base-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "994873017": {
+        "api": "https://staging.electra.finance/lumia-mainnet",
         "services": {
           "aggregator": {
             "http": "/backend",
