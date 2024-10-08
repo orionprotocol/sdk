@@ -201,6 +201,24 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "994873017": {
+        "api": "https://trade.orion.xyz/lumia-mainnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },

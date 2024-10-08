@@ -2,6 +2,7 @@ import { JsonRpcProvider } from 'ethers';
 import { Aggregator } from '../services/Aggregator';
 import { BlockchainService } from '../services/BlockchainService';
 import { PriceFeed } from '../services/PriceFeed';
+import { IndexerService } from '../services/Indexer';
 import type {
   KnownEnv,
   SupportedChainId,
@@ -10,7 +11,6 @@ import type {
 import Exchange from './Exchange/index.js';
 import { chains, envs } from '../config';
 import type { networkCodes } from '../constants/index.js';
-import { IndexerService } from '../services/Indexer';
 import Pmm from './Pmm';
 
 type KnownConfig = {

@@ -18,4 +18,5 @@ export const productionChains = [
   SupportedChainId.LINEA,
   SupportedChainId.AVAX,
   SupportedChainId.BASE,
+  SupportedChainId.LUMIA,
 ];
