@@ -41,7 +41,10 @@ export default class Unit {
 
   public readonly contracts: Record<string, string>;
 
-  constructor(config: KnownConfig | VerboseUnitConfig) {
+  public logger: ((message: string) => void) | undefined;
+
+  constructor(config: KnownConfig | VerboseUnitConfig, logger?: ((message: string) => void) | undefined) {
+    this.logger = logger;
     if ('env' in config) {
       const staticConfig = envs[config.env];
       if (!staticConfig) {
@@ -118,7 +121,8 @@ export default class Unit {
     this.aggregator = new Aggregator(
       this.config.services.aggregator.http,
       this.config.services.aggregator.ws,
-      this.config.basicAuth
+      this.config.basicAuth,
+      logger,
     );
     this.priceFeed = new PriceFeed(
       this.config.services.priceFeed.api,

@@ -3,8 +3,9 @@ import type factories from './constants/factories.js';
 import type { BigNumber } from 'bignumber.js';
 import type subOrderStatuses from './constants/subOrderStatuses.js';
 import type positionStatuses from './constants/positionStatuses.js';
-import type { knownEnvs } from './config/schemas/index.js';
+import type { knownEnvs } from './config/schemas';
 import type getHistory from './Orion/bridge/getHistory.js';
+import type { networkCodes } from './constants';
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -81,23 +82,21 @@ export type Pair = {
 
 export enum SupportedChainId {
   MAINNET = '1',
-  ROPSTEN = '3',
-  GOERLI = '5',
-  ARBITRUM = '42161',
-  FANTOM_OPERA = '250',
-  POLYGON = '137',
+  BSC = '56',
   OKC = '66',
+  POLYGON = '137',
   OPBNB = '204',
+  FANTOM_OPERA = '250',
   INEVM = '2525',
+  BASE = '8453',
+  ARBITRUM = '42161',
+  AVAX = '43114',
   LINEA = '59144',
 
-  POLYGON_TESTNET = '80001',
-  FANTOM_TESTNET = '4002',
-  BSC = '56',
   BSC_TESTNET = '97',
-  OKC_TESTNET = '65',
-  DRIP_TESTNET = '56303',
-  ARBITRUM_GOERLI = '421613',
+  SEPOLIA = '11155111',
+  EVENT_HORIZON_TESTNET = '123420000034',
+  LUMIA_TESTNET = '1952959480',
 
   // For testing and debug purpose
   // BROKEN = '0',
@@ -175,6 +174,9 @@ export type SingleSwap = {
   assetIn: string
   assetOut: string
   factory: Factory
+  assetAddressIn: string
+  assetAddressOut: string
+  fee?: number | undefined
 }
 
 export type SwapInfoBase = {
@@ -208,16 +210,17 @@ export type SwapInfoBase = {
     marketAmountIn: number | undefined
     difference: string | undefined
   } | undefined
+  autoSlippage: number | undefined
 }
 
 export type SwapInfoByAmountIn = SwapInfoBase & {
-  kind: 'exactSpend'
+  isTradeBuy: false
   availableAmountIn?: number | undefined
   marketAmountOut?: number | undefined
 }
 
 export type SwapInfoByAmountOut = SwapInfoBase & {
-  kind: 'exactReceive'
+  isTradeBuy: true
   marketAmountIn?: number | undefined
   availableAmountOut?: number | undefined
 }
@@ -283,22 +286,22 @@ export type EnvConfig = {
   referralAPI: string
   frontageAPI: string
   networks: Partial<
-    Record<
-      SupportedChainId,
-      VerboseUnitConfig
+        Record<
+            SupportedChainId,
+            VerboseUnitConfig
+        >
     >
-  >
 }
 export type AggregatedAssets = Partial<
-  Record<
-    string,
-    Partial<
-      Record<SupportedChainId, {
-        address: string
-      }>
+    Record<
+        string,
+        Partial<
+            Record<SupportedChainId, {
+              address: string
+            }>
+        >
     >
-  >
-  >;
+>;
 
 export type RedeemOrder = {
   sender: string
@@ -438,9 +441,9 @@ type BridgeHistory = Awaited<ReturnType<typeof getHistory>>;
 type BridgeHistoryItem = NonNullable<BridgeHistory[string]>;
 
 export type AtomicSwap = Partial<
-  Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
+    Omit<BridgeHistoryItem, 'creationDate' | 'expiration' | 'secret'>
 > & Partial<
-  Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
+    Omit<AtomicSwapLocal, 'creationDate' | 'expiration' | 'secret'>
 > & {
   sourceChainId: SupportedChainId
   targetChainId: SupportedChainId
@@ -459,3 +462,21 @@ export type AtomicSwap = Partial<
 }
 
 export type OrderSource = 'TERMINAL_MARKET' | 'TERMINAL_LIMIT' | 'SWAP_UI' | 'WIDGET';
+
+// Frontage
+export type NetworkCode = typeof networkCodes[number];
+
+export type TickersCategories = 'FAVORITES' | 'USD' | 'ORN' | 'NATIVE' | 'ALTS';
+
+export type TickersSortBy = 'PRICE' | 'CHANGE' | 'VOLUME';
+
+export type TickersSortType = 'ASCENDING' | 'DESCENDING';
+
+export type TickersBaseSearchParams = {
+  currentNetwork?: NetworkCode
+  targetNetwork?: NetworkCode
+  sortBy?: TickersSortBy
+  sortType?: TickersSortType
+  offset?: number
+  limit?: number
+}

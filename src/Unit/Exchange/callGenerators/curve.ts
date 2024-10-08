@@ -45,5 +45,5 @@ export async function generateCurveStableSwapCall(
     }
   calls.push(calldata)
 
-  return calls 
+  return calls
 }

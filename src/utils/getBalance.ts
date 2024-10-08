@@ -195,5 +195,5 @@ export async function getTotalBalance(
     walletBalance,
     exchangeBalance,
     totalBalance: walletBalance + exchangeBalance
-  } 
+  }
 }

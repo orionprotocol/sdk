@@ -81,7 +81,7 @@ describe('Orion', () => {
   test('Init Orion testing', () => {
     const orion = new Orion('testing');
     expect(orion.referralSystem).toBeInstanceOf(ReferralSystem);
-    expect(orion.unitsArray.length).toBe(4); // eth, bsc, polygon, fantom
+    expect(orion.unitsArray.length).toBe(2); // eth, bsc
 
     const unitBSC = orion.units[SupportedChainId.BSC_TESTNET];
     expect(unitBSC?.chainId).toBe(SupportedChainId.BSC_TESTNET);
@@ -89,23 +89,11 @@ describe('Orion', () => {
     expect(orion.getSiblingsOf(SupportedChainId.BSC_TESTNET)).toHaveLength(3);
     expect(unitBSC?.networkCode).toBe('bsc');
 
-    const unitRopsten = orion.units[SupportedChainId.ROPSTEN]
-    expect(unitRopsten?.chainId).toBe(SupportedChainId.ROPSTEN);
+    const unitSepolia = orion.units[SupportedChainId.SEPOLIA]
+    expect(unitSepolia?.chainId).toBe(SupportedChainId.SEPOLIA);
     // expect(unitRopsten?.env).toBe('testing');
-    expect(orion.getSiblingsOf(SupportedChainId.ROPSTEN)).toHaveLength(3);
-    expect(unitRopsten?.networkCode).toBe('eth');
-
-    const unitPolygon = orion.units[SupportedChainId.POLYGON_TESTNET];
-    expect(unitPolygon?.chainId).toBe(SupportedChainId.POLYGON_TESTNET);
-    // expect(unitPolygon?.env).toBe('testing');
-    expect(orion.getSiblingsOf(SupportedChainId.POLYGON_TESTNET)).toHaveLength(3);
-    expect(unitPolygon?.networkCode).toBe('polygon');
-
-    const unitFantom = orion.units[SupportedChainId.FANTOM_TESTNET];
-    expect(unitFantom?.chainId).toBe(SupportedChainId.FANTOM_TESTNET);
-    // expect(unitFantom?.env).toBe('testing');
-    expect(orion.getSiblingsOf(SupportedChainId.FANTOM_TESTNET)).toHaveLength(3);
-    expect(unitFantom?.networkCode).toBe('ftm');
+    expect(orion.getSiblingsOf(SupportedChainId.SEPOLIA)).toHaveLength(3);
+    expect(unitSepolia?.networkCode).toBe('eth');
   });
 
   test('Init Orion production', () => {

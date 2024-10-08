@@ -12,6 +12,8 @@ const exchangeContractStep = z.object({
   assetIn: z.string(),
   assetOut: z.string(),
   factory: z.string(),
+  assetAddressIn: z.string(),
+  assetAddressOut: z.string(),
 });
 
 const swapInfoBase = z.object({
@@ -49,6 +51,7 @@ const swapInfoBase = z.object({
     mi: z.number().optional(), // market amount in, USD
     d: z.string().optional(), // difference in available amount in/out (USD) and market amount out/in (USD) in percentage
   }).optional(),
+  autoSlippage: z.number().optional(),
 });
 
 const swapInfoByAmountIn = swapInfoBase.extend({
@@ -58,7 +61,7 @@ const swapInfoByAmountIn = swapInfoBase.extend({
   marketAmountIn: z.null(),
 }).transform((val) => ({
   ...val,
-  type: 'exactSpend' as const,
+  isTradeBuy: false as const,
 }));
 
 const swapInfoByAmountOut = swapInfoBase.extend({
@@ -68,7 +71,7 @@ const swapInfoByAmountOut = swapInfoBase.extend({
   marketAmountIn: z.number().nullable(),
 }).transform((val) => ({
   ...val,
-  type: 'exactReceive' as const,
+  isTradeBuy: true as const,
 }));
 
 const swapInfoSchema = swapInfoByAmountIn.or(swapInfoByAmountOut);

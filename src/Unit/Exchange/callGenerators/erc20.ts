@@ -15,7 +15,7 @@ export function generateTransferCall(
     target,
     amount
   ])
-  
+
   return addCallParams(calldata, callParams)
 }
 
@@ -31,6 +31,6 @@ export function generateApproveCall(
     target,
     amount
   ])
-  
+
   return addCallParams(calldata, callParams)
 }

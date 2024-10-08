@@ -31,10 +31,15 @@ export default class Orion {
 
   // TODO: get tradable pairs (aggregated)
 
+  public logger: ((message: string) => void) | undefined;
+
   constructor(
     envOrConfig: KnownEnv | EnvConfig = 'production',
-    overrides?: DeepPartial<EnvConfig>
+    overrides?: DeepPartial<EnvConfig>,
+    logger?: ((message: string) => void) | undefined
   ) {
+    this.logger = logger;
+
     let config: EnvConfig;
     if (typeof envOrConfig === 'string') {
       const envConfig = envs[envOrConfig];
@@ -104,7 +109,7 @@ export default class Orion {
           // api: networkConfig.api,
           nodeJsonRpc: networkConfig.nodeJsonRpc,
           services: networkConfig.services,
-        });
+        }, logger);
         return {
           ...acc,
           [chainId]: unit,

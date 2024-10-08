@@ -16,6 +16,6 @@ export function generateFeePaymentCall(
     token,
     amount
   ])
-  
+
   return addCallParams(calldata, callParams)
 }

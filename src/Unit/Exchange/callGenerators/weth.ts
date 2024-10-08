@@ -12,7 +12,7 @@ export function generateWrapAndTransferCall(
   const calldata = executorInterface.encodeFunctionData('wrapAndTransfer', [
     target,
   ])
-  
+
   return addCallParams(calldata, callParams)
 }
 
@@ -27,6 +27,6 @@ export function generateUnwrapAndTransferCall(
     target,
     amount
   ])
-  
+
   return addCallParams(calldata, callParams)
 }

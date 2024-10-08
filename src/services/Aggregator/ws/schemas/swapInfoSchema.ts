@@ -40,6 +40,9 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     ai: z.string().toUpperCase(), // asset in
     ao: z.string().toUpperCase(), // asset out
     f: factorySchema, // factory
+    aai: z.string(), // asset address in
+    aao: z.string(), // asset address out
+    fee: z.number().optional(), // fee
   })),
   usd: z.object({ // USD info of this swap, nullable
     aa: z.number().optional(), // available amount in, USD
@@ -48,6 +51,7 @@ const swapInfoSchemaBase = baseMessageSchema.extend({
     mi: z.number().optional(), // market amount in, USD
     d: z.string().optional(), // difference in available amount in/out (USD) and market amount out/in (USD) in percentage
   }).optional(),
+  sl: z.number().optional(),
 });
 
 const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
@@ -55,7 +59,7 @@ const swapInfoSchemaByAmountIn = swapInfoSchemaBase.extend({
   aa: z.number(), // available amount in
 }).transform((content) => ({
   ...content,
-  k: 'exactSpend' as const,
+  tb: false as const, // isTradeBuy
 }));
 
 const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
@@ -63,7 +67,7 @@ const swapInfoSchemaByAmountOut = swapInfoSchemaBase.extend({
   aao: z.number(), // available amount out
 }).transform((content) => ({
   ...content,
-  k: 'exactReceive' as const,
+  tb: true as const, // isTradeBuy
 }));
 
 const swapInfoSchema = z.union([
