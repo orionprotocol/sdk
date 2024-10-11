@@ -193,5 +193,18 @@
       "WETH": "0x4200000000000000000000000000000000000006",
       "curveRegistry": ""
     }
+  },
+  "994873017": {
+    "chainId": "994873017",
+    "label": "Lumia",
+    "shortName": "Lumia",
+    "code": "lumia",
+    "baseCurrencyName": "LUMIA",
+    "rpc": "https://mainnet-rpc.lumia.org/",
+    "explorer": "https://explorer.lumia.org",
+    "contracts": {
+      "WETH": "",
+      "curveRegistry": ""
+    }
   }
 }

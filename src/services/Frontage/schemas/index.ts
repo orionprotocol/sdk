@@ -1,1 +1,1 @@
-export * from './tickers-schema';
+export * from './aggregated-metrics-schema';
