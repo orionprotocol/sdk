@@ -283,5 +283,25 @@
       "WETH": "0x4200000000000000000000000000000000000006",
       "curveRegistry": ""
     }
+  },
+  "4398026970694": {
+    "chainId": "4398026970694",
+    "explorer": "https://testnet.tonscan.org/",
+    "label": "TON Testnet",
+    "shortName": "TON Testnet",
+    "code": "tonTestnet",
+    "rpc": "https://testnet-v4.tonhubapi.com",
+    "baseCurrencyName": "TON",
+    "contracts": {}
+  },
+  "4398026970693": {
+    "chainId": "4398026970693",
+    "explorer": "https://tonscan.org/",
+    "label": "TON Mainnet",
+    "shortName": "TON Mainnet",
+    "code": "ton",
+    "rpc": "https://mainnet-v4.tonhubapi.com",
+    "baseCurrencyName": "TON",
+    "contracts": {}
   }
 }

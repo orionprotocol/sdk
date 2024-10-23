@@ -219,6 +219,25 @@
             "http": "/orion-indexer/"
           }
         }
+      },
+      "4398026970693": {
+        "api": "https://app.electra.trade/lumia-mainnet",
+        "rpc": "https://mainnet-v4.tonhubapi.com",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
       }
     }
   },
@@ -283,6 +302,25 @@
       },
       "1952959480": {
         "api": "https://testing.orion.xyz/lumia-testnet",
+        "services": {
+          "aggregator": {
+            "http": "/backend",
+            "ws": "/v1"
+          },
+          "blockchain": {
+            "http": ""
+          },
+          "priceFeed": {
+            "all": "/price-feed"
+          },
+          "indexer": {
+            "http": "/orion-indexer/"
+          }
+        }
+      },
+      "4398026970694": {
+        "api": "https://app.electra.trade/lumia-testnet",
+        "rpc": "https://testnet-v4.tonhubapi.com",
         "services": {
           "aggregator": {
             "http": "/backend",
