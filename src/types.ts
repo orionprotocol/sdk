@@ -110,7 +110,7 @@ export enum SupportedChainId {
   LUMIA_TESTNET = '1952959480',
 
   TON = '4398026970693',
-  TON_TESTNET = '4398026970694',
+  TON_TESTNET = '4398026970692',
 
   // For testing and debug purpose
   // BROKEN = '0',
