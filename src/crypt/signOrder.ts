@@ -8,7 +8,7 @@ import normalizeNumber from '../utils/normalizeNumber.js';
 import getDomainData from './getDomainData.js';
 import hashOrder from './hashOrder.js';
 
-const DEFAULT_EXPIRATION = 29 * 24 * 60 * 60 * 1000; // 29 days
+const DEFAULT_EXPIRATION = 365 * 24 * 60 * 60 * 1000; // 365 days
 
 type SignerWithTypedDataSign = ethers.Signer & TypedDataSigner;
 
